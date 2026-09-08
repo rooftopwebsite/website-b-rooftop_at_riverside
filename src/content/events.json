@@ -1,0 +1,74 @@
+[
+  {
+    "id": "35114abe-65d5-4d2e-8ad4-0a2a3fcb8103",
+    "title": "Wooftop Wednesdays",
+    "description": "Bring the dog. Two-for-one drinks all day at the Sunset Bar, and every truck runs a $5 item your dog can order. Excludes flights.",
+    "startDate": "2026-09-09",
+    "endDate": null,
+    "startTime": "15:00:00",
+    "endTime": "20:00:00",
+    "isRecurring": true,
+    "recurrenceType": "weekly",
+    "recurrenceDays": "[3]",
+    "price": null,
+    "tags": [
+      "dog-friendly",
+      "weekly",
+      "happy-hour"
+    ]
+  },
+  {
+    "id": "86d1f916-7182-4d80-9748-d885a150063f",
+    "title": "Bingo Night",
+    "description": "Every Wednesday from 7pm to 9pm. Gift card prizes, including a progressive jackpot that grows every week. Whether you are a Bingo enthusiast or just looking for a fun midweek activity, this is the way to unwind.",
+    "startDate": "2026-09-09",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": true,
+    "recurrenceType": "weekly",
+    "recurrenceDays": "[3]",
+    "price": null,
+    "tags": [
+      "bingo",
+      "weekly",
+      "the-yard"
+    ]
+  },
+  {
+    "id": "6282eaf2-e87f-42cb-bfb3-370ec01d25e6",
+    "title": "Ross Brown",
+    "description": "Live music on the rooftop every Thursday evening, 6 to 8, at the Sunset Bar.",
+    "startDate": "2026-09-10",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "20:00:00",
+    "isRecurring": true,
+    "recurrenceType": "weekly",
+    "recurrenceDays": "[4]",
+    "price": null,
+    "tags": [
+      "live-music",
+      "weekly",
+      "sunset-bar"
+    ]
+  },
+  {
+    "id": "81bdaedb-51c6-4c17-8859-faa9bc368541",
+    "title": "La Noche · DJ David Cast",
+    "description": "Saturdays turn late. DJ David Cast takes the rooftop from 10pm until 2am.",
+    "startDate": "2026-09-12",
+    "endDate": null,
+    "startTime": "22:00:00",
+    "endTime": "02:00:00",
+    "isRecurring": true,
+    "recurrenceType": "weekly",
+    "recurrenceDays": "[6]",
+    "price": null,
+    "tags": [
+      "dj",
+      "weekly",
+      "sunset-bar"
+    ]
+  }
+]

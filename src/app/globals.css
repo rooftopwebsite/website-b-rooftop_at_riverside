@@ -1,26 +1,455 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Rooftop at Riverside — sistema de diseño
+
+   La escala tipográfica y de espaciado sale de `docs/house-tokens.md`: son
+   valores MEDIDOS sobre The Orient, Tre Vele y Showdown Social, no inventados.
+   Los colores salen de la ley del color del brief (Fase 1).
+
+   Tailwind v4: el tema vive acá, no en un `tailwind.config.ts` (que en v4 no
+   existe). Es lo que hacen los cinco repos de la casa.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   TIPOGRAFÍAS
+
+   ⚠️ ESTADO: los WOFF2 de marca todavía NO están en el proyecto, así que el
+   bloque de `@font-face` de abajo está COMENTADO y el sitio corre con las
+   cadenas de respaldo que declara el `@theme`.
+
+   PARA ACTIVAR LA MARCA, dos pasos:
+     1. poner los siete archivos en `public/fonts/` con los nombres exactos
+        que usan los `src` de abajo;
+     2. descomentar el bloque.
+   Nada más. El `@theme` ya nombra 'Steelfish', 'Bronx' y 'Futura PT' primero
+   en cada cadena, así que el cambio es inmediato y no toca ningún componente.
+
+   ⚠️ Por qué está comentado y no simplemente apuntando a archivos que no
+   existen: un `@font-face` con un `src` roto dispara un 404 por cara —siete
+   errores en la consola de cada página— y eso hunde el puntaje de Best
+   Practices de Lighthouse, que es criterio de aceptación (Fase 4, ≥95).
+
+   ⚠️ Se usa `@font-face` en CSS y no `next/font/local` porque este último
+   ROMPE EL BUILD si el archivo no existe. Cuando los WOFF2 lleguen conviene
+   migrar a `next/font/local`: da `size-adjust` automático y elimina el salto
+   de layout al intercambiar la fuente.
+
+   `font-display: swap` es requisito del brief (Fase 4).
+   -------------------------------------------------------------------------- */
+
+/* ===== DESCOMENTAR CUANDO LOS WOFF2 ESTÉN EN public/fonts/ =====
+@font-face {
+  font-family: 'Steelfish';
+  src: url('/fonts/steelfish-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Steelfish';
+  src: url('/fonts/steelfish-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Steelfish';
+  src: url('/fonts/steelfish-extrabold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Bronx';
+  src: url('/fonts/bronx-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Futura PT';
+  src: url('/fonts/futura-pt-book.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Futura PT';
+  src: url('/fonts/futura-pt-medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Futura PT';
+  src: url('/fonts/futura-pt-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+===== FIN DEL BLOQUE A DESCOMENTAR ===== */
+
+@theme static {
+  /* ── Color ──────────────────────────────────────────────────────────────
+     Colores AUTORIZADOS, no obligatorios. El sitio es blanco y el texto negro;
+     el color es puntuación. Las reglas duras están en `src/lib/brand.ts`
+     (COLOR_RULES) y los ratios en `docs/contrast-audit.md`.                */
+  --color-sunset: #f58521; /* CTA primario (texto NEGRO encima), hover, 1 bloque/página */
+  --color-river: #0eb6b8; /* isotipo, iconografía, patrón. NUNCA como texto */
+  --color-cream: #fdf0b4; /* única superficie de color grande */
+  --color-mint: #c4f2ec;
+  --color-deep: #014545; /* única superficie oscura: Sunset Bar + footer */
+  --color-teal600: #028382;
+  --color-tomato: #eb452c;
+  --color-terra: #a62000;
+  --color-plum: #402639;
+  --color-magenta: #a24584;
+  --color-ink: #000000;
+  --color-paper: #ffffff;
+  --color-body: #0a0a0a;
+
+  /* ── Tipografías ─────────────────────────────────────────────────────────
+     Cada familia lleva su cadena de respaldo. Los respaldos NO son sustitutos
+     de diseño: son lo que se ve mientras faltan los WOFF2.
+
+     display  Steelfish  → condensada de caja alta. Respaldo: las condensadas
+                           del sistema (Haettenschweiler en Windows, Arial
+                           Narrow en todos lados). Mantiene la proporción
+                           angosta, que es lo que sostiene el layout.
+     subhead  Bronx      → eyebrows y subheads, SIEMPRE en caja alta con
+                           tracking abierto. Sin respaldo propio: cae al stack
+                           de display, que es lo más cercano en color de página.
+     body     Futura PT  → geométrica. Respaldo: Futura (macOS),
+                           Century Gothic (Windows), luego el stack del sistema. */
+  --font-display: 'Steelfish', 'Haettenschweiler', 'Arial Narrow', 'Oswald',
+    ui-sans-serif, sans-serif;
+  --font-subhead: 'Bronx', 'Haettenschweiler', 'Arial Narrow', ui-sans-serif, sans-serif;
+  --font-body: 'Futura PT', 'Futura', 'Century Gothic', 'Avenir Next', ui-sans-serif,
+    system-ui, sans-serif;
+
+  /* ── Breakpoints ─────────────────────────────────────────────────────────
+     `desk` (1344) es el de la casa: 1280 de caja + 32×2 de gutter. Es el ancho
+     en el que la pantalla DA para el contenedor grande, no el breakpoint de
+     layout. Ver la nota de `--container-site` en docs/house-tokens.md.       */
+  --breakpoint-desk: 1344px;
+
+  /* ── Contenedor ──────────────────────────────────────────────────────────
+     1280px es unánime en las seis fuentes auditadas.                        */
+  --container-mobile: 780px;
+  --container-tablet: 880px;
+  --container-site: 1280px;
+  --container-wide: 1420px;
+
+  /* ── Gutter ─────────────────────────────────────────────────────────────
+     16/32. Es el par tokenizado de The Orient y el que cierra con el 1344.  */
+  --spacing-gutter: 16px;
+  --spacing-gutter-lg: 32px;
+
+  /* ── Bandas de sección ──────────────────────────────────────────────────
+     Se aplican siempre como PAR mobile/desktop y siempre simétricas
+     (mismo pt que pb). Ver `Section`.                                       */
+  --spacing-band-sm: 64px;
+  --spacing-band: 96px;
+  --spacing-band-lg: 128px;
+  --spacing-band-xl: 160px;
+
+  /* ── Ritmo interno del encabezado de sección ────────────────────────────
+     Valores de DESKTOP. En mobile los pisa el `:root` de más abajo.         */
+  --spacing-gap-kicker: 12px;
+  --spacing-gap-bajada: 20px;
+  --spacing-gap-parrafo: 8px;
+  --spacing-gap-cta: 32px;
+
+  /* ── Header ─────────────────────────────────────────────────────────────*/
+  --spacing-header: 77px;
+  --spacing-header-sm: 67px;
+
+  /* ── Escala de display ──────────────────────────────────────────────────
+     La escala de la casa, tal cual. Las interlíneas son las medidas.        */
+  --text-d1: 72px;
+  --text-d1--line-height: 0.94;
+  --text-d2: 58px;
+  --text-d2--line-height: 0.96;
+  --text-d3: 46px;
+  --text-d3--line-height: 1;
+  --text-d4: 36px;
+  --text-d4--line-height: 1.08;
+  --text-d5: 28px;
+  --text-d5--line-height: 1.18;
+  --text-d6: 22px;
+  --text-d6--line-height: 1.25;
+  --text-d7: 18px;
+  --text-d7--line-height: 1.3;
+
+  /*
+   * `hero` — la ÚNICA extensión a la escala de la casa, y está justificada.
+   *
+   * La casa mide la escala sobre Lusitana (The Orient), una serif de ancho
+   * normal. Steelfish es una condensada extrema: al mismo cuerpo ocupa cerca
+   * de la mitad del ancho y se lee bastante más chica. Un h1 a 72px en
+   * Steelfish pesa en pantalla como uno de ~46px en Lusitana.
+   *
+   * Esto ya quedó anotado en docs/house-tokens.md §3 («mantener los escalones
+   * de The Orient y evaluar subir sólo el d1 del hero»). Es lo que se hace acá:
+   * un peldaño más, exclusivo del h1 del hero, y el resto de la escala intacto.
+   *
+   * ⚠️ El clamp va en `:root`, no acá: Tailwind v4 evalúa el `@theme` en
+   * tiempo de compilación y un `clamp` con `100vw` no se puede resolver ahí
+   * (compila mudo en el valor máximo). Es el mismo tropiezo que `--text-lead`.
+   */
+  --text-hero: 112px;
+  --text-hero--line-height: 0.86;
+
+  /* ── Escala de texto ────────────────────────────────────────────────────*/
+  --text-intro: 25px;
+  --text-intro--line-height: 1.4;
+  --text-lead: 18px;
+  --text-lead--line-height: 1.6;
+  --text-base: 16px;
+  --text-base--line-height: 1.65;
+  --text-cta: 16px;
+  --text-cta--line-height: 1.2;
+  --text-caption: 13px;
+  --text-caption--line-height: 1.45;
+
+  /* Bronx va siempre en caja alta y abierto. 0.24em es donde convergen
+     The Orient, Tre Vele y Santa María. */
+  --tracking-eyebrow: 0.24em;
+
+  /* ── Motion ─────────────────────────────────────────────────────────────*/
+  --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Radios ─────────────────────────────────────────────────────────────
+     Chicos a propósito. No hay consenso en la casa (0px en Showdown y YAVA,
+     22px en Tre Vele), así que manda la marca: el isotipo es un círculo y una
+     card muy redondeada le compite. Además Steelfish es una condensada de
+     filo recto; el radio grande la contradice.                              */
+  --radius-card: 10px;
+  --radius-btn: 2px;
+  --radius-pill: 999px;
+
+  /* ── Sombras ────────────────────────────────────────────────────────────
+     Retintadas sobre `deep` #014545. Las de The Orient venían tintadas en su
+     navy y no se copian tal cual.                                           */
+  --shadow-card: 0 2px 10px rgba(1, 69, 69, 0.14), 0 18px 44px -12px rgba(1, 69, 69, 0.28);
+  --shadow-photo: 0 3px 10px rgba(1, 69, 69, 0.08), 0 22px 48px -20px rgba(1, 69, 69, 0.2);
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Fluidos. Van acá y no en `@theme` por el límite de compilación de v4. */
+  --text-hero: clamp(56px, 56px + (100vw - 390px) * 0.0533, 112px);
+  --text-lead: clamp(16px, 16px + (100vw - 390px) * 0.005128, 18px);
+
+  /* El ritmo del encabezado, un escalón más apretado en mobile. */
+  --spacing-gap-kicker: 8px;
+  --spacing-gap-bajada: 16px;
+  --spacing-gap-cta: 24px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (min-width: 922px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --spacing-gap-kicker: 12px;
+    --spacing-gap-bajada: 20px;
+    --spacing-gap-cta: 32px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    /* El sitio es blanco y el texto negro. No se negocia. */
+    background-color: var(--color-paper);
+    color: var(--color-body);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Sin viudas: equilibra los títulos y evita palabras solas al final. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+  p,
+  li,
+  figcaption,
+  blockquote {
+    text-wrap: pretty;
+  }
+
+  /*
+   * Foco visible en TODO lo interactivo. WCAG 2.4.7.
+   *
+   * ⚠️ El anillo va en `ink` y no en `sunset`: sobre blanco el naranja da
+   * 2.54:1, por debajo del 3:1 que pide WCAG 1.4.11 para un elemento de
+   * interfaz no textual. El negro da 21:1 sobre blanco y 8.26:1 sobre el
+   * naranja del CTA, así que se ve sobre los dos fondos.
+   *
+   * Sobre las superficies oscuras (`deep`) el negro desaparece, así que ahí
+   * se invierte — ver la regla de abajo.
+   */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Sobre fondo oscuro el anillo va en crema (9.44:1 contra `deep`). */
+  .on-dark :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline-color: var(--color-cream);
+  }
+
+  /* Reserva de espacio para imágenes: sin esto hay CLS. */
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ==========================================================================
+   Utilidades
+   ========================================================================== */
+
+/**
+ * La caja de contenido. El salto a 1280 va en 1344 (1280 + 32×2 de gutter),
+ * que es cuando la PANTALLA da para el máximo — no en el breakpoint de layout.
+ */
+@utility caja {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-mobile);
+
+  @media (width >= 768px) {
+    max-width: var(--container-tablet);
+  }
+  @media (width >= 1344px) {
+    max-width: var(--container-site);
+  }
+}
+
+/**
+ * Eyebrow. Bronx en caja alta con tracking abierto, siempre.
+ * El color lo pone quien lo usa: sobre blanco tiene que ser uno de los
+ * autorizados (deep / plum / terra / magenta), nunca sunset ni river.
+ */
+@utility eyebrow {
+  font-family: var(--font-subhead);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+/**
+ * Un filete de 1px en la tinta, al 12%. Es el separador por defecto del sitio:
+ * el color es puntuación, así que las divisiones NO se pintan de color.
+ */
+@utility filete {
+  height: 1px;
+  width: 100%;
+  background-color: color-mix(in srgb, var(--color-ink) 12%, transparent);
+}
+
+/**
+ * Link de texto.
+ *
+ * ⚠️ Acá chocan DOS reglas del brief y hay que resolverlo, no elegir una:
+ *
+ *   a) «el naranja marca el hover de links»
+ *   b) «todo cumple AA» / «si un par no pasa, cambialo, no lo justifiques»
+ *
+ * El naranja sobre blanco da 2.54:1 y no llega al 3:1 que WCAG 1.4.11 pide
+ * para un indicador de interfaz no textual. Pintar el subrayado de naranja y
+ * listo rompería (b).
+ *
+ * La resolución:
+ *
+ *   REPOSO  subrayado 1px en tinta al 45% → **3.36:1**, pasa 1.4.11. Es ACÁ
+ *           donde el link se identifica como link, y ese indicador cumple.
+ *   HOVER   el subrayado pasa a 2px y a naranja. El cambio de estado se
+ *           comunica por GROSOR además de por color, así que no depende del
+ *           color (WCAG 1.4.1), y el texto sigue en tinta a 21:1.
+ *
+ * O sea: el naranja es el gesto del hover, no el que sostiene la accesibilidad.
+ * Ninguna información se pierde si el usuario no distingue el naranja.
+ */
+@utility link-texto {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  transition:
+    text-decoration-color 0.25s var(--ease-brand),
+    text-decoration-thickness 0.25s var(--ease-brand);
+
+  &:hover {
+    text-decoration-color: var(--color-sunset);
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* ==========================================================================
+   Motion
+   ========================================================================== */
+
+@keyframes rt-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.rt-marquee {
+  animation: rt-marquee var(--marquee-duration, 35s) linear infinite;
+  will-change: transform;
+}
+
+.rt-marquee[data-paused='true'] {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-marquee {
+    animation: none;
+  }
+}
+
+/**
+ * Corte global de movimiento. Es la red de seguridad: cualquier animación que
+ * se escape de los componentes (que ya cortocircuitan con `useReducedMotion`)
+ * queda desactivada acá. WCAG 2.3.3.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
