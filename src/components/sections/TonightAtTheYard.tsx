@@ -53,7 +53,7 @@ export default function TonightAtTheYard() {
   const isClosed = today !== null && CLOSED_DAYS.includes(today);
 
   return (
-    <Section tone="cream" band="lg" labelledBy="tonight-title">
+    <Section band="lg" labelledBy="tonight-title">
       <div className="flex flex-col gap-[10px] sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Eyebrow tone="deep">Tonight at the Yard</Eyebrow>
@@ -68,7 +68,7 @@ export default function TonightAtTheYard() {
 
       <div className="mt-[40px] grid gap-[28px] lg:grid-cols-2 lg:gap-[48px]">
         {/* ── Música de hoy ───────────────────────────────────────────── */}
-        <div className="flex flex-col rounded-card border border-ink/12 bg-paper p-[24px] lg:p-[32px]">
+        <div className="flex flex-col rounded-card bg-paper p-[24px] shadow-card lg:p-[32px]">
           <Eyebrow tone="magenta">On the stage</Eyebrow>
 
           {isClosed ? (

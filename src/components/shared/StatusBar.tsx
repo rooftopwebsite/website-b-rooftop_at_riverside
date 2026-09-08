@@ -98,8 +98,9 @@ export default function StatusBar() {
   const anyOpen = state ? state.barOpen || state.trucksOpen : false;
 
   return (
-    <div className="border-b border-ink/10 bg-cream">
-      <div className="mx-auto flex h-[34px] w-full max-w-[1280px] items-center gap-[14px] overflow-x-auto px-gutter whitespace-nowrap md:px-gutter-lg">
+    // Píldora, no franja: acompaña al nav sin volver a dibujar un borde.
+    <div className="flex max-w-full items-center gap-[12px] overflow-x-auto rounded-pill bg-cream px-[16px] py-[7px] whitespace-nowrap ring-1 ring-ink/[0.06]">
+      <div className="flex items-center gap-[12px]">
         {/*
           El estado. El punto es decorativo: lo que informa es el TEXTO de al
           lado. Sin eso el dato dependería del color, que WCAG 1.4.1 no permite.
@@ -112,21 +113,26 @@ export default function StatusBar() {
               state ? (anyOpen ? 'bg-teal600' : 'bg-terra') : 'bg-ink/25',
             ].join(' ')}
           />
-          <span className="font-body text-[12px] font-bold uppercase tracking-[0.14em] text-ink">
+          <span className="font-body text-[12px] font-medium text-ink">
             {state ? (anyOpen ? 'Open now' : 'Closed now') : 'Today'}
           </span>
         </span>
 
         <span aria-hidden="true" className="h-[12px] w-px shrink-0 bg-ink/20" />
 
-        <p className="flex shrink-0 items-center gap-[14px] font-body text-[12px] text-body/80">
+        {/* ⚠️ Las etiquetas «Bar» y «Trucks» se distinguen por PESO, no por
+            color. Tenían `text-body/55`, que sobre el crema de la píldora
+            (#fdf0b4) da 4.27:1 y no llega al 4.5:1 que pide un texto de 12px.
+            Bajar el color para jerarquizar es justo lo que rompe el contraste
+            en textos chicos; el peso hace el mismo trabajo gratis. */}
+        <p className="flex shrink-0 items-center gap-[12px] font-body text-[12px] text-body/80">
           <span>
-            <span className="font-bold uppercase tracking-[0.1em]">Bar</span>{' '}
+            <span className="font-medium">Bar</span>{' '}
             <span className="tabular-nums">{state ? state.bar : '—'}</span>
           </span>
           <span aria-hidden="true" className="h-[12px] w-px bg-ink/20" />
           <span>
-            <span className="font-bold uppercase tracking-[0.1em]">Trucks</span>{' '}
+            <span className="font-medium">Trucks</span>{' '}
             <span className="tabular-nums">{state ? state.trucks : '—'}</span>
           </span>
         </p>

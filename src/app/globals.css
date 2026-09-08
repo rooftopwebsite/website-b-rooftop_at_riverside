@@ -1,5 +1,15 @@
 @import 'tailwindcss';
 
+/*
+ * ⚠️ Las fuentes de contenido, DECLARADAS. Tailwind v4 las autodetecta, pero la
+ * autodetección se cayó en silencio: el build seguía pasando y el CSS emitido
+ * bajaba de 49 KB a 33 KB sin una sola utilidad de tema — sin `bg-cream`, sin
+ * `text-ink`, sin `px-gutter`. La página se veía sin estilos y nada avisaba.
+ *
+ * Declaradas a mano el escaneo es determinista y no depende de heurística.
+ */
+@source '../**/*.{ts,tsx}';
+
 /* ==========================================================================
    Rooftop at Riverside — sistema de diseño
 
@@ -14,56 +24,57 @@
 /* --------------------------------------------------------------------------
    TIPOGRAFÍAS
 
-   ⚠️ ESTADO: los WOFF2 de marca todavía NO están en el proyecto, así que el
-   bloque de `@font-face` de abajo está COMENTADO y el sitio corre con las
-   cadenas de respaldo que declara el `@theme`.
+   ESTADO: las 14 caras de marca están instaladas. El bloque de `@font-face`
+   de abajo lo GENERA `npm run fonts` desde `public/fonts/_drop/`; no se toca
+   a mano.
 
-   PARA ACTIVAR LA MARCA, dos pasos:
-     1. poner los siete archivos en `public/fonts/` con los nombres exactos
-        que usan los `src` de abajo;
-     2. descomentar el bloque.
-   Nada más. El `@theme` ya nombra 'Steelfish', 'Bronx' y 'Futura PT' primero
-   en cada cadena, así que el cambio es inmediato y no toca ningún componente.
+   Lo que hay, verificado en un specimen y no de memoria:
 
-   ⚠️ Por qué está comentado y no simplemente apuntando a archivos que no
-   existen: un `@font-face` con un `src` roto dispara un 404 por cara —siete
-   errores en la consola de cada página— y eso hunde el puntaje de Best
-   Practices de Lighthouse, que es criterio de aceptación (Fase 4, ≥95).
+     Steelfish   condensada alta, en 400 / 700 / 800 más las tres itálicas.
+                 Es el display. A 112px con −0.02em de tracking y 0.95 de
+                 interlínea da el bloque de póster que buscábamos.
+     Steelfish Outline  hueca. Decorativa: a 15px es ilegible, así que sólo
+                 sirve para UNA palabra grande. Nunca en cuerpo ni en UI.
+     Bronx       GEOMÉTRICA ANCHA en caja alta, de aire déco. No es script
+                 —hay al menos tres fuentes con ese nombre y una lo es—.
+                 Va en eyebrows y subheads, siempre en caja alta y con
+                 tracking abierto.
+     Futura PT   geométrica, de 300 a 800. Es el cuerpo.
 
-   ⚠️ Se usa `@font-face` en CSS y no `next/font/local` porque este último
-   ROMPE EL BUILD si el archivo no existe. Cuando los WOFF2 lleguen conviene
-   migrar a `next/font/local`: da `size-adjust` automático y elimina el salto
-   de layout al intercambiar la fuente.
+   ⚠️ El par que sostiene el sistema es **Steelfish estrechísima contra Bronx
+   anchísima**. Ese contraste de ancho es de la marca y es lo que le da
+   carácter propio al sitio; no hace falta pedirle personalidad a las sombras
+   ni a las píldoras.
+
+   ⚠️ DOS PROBLEMAS DE LICENCIA, avisados a Camila y sin resolver:
+     · `Bronx_PersonalUse.otf` — la cara que llegó es de USO PERSONAL. Esto es
+       un sitio comercial. Hay que comprar la licencia o cambiar la fuente.
+     · Los archivos de Futura vienen como `FuturaCyrillic*`, que no es la
+       Futura PT de Adobe sino un repackage. Conviene confirmar la licencia.
 
    `font-display: swap` es requisito del brief (Fase 4).
+
+   ⚠️⚠️ NO PONGAS UN COMENTARIO CSS DENTRO DEL BLOQUE GENERADO DE ABAJO.
+   Los comentarios CSS **no se anidan**: el cierre del interno termina este
+   bloque antes de tiempo, el cierre final queda suelto, y Tailwind deja de
+   emitir TODAS las utilidades de tema — `bg-cream`, `text-ink`, `px-gutter`,
+   todas. El build sigue pasando sin un solo warning y la página se sirve sin
+   estilos. Ya pasó una vez y costó una bisección encontrarlo.
+   Lo cubre `npm run check:css`.
    -------------------------------------------------------------------------- */
 
-/* ===== DESCOMENTAR CUANDO LOS WOFF2 ESTÉN EN public/fonts/ =====
-@font-face {
-  font-family: 'Steelfish';
-  src: url('/fonts/steelfish-regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Steelfish';
-  src: url('/fonts/steelfish-bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Steelfish';
-  src: url('/fonts/steelfish-extrabold.woff2') format('woff2');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
+/* ===== FUENTES DE MARCA — generado por `npm run fonts`. NO EDITAR A MANO. ===== */
 @font-face {
   font-family: 'Bronx';
   src: url('/fonts/bronx-regular.woff2') format('woff2');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Futura PT';
+  src: url('/fonts/futura-pt-bold.woff2') format('woff2');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -76,38 +87,121 @@
 }
 @font-face {
   font-family: 'Futura PT';
+  src: url('/fonts/futura-pt-heavy.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Futura PT';
+  src: url('/fonts/futura-pt-extrabold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Futura PT';
+  src: url('/fonts/futura-pt-light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Futura PT';
   src: url('/fonts/futura-pt-medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Futura PT';
-  src: url('/fonts/futura-pt-bold.woff2') format('woff2');
+  font-family: 'Steelfish';
+  src: url('/fonts/steelfish-bold-italic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Steelfish';
+  src: url('/fonts/steelfish-bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
-===== FIN DEL BLOQUE A DESCOMENTAR ===== */
+@font-face {
+  font-family: 'Steelfish';
+  src: url('/fonts/steelfish-extrabold-italic.woff2') format('woff2');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Steelfish';
+  src: url('/fonts/steelfish-extrabold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Steelfish Outline';
+  src: url('/fonts/steelfish-outline.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Steelfish';
+  src: url('/fonts/steelfish-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Steelfish';
+  src: url('/fonts/steelfish-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+/* ===== FIN FUENTES DE MARCA ===== */
 
 @theme static {
   /* ── Color ──────────────────────────────────────────────────────────────
-     Colores AUTORIZADOS, no obligatorios. El sitio es blanco y el texto negro;
-     el color es puntuación. Las reglas duras están en `src/lib/brand.ts`
-     (COLOR_RULES) y los ratios en `docs/contrast-audit.md`.                */
-  --color-sunset: #f58521; /* CTA primario (texto NEGRO encima), hover, 1 bloque/página */
-  --color-river: #0eb6b8; /* isotipo, iconografía, patrón. NUNCA como texto */
-  --color-cream: #fdf0b4; /* única superficie de color grande */
+     ⚠️ REVISADO tras medir Showdown Social, que Camila fijó como referencia
+     máxima de la casa junto con WeWork, Superside y Stripe.
+
+     Lo que cambió y por qué:
+
+       · **No hay blanco puro.** Showdown usa `#FCFBF2` y `#F1EBDC`; ninguna
+         página de la casa se apoya en `#FFFFFF`. El blanco puro con texto
+         negro es lo que hacía que esto pareciera un panel de software y no
+         un lugar donde se come. `paper` pasa a ser hueso cálido.
+       · **El negro tampoco es puro.** Showdown titula en `rgb(21,21,28)`.
+         Un negro con una pizca de azul se lee más impreso y menos pantalla.
+       · **`deep` deja de ser sólo el footer.** La casa apoya el layout en
+         LOSAS oscuras anchas sobre fondo claro. Es el recurso que le da peso
+         a la página, y acá estaba desaprovechado.
+
+     La «ley del color» del brief original —sitio blanco, color como
+     puntuación— queda levantada por indicación de Camila: «aunque no sea todo
+     blanco y negro». El color ahora estructura, no sólo puntúa.           */
+  --color-sunset: #f58521; /* CTA primario. ⚠️ El texto encima va NEGRO: blanco da 2.54:1 */
+  --color-river: #0eb6b8; /* isotipo, iconografía, patrón. NUNCA como texto sobre claro */
+  --color-cream: #fdf0b4; /* banda de color fuerte */
   --color-mint: #c4f2ec;
-  --color-deep: #014545; /* única superficie oscura: Sunset Bar + footer */
+  --color-deep: #014545; /* losas oscuras + footer */
+  --color-deeper: #013434; /* un peldaño más para capas dentro de una losa */
   --color-teal600: #028382;
   --color-tomato: #eb452c;
   --color-terra: #a62000;
   --color-plum: #402639;
   --color-magenta: #a24584;
-  --color-ink: #000000;
-  --color-paper: #ffffff;
-  --color-body: #0a0a0a;
+
+  --color-ink: #101418; /* titulares sobre claro. No #000 */
+  --color-paper: #fdfcf7; /* fondo base: hueso cálido, NO blanco */
+  --color-bone: #f7f1e3; /* banda alterna, un tono más cálido que paper */
+  --color-chalk: #ffffff; /* blanco real: SÓLO tarjetas que deben separarse del hueso */
+  --color-body: #2a2b28; /* cuerpo de texto sobre claro */
+  --color-fog: #e6e1d4; /* filetes y bordes, calibrado sobre hueso y no sobre blanco */
 
   /* ── Tipografías ─────────────────────────────────────────────────────────
      Cada familia lleva su cadena de respaldo. Los respaldos NO son sustitutos
@@ -118,13 +212,25 @@
                            Narrow en todos lados). Mantiene la proporción
                            angosta, que es lo que sostiene el layout.
      subhead  Bronx      → eyebrows y subheads, SIEMPRE en caja alta con
-                           tracking abierto. Sin respaldo propio: cae al stack
-                           de display, que es lo más cercano en color de página.
+                           tracking abierto.
+                           ⚠️ Es una GEOMÉTRICA ANCHA, verificado en la página 13
+                           del brand book: la «A» es ancha, de asta recta y
+                           vértice plano. NO es condensada y NO es una script
+                           —hay al menos tres fuentes distintas llamadas «Bronx»
+                           y una es de pincel—. Por eso su respaldo es el stack
+                           geométrico y no el de display: con una condensada
+                           detrás, los eyebrows saldrían con el ancho equivocado.
      body     Futura PT  → geométrica. Respaldo: Futura (macOS),
                            Century Gothic (Windows), luego el stack del sistema. */
-  --font-display: 'Steelfish', 'Haettenschweiler', 'Arial Narrow', 'Oswald',
-    ui-sans-serif, sans-serif;
-  --font-subhead: 'Bronx', 'Haettenschweiler', 'Arial Narrow', ui-sans-serif, sans-serif;
+  /* ⚠️ Sin 'Haettenschweiler'. Estaba primero en la cadena y es la Impact de
+     Windows: mientras faltaron los WOFF2, TODO el sitio se diseñó mirando
+     Impact, que es mucho más ancha de caja que Steelfish. Ese fue el motivo
+     de que los titulares se pisaran y de que el conjunto se viera ajeno.
+     Con Steelfish instalada el respaldo sólo se ve durante el swap, así que
+     conviene que sea lo más parecido posible: Arial Narrow, no Impact. */
+  --font-display: 'Steelfish', 'Arial Narrow', ui-sans-serif, sans-serif;
+  --font-subhead: 'Bronx', 'Futura PT', 'Futura', 'Century Gothic', 'Avenir Next',
+    ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Futura PT', 'Futura', 'Century Gothic', 'Avenir Next', ui-sans-serif,
     system-ui, sans-serif;
 
@@ -207,7 +313,22 @@
    * (compila mudo en el valor máximo). Es el mismo tropiezo que `--text-lead`.
    */
   --text-hero: 112px;
-  --text-hero--line-height: 0.86;
+
+  /*
+   * ⚠️ 0.95, NO 0.86. Con 0.86 las dos líneas del h1 del home se PISAN: en la
+   * captura, la barriga de «BONITA COMES» toca el asta de «TOGETHER».
+   *
+   * El 0.86 venía de suponer que arriba iba Steelfish, que es condensada y de
+   * caja alta. Pero mientras no lleguen los WOFF2 el navegador cae en una
+   * Impact/Haettenschweiler, que tiene MÁS altura de mayúscula y casi nada de
+   * hombro — y a 112px, 16px de diferencia de interlínea son un choque.
+   *
+   * 0.95 respira con las dos: sigue siendo un titular apretado —que es lo que
+   * pide un display condensado— y deja de solaparse con la fallback. Cuando
+   * lleguen las fuentes reales hay que volver a mirarlo, pero para abajo, y
+   * con la fuente puesta, no de memoria.
+   */
+  --text-hero--line-height: 0.95;
 
   /* ── Escala de texto ────────────────────────────────────────────────────*/
   --text-intro: 25px;
@@ -225,23 +346,65 @@
      The Orient, Tre Vele y Santa María. */
   --tracking-eyebrow: 0.24em;
 
+  /*
+   * Tracking del display.
+   *
+   * ⚠️ La referencia usa −0.05em a 60px, y ese apretado es lo que le da el
+   * aire «engineered». Pero lo hace sobre OpenRunde, una geométrica de ancho
+   * normal. Steelfish ya es una condensada extrema: aplicarle −0.05em le
+   * cierra los contraformas y la vuelve una mancha. Acá el equivalente
+   * expresivo es un negativo LEVE, que junta las astas sin cerrarlas.
+   *
+   * ⚠️ AJUSTADO a −0.02em: es el valor medido en Showdown Social (84px con
+   * −1.68px, 72px con −1.44px — exactamente −0.02em en las dos). Con la
+   * Steelfish real puesta —antes se veía Impact, que es más ancha de caja—
+   * −0.012em quedaba flojo y el titular perdía el bloque compacto que tiene
+   * la casa. −0.02em es el mismo apretado de Showdown y las contraformas de
+   * Steelfish lo aguantan; verificado en el specimen a 112px.
+   */
+  --tracking-display: -0.02em;
+
   /* ── Motion ─────────────────────────────────────────────────────────────*/
   --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* ── Radios ─────────────────────────────────────────────────────────────
-     Chicos a propósito. No hay consenso en la casa (0px en Showdown y YAVA,
-     22px en Tre Vele), así que manda la marca: el isotipo es un círculo y una
-     card muy redondeada le compite. Además Steelfish es una condensada de
-     filo recto; el radio grande la contradice.                              */
-  --radius-card: 10px;
-  --radius-btn: 2px;
-  --radius-pill: 999px;
+     ⚠️ TERCERA revisión, y ésta viene de medir, no de suponer.
+
+     Estuvo primero en filo recto (0–4px) y después TODO en píldora, cuando
+     Camila trajo visitors.now. La píldora resultó ser el rasgo que más alejaba
+     el sitio de la casa: ninguna de las cuatro referencias que fijó como
+     máximas —Showdown Social, WeWork, Superside, Stripe— usa píldoras como
+     lenguaje general. Las cuatro usan radios CHICOS, de 4 a 12px.
+
+     Así que:
+       · controles y tarjetas → radio chico (8 / 14 / 20)
+       · `pill` sobrevive sólo para lo que de verdad es una etiqueta: chips,
+         badges, el riel de progreso. No para botones ni tarjetas.
+       · el CHAFLÁN (ver `.chaflan` abajo) queda reservado para las losas
+         oscuras, que es de donde sale la firma de Showdown.                */
+  --radius-pill: 9999px;
+  --radius-btn: 8px;
+  --radius-card: 14px;
+  --radius-panel: 20px;
+  --radius-input: 8px;
+  --radius-image: 10px;
+
+  /* ⚠️ `--color-fog` y `--color-linen` VIVÍAN ACÁ y eran grises fríos
+     (#e8e8e8 / #fafafa), calibrados contra un fondo blanco puro. Sobre el
+     hueso cálido se veían sucios: un gris neutro sobre un fondo cálido lee
+     como gris azulado. `fog` se movió arriba, con el resto del color, y
+     ahora es cálido. `linen` se eliminó: era «casi blanco sobre blanco», y
+     con `paper` ya cálido no distinguía nada. Si hace falta una tarjeta que
+     se despegue del fondo, ésa es `chalk`, que es blanco de verdad. */
 
   /* ── Sombras ────────────────────────────────────────────────────────────
-     Retintadas sobre `deep` #014545. Las de The Orient venían tintadas en su
-     navy y no se copian tal cual.                                           */
-  --shadow-card: 0 2px 10px rgba(1, 69, 69, 0.14), 0 18px 44px -12px rgba(1, 69, 69, 0.28);
-  --shadow-photo: 0 3px 10px rgba(1, 69, 69, 0.08), 0 22px 48px -20px rgba(1, 69, 69, 0.2);
+     Tres capas sutiles, nada dramático. La elevación no define la superficie
+     —eso lo hace el filo de 1px—; la sombra sólo despega la tarjeta flotante. */
+  --shadow-btn: 0 1px 1px 1px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 8px 16px 0 rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  --shadow-float: 0 2px 6px 0 rgba(1, 69, 69, 0.06), 0 18px 40px -8px rgba(1, 69, 69, 0.14),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
 }
 
 :root {
@@ -368,6 +531,35 @@
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
   font-weight: 400;
+}
+
+/**
+ * CHAFLÁN — la esquina cortada de la casa.
+ *
+ * Medido en Showdown Social:
+ *   polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))
+ * o sea: se cortan la esquina SUPERIOR DERECHA y la INFERIOR IZQUIERDA. Las
+ * otras dos quedan vivas. Esa asimetría es lo que le da dirección — un corte
+ * en las cuatro esquinas sería un octógono y no dice nada.
+ *
+ * Se usa SÓLO en las losas oscuras y en la imagen que va dentro de ellas. No
+ * es el radio general del sitio: si todo lleva chaflán, el sitio se vuelve una
+ * interfaz de videojuego, que es el registro de Showdown y no el de Rooftop.
+ *
+ * ⚠️ NO PONER ESTO EN NADA ENFOCABLE. `clip-path` recorta el anillo de foco,
+ * así que un botón con chaflán deja a alguien navegando con teclado sin saber
+ * dónde está parado. Si algún día hace falta un control con chaflán, el anillo
+ * tiene que ir por dentro (`box-shadow: inset`), que sí sobrevive al recorte.
+ */
+@utility chaflan {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--chaflan, 14px)) 0,
+    100% var(--chaflan, 14px),
+    100% 100%,
+    var(--chaflan, 14px) 100%,
+    0 calc(100% - var(--chaflan, 14px))
+  );
 }
 
 /**

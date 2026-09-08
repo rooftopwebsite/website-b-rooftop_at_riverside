@@ -82,17 +82,24 @@ export default function Header() {
 
   return (
     <>
-      <div className="fixed inset-x-0 top-0 z-[99]">
+      {/*
+        Píldora flotante, no barra a sangre. Es la firma de la referencia: la
+        navegación se lee como un control, no como un borde de la página.
+
+        ⚠️ El contenedor exterior es `pointer-events-none` y la píldora lo
+        reactiva. Sin eso, la franja transparente a los costados taparía los
+        clics del contenido que pasa por debajo.
+      */}
+      <div className={`pointer-events-none fixed inset-x-0 top-0 z-[99] pt-[12px] ${GUTTER}`}>
         <header
           className={[
-            'flex items-center bg-paper',
-            'h-header-sm desk:h-header',
-            'border-b transition-[box-shadow,border-color] duration-300',
-            scrolled ? 'border-ink/10 shadow-[0_2px_18px_rgba(0,0,0,0.06)]' : 'border-transparent',
-            GUTTER,
+            'caja pointer-events-auto flex items-center bg-paper',
+            'h-[60px] rounded-pill px-[10px] desk:h-[64px] desk:px-[14px]',
+            'ring-1 ring-fog transition-shadow duration-300',
+            scrolled ? 'shadow-card' : 'shadow-btn',
           ].join(' ')}
         >
-          <div className="caja flex w-full items-center justify-between gap-[16px]">
+          <div className="flex w-full items-center justify-between gap-[16px]">
             {/*
               Logo. Se reduce al scrollear: el lockup completo al tope, y una
               versión más chica una vez que el hero salió de pantalla. La
@@ -126,21 +133,14 @@ export default function Header() {
                   href={href}
                   aria-current={isCurrent(href) ? 'page' : undefined}
                   className={[
-                    'relative px-[12px] py-[8px] font-body text-caption font-bold uppercase',
-                    'tracking-[0.14em] whitespace-nowrap transition-colors duration-250',
-                    isCurrent(href) ? 'text-ink' : 'text-ink/60 hover:text-ink',
+                    'rounded-pill px-[14px] py-[8px] font-body text-[14px] font-medium',
+                    'whitespace-nowrap transition-colors duration-200',
+                    // La página actual se marca con un relleno suave, no con un
+                    // filete: dentro de una píldora, una línea recta desentona.
+                    isCurrent(href) ? 'bg-ink/[0.06] text-ink' : 'text-body/65 hover:text-ink',
                   ].join(' ')}
                 >
                   {label}
-                  {/* El filete marca SÓLO la página actual. El hover se limita
-                      a pintar la tipografía: si el hover también dibujara la
-                      línea, el gesto se confundiría con la señal de dónde estás. */}
-                  {isCurrent(href) ? (
-                    <span
-                      aria-hidden="true"
-                      className="absolute bottom-[2px] left-[12px] h-[2px] w-[calc(100%-24px)] bg-sunset"
-                    />
-                  ) : null}
                 </Link>
               ))}
 
@@ -156,10 +156,10 @@ export default function Header() {
                   aria-expanded={moreOpen}
                   aria-haspopup="true"
                   className={[
-                    'flex items-center gap-[8px] px-[12px] py-[8px]',
-                    'font-body text-caption font-bold uppercase tracking-[0.14em]',
-                    'whitespace-nowrap transition-colors duration-250',
-                    moreActive ? 'text-ink' : 'text-ink/60 hover:text-ink',
+                    'flex items-center gap-[7px] rounded-pill px-[14px] py-[8px]',
+                    'font-body text-[14px] font-medium whitespace-nowrap',
+                    'transition-colors duration-200',
+                    moreActive ? 'bg-ink/[0.06] text-ink' : 'text-body/65 hover:text-ink',
                   ].join(' ')}
                 >
                   More
@@ -189,16 +189,16 @@ export default function Header() {
                       : 'invisible pointer-events-none -translate-y-[4px] opacity-0',
                   ].join(' ')}
                 >
-                  <ul className="grid w-[560px] grid-cols-2 gap-[2px] rounded-card border border-ink/10 bg-paper p-[10px] shadow-card">
+                  <ul className="grid w-[560px] grid-cols-2 gap-[2px] rounded-panel bg-paper p-[12px] shadow-card ring-1 ring-fog">
                     {NAV_MORE.map(({ label, href, hint }) => (
                       <li key={href}>
                         <Link
                           href={href}
                           onClick={() => setMoreOpen(false)}
                           aria-current={isCurrent(href) ? 'page' : undefined}
-                          className="block rounded-btn px-[12px] py-[10px] transition-colors duration-200 hover:bg-cream"
+                          className="block rounded-input px-[12px] py-[10px] transition-colors duration-200 hover:bg-ink/[0.04]"
                         >
-                          <span className="block font-body text-[14px] font-bold uppercase tracking-[0.1em] text-ink">
+                          <span className="block font-body text-[15px] font-medium text-ink">
                             {label}
                           </span>
                           {hint ? (
@@ -247,9 +247,12 @@ export default function Header() {
           </div>
         </header>
 
-        {/* Barra de estado. Información de alto valor y bajo costo visual: es la
-            pregunta que más se hace del negocio y ocupa una línea. */}
-        <StatusBar />
+        {/* Barra de estado: segunda píldora, más chica, debajo de la del nav.
+            Información de alto valor y bajo costo visual — es la pregunta que
+            más se hace del negocio y ocupa una línea. */}
+        <div className="caja pointer-events-auto mt-[8px] flex justify-center">
+          <StatusBar />
+        </div>
       </div>
 
       {/* ── Menú full-screen de mobile ─────────────────────────────────── */}

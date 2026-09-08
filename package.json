@@ -11,7 +11,9 @@
     "contrast": "node scripts/contrast.mjs",
     "check:surfaces": "node scripts/surface-rhythm.mjs",
     "check:motion": "node scripts/reduced-motion.mjs",
-    "check:seo": "node --experimental-strip-types scripts/check-seo.mjs"
+    "check:seo": "node --experimental-strip-types scripts/check-seo.mjs",
+    "check:css": "node scripts/check-css.mjs",
+    "fonts": "node scripts/install-fonts.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -35,6 +37,7 @@
     "server-only": "^0.0.1",
     "sharp": "^0.35.4",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wawoff2": "^2.0.1"
   }
 }

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLink, ButtonLink } from '@/components/shared/Button';
 import { Marquee, Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { PhotoPending } from '@/components/shared/PendingData';
+import PinnedList, { type PinnedItem } from '@/components/shared/PinnedList';
 import Section, { GUTTER } from '@/components/shared/Section';
 import TilePattern from '@/components/shared/TilePattern';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
@@ -49,54 +50,73 @@ export function FeaturesMarquee() {
    How this place works — el módulo que desarma la confusión
    ========================================================================== */
 
-const STEPS = [
+/**
+ * ⚠️ Las etiquetas de cada paso son datos YA confirmados en otro lado del
+ * sitio: los cuatro camiones, el happy hour de `HAPPY_HOUR`, las cinco noches
+ * de música. No hay ni un dato nuevo acá. Este módulo explica, no anuncia.
+ */
+const STEPS: readonly PinnedItem[] = [
   {
     n: '01',
     title: 'Order at whichever window you want',
     body: 'Four trucks park in the yard and each one is somebody’s own business. You order at the window, you pay that truck. Separate line, separate card, separate receipt.',
+    tags: ['Four independent kitchens', 'Order at the window', 'A tab per truck', 'No table service'],
   },
   {
     n: '02',
     title: 'Get your drinks upstairs',
     body: 'The Sunset Bar on the roof is ours. Cocktails made that morning, drafts from breweries twenty minutes away. It’s the one tab we run, and the only menu on this site with prices.',
+    tags: ['Cocktails made daily', 'Local drafts', `Happy hour ${HAPPY_HOUR.days}, ${HAPPY_HOUR.time}`, 'The one tab we run'],
   },
   {
     n: '03',
     title: 'Stay for whoever’s playing',
     body: 'Live music five nights a week, Bingo on Wednesdays, DJ sets late on Saturdays. Almost all of it is free and none of it needs a ticket.',
+    tags: ['Live music five nights', 'Bingo Wednesdays', 'DJ sets Saturdays', 'No ticket, no cover'],
   },
-] as const;
+];
 
+/**
+ * El módulo que desarma la confusión, contado con el scroll.
+ *
+ * ⚠️ Cambia la FORMA, no el contenido: eran tres columnas que se leían de un
+ * vistazo y ahora es una lista fijada que se abre de a un paso. La razón es que
+ * el orden importa —primero pedís, después subís, después te quedás— y tres
+ * columnas en paralelo no dicen que hay una secuencia. Ver `PinnedList` para
+ * el mecanismo y para qué pasa sin JS.
+ *
+ * ⚠️ El `Section` va sin `band`: el alto lo pone `PinnedList`, y un padding
+ * vertical grande encima del recorrido de varias pantallas sólo agrega vacío.
+ */
 export function HowThisPlaceWorks() {
   return (
-    <Section band="lg" labelledBy="how-title">
-      <SectionHead
-        eyebrow="How this place works"
-        eyebrowTone="deep"
-        id="how-title"
-        title={
-          <>
-            Five businesses, <br className="hidden sm:block" />
-            one set of stairs.
-          </>
+    <Section bandTop="lg" bandBottom="sm" labelledBy="how-title">
+      <PinnedList
+        items={STEPS}
+        head={
+          <SectionHead
+            eyebrow="How this place works"
+            eyebrowTone="deep"
+            id="how-title"
+            title={
+              <>
+                Five businesses, <br className="hidden sm:block" />
+                one set of stairs.
+              </>
+            }
+            lead="It catches people out the first time, so here it is plainly."
+          >
+            {/* La columna izquierda queda fijada varias pantallas: sin una
+                salida, es mucho aire sostenido sin nada que hacer. El enlace
+                va ACÁ y no dentro de los ítems, que se pliegan — un enlace
+                enfocable dentro de un bloque con `overflow: hidden` recibe
+                foco en una zona que no se ve. */}
+            <ArrowLink href="/the-yard" className="mt-[26px]">
+              See how the yard is laid out
+            </ArrowLink>
+          </SectionHead>
         }
-        lead="It catches people out the first time, so here it is plainly."
       />
-
-      <StaggerGroup as="ol" className="mt-[48px] grid gap-[32px] md:grid-cols-3 md:gap-[40px]">
-        {STEPS.map((s) => (
-          <RevealItem as="li" key={s.n} className="flex flex-col">
-            <span aria-hidden="true" className="font-display text-d3 text-sunset lg:text-d2">
-              {s.n}
-            </span>
-            <span className="mt-[4px] block h-[2px] w-[44px] bg-ink" />
-            <Heading level={3} className="mt-[18px]">
-              {s.title}
-            </Heading>
-            <p className="mt-[12px] text-[15px] leading-[1.65] text-body/75">{s.body}</p>
-          </RevealItem>
-        ))}
-      </StaggerGroup>
     </Section>
   );
 }

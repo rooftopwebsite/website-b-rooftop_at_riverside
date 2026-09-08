@@ -47,7 +47,7 @@ export default function PageHero({
         }
       >
         <div
-          className={`${GUTTER} flex flex-col justify-center pt-[40px] pb-[40px] lg:pt-[72px] lg:pb-[64px]`}
+          className={`${GUTTER} flex flex-col justify-center pt-[132px] pb-[48px] lg:pt-[156px] lg:pb-[64px]`}
         >
           <div className={hasImage ? 'mx-auto w-full max-w-[640px] desk:mr-[56px] desk:ml-auto' : 'caja'}>
             {crumbs && crumbs.length > 0 ? (

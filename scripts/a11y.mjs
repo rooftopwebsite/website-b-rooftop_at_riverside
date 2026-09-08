@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { assertFresh } from './assert-fresh.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -17,7 +18,19 @@ import path from 'node:path';
  * renderizado, que es lo que hace axe.
  */
 
-const BASE = process.env.BASE ?? 'http://localhost:3114';
+/*
+ * ⚠️ UN SOLO puerto para los tres guards, y uno poco común a propósito.
+ * Antes cada script tenía el suyo (3114, 3119, 3120) y los tres chocaban con
+ * servers viejos de otras sesiones — de ahí los resultados falsos. Serví el
+ * build acá:
+ *
+ *   npm run build && npx next start --port 3157
+ *
+ * assertFresh() verifica que lo que contesta sea de verdad el build actual.
+ */
+const BASE = process.env.BASE ?? 'http://localhost:3157';
+
+await assertFresh(BASE);
 const PAGES = [
   '/',
   '/sunset-bar',
@@ -55,6 +68,16 @@ for (const width of [1440, 390]) {
 
   for (const p of PAGES) {
     await page.goto(BASE + p, { waitUntil: 'networkidle' });
+
+    /* ⚠️ Hay que ESPERAR a que las animaciones de entrada terminen antes de
+       medir. Sin esto, axe lee el color a mitad del fundido: un texto que en
+       reposo es `#5a5a5a` se mide como `#e2e2e2` porque el padre todavía está
+       en opacity 0.3. Eso llena el informe de fallos de contraste inventados,
+       y los inventados tapan a los de verdad.
+
+       `networkidle` no alcanza: dice que no hay peticiones, no que la página
+       se quedó quieta. Las entradas más lentas son delay 0.42s + 0.6s. */
+    await page.waitForTimeout(1600);
     await page.addScriptTag({ content: axeSource });
     const res = await page.evaluate(async () =>
       window.axe.run(document, {

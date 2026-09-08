@@ -78,20 +78,20 @@ export default function Footer() {
           {/* 1 — Identidad */}
           <div className="flex flex-col gap-[18px]">
             {/*
-              ⚠️ ASSET FALTANTE: no tenemos versión REVERSADA del lockup, y el
-              logo a color no se lee sobre #014545 — el wordmark es negro.
-              `brightness-0 invert` lo pasa a blanco puro: se lee, pero pierde
-              el aro naranja y la onda teal.
-              Es una solución de compromiso hasta que llegue el lockup en
-              blanco del brand book. NO es recrear el asset con CSS: es un
-              filtro sobre el archivo real.
+              RESUELTO: éste es el lockup reversado de verdad, sacado del Figma
+              de marca (`logo-blanco`). Antes acá había un `brightness-0 invert`
+              sobre el logo a color, porque el wordmark es negro y desaparecía
+              sobre #014545; ese filtro se lo comía el aro naranja y la onda.
+
+              ⚠️ `alt=""` a propósito: el nombre ya está en el texto de al lado
+              y en el `<h2>` del footer. Un alt acá lo repetiría dos veces.
             */}
             <Image
-              src="/brand/logo-lockup.png"
+              src="/brand/logo-reversed.svg"
               alt=""
-              width={200}
-              height={212}
-              className="h-auto w-[112px] brightness-0 invert"
+              width={303}
+              height={322}
+              className="h-auto w-[112px]"
             />
             <p className="max-w-[30ch] text-[15px] leading-[1.6] text-paper/80">
               A rooftop bar over a curated food truck park, in downtown Bonita Springs.

@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { assertFresh } from './assert-fresh.mjs';
 
 /**
  * Compara lo que el sitio RENDERIZA contra la tabla del brief.
@@ -17,7 +18,19 @@ import { chromium } from 'playwright';
 
 import { PAGE_SEO } from '../src/content/seo-pages.ts';
 
-const BASE = process.env.BASE ?? 'http://localhost:3120';
+/*
+ * ⚠️ UN SOLO puerto para los tres guards, y uno poco común a propósito.
+ * Antes cada script tenía el suyo (3114, 3119, 3120) y los tres chocaban con
+ * servers viejos de otras sesiones — de ahí los resultados falsos. Serví el
+ * build acá:
+ *
+ *   npm run build && npx next start --port 3157
+ *
+ * assertFresh() verifica que lo que contesta sea de verdad el build actual.
+ */
+const BASE = process.env.BASE ?? 'http://localhost:3157';
+
+await assertFresh(BASE);
 const SITE = 'https://rooftopatriverside.com';
 
 /**

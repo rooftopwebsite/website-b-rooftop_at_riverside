@@ -1,7 +1,8 @@
 /**
  * Tokens de marca y datos del negocio de Rooftop at Riverside.
  *
- * Fuente de los colores: brief del proyecto (Fase 1).
+ * Fuente de los colores: **brand book de Rooftop at Riverside**, página 10
+ * («Expanded Palette»). Los 12 valores verificados uno a uno contra el libro.
  * Fuente de los datos: auditoría de eatdrinkparadise.com del 2026-09-08,
  * cruzada contra el brief. Ver `docs/current-site-inventory.md`.
  *
@@ -12,9 +13,9 @@
  */
 
 export const COLORS = {
-  /** CTA primario (con texto NEGRO encima), hover de links, un bloque de acento por página. */
+  /** «Sunset Orange». CTA primario (texto NEGRO encima), hover de links, un bloque de acento por página. */
   sunset: '#F58521',
-  /** Isotipo, detalles de iconografía, patrón gráfico. Nunca como texto. */
+  /** «River Teal». Isotipo, iconografía, patrón gráfico. Nunca como texto. */
   river: '#0EB6B8',
   /** La única superficie de color grande permitida. Una o dos secciones por página. */
   cream: '#FDF0B4',
@@ -26,7 +27,9 @@ export const COLORS = {
   terra: '#A62000',
   plum: '#402639',
   magenta: '#A24584',
+  /** «Nightlife Black». */
   ink: '#000000',
+  /** «Cloud White». */
   paper: '#FFFFFF',
   /** Cuerpo de texto. El brief autoriza #0A0A0A además del negro puro. */
   body: '#0A0A0A',

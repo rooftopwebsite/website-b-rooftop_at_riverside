@@ -8,9 +8,13 @@ import { Eyebrow, Heading } from './Type';
  * La tarjeta con enlace: trucks, espacios y eventos usan ésta.
  *
  * ⚠️ El hover está definido en UN solo lugar y es deliberadamente MÍNIMO:
- *   · elevación de 2px (`-translate-y`) más la sombra tintada en `deep`
+ *   · elevación de 2px (`-translate-y`) y el filo se oscurece
  *   · la imagen escala 1.03 — apenas, y sólo la imagen
  *   · el título pasa a `#014545`
+ *
+ * ⚠️ La superficie la define un FILO de 1px, no una sombra. Es la regla de la
+ * referencia y es lo que mantiene la estética plana: la sombra sólo aparece en
+ * lo que de verdad flota (el panel del hero, el mega-menú).
  *
  * Nada de parallax: el brief lo prohíbe sobre fotos de comida y de gente, que
  * es justo lo que hay en estas tarjetas.
@@ -60,8 +64,9 @@ export default function Card({
     <Link
       href={href}
       className={[
-        'group flex h-full flex-col rounded-card',
-        'transition-[transform,box-shadow] duration-250 ease-brand',
+        'group flex h-full flex-col overflow-hidden rounded-card bg-paper',
+        'ring-1 ring-fog',
+        'transition-[transform,box-shadow] duration-200 ease-brand',
         'hover:-translate-y-[2px] hover:shadow-card',
         className,
       ]
@@ -69,7 +74,7 @@ export default function Card({
         .join(' ')}
     >
       {photo ? (
-        <div className={`relative ${ratio} overflow-hidden rounded-card bg-mint`}>
+        <div className={`relative ${ratio} overflow-hidden bg-cream`}>
           <Image
             src={photo}
             alt={photoAlt ?? ''}
@@ -84,11 +89,12 @@ export default function Card({
           ) : null}
         </div>
       ) : (
-        <PhotoPending brief={photoBrief ?? 'Photo needed.'} ratio={ratio} />
+        <PhotoPending brief={photoBrief ?? 'Photo needed.'} ratio={ratio} className="rounded-none border-0" />
       )}
 
+      <div className="flex flex-1 flex-col p-[20px]">
       {eyebrow ? (
-        <Eyebrow tone="deep" className="mt-[18px]">
+        <Eyebrow tone="deep">
           {eyebrow}
         </Eyebrow>
       ) : null}
@@ -96,7 +102,7 @@ export default function Card({
       <Heading
         level={3}
         role="card"
-        className="mt-[6px] transition-colors duration-250 group-hover:text-deep"
+        className="mt-[6px] transition-colors duration-200 group-hover:text-deep"
       >
         {title}
       </Heading>
@@ -121,10 +127,11 @@ export default function Card({
             strokeWidth="1.6"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="transition-transform duration-250 group-hover:translate-x-[3px]"
+            className="transition-transform duration-200 group-hover:translate-x-[3px]"
           />
         </svg>
       </span>
+      </div>
     </Link>
   );
 }

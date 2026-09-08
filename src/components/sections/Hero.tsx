@@ -1,136 +1,135 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { AnnouncementChip, ButtonLink } from '@/components/shared/Button';
 import { HeroFadeUp, MaskedLines } from '@/components/shared/Motion';
 import { GUTTER } from '@/components/shared/Section';
-import { TileMark } from '@/components/shared/TilePattern';
-import { Eyebrow, Heading } from '@/components/shared/Type';
+import { Heading } from '@/components/shared/Type';
 
 /**
- * Hero del home.
+ * Hero del home — pila CENTRADA.
  *
- * ⚠️ Decisión de diseño: el hero está PARTIDO en dos paneles —tipografía sobre
- * blanco a la izquierda, la foto real a la derecha— en vez de texto encima de
- * una foto a sangre.
+ * ⚠️ REVIERTE el hero anterior (dos paneles, tipografía a la izquierda y foto a
+ * la derecha). Dirección nueva de Camila con la referencia de visitors.now:
+ * chip → titular grande → bajada → doble CTA → intención, todo centrado sobre
+ * blanco, y recién después la foto flotando en una tarjeta sobre un campo suave.
  *
- * Por dos razones, y las dos son del brief:
+ * ⚠️ Lo que se MANTIENE de la decisión anterior, y no es casual: el texto nunca
+ * va encima de la foto. Centrado o partido, el h1 es negro sobre blanco —21:1—,
+ * sin velo y sin tener que medir un color compuesto. La foto entra después, en
+ * su propia tarjeta, que es exactamente lo que la referencia hace con su
+ * captura de producto.
  *
- *   1. «El sitio es blanco.» Una foto a sangre de 100vh en el primer viewport
- *      convierte el hero en una superficie de color, que es justo lo que la ley
- *      del color prohíbe. Partido, el blanco sigue mandando.
- *   2. Texto sobre foto obliga a un velo y a medir el contraste sobre el color
- *      COMPUESTO, no sobre el declarado. Es el error que ningún checker
- *      automático detecta. Acá el h1 es negro sobre blanco: 21:1, sin discusión.
+ * ⚠️ El campo de abajo va en CREMA, no en un degradado saturado. La referencia
+ * usa un azul-lavanda fuerte; acá eso rompería la ley del color, que sólo
+ * autoriza crema como superficie de color grande y teal profundo como la
+ * oscura. Crema cumple la misma función atmosférica y está dentro de la ley.
  *
- * ⚠️ La foto NO es de atardecer. El brief pide «imagen real del venue al
- * atardecer» y en el sitio actual no hay ninguna: la mejor disponible es esta,
- * música en vivo de noche con el público. Está marcado en el informe.
- *
- * ⚠️ En lugar del widget de reserva del patrón de la casa —acá no hay reservas,
- * es walk-in— va el selector de intención de tres vías. Es la corrección más
- * importante del sitio: el visitante llega asumiendo restaurante, y las tres
- * puertas le dicen en el primer viewport que esto son tres negocios.
+ * ⚠️ Este crema CUENTA para el tope de dos por página. Por eso «Tonight at the
+ * Yard» pasó a blanco: si no, la home tendría tres.
  */
 
 const INTENTS = [
-  {
-    href: '/food-trucks',
-    label: 'Eat and drink',
-    hint: 'Four kitchens and a rooftop bar',
-  },
-  {
-    href: '/whats-on',
-    label: "See what's on this weekend",
-    hint: 'Live music, bingo, the whole calendar',
-  },
-  {
-    href: '/events',
-    label: 'Rent the place',
-    hint: 'Private and corporate events',
-  },
+  { href: '/food-trucks', label: 'Eat and drink' },
+  { href: '/whats-on', label: "See what's on" },
+  { href: '/events', label: 'Rent the place' },
 ] as const;
 
 export default function Hero() {
   return (
-    <section aria-labelledby="hero-title" className="relative overflow-hidden">
-      <div className="desk:grid desk:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] desk:items-stretch">
-        {/* ── Panel de tipografía ─────────────────────────────────────── */}
-        <div className={`${GUTTER} flex flex-col justify-center pt-[48px] pb-[40px] lg:pt-[80px] lg:pb-[72px]`}>
-          <div className="mx-auto w-full max-w-[640px] desk:mr-[64px] desk:ml-auto">
-            <Eyebrow tone="deep" className="flex items-center gap-[12px]">
-              <TileMark />
-              Downtown Bonita Springs
-            </Eyebrow>
+    <section aria-labelledby="hero-title" className="relative">
+      {/* ── Pila centrada sobre blanco ──────────────────────────────────── */}
+      <div className={`${GUTTER} pt-[132px] pb-[56px] lg:pt-[164px] lg:pb-[72px]`}>
+        <div className="mx-auto flex max-w-[820px] flex-col items-center text-center">
+          <HeroFadeUp>
+            <AnnouncementChip tag="Tonight" href="/whats-on">
+              Live music five nights a week
+            </AnnouncementChip>
+          </HeroFadeUp>
 
-            {/* Slot 2 del vocabulario de motion: el H1 sube por líneas, cada
-                una con su máscara y un stagger corto. El corte está escrito a
-                mano y no medido en runtime — ver `MaskedLines`. */}
-            <Heading level={1} role="hero" id="hero-title" className="mt-gap-kicker text-ink">
-              <MaskedLines lines={['Bonita comes', 'together']} delay={0.08} />
-            </Heading>
+          <Heading
+            level={1}
+            role="hero"
+            id="hero-title"
+            className="mt-[26px] tracking-display text-ink"
+          >
+            <MaskedLines lines={['Bonita comes', 'together']} delay={0.08} />
+          </Heading>
 
-            <HeroFadeUp delay={0.26} className="mt-gap-bajada">
-            <p className="max-w-[46ch] text-lead text-body/80">
-              A rooftop bar over a curated food truck park. Four independent kitchens in the yard,
-              our own bar upstairs, and a calendar that runs five nights a week.
+          <HeroFadeUp delay={0.26} className="mt-[22px]">
+            <p className="max-w-[54ch] text-[17px] leading-[1.55] text-body/70 lg:text-[19px]">
+              A rooftop bar over four food trucks in downtown Bonita Springs. Our bar upstairs,
+              four independent kitchens in the yard, and a calendar that runs five nights a week.
             </p>
-            </HeroFadeUp>
+          </HeroFadeUp>
 
-            {/* ── Selector de intención ────────────────────────────────
-                Tres puertas, no tres botones decorativos: cada una rutea a
-                una de las tres verticales del negocio. */}
-            <HeroFadeUp delay={0.34}>
-            <nav aria-label="What brings you here" className="mt-[32px]">
-              <ul className="flex flex-col border-t border-ink/15">
+          {/* Doble CTA, como la referencia: uno lleno y uno fantasma. */}
+          <HeroFadeUp delay={0.34} className="mt-[30px]">
+            <div className="flex flex-wrap items-center justify-center gap-[12px]">
+              <ButtonLink href="/whats-on" variant="primary" size="lg">
+                What&rsquo;s on tonight
+              </ButtonLink>
+              <ButtonLink href="/events/inquire" variant="secondary" size="lg">
+                Plan an event
+              </ButtonLink>
+            </div>
+          </HeroFadeUp>
+
+          {/*
+            El selector de intención sobrevive al rediseño, pero pasa a ser una
+            fila de píldoras. Sigue siendo la corrección más importante del
+            sitio —el visitante llega asumiendo restaurante y acá ve tres
+            puertas distintas— y ahora cuesta una línea en vez de un bloque.
+          */}
+          <HeroFadeUp delay={0.42} className="mt-[36px] w-full">
+            <nav aria-label="What brings you here">
+              <ul className="flex flex-wrap items-center justify-center gap-[8px]">
                 {INTENTS.map((intent) => (
                   <li key={intent.href}>
                     <Link
                       href={intent.href}
-                      className="group flex items-center justify-between gap-[16px] border-b border-ink/15 py-[18px] transition-colors duration-250 hover:bg-cream"
+                      className="inline-flex items-center gap-[7px] rounded-pill bg-ink/[0.04] px-[16px] py-[9px] font-body text-[14px] font-medium text-body/75 transition-colors duration-200 hover:bg-ink/[0.08] hover:text-ink"
                     >
-                      <span className="flex flex-col gap-[2px]">
-                        <span className="font-display text-d6 uppercase lg:text-d5">
-                          {intent.label}
-                        </span>
-                        <span className="text-[14px] text-body/60">{intent.hint}</span>
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-pill border border-ink/20 transition-all duration-250 group-hover:border-ink group-hover:bg-ink group-hover:text-paper"
-                      >
-                        <svg width="15" height="10" viewBox="0 0 16 10" fill="none">
-                          <path
-                            d="M0 5h14M10 1l4 4-4 4"
-                            stroke="currentColor"
-                            strokeWidth="1.6"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </span>
+                      {intent.label}
+                      <svg width="13" height="9" viewBox="0 0 16 10" fill="none" aria-hidden="true">
+                        <path
+                          d="M0 5h14M10 1l4 4-4 4"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </Link>
                   </li>
                 ))}
               </ul>
             </nav>
-            </HeroFadeUp>
-
-            {/* ⚠️ Acá NO van los horarios de hoy. Los cubre la barra de estado
-                que va pegada al header y se ve en todas las páginas; repetirlos
-                a 400px de distancia es ruido, no refuerzo. */}
-          </div>
+          </HeroFadeUp>
         </div>
+      </div>
 
-        {/* ── Panel de foto ───────────────────────────────────────────── */}
-        <div className="relative min-h-[320px] desk:min-h-[calc(100vh-var(--spacing-header))]">
-          <Image
-            src="/images/hero-live-music.jpg"
-            alt="A drummer playing to a full crowd under string lights at Rooftop at Riverside"
-            fill
-            priority
-            fetchPriority="high"
-            sizes="(max-width: 1343px) 100vw, 48vw"
-            className="object-cover"
-          />
+      {/* ── Campo suave con la foto flotando ────────────────────────────── */}
+      <div className="relative">
+        {/* El campo arranca a media altura de la tarjeta, así la foto queda
+            montada entre el blanco y el color — el gesto de la referencia. */}
+        <div aria-hidden="true" className="absolute inset-x-0 top-[86px] bottom-0 bg-cream" />
+
+        <div className={`relative ${GUTTER} pb-[72px] lg:pb-[96px]`}>
+          <div className="caja">
+            <div className="rounded-panel bg-paper p-[8px] shadow-float lg:p-[10px]">
+              <div className="relative aspect-[16/9] overflow-hidden rounded-card bg-cream">
+                <Image
+                  src="/images/hero-live-music.jpg"
+                  alt="A drummer playing to a full crowd under string lights at Rooftop at Riverside"
+                  fill
+                  priority
+                  fetchPriority="high"
+                  sizes="(max-width: 1343px) 100vw, 1280px"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

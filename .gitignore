@@ -12,3 +12,10 @@ next-env.d.ts
 *.tsbuildinfo
 .playwright-mcp
 a11y-report.json
+
+# Capturas de referencia locales (no forman parte del sitio)
+/n*.png
+/ref*.png
+
+# Fuentes originales (.otf/.ttf) usadas solo por scripts/install-fonts.mjs
+public/fonts/_drop/

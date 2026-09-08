@@ -29,6 +29,21 @@ function truckUrl(slug: string): string {
 const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
+
+    /*
+     * Los assets de marca del Figma vienen en SVG (lockup reversado, isotipo
+     * del camión, las olas), y `next/image` los rechaza si no se habilita esto.
+     *
+     * ⚠️ El nombre asusta más de lo que corresponde acá. El riesgo real de
+     * `dangerouslyAllowSVG` es servir SVG de TERCEROS: un SVG puede traer
+     * `<script>`. Todos los nuestros son archivos propios en `public/brand`,
+     * revisados, de un solo `fill`. Aun así van con la red de seguridad que
+     * recomienda Next: CSP con `script-src 'none'` y `sandbox`, que desactiva
+     * el script incluso si algún día entra uno.
+     */
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   async redirects() {

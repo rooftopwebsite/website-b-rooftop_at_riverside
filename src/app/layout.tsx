@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import BrandTrail from '@/components/shared/BrandTrail';
 import Footer from '@/components/shared/Footer';
 import Header from '@/components/shared/Header';
 import PageTransition from '@/components/shared/PageTransition';
@@ -54,15 +55,16 @@ export default function RootLayout({ children }: { readonly children: React.Reac
         <SmoothScroll />
         <Preloader />
         <PageTransition />
+        <BrandTrail />
         <Header />
 
         {/*
-          El padding compensa el header fijo MÁS la barra de estado (34px).
-          Los dos viven en el mismo contenedor `fixed`, así que el offset es la
-          suma. `scroll-mt` en el propio `main` no alcanza: los anclajes internos
-          lo resuelven con `scroll-margin-top` en globals.css.
+          Sin padding acá. El header pasó a ser una píldora FLOTANTE, así que no
+          empuja el contenido: cada hero se hace cargo de su propio aire de
+          arriba (`PageHero` y `Hero`). Los anclajes internos siguen
+          compensados por el `scroll-margin-top` de globals.css.
         */}
-        <main id="main" className="pt-[calc(var(--spacing-header-sm)+34px)] desk:pt-[calc(var(--spacing-header)+34px)]">
+        <main id="main">
           {children}
         </main>
 
