@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import Footer from '@/components/shared/Footer';
 import Header from '@/components/shared/Header';
+import PageTransition from '@/components/shared/PageTransition';
 import Preloader from '@/components/shared/Preloader';
+import SmoothScroll from '@/components/shared/SmoothScroll';
 import { BRAND } from '@/lib/brand';
 import { SITE_URL, jsonLdScript, venueJsonLd } from '@/lib/seo';
 import './globals.css';
@@ -49,11 +51,18 @@ export default function RootLayout({ children }: { readonly children: React.Reac
           Skip to content
         </a>
 
+        <SmoothScroll />
         <Preloader />
+        <PageTransition />
         <Header />
 
-        {/* El padding compensa el header fijo. Es el alto exacto del header. */}
-        <main id="main" className="pt-header-sm desk:pt-header">
+        {/*
+          El padding compensa el header fijo MÁS la barra de estado (34px).
+          Los dos viven en el mismo contenedor `fixed`, así que el offset es la
+          suma. `scroll-mt` en el propio `main` no alcanza: los anclajes internos
+          lo resuelven con `scroll-margin-top` en globals.css.
+        */}
+        <main id="main" className="pt-[calc(var(--spacing-header-sm)+34px)] desk:pt-[calc(var(--spacing-header)+34px)]">
           {children}
         </main>
 

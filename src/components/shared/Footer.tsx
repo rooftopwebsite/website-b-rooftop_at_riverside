@@ -1,39 +1,40 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { BRAND, HAPPY_HOUR, HOURS, addressLine, mapsUrl } from '@/lib/brand';
-import { FOOTER_NAV, NAV_CTA } from '@/lib/nav';
-import { ButtonLink } from './Button';
-import OpenStatus from './OpenStatus';
+import { FOOTER_QUICK_LINKS, NAV_CTA } from '@/lib/nav';
+import { ButtonLink, ExternalIcon } from './Button';
 import { GUTTER } from './Section';
-import TilePattern from './TilePattern';
 import { Eyebrow, Heading } from './Type';
 import NewsletterForm from './NewsletterForm';
 
 /**
- * Footer.
+ * Footer, en cuatro columnas.
  *
- * Estructura de Showdown Social (docs/house-tokens.md §6), que es la que ya
- * integra el Last Call y la captura de email — exactamente lo que el brief pide
- * para el cierre del home.
+ *   1. logo + una línea de posicionamiento + redes (IG, FB, Google)
+ *   2. contacto — dirección, teléfono, info@, botón de direcciones
+ *   3. horarios — LOS DOS SETS, barra y trucks, en filas separadas
+ *   4. quick links
+ *   franja inferior: legales + badge de Resto Experience
  *
- * Orden: cierre doble → newsletter → identidad y contacto → 3 columnas →
- * horarios → legal → barra de agencia.
+ * ⚠️ `events@eatdrinkparadise.com` NO va acá. Vive sólo en el hub de eventos y
+ * en /contact: una consulta de $20.000 no puede caer en el mismo buzón que una
+ * pregunta sobre estacionamiento.
  *
- * ⚠️ Va en `deep` #014545, que es uno de los dos únicos lugares donde el brief
- * permite la superficie oscura (el otro es la sección del Sunset Bar).
- * Todo el texto de acá va en papel (10.83:1) o crema (9.44:1).
+ * ⚠️ Va sobre `#014545`, que junto con la sección del Sunset Bar es la única
+ * superficie oscura grande del sitio. Todo el texto va en papel (10.83:1) o
+ * crema (9.44:1).
  *
- * ⚠️ Los DOS sets de horarios van completos en el footer. Es el dato que más se
- * consulta y la diferencia entre barra y trucks es la fuente de confusión número
- * uno del negocio.
+ * ⚠️ La columna 3 es donde el footer hace trabajo de POSICIONAMIENTO: mostrar
+ * los dos horarios uno al lado del otro dice «bar y trucks son cosas distintas»
+ * sin una sola línea de copy explicándolo.
  */
 export default function Footer() {
   return (
     <footer className="on-dark bg-deep text-paper">
-      {/* ── Last call: el cierre doble ─────────────────────────────────── */}
-      <div className={`${GUTTER} pt-band-sm pb-[56px] lg:pt-band lg:pb-[72px]`}>
+      {/* ── Last call ──────────────────────────────────────────────────── */}
+      <div className={`${GUTTER} pt-band-sm pb-[48px] lg:pt-band lg:pb-[64px]`}>
         <div className="caja">
-          <div className="flex flex-col gap-[40px] lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-[36px] lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-[620px]">
               <Eyebrow tone="cream">Last call</Eyebrow>
               <Heading level={2} className="mt-gap-kicker text-d4 lg:text-d2">
@@ -53,12 +54,10 @@ export default function Footer() {
         </div>
       </div>
 
-      <TilePattern tone="river" height="h-[24px]" />
-
       {/* ── Newsletter ─────────────────────────────────────────────────── */}
-      <div className={`${GUTTER} py-[56px]`}>
+      <div className={`${GUTTER} border-t border-paper/15 py-[48px]`}>
         <div className="caja">
-          <div className="grid gap-[32px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:gap-[64px]">
+          <div className="grid gap-[28px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:gap-[64px]">
             <div>
               <Heading level={2} className="text-d5">
                 Get on the list
@@ -73,39 +72,30 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className={GUTTER}>
-        <div className="caja">
-          <div className="h-px w-full bg-paper/15" />
-        </div>
-      </div>
-
-      {/* ── Identidad + columnas ───────────────────────────────────────── */}
-      <div className={`${GUTTER} py-[56px]`}>
-        <div className="caja flex flex-col gap-[48px] desk:flex-row desk:justify-between desk:gap-[64px]">
-          {/* Identidad y contacto */}
-          <div className="flex max-w-[320px] flex-col gap-[20px]">
+      {/* ── Las cuatro columnas ────────────────────────────────────────── */}
+      <div className={`${GUTTER} border-t border-paper/15 py-[52px]`}>
+        <div className="caja grid gap-[40px] sm:grid-cols-2 desk:grid-cols-4 desk:gap-[40px]">
+          {/* 1 — Identidad */}
+          <div className="flex flex-col gap-[18px]">
+            {/*
+              ⚠️ ASSET FALTANTE: no tenemos versión REVERSADA del lockup, y el
+              logo a color no se lee sobre #014545 — el wordmark es negro.
+              `brightness-0 invert` lo pasa a blanco puro: se lee, pero pierde
+              el aro naranja y la onda teal.
+              Es una solución de compromiso hasta que llegue el lockup en
+              blanco del brand book. NO es recrear el asset con CSS: es un
+              filtro sobre el archivo real.
+            */}
             <Image
               src="/brand/logo-lockup.png"
               alt=""
               width={200}
               height={212}
-              className="h-auto w-[130px]"
+              className="h-auto w-[112px] brightness-0 invert"
             />
-            <p className="text-[15px] leading-[1.6] text-paper/75">
+            <p className="max-w-[30ch] text-[15px] leading-[1.6] text-paper/80">
               A rooftop bar over a curated food truck park, in downtown Bonita Springs.
             </p>
-            <address className="flex flex-col gap-[6px] text-[15px] not-italic leading-[1.6]">
-              <a href={mapsUrl()} target="_blank" rel="noopener noreferrer" className="link-texto">
-                {addressLine()}
-                <span className="sr-only">(opens in a new tab)</span>
-              </a>
-              <a href={BRAND.contact.phoneHref} className="link-texto">
-                {BRAND.contact.phone}
-              </a>
-              <a href={`mailto:${BRAND.contact.email}`} className="link-texto">
-                {BRAND.contact.email}
-              </a>
-            </address>
             <ul className="flex items-center gap-[10px]">
               <li>
                 <SocialLink href={BRAND.social.instagram} label="Instagram">
@@ -117,97 +107,139 @@ export default function Footer() {
                   <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z" />
                 </SocialLink>
               </li>
+              <li>
+                <SocialLink href={BRAND.social.google} label="Google Business Profile">
+                  <path d="M21.8 12.2c0-.7-.06-1.4-.18-2H12v3.9h5.5a4.7 4.7 0 0 1-2 3.1v2.6h3.2c1.9-1.7 3-4.3 3-7.5Z" />
+                  <path d="M12 22c2.7 0 5-.9 6.7-2.4l-3.2-2.5a6 6 0 0 1-9-3.2H3.1v2.6A10 10 0 0 0 12 22Z" />
+                  <path d="M6.5 13.9a6 6 0 0 1 0-3.8V7.5H3.1a10 10 0 0 0 0 9l3.4-2.6Z" />
+                  <path d="M12 6a5.4 5.4 0 0 1 3.8 1.5l2.9-2.9A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.9 5.5l3.4 2.6A6 6 0 0 1 12 6Z" />
+                </SocialLink>
+              </li>
             </ul>
           </div>
 
-          {/* Tres columnas */}
-          <div className="grid grid-cols-1 gap-[32px] sm:grid-cols-3 desk:gap-[56px]">
-            {FOOTER_NAV.map((col) => (
-              <div key={col.title}>
-                <Heading level={3} role="label" className="text-paper">
-                  {col.title}
-                </Heading>
-                <span aria-hidden="true" className="mt-[10px] block h-[2px] w-[28px] bg-sunset" />
-                <nav aria-label={col.title}>
-                  <ul className="mt-[14px] flex flex-col gap-[8px]">
-                    {col.links.map((l) => (
-                      <li key={l.href}>
-                        <Link href={l.href} className="text-[15px] text-paper/75 link-texto">
-                          {l.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              </div>
-            ))}
+          {/* 2 — Contacto */}
+          <div>
+            <Heading level={3} role="label" className="text-paper">
+              Come by
+            </Heading>
+            <span aria-hidden="true" className="mt-[10px] block h-[2px] w-[28px] bg-sunset" />
+            <address className="mt-[16px] flex flex-col gap-[8px] text-[15px] not-italic leading-[1.6]">
+              <span className="text-paper/80">
+                {BRAND.address.street}
+                <br />
+                {BRAND.address.locality}, {BRAND.address.region} {BRAND.address.postalCode}
+              </span>
+              <a href={BRAND.contact.phoneHref} className="link-texto text-paper/80">
+                {BRAND.contact.phone}
+              </a>
+              <a href={`mailto:${BRAND.contact.email}`} className="link-texto break-all text-paper/80">
+                {BRAND.contact.email}
+              </a>
+            </address>
+            <div className="mt-[18px]">
+              <ButtonLink href={mapsUrl()} variant="onDark" external>
+                Get directions
+              </ButtonLink>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* ── Los dos sets de horarios ───────────────────────────────────── */}
-      <div className={GUTTER}>
-        <div className="caja">
-          <div className="h-px w-full bg-paper/15" />
-        </div>
-      </div>
-
-      <div className={`${GUTTER} py-[48px]`}>
-        <div className="caja">
-          <div className="flex flex-col gap-[8px] sm:flex-row sm:items-baseline sm:justify-between">
-            <Heading level={2} role="label" className="text-paper">
+          {/* 3 — Horarios, los DOS sets */}
+          <div>
+            <Heading level={3} role="label" className="text-paper">
               Hours
             </Heading>
-            <OpenStatus which="bar" className="text-paper/80" />
-          </div>
+            <span aria-hidden="true" className="mt-[10px] block h-[2px] w-[28px] bg-sunset" />
 
-          {/* Tabla real: son dos columnas de datos por fila y una lista no lo
-              comunica. El scroll horizontal vive en su propio contenedor. */}
-          <div className="mt-[20px] overflow-x-auto" tabIndex={0} role="region" aria-label="Opening hours, scrollable">
-            <table className="w-full min-w-[440px] border-collapse text-[15px]">
+            <table className="mt-[16px] w-full border-collapse text-[13px]">
               <caption className="sr-only">
-                Opening hours for the bar and the food trucks
+                Opening hours. The bar and the food trucks keep different hours.
               </caption>
               <thead>
-                <tr className="border-b border-paper/20">
-                  <th scope="col" className="py-[8px] pr-[16px] text-left eyebrow text-paper/60">
+                <tr>
+                  <th scope="col" className="pb-[6px] text-left eyebrow text-[10px] text-paper/70">
                     Day
                   </th>
-                  <th scope="col" className="py-[8px] pr-[16px] text-left eyebrow text-paper/60">
-                    Sunset Bar
+                  <th scope="col" className="pb-[6px] text-left eyebrow text-[10px] text-paper/70">
+                    Bar
                   </th>
-                  <th scope="col" className="py-[8px] text-left eyebrow text-paper/60">
-                    Food Trucks
+                  <th scope="col" className="pb-[6px] text-left eyebrow text-[10px] text-paper/70">
+                    Trucks
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {HOURS.map((h) => (
-                  <tr key={h.day} className="border-b border-paper/10 last:border-0">
-                    <th scope="row" className="py-[9px] pr-[16px] text-left font-bold">
-                      {h.day}
+                  <tr key={h.day} className="border-t border-paper/10">
+                    <th
+                      scope="row"
+                      className="py-[6px] pr-[8px] text-left font-bold whitespace-nowrap text-paper/90"
+                    >
+                      {h.day.slice(0, 3)}
                     </th>
-                    <td className="py-[9px] pr-[16px] text-paper/80">{h.bar}</td>
-                    <td className="py-[9px] text-paper/80">{h.trucks}</td>
+                    <td className="py-[6px] pr-[8px] tabular-nums whitespace-nowrap text-paper/70">
+                      {h.bar === 'Closed' ? '—' : h.bar.replace(/:00/g, '').replace(/\s/g, '')}
+                    </td>
+                    <td className="py-[6px] tabular-nums whitespace-nowrap text-paper/70">
+                      {h.trucks === 'Closed' ? '—' : h.trucks.replace(/:00/g, '').replace(/\s/g, '')}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+
+            <p className="mt-[14px] text-[13px] leading-[1.5] text-paper/70">
+              <span className="eyebrow text-[10px] text-cream">Happy hour</span>
+              <br />
+              {HAPPY_HOUR.days}, {HAPPY_HOUR.time}
+              <br />
+              {HAPPY_HOUR.deals.join(' · ')}
+            </p>
           </div>
 
-          <p className="mt-[18px] text-[15px] text-paper/80">
-            <span className="eyebrow text-cream">Happy hour</span>{' '}
-            <span className="ml-[6px]">
-              {HAPPY_HOUR.days}, {HAPPY_HOUR.time} — {HAPPY_HOUR.deals.join(' · ')}
-            </span>
-          </p>
+          {/* 4 — Quick links */}
+          <div>
+            <Heading level={3} role="label" className="text-paper">
+              Quick links
+            </Heading>
+            <span aria-hidden="true" className="mt-[10px] block h-[2px] w-[28px] bg-sunset" />
+            <nav aria-label="Quick links">
+              <ul className="mt-[16px] flex flex-col gap-[8px]">
+                {FOOTER_QUICK_LINKS.map((l) => {
+                  // `GIFT_CARDS` es un centinela: la URL real vive en `brand.ts`
+                  // y no se duplica en la config de navegación.
+                  const href = l.href === 'GIFT_CARDS' ? BRAND.giftCards : l.href;
+                  return (
+                    <li key={l.label}>
+                      {l.external ? (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link-texto inline-flex items-center gap-[6px] text-[15px] text-paper/80"
+                        >
+                          {l.label}
+                          <ExternalIcon />
+                          <span className="sr-only">(opens in a new tab)</span>
+                        </a>
+                      ) : (
+                        <Link href={href} className="link-texto text-[15px] text-paper/80">
+                          {l.label}
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          </div>
         </div>
       </div>
 
-      {/* ── Legal + agencia ────────────────────────────────────────────── */}
+      {/* ── Franja inferior ────────────────────────────────────────────── */}
       <div className="border-t border-paper/15">
         <div className={GUTTER}>
-          <div className="caja flex flex-col items-center justify-between gap-[12px] py-[24px] text-[13px] text-paper/60 sm:flex-row">
+          <div className="caja flex flex-col items-center justify-between gap-[12px] py-[22px] text-[13px] text-paper/60 sm:flex-row">
             <p>
               © {new Date().getFullYear()} {BRAND.name}. {BRAND.group}.
             </p>
@@ -246,7 +278,7 @@ function SocialLink({
       rel="noopener noreferrer"
       className="grid h-[44px] w-[44px] place-items-center rounded-pill border border-paper/35 text-paper/80 transition-colors duration-250 hover:border-cream hover:bg-cream hover:text-deep"
     >
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         {children}
       </svg>
       <span className="sr-only">{label} (opens in a new tab)</span>

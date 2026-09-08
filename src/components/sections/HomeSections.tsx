@@ -222,42 +222,54 @@ export function ForEventPlanners() {
       {/* Este es el ÚNICO bloque de acento naranja de la home. El brief
           permite uno por página, y le corresponde a la vertical que factura
           entre $10.000 y $30.000 por evento. */}
+      {/*
+        Slot 6 del vocabulario de motion: el texto queda STICKY mientras pasan
+        los tres pasos.
+
+        ⚠️ Hecho con `position: sticky` puro, sin JS y sin scroll-jacking. El
+        scroll sigue siendo el del navegador: no se secuestra, no se pinea la
+        página, no se cambia la velocidad. Sólo un elemento que se queda quieto
+        dentro de su contenedor, que es exactamente para lo que existe `sticky`.
+
+        ⚠️ Sólo desde `lg`. En un teléfono no hay ancho para dos columnas y el
+        sticky no tendría contra qué quedarse fijo: ahí el bloque se apila y
+        listo. El layout es el mismo con o sin animación.
+      */}
       <div className="rounded-card bg-sunset px-[24px] py-[40px] text-ink lg:px-[56px] lg:py-[56px]">
-        <div className="flex flex-col gap-[16px] lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-[640px]">
+        <div className="grid gap-[40px] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-[64px]">
+          <div className="lg:sticky lg:top-[calc(var(--spacing-header)+34px+48px)] lg:self-start">
             {/* Sobre naranja el texto va en NEGRO. 8.26:1. Nunca en blanco. */}
             <Eyebrow tone="ink">Planning a work event?</Eyebrow>
             <Heading level={2} id="planners-title" className="mt-gap-kicker">
               We close the whole place for you
             </Heading>
-            <p className="mt-gap-bajada max-w-[54ch] text-lead">
+            <p className="mt-gap-bajada max-w-[46ch] text-lead">
               Holiday parties, client nights, fundraisers and reunions. You get the rooftop, the
               yard and four kitchens — and one person coordinating all of it.
             </p>
           </div>
-        </div>
 
-        <ol className="mt-[40px] grid gap-[24px] md:grid-cols-3">
-          {PLANNER_STEPS.map((s) => (
-            <li
-              key={s.n}
-              className="flex flex-col border-t-2 border-ink/30 pt-[18px]"
-            >
-              <span aria-hidden="true" className="eyebrow text-ink/80">
-                Step {s.n}
-              </span>
-              <Heading level={3} className="mt-[10px]">
-                {s.title}
-              </Heading>
-              <p className="mt-[8px] flex-1 text-[15px] leading-[1.6] text-ink/85">{s.body}</p>
-              <div className="mt-[18px]">
-                <ButtonLink href={s.href} variant="dark">
-                  {s.cta}
-                </ButtonLink>
-              </div>
-            </li>
-          ))}
-        </ol>
+          <ol className="flex flex-col gap-[28px]">
+            {PLANNER_STEPS.map((s) => (
+              <li key={s.n} className="flex flex-col border-t-2 border-ink/30 pt-[18px]">
+                <span aria-hidden="true" className="eyebrow text-ink/80">
+                  Step {s.n}
+                </span>
+                <Heading level={3} className="mt-[10px]">
+                  {s.title}
+                </Heading>
+                <p className="mt-[8px] max-w-[46ch] text-[15px] leading-[1.6] text-ink/85">
+                  {s.body}
+                </p>
+                <div className="mt-[18px]">
+                  <ButtonLink href={s.href} variant="dark">
+                    {s.cta}
+                  </ButtonLink>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </Section>
   );

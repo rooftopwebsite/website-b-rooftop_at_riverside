@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import OpenStatus from '@/components/shared/OpenStatus';
+import { HeroFadeUp, MaskedLines } from '@/components/shared/Motion';
 import { GUTTER } from '@/components/shared/Section';
 import { TileMark } from '@/components/shared/TilePattern';
 import { Eyebrow, Heading } from '@/components/shared/Type';
@@ -61,18 +61,24 @@ export default function Hero() {
               Downtown Bonita Springs
             </Eyebrow>
 
+            {/* Slot 2 del vocabulario de motion: el H1 sube por líneas, cada
+                una con su máscara y un stagger corto. El corte está escrito a
+                mano y no medido en runtime — ver `MaskedLines`. */}
             <Heading level={1} role="hero" id="hero-title" className="mt-gap-kicker text-ink">
-              Bonita comes together
+              <MaskedLines lines={['Bonita comes', 'together']} delay={0.08} />
             </Heading>
 
-            <p className="mt-gap-bajada max-w-[46ch] text-lead text-body/80">
+            <HeroFadeUp delay={0.26} className="mt-gap-bajada">
+            <p className="max-w-[46ch] text-lead text-body/80">
               A rooftop bar over a curated food truck park. Four independent kitchens in the yard,
               our own bar upstairs, and a calendar that runs five nights a week.
             </p>
+            </HeroFadeUp>
 
             {/* ── Selector de intención ────────────────────────────────
                 Tres puertas, no tres botones decorativos: cada una rutea a
                 una de las tres verticales del negocio. */}
+            <HeroFadeUp delay={0.34}>
             <nav aria-label="What brings you here" className="mt-[32px]">
               <ul className="flex flex-col border-t border-ink/15">
                 {INTENTS.map((intent) => (
@@ -106,12 +112,11 @@ export default function Hero() {
                 ))}
               </ul>
             </nav>
+            </HeroFadeUp>
 
-            {/* Horarios de hoy y estado, en una línea. */}
-            <div className="mt-[24px] flex flex-col gap-[6px]">
-              <OpenStatus which="bar" />
-              <OpenStatus which="trucks" />
-            </div>
+            {/* ⚠️ Acá NO van los horarios de hoy. Los cubre la barra de estado
+                que va pegada al header y se ve en todas las páginas; repetirlos
+                a 400px de distancia es ruido, no refuerzo. */}
           </div>
         </div>
 

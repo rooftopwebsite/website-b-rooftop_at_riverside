@@ -107,7 +107,7 @@ export default function NfcNorthPage() {
       </Section>
 
       {/* ── Cómo funciona el domingo ───────────────────────────────────── */}
-      <Section tone="cream" band="md" labelledBy="sunday-title">
+      <Section band="md" labelledBy="sunday-title">
         <div className="grid gap-[32px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:gap-[64px]">
           <Heading level={2} id="sunday-title" className="text-d5 lg:text-d4">
             How Sunday runs

@@ -129,6 +129,12 @@ export const BRAND = {
   social: {
     instagram: 'https://www.instagram.com/rooftopatriverside/',
     facebook: 'https://www.facebook.com/people/Rooftop-at-Riverside/100075964505890/',
+    /**
+     * El Google Business Profile, por su `cid`. Sale del dashboard interno, que
+     * lo tiene vinculado — no es una búsqueda armada a mano, así que apunta a
+     * la ficha real y no a un resultado parecido.
+     */
+    google: 'https://maps.google.com/?cid=17116543045499348377',
     /** No tienen. No inventar handle. */
     tiktok: null,
   },

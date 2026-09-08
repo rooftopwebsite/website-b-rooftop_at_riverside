@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
+import TruckCarousel from '@/components/sections/TruckCarousel';
 import PageHero from '@/components/shared/PageHero';
-import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
-import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
+import { Heading, SectionHead } from '@/components/shared/Type';
 import { activeTrucks } from '@/content/trucks';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
@@ -56,79 +53,7 @@ export default function FoodTrucksPage() {
           lead="Which trucks are in on a given night is on the calendar."
         />
 
-        <StaggerGroup as="ul" className="mt-[48px] grid gap-[28px] sm:grid-cols-2 lg:grid-cols-3">
-          {trucks.map((t) => (
-            <RevealItem as="li" key={t.slug}>
-              <Link href={`/food-trucks/${t.slug}`} className="group flex h-full flex-col">
-                {t.photo ? (
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint">
-                    <Image
-                      src={t.photo}
-                      alt={t.photoAlt ?? ''}
-                      fill
-                      sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 ease-brand group-hover:scale-[1.03]"
-                    />
-                  </div>
-                ) : (
-                  <PhotoPending brief={t.photoBrief} />
-                )}
-                <Eyebrow tone="deep" className="mt-[18px]">
-                  {t.cuisine}
-                </Eyebrow>
-                <Heading level={2} role="card" className="mt-[6px]">
-                  {t.name}
-                </Heading>
-                <p className="mt-[8px] flex-1 text-[15px] leading-[1.6] text-body/75">
-                  {t.specialty}
-                </p>
-                <span
-                  aria-hidden="true"
-                  className="mt-[14px] text-caption font-bold uppercase tracking-[0.14em] underline decoration-ink/45 decoration-1 underline-offset-4 transition-[text-decoration-color] group-hover:decoration-sunset group-hover:decoration-2"
-                >
-                  Meet the truck
-                </span>
-              </Link>
-            </RevealItem>
-          ))}
-
-          {/* ── La quinta tarjeta: el Sunset Bar ────────────────────────
-              Al mismo nivel visual que los trucks, y a propósito. Es la
-              diferencia entre «los trucks + una barra» y «cinco negocios,
-              uno de los cuales es nuestro». */}
-          <RevealItem as="li">
-            <Link href="/sunset-bar" className="group flex h-full flex-col">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint">
-                <Image
-                  src="/images/venue-rooftop.jpg"
-                  alt="The Sunset Bar rooftop at Rooftop at Riverside"
-                  fill
-                  sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 ease-brand group-hover:scale-[1.03]"
-                />
-                <span className="absolute top-[12px] left-[12px] rounded-btn bg-sunset px-[10px] py-[5px] text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
-                  Ours
-                </span>
-              </div>
-              <Eyebrow tone="deep" className="mt-[18px]">
-                Drinks
-              </Eyebrow>
-              <Heading level={2} role="card" className="mt-[6px]">
-                Sunset Bar
-              </Heading>
-              <p className="mt-[8px] flex-1 text-[15px] leading-[1.6] text-body/75">
-                Cocktails, local drafts and wine — the one tab that&rsquo;s ours, upstairs on the
-                roof.
-              </p>
-              <span
-                aria-hidden="true"
-                className="mt-[14px] text-caption font-bold uppercase tracking-[0.14em] underline decoration-ink/45 decoration-1 underline-offset-4 transition-[text-decoration-color] group-hover:decoration-sunset group-hover:decoration-2"
-              >
-                See the menu
-              </span>
-            </Link>
-          </RevealItem>
-        </StaggerGroup>
+        <TruckCarousel trucks={trucks} />
       </Section>
 
       {/* ── Cómo funciona el pago ──────────────────────────────────────── */}

@@ -8,7 +8,9 @@
     "start": "next start",
     "sync:events": "node --env-file-if-exists=.env.local scripts/sync-events.mjs",
     "a11y": "node scripts/a11y.mjs",
-    "contrast": "node scripts/contrast.mjs"
+    "contrast": "node scripts/contrast.mjs",
+    "check:surfaces": "node scripts/surface-rhythm.mjs",
+    "check:motion": "node scripts/reduced-motion.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

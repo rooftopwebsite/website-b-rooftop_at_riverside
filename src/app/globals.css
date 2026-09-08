@@ -131,8 +131,16 @@
   /* ── Breakpoints ─────────────────────────────────────────────────────────
      `desk` (1344) es el de la casa: 1280 de caja + 32×2 de gutter. Es el ancho
      en el que la pantalla DA para el contenedor grande, no el breakpoint de
-     layout. Ver la nota de `--container-site` en docs/house-tokens.md.       */
-  --breakpoint-desk: 1344px;
+     layout. Ver la nota de `--container-site` en docs/house-tokens.md.
+
+     ⚠️ VA EN **rem**, no en px, aunque el número que importa sean 1344px.
+     Tailwind v4 ordena los media queries por el valor del breakpoint, y los
+     suyos vienen en rem (40rem, 48rem, 64rem…). Declarado en px no los puede
+     comparar y emite el bloque de `desk` ANTES que los defaults — con lo cual
+     `sm:grid-cols-2` le gana a `desk:grid-cols-4` en una pantalla de 1440.
+     Medido: el bloque de 1344px caía en el byte 39975 y el de 40rem en 40927.
+     84rem × 16 = 1344px exactos.                                             */
+  --breakpoint-desk: 84rem;
 
   /* ── Contenedor ──────────────────────────────────────────────────────────
      1280px es unánime en las seis fuentes auditadas.                        */
@@ -451,5 +459,19 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/**
+ * Anclajes internos (`/visit#parking`). Sin esto el título queda tapado por el
+ * header fijo más la barra de estado. Es el alto de los dos, sumado.
+ */
+:target {
+  scroll-margin-top: calc(var(--spacing-header-sm) + 34px + 16px);
+}
+
+@media (width >= 1344px) {
+  :target {
+    scroll-margin-top: calc(var(--spacing-header) + 34px + 16px);
   }
 }

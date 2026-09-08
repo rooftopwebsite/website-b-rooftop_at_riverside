@@ -109,7 +109,7 @@ export function PhotoPending({
         />
       </svg>
 
-      <p className="eyebrow text-ink/50">Image missing</p>
+      <p className="eyebrow text-ink/65">Image missing</p>
 
       {/* El brief de la toma. Es lo único que hace útil a este placeholder. */}
       <p className="max-w-[34ch] font-body text-[13px] leading-[1.5] text-ink/60">{brief}</p>

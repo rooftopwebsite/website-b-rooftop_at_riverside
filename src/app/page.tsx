@@ -10,6 +10,7 @@ import {
   ThisWeek,
   ThreeVerticals,
 } from '@/components/sections/HomeSections';
+import Scallop from '@/components/shared/Scallop';
 import { pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
@@ -42,12 +43,21 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+
+      {/* Festón sólo donde la superficie CAMBIA de verdad. Dos en toda la
+          home: las dos entradas a crema. Puesto en cada corte dejaría de ser
+          un gesto de marca y sería un patrón de fondo. */}
+      <Scallop from="paper" to="cream" />
       <TonightAtTheYard />
+
       <FeaturesMarquee />
       <HowThisPlaceWorks />
       <ThreeVerticals />
       <ForEventPlanners />
+
+      <Scallop from="paper" to="cream" />
       <ThisWeek />
+
       <StoryTeaser />
       <FindUs />
     </>

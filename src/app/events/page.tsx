@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ButtonLink } from '@/components/shared/Button';
-import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
+import { CountUp, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import PageHero from '@/components/shared/PageHero';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
@@ -124,6 +124,36 @@ export default function EventsPage() {
           instead is four different menus in one yard — which is a better problem to hand a room of
           two hundred people than one set entrée.
         </p>
+      </Section>
+
+      {/*
+        Slot 8 del vocabulario de motion, y el ÚNICO contador del sitio.
+        Un número que sube es un gesto caro: usado dos veces se vuelve un tic.
+        Acá se gana el lugar porque es la prueba dura de que el venue mueve
+        gente, y es el dato que decide una venta corporativa.
+      */}
+      <Section band="md" labelledBy="proof-title">
+        <div className="grid gap-[28px] border-y border-ink/15 py-[40px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-center lg:gap-[64px]">
+          <div>
+            <Eyebrow tone="terra">Fourth of July</Eyebrow>
+            <p className="mt-[10px] font-display text-hero leading-[0.9] text-ink">
+              <CountUp to={25000} />
+              <span aria-hidden="true">–</span>
+              <CountUp to={30000} />
+            </p>
+            <p className="sr-only">Between 25,000 and 30,000 people.</p>
+          </div>
+          <div>
+            <Heading level={2} id="proof-title" className="text-d5 lg:text-d4">
+              People downtown for one night
+            </Heading>
+            <p className="mt-[12px] max-w-[52ch] text-[15px] leading-[1.65] text-body/75">
+              That&rsquo;s what the Fourth of July pulled into downtown Bonita Springs. The yard sits
+              in the middle of it, on Old 41, across from Riverside Park. For a brand activation or
+              a fundraiser, that footfall is the room.
+            </p>
+          </div>
+        </div>
       </Section>
 
       {/* ── Verticales ─────────────────────────────────────────────────── */}

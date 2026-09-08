@@ -26,8 +26,10 @@ let alreadyShown = false;
 
 type Phase = 'loading' | 'exit' | 'hidden';
 
-const FADE = 0.45;
-const LIFT = 0.9;
+// ⚠️ Tope del sitio: ninguna animación pasa de 600ms. La salida son dos
+// tramos encadenados, y cada uno respeta el tope por separado.
+const FADE = 0.3;
+const LIFT = 0.6;
 
 export default function Preloader() {
   const reduced = useReducedMotion();
@@ -68,7 +70,7 @@ export default function Preloader() {
       setProgress(100);
       setPhase('exit');
       timers.push(window.setTimeout(() => setPhase('hidden'), (FADE + LIFT) * 1000 + 120));
-    }, 4000);
+    }, 2600);
     timers.push(safety);
 
     return () => {

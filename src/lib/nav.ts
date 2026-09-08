@@ -1,13 +1,9 @@
 /**
  * Navegación.
  *
- * El patrón de la casa, verificado en The Orient y Showdown Social: pocos
- * destinos a la vista y el resto en un desplegable «More» con label + subtítulo.
- * Ver docs/house-tokens.md §5.
- *
- * El orden de los items visibles NO es alfabético ni casual: sigue las cuatro
- * fuentes de ingreso, de la más consultada a la más rentable.
- *   Food Trucks → Sunset Bar → What's On → Events
+ * El patrón de la casa (The Orient + Showdown, ver docs/house-tokens.md §5):
+ * nav reducida más un mega-menú «More» con una línea de descripción por link.
+ * Con 23 rutas es la única forma de no romper la jerarquía.
  */
 
 export interface NavLink {
@@ -15,75 +11,68 @@ export interface NavLink {
   readonly href: string;
   /** Sólo en el mega-menú: la línea que explica qué hay adentro. */
   readonly hint?: string;
+  /** Abre en otra pestaña. Se anuncia por texto además del icono. */
+  readonly external?: boolean;
 }
 
+/**
+ * Los cinco visibles. El orden NO es casual: sigue las cuatro fuentes de
+ * ingreso, de la que factura el venue hacia la que factura el vendor.
+ *   Sunset Bar (nuestro) → Food Trucks → What's On → Events → The Yard
+ */
 export const NAV_MAIN: readonly NavLink[] = [
-  { label: 'Food Trucks', href: '/food-trucks' },
   { label: 'Sunset Bar', href: '/sunset-bar' },
+  { label: 'Food Trucks', href: '/food-trucks' },
   { label: "What's On", href: '/whats-on' },
   { label: 'Events', href: '/events' },
-  { label: 'Visit', href: '/visit' },
+  { label: 'The Yard', href: '/the-yard' },
 ];
 
 export const NAV_MORE: readonly NavLink[] = [
-  { label: 'The Yard', href: '/the-yard', hint: 'Ticketed events in the gated yard.' },
-  { label: 'The Experience', href: '/the-experience', hint: 'Game Lounge and the gaming truck.' },
-  { label: 'Event Spaces', href: '/events/spaces', hint: 'Capacities, minimums and layouts.' },
-  { label: 'NFC North HQ', href: '/nfc-north-hq', hint: 'Where the north watches the game.' },
-  { label: 'Market', href: '/market', hint: 'Local vendors, handmade goods.' },
-  { label: 'Our Story', href: '/our-story', hint: 'The Magnus family and the park.' },
-  { label: 'Join Us', href: '/join-us', hint: 'Play here, work here, vend here.' },
-  { label: 'FAQ', href: '/faq', hint: 'Parking, dogs, kids, ordering.' },
+  { label: 'Our Story', href: '/our-story', hint: 'The Magnus family and four years of planning.' },
+  {
+    label: 'The Experience',
+    href: '/the-experience',
+    hint: "The Game Lounge and Southwest Florida's first gaming truck.",
+  },
+  { label: 'Market', href: '/market', hint: 'Local vendors and handmade goods in the yard.' },
+  {
+    label: 'Events Packet',
+    href: '/events/inquire',
+    hint: 'Spaces, capacities and food tiers, as a PDF.',
+  },
+  { label: 'Join Us', href: '/join-us', hint: 'Play here, park a truck here, work here.' },
+  { label: 'FAQ', href: '/faq', hint: 'Parking, dogs, kids and how ordering works.' },
+  { label: 'Visit', href: '/visit', hint: 'Hours, parking and directions.' },
+  { label: 'Contact', href: '/contact', hint: 'Three inboxes, so you reach the right one.' },
 ];
 
 /**
- * Los dos CTA fijos del header.
+ * Los dos CTA fijos, con jerarquía distinta.
  *
- * ⚠️ Acá el patrón de la casa se DESVÍA a propósito. En Showdown el primario es
- * «Book Now» y en The Orient «Order Online»: los dos son transacciones. En
- * Rooftop no hay reservas ni pedidos —es walk-in— así que el lugar del primario
- * lo ocupa la vertical que más deja, que son los eventos privados.
+ * ⚠️ NO hay «Book Now». El venue es walk-in y no toma reservas de mesa; el
+ * lugar del primario lo ocupa la vertical que más factura.
  */
 export const NAV_CTA = {
   primary: { label: 'Plan an Event', href: '/events/inquire' },
   secondary: { label: "What's On", href: '/whats-on' },
 } as const;
 
-/** Columnas del footer. Repiten y amplían lo del header, que es el patrón medido. */
-export const FOOTER_NAV: readonly { title: string; links: readonly NavLink[] }[] = [
-  {
-    title: 'Come by',
-    links: [
-      { label: 'Food Trucks', href: '/food-trucks' },
-      { label: 'Sunset Bar', href: '/sunset-bar' },
-      { label: 'The Yard', href: '/the-yard' },
-      { label: 'The Experience', href: '/the-experience' },
-      { label: 'NFC North HQ', href: '/nfc-north-hq' },
-      { label: 'Market', href: '/market' },
-    ],
-  },
-  {
-    title: 'Host with us',
-    links: [
-      { label: 'Private Events', href: '/events' },
-      { label: 'Event Spaces', href: '/events/spaces' },
-      { label: 'Corporate', href: '/events/corporate' },
-      { label: 'Holiday Parties', href: '/events/holiday-parties' },
-      { label: 'Fundraisers', href: '/events/fundraisers' },
-      { label: 'Request a Proposal', href: '/events/inquire' },
-    ],
-  },
-  {
-    title: 'Get to know us',
-    links: [
-      { label: "What's On", href: '/whats-on' },
-      { label: 'Our Story', href: '/our-story' },
-      { label: 'Visit', href: '/visit' },
-      { label: 'Contact', href: '/contact' },
-      { label: 'Join Us', href: '/join-us' },
-      { label: 'FAQ', href: '/faq' },
-    ],
-  },
+/**
+ * Footer en cuatro columnas.
+ *
+ * ⚠️ `events@eatdrinkparadise.com` NO va en el footer. Vive sólo en el hub de
+ * eventos y en /contact, para no mezclar canales: una consulta de $20.000 no
+ * puede caer en el mismo buzón que una pregunta sobre estacionamiento.
+ */
+export const FOOTER_QUICK_LINKS: readonly NavLink[] = [
+  { label: 'Events Packet', href: '/events/inquire' },
+  { label: 'Event Spaces', href: '/events/spaces' },
+  { label: 'Corporate Events', href: '/events/corporate' },
+  { label: 'Join Us', href: '/join-us' },
+  { label: 'FAQ', href: '/faq' },
+  { label: 'Gift Cards', href: 'GIFT_CARDS', external: true },
+  { label: 'Careers', href: '/join-us#work' },
 ];
 
 export const ALL_ROUTES: readonly string[] = [
