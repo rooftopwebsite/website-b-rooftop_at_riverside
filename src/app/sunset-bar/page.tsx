@@ -18,10 +18,7 @@ import { HAPPY_HOUR } from '@/lib/brand';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Sunset Bar — Cocktails & Local Drafts',
-  description:
-    'The rooftop bar at Rooftop at Riverside in Bonita Springs. Signature cocktails made daily, local drafts from Ankrolab and Riptide, wine by the glass, and happy hour Wednesday to Friday.',
-  path: '/sunset-bar',
+  route: "/sunset-bar",
   image: {
     url: '/images/venue-rooftop.jpg',
     width: 2000,
@@ -54,7 +51,7 @@ export default function SunsetBarPage() {
 
       <PageHero
         eyebrow="The rooftop"
-        title="Sunset Bar"
+        title={"Bonita's only rooftop"}
         lead="Our bar, and the only thing here we actually cook up ourselves. Cocktails made daily, drafts from down the road, and the best west-facing seat in Bonita Springs."
         image="/images/venue-rooftop.jpg"
         imageAlt="The rooftop bar at Rooftop at Riverside with seating overlooking the river"

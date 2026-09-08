@@ -8,10 +8,7 @@ import { BRAND } from '@/lib/brand';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Neighborhood Market — Local Vendors',
-  description:
-    'The Neighborhood Market at Rooftop at Riverside in Bonita Springs: local vendors, handmade goods and live music, with food and drinks in the yard. Vendor spots are $30.',
-  path: '/market',
+  route: "/market",
   image: {
     url: '/images/venue-park.jpg',
     width: 2000,
@@ -33,7 +30,7 @@ export default function MarketPage() {
 
       <PageHero
         eyebrow="Neighborhood Market"
-        title="Local vendors, in the yard"
+        title="The Neighborhood Market"
         lead="A curated set of local makers showing handmade goods, with the trucks cooking and the bar open the whole time."
         image="/images/venue-park.jpg"
         imageAlt="Vendors and visitors in the yard at Rooftop at Riverside"

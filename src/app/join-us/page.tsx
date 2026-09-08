@@ -8,10 +8,7 @@ import { BRAND } from '@/lib/brand';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Join Us — Play, Work or Vend Here',
-  description:
-    'Musicians, food truck owners, market vendors and staff: three ways to work with Rooftop at Riverside in Bonita Springs.',
-  path: '/join-us',
+  route: "/join-us",
 });
 
 /**
@@ -67,7 +64,7 @@ export default function JoinUsPage() {
 
       <PageHero
         eyebrow="Join us"
-        title="Play here, park here, work here"
+        title="Bring your truck to the yard"
         lead="Three ways in, depending on what you do. All of them start with an email."
         crumbs={[{ name: 'Join Us', path: '/join-us' }]}
       />

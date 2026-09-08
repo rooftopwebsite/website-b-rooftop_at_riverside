@@ -8,10 +8,7 @@ import { BRAND, addressLine, mapsUrl } from '@/lib/brand';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Contact',
-  description:
-    'Get in touch with Rooftop at Riverside in Bonita Springs: general questions, private events, hiring, and where to find us at 27333 Old 41 Rd.',
-  path: '/contact',
+  route: "/contact",
 });
 
 /**
@@ -68,7 +65,7 @@ export default function ContactPage() {
 
       <PageHero
         eyebrow="Contact"
-        title="Who you actually need"
+        title="Say hello"
         lead="Three inboxes, so your message lands with the person who can answer it instead of a shared one."
         crumbs={[{ name: 'Contact', path: '/contact' }]}
       >

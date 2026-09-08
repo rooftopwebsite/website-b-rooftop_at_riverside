@@ -8,10 +8,7 @@ import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Book the Gaming Truck',
-  description:
-    'Book the gaming truck for a birthday, a team night or a school event in Bonita Springs. Consoles, screens, a Game Coach and air conditioning. Two hours from $400.',
-  path: '/events/game-truck',
+  route: "/events/game-truck",
   image: {
     url: '/images/game-truck.jpg',
     width: 1800,
@@ -47,7 +44,7 @@ export default function GameTruckPage() {
 
       <PageHero
         eyebrow="Events add-on"
-        title="The gaming truck, at your party"
+        title="The party arrives on wheels"
         lead="Two hours, a Game Coach, and a truck full of consoles with the air conditioning running. It parks at your event here, or drives to it."
         image="/images/game-truck.jpg"
         imageAlt="The gaming truck parked and open at Rooftop at Riverside"

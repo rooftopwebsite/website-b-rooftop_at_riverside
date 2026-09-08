@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { PAGE_SEO, type SeoRoute } from '@/content/seo-pages';
 import { BRAND, HOURS_SCHEMA, addressLine } from './brand';
 
 /**
@@ -12,7 +13,14 @@ import { BRAND, HOURS_SCHEMA, addressLine } from './brand';
 
 export const SITE_URL = 'https://rooftopatriverside.com';
 
-const OG_IMAGE = {
+interface OgImage {
+  readonly url: string;
+  readonly width: number;
+  readonly height: number;
+  readonly alt: string;
+}
+
+const OG_IMAGE: OgImage = {
   url: '/images/hero-live-music.jpg',
   width: 2400,
   height: 1600,
@@ -22,31 +30,46 @@ const OG_IMAGE = {
 /**
  * Metadata de una página.
  *
- * `title` va SIN el nombre del sitio: lo agrega el `template` del layout raíz.
+ * Dos formas de usarlo:
+ *
+ *   · `pageMeta({ route: '/visit' })` — lee título y descripción de
+ *     `content/seo-pages.ts`, que es la tabla del brief. **Es la forma normal.**
+ *   · `pageMeta({ title, description, path })` — para las rutas dinámicas
+ *     (`/whats-on/[slug]`, `/food-trucks/[slug]`), que no están en la tabla
+ *     porque su título sale del dato.
+ *
+ * ⚠️ Los títulos de la tabla son **absolutos**: ya traen la marca donde va y
+ * evitan el `template` del layout. Los dinámicos sí pasan por el template.
  */
-export function pageMeta({
-  title,
-  description,
-  path,
-  image,
-  noIndex = false,
-}: {
-  readonly title: string;
-  readonly description: string;
-  readonly path: string;
-  readonly image?: { url: string; width: number; height: number; alt: string };
-  readonly noIndex?: boolean;
-}): Metadata {
+export function pageMeta(
+  args:
+    | { readonly route: SeoRoute; readonly image?: OgImage; readonly noIndex?: boolean }
+    | {
+        readonly title: string;
+        readonly description: string;
+        readonly path: string;
+        readonly image?: OgImage;
+        readonly noIndex?: boolean;
+      },
+): Metadata {
+  const fromTable = 'route' in args;
+  const path = fromTable ? args.route : args.path;
+  const entry = fromTable ? PAGE_SEO[args.route] : null;
+  const title = entry ? entry.title : (args as { title: string }).title;
+  const description = entry ? entry.description : (args as { description: string }).description;
+
   const url = `${SITE_URL}${path === '/' ? '' : path}`;
-  const img = image ?? OG_IMAGE;
+  const img = args.image ?? OG_IMAGE;
+  // El de la tabla no debe recibir el sufijo del template; el dinámico sí.
+  const socialTitle = fromTable ? title : `${title} · ${BRAND.name}`;
 
   return {
-    title,
+    title: fromTable ? { absolute: title } : title,
     description,
     alternates: { canonical: url },
-    ...(noIndex ? { robots: { index: false, follow: true } } : {}),
+    ...(args.noIndex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
-      title: `${title} · ${BRAND.name}`,
+      title: socialTitle,
       description,
       url,
       siteName: BRAND.name,
@@ -56,7 +79,7 @@ export function pageMeta({
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${title} · ${BRAND.name}`,
+      title: socialTitle,
       description,
       images: [`${SITE_URL}${img.url}`],
     },

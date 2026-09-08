@@ -52,18 +52,18 @@ export function FeaturesMarquee() {
 const STEPS = [
   {
     n: '01',
-    title: 'Order at whichever truck you want',
-    body: 'Four independent kitchens park in the yard. You order at the window and you pay that truck directly — each one runs its own business, its own menu and its own register.',
+    title: 'Order at whichever window you want',
+    body: 'Four trucks park in the yard and each one is somebody’s own business. You order at the window, you pay that truck. Separate line, separate card, separate receipt.',
   },
   {
     n: '02',
-    title: 'Get your drinks at the Sunset Bar',
-    body: 'The rooftop bar is ours. Craft cocktails, local drafts, wine. That one is on our tab, and it is the only thing on this site with prices.',
+    title: 'Get your drinks upstairs',
+    body: 'The Sunset Bar on the roof is ours. Cocktails made that morning, drafts from breweries twenty minutes away. It’s the one tab we run, and the only menu on this site with prices.',
   },
   {
     n: '03',
-    title: 'Stay for the music',
-    body: 'Live music, bingo, DJ sets. Most of it is free and happens in the yard or up on the roof. The ticketed shows are in The Yard.',
+    title: 'Stay for whoever’s playing',
+    body: 'Live music five nights a week, Bingo on Wednesdays, DJ sets late on Saturdays. Almost all of it is free and none of it needs a ticket.',
   },
 ] as const;
 
@@ -76,11 +76,11 @@ export function HowThisPlaceWorks() {
         id="how-title"
         title={
           <>
-            Not a restaurant. <br className="hidden sm:block" />
-            Four kitchens and a bar.
+            Five businesses, <br className="hidden sm:block" />
+            one set of stairs.
           </>
         }
-        lead="It trips people up the first time, so here it is plainly."
+        lead="It catches people out the first time, so here it is plainly."
       />
 
       <StaggerGroup as="ol" className="mt-[48px] grid gap-[32px] md:grid-cols-3 md:gap-[40px]">

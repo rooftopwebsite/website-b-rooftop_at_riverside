@@ -9,10 +9,7 @@ import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'The Experience — Game Lounge & Gaming Truck',
-  description:
-    "Southwest Florida's first gaming truck, plus the Game Lounge at Rooftop at Riverside in Bonita Springs. Consoles, screens and a Game Coach, with air conditioning.",
-  path: '/the-experience',
+  route: "/the-experience",
   image: {
     url: '/images/game-truck.jpg',
     width: 1800,
@@ -50,7 +47,7 @@ export default function TheExperiencePage() {
 
       <PageHero
         eyebrow="Game Lounge"
-        title="Southwest Florida's first gaming truck"
+        title="More than a bar with a view"
         lead="A climate-controlled truck full of consoles and screens, with a Game Coach keeping the rounds moving. Parked in the yard, or parked at your party."
         image="/images/game-truck.jpg"
         imageAlt="The gaming truck parked in the yard at Rooftop at Riverside"

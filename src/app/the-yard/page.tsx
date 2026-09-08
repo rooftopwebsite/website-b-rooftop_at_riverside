@@ -11,10 +11,7 @@ import { BRAND } from '@/lib/brand';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'The Yard — Ticketed Shows & Festivals',
-  description:
-    'The gated yard at Rooftop at Riverside in Bonita Springs. Live music, festivals and ticketed shows under the trucks and the stage. Tickets sell through Eventbrite.',
-  path: '/the-yard',
+  route: "/the-yard",
   image: {
     url: '/images/venue-truck-line.jpg',
     width: 2000,
@@ -49,7 +46,7 @@ export default function TheYardPage() {
 
       <PageHero
         eyebrow="The ground floor"
-        title="The Yard"
+        title="The Yard is open"
         lead="The open yard where the trucks park and the stage goes up. It is being gated for ticketed entry, which turns it into the room for a festival, a benefit, or a show you sell seats to."
         image="/images/venue-truck-line.jpg"
         imageAlt="Food trucks and string lights in the yard at Rooftop at Riverside"

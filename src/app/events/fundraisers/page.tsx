@@ -4,9 +4,7 @@ import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 /** Generado por scripts/gen-verticals.mjs. Editá el script, no este archivo. */
 export const metadata: Metadata = pageMeta({
-  title: "Fundraisers & Nonprofit Events",
-  description: "Spirit nights, nonprofit galas and school fundraisers in the gated yard at Rooftop at Riverside, Bonita Springs.",
-  path: '/events/fundraisers',
+  route: '/events/fundraisers',
   image: {
     url: "/images/venue-guests.jpg",
     width: 1800,
@@ -17,7 +15,7 @@ export const metadata: Metadata = pageMeta({
 
 const CONFIG: VerticalConfig = {
   eyebrow: "Fundraisers",
-  title: "A room the whole town walks past",
+  title: "Raise more, spend less on the room",
   lead: "The yard sits on Old 41 in the middle of downtown, across from Riverside Park. For a community fundraiser that visibility is half the job done.",
   image: "/images/venue-guests.jpg",
   imageAlt: "A crowd gathered in the yard at Rooftop at Riverside",

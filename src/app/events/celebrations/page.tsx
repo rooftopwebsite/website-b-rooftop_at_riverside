@@ -4,9 +4,7 @@ import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 /** Generado por scripts/gen-verticals.mjs. Editá el script, no este archivo. */
 export const metadata: Metadata = pageMeta({
-  title: "Birthdays, Milestones & Celebrations",
-  description: "Milestone birthdays, engagements, showers and reunions at a rooftop bar over a food truck park in downtown Bonita Springs.",
-  path: '/events/celebrations',
+  route: '/events/celebrations',
   image: {
     url: "/images/events/event-d.jpg",
     width: 1800,
@@ -17,7 +15,7 @@ export const metadata: Metadata = pageMeta({
 
 const CONFIG: VerticalConfig = {
   eyebrow: "Celebrations",
-  title: "The good ones run late",
+  title: "Every milestone deserves a view",
   lead: "Fortieths, engagements, showers, reunions. The rooftop holds a party that starts at sunset and does not really have a plan for when it ends.",
   image: "/images/events/event-d.jpg",
   imageAlt: "Guests raising glasses at a celebration at Rooftop at Riverside",

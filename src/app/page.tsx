@@ -14,10 +14,7 @@ import Scallop from '@/components/shared/Scallop';
 import { pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Rooftop Bar & Food Truck Park in Bonita Springs',
-  description:
-    'A rooftop bar over a curated food truck park in downtown Bonita Springs. Four independent kitchens, craft cocktails, live music five nights a week, and a venue you can rent.',
-  path: '/',
+  route: "/",
 });
 
 /**

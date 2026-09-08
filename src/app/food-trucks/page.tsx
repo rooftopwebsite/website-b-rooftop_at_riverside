@@ -7,10 +7,7 @@ import { activeTrucks } from '@/content/trucks';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Food Trucks in Bonita Springs',
-  description:
-    'Four independent food trucks park in the yard at Rooftop at Riverside: tacos, seafood, smashburgers and Caribbean. Each one takes its own orders. Upstairs, the Sunset Bar is ours.',
-  path: '/food-trucks',
+  route: "/food-trucks",
 });
 
 /**
@@ -39,7 +36,7 @@ export default function FoodTrucksPage() {
 
       <PageHero
         eyebrow="The yard"
-        title="Four kitchens, four businesses"
+        title="Four kitchens. One yard."
         lead="The trucks rotate. Each one is independently owned, sets its own menu and takes its own payment — we just give them the yard and the crowd."
         crumbs={[{ name: 'Food Trucks', path: '/food-trucks' }]}
       />

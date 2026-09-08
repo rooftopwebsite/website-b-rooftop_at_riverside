@@ -168,12 +168,18 @@ export function MaskedLines({
 }) {
   const reduced = useReducedMotion();
 
+  // ⚠️ El espacio al final de cada línea salvo la última NO es cosmético: sin
+  // él el texto del elemento queda «Bonita comestogether», que es lo que lee
+  // un crawler y lo que compone el nombre accesible. Dentro de la máscara es
+  // invisible, porque cae al final del renglón.
+  const withSpace = (line: string, i: number) => (i < lines.length - 1 ? `${line} ` : line);
+
   if (reduced) {
     return (
       <Tag className={className}>
         {lines.map((line, i) => (
           <span key={i} className="block">
-            {line}
+            {withSpace(line, i)}
           </span>
         ))}
       </Tag>
@@ -196,7 +202,7 @@ export function MaskedLines({
               delay: delay + i * 0.07,
             }}
           >
-            {line}
+            {withSpace(line, i)}
           </motion.span>
         </span>
       ))}

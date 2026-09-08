@@ -9,10 +9,7 @@ import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Private & Corporate Events in Bonita Springs',
-  description:
-    'Rent a rooftop bar, a gated yard and four food trucks in downtown Bonita Springs. Corporate nights, holiday parties, fundraisers, celebrations and full buyouts — one coordinator for all of it.',
-  path: '/events',
+  route: "/events",
   image: {
     url: '/images/events/event-a.jpg',
     width: 1800,
@@ -86,7 +83,7 @@ export default function EventsPage() {
 
       <PageHero
         eyebrow="Private events"
-        title="Take the whole place"
+        title="Your event, two stories up"
         lead="A rooftop bar, a gated yard and four independent kitchens — in downtown Bonita Springs, ten minutes from Naples and Estero."
         image="/images/events/event-a.jpg"
         imageAlt="Guests at a private event on the rooftop at Rooftop at Riverside"

@@ -9,10 +9,7 @@ import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Our Story — The Magnus Family',
-  description:
-    'Four years of planning by locals. How the Magnus family turned a corner of downtown Bonita Springs into a rooftop bar over a food truck park.',
-  path: '/our-story',
+  route: '/our-story',
   image: {
     url: '/images/venue-story.jpg',
     width: 2000,
@@ -22,14 +19,20 @@ export const metadata: Metadata = pageMeta({
 });
 
 /**
- * /our-story
+ * /our-story — el activo narrativo principal.
  *
- * ⚠️ Todo el copy de esta página sale del `/this-is-us` actual: son palabras
- * del cliente. El brief prohíbe texto generado por IA y ésta es la página
- * donde más tentaría escribirlo.
+ * Es la única página que ningún competidor de la zona puede copiar: la familia,
+ * el pueblo y las reliquias en las paredes son de acá y de nadie más.
  *
- * ⚠️ Los emails personales de `/this-is-us` (cmagnus@ y ahayes@) NO se
- * republican: se dejan los buzones genéricos. Ver docs/current-site-inventory.md §6.
+ * ⚠️ La cita de Chris Magnus es LITERAL, de `/this-is-us`. El resto está
+ * escrito de cero: el copy viejo refuerza la lectura de restaurante.
+ *
+ * ⚠️ Los emails personales que publica `/this-is-us` (cmagnus@ y ahayes@) NO se
+ * republican. Ver docs/current-site-inventory.md §6.
+ *
+ * ⚠️ Nada inventado. El Bonita Springs Brio es un cóctel REAL de la carta de
+ * enero 2026; no se nombran otros «cócteles con nombre local» sin tenerlos a la
+ * vista, porque sería inventar producto.
  */
 export default function OurStoryPage() {
   return (
@@ -43,21 +46,34 @@ export default function OurStoryPage() {
 
       <PageHero
         eyebrow="Our story"
-        title="Four years of planning, by people from here"
-        lead="The Magnus family are Bonitians. This corner of Old 41 was an idea long before it was a rooftop."
+        title="A Magnus family project"
+        lead="The Magnuses are Bonitians. This corner of Old 41 was an idea in their kitchen for four years before it was a rooftop."
         image="/images/venue-story.jpg"
-        imageAlt="The park and rooftop at Rooftop at Riverside in downtown Bonita Springs"
+        imageAlt="The yard and rooftop at Rooftop at Riverside in downtown Bonita Springs"
         crumbs={[{ name: 'Our Story', path: '/our-story' }]}
       />
 
       <Section band="lg" width="prose">
-        {/* Texto del cliente, literal. */}
         <p className="text-intro leading-[1.5] text-body/90">
-          After four years of planning, the Magnus family — Bonitian locals — got to fulfill their
-          dream of bringing life, community fun and legacy to Bonita Springs.
+          After four years of planning, the Magnus family — locals — got to build the thing they
+          kept talking about: somewhere the whole town could end up on the same night.
         </p>
 
-        <blockquote className="mt-[32px] border-l-2 border-sunset pl-[24px]">
+        <div className="mt-[32px] flex flex-col gap-[16px] text-lead leading-[1.7] text-body/85">
+          <p>
+            They could have opened a restaurant. Hire a chef, print a menu, hope the town likes it.
+            They did the opposite. They built a yard four independent food businesses could park in,
+            and put a bar on the roof above it.
+          </p>
+          <p>
+            Every truck keeps its own margin. We keep the bar. It means a family that can&rsquo;t
+            agree on dinner doesn&rsquo;t have to, and it means four small businesses get a downtown
+            corner none of them could rent alone.
+          </p>
+        </div>
+
+        <blockquote className="mt-[40px] border-l-2 border-sunset pl-[24px]">
+          {/* Cita literal del cliente. */}
           <p className="text-intro leading-[1.45] text-body/85">
             &ldquo;We hope this park will be a staple for families in the community, a symbol for up
             and coming entrepreneurs and business owners, and a landmark our kids would be proud
@@ -67,35 +83,64 @@ export default function OurStoryPage() {
             Chris Magnus — Founder &amp; Operator
           </footer>
         </blockquote>
+      </Section>
 
-        <div className="mt-[40px] flex flex-col gap-[16px] text-lead leading-[1.7] text-body/85">
-          <p>
-            The model is unusual on purpose. Rather than open a restaurant and hire a kitchen, they
-            built a yard four independent food businesses could park in — and put a bar on the roof
-            above it.
-          </p>
-          <p>
-            Every truck keeps its own margin. The venue keeps the bar. It means a family that
-            can&rsquo;t agree on dinner doesn&rsquo;t have to, and it means four small businesses
-            get a downtown corner they couldn&rsquo;t rent on their own.
-          </p>
+      {/* ── La historia en las paredes ─────────────────────────────────── */}
+      <Section tone="cream" band="lg" labelledBy="history-title">
+        <div className="grid gap-[36px] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-[64px]">
+          <div>
+            <Eyebrow tone="deep">Bonita on the walls</Eyebrow>
+            <Heading level={2} id="history-title" className="mt-gap-kicker text-d4 lg:text-d3">
+              Borrowed from the Historical Society
+            </Heading>
+            <div className="mt-gap-bajada flex flex-col gap-[14px] text-[15px] leading-[1.7] text-body/80">
+              <p>
+                The pieces hanging around the bar came from the Bonita Springs Historical Society.
+                Real relics from this town, a few steps from the river they came off.
+              </p>
+              <p>
+                It started as a way to fill the walls with something other than shiplap and a neon
+                sign. It turned into the thing people photograph. Somebody&rsquo;s grandfather is
+                usually in one of them.
+              </p>
+              <p>
+                The drinks do the same job. Order a Bonita Springs Brio and you&rsquo;re drinking
+                the name of the place you&rsquo;re standing in.
+              </p>
+            </div>
+            <div className="mt-[24px]">
+              <ButtonLink href="/sunset-bar" variant="secondary">
+                See the bar menu
+              </ButtonLink>
+            </div>
+          </div>
+
+          <Reveal className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint">
+            <Image
+              src="/images/venue-rooftop.jpg"
+              alt="The rooftop bar at Rooftop at Riverside, with seating overlooking the Imperial River"
+              fill
+              sizes="(max-width: 1023px) 100vw, 40vw"
+              className="object-cover"
+            />
+          </Reveal>
         </div>
       </Section>
 
       {/* ── Los espacios ───────────────────────────────────────────────── */}
-      <Section tone="cream" band="lg" labelledBy="places-title">
+      <Section band="lg" labelledBy="places-title">
         <SectionHead
           eyebrow="The place"
-          eyebrowTone="deep"
+          eyebrowTone="plum"
           id="places-title"
           title="What got built"
         />
         <div className="mt-[40px] grid gap-[28px] sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ['Sunset Bar', 'The rooftop, facing west over the Imperial River.'],
+            ['Sunset Bar', 'The rooftop, facing west over the Imperial River. Ours.'],
             ['The Yard', 'Where the trucks park and the stage goes up. Being gated.'],
-            ['The Patio', 'Between the two, currently in renovation.'],
-            ['Game Lounge', "A gaming truck — Southwest Florida's first."],
+            ['The Patio', 'Between the two. In renovation, name not final.'],
+            ['Game Lounge', 'A gaming truck, air conditioned. First in Southwest Florida.'],
           ].map(([title, body]) => (
             <div key={title} className="border-t-2 border-ink pt-[16px]">
               <Heading level={3} role="label">
@@ -105,16 +150,22 @@ export default function OurStoryPage() {
             </div>
           ))}
         </div>
+
+        <p className="mt-[32px] max-w-[62ch] text-[15px] leading-[1.65] text-body/70">
+          It shut for about six months in each of the last two years while the work got done. The
+          point of all of it was to make the place feel less like a lot with tables on it — warmer,
+          softer, somewhere you stay past sunset.
+        </p>
       </Section>
 
       {/* ── Charity Partner Program ────────────────────────────────────
           Contenido real de /giveback, que el brief no contemplaba. */}
-      <Section band="lg" labelledBy="giveback-title">
+      <Section band="lg" bandTop="none" labelledBy="giveback-title">
         <div className="grid gap-[32px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:gap-[64px]">
           <Reveal className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint">
             <Image
               src="/images/venue-park.jpg"
-              alt="The yard at Rooftop at Riverside on a busy evening"
+              alt="A busy evening in the yard at Rooftop at Riverside"
               fill
               sizes="(max-width: 1023px) 100vw, 42vw"
               className="object-cover"
@@ -122,26 +173,26 @@ export default function OurStoryPage() {
           </Reveal>
 
           <div>
-            <Eyebrow tone="plum">Charity Partner Program</Eyebrow>
+            <Eyebrow tone="terra">Charity Partner Program</Eyebrow>
             <Heading level={2} id="giveback-title" className="mt-gap-kicker text-d5 lg:text-d4">
               A dollar at a time
             </Heading>
             <div className="mt-gap-bajada flex flex-col gap-[14px] text-[15px] leading-[1.7] text-body/80">
               <p>
-                At the end of your tab you can add $1, $3 or $5. One hundred percent of the net
-                proceeds go to a different local organisation every month.
+                Close your tab and you can add a dollar, three or five. All of the net proceeds go
+                to a different local organisation every month.
               </p>
               <p>
-                Past partners include the Wonder Gardens of Bonita Springs, which has been showing
-                people tropical flora and fauna for nearly nine decades.
+                Past partners include the Wonder Gardens down the road, which has been showing this
+                town tropical plants and birds for nearly ninety years.
               </p>
             </div>
             <div className="mt-[24px]">
               <PendingBlock title="Current charity partner">
                 This lived on <code className="text-[13px]">/giveback</code>, a page the brief
-                didn&rsquo;t account for. It&rsquo;s folded in here for now, and the monthly partner
-                shown on the old site is stale. Tell us where this should live — its own route or
-                this section — and who the current partner is.
+                didn&rsquo;t account for. It&rsquo;s folded in here for now, and the partner shown on
+                the old site is stale. Tell us where this belongs — its own route or this section —
+                and who the current partner is.
               </PendingBlock>
             </div>
           </div>

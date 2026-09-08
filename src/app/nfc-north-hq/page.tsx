@@ -7,10 +7,7 @@ import { HAPPY_HOUR } from '@/lib/brand';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'NFC North HQ — Sunday Football in Bonita Springs',
-  description:
-    'Transplants from up north watch their teams here. Sound on, screens up, and a rooftop bar in Bonita Springs that fills every Sunday of the season.',
-  path: '/nfc-north-hq',
+  route: "/nfc-north-hq",
 });
 
 /**
@@ -57,7 +54,7 @@ export default function NfcNorthPage() {
 
       <PageHero
         eyebrow="Sundays in season"
-        title="Where the north watches"
+        title="Sunday belongs to the rooftop"
         lead="Half of Bonita Springs came down from somewhere with actual winter, and on Sunday it shows. Sound on, screens up, and a rooftop that turns into somebody's hometown bar."
         crumbs={[{ name: 'NFC North HQ', path: '/nfc-north-hq' }]}
       >

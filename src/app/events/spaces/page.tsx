@@ -10,10 +10,7 @@ import { SPACES, type Space } from '@/content/spaces';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Event Spaces — Capacities & Layouts',
-  description:
-    'The four event spaces at Rooftop at Riverside in Bonita Springs: the Sunset Bar rooftop, the gated Yard, the patio, and a full venue buyout. Capacities, minimums and what each one is best for.',
-  path: '/events/spaces',
+  route: "/events/spaces",
 });
 
 /**
@@ -41,7 +38,7 @@ export default function SpacesPage() {
 
       <PageHero
         eyebrow="Event spaces"
-        title="Four rooms, one address"
+        title="Pick your corner of paradise"
         lead="A rooftop, a gated yard, a patio, and the option to take all of it. Every one of them comes with the bar and the trucks."
         crumbs={[
           { name: 'Events', path: '/events' },

@@ -15,7 +15,7 @@ const V = [
     metaDesc:
       'Client nights, team outings and company dinners in downtown Bonita Springs. A rooftop bar, a gated yard and four food trucks, with one coordinator handling all of it.',
     eyebrow: 'Corporate',
-    title: 'A work night nobody tries to leave early',
+    title: "Take the team somewhere they'll actually want to go",
     lead: 'Four kitchens means nobody gets handed a plate they did not choose. That alone solves the hardest part of feeding a room of colleagues.',
     image: '/images/events/event-b.jpg',
     imageAlt: 'A corporate group gathered on the rooftop at Rooftop at Riverside',
@@ -32,6 +32,10 @@ const V = [
       [
         'One invoice, one contact',
         'You do not chase four vendors. We coordinate the trucks and the bar, and you get a single point of contact from the first email to load-out.',
+      ],
+      [
+        'Downtown is being built around us',
+        '120 residential units plus commercial space are going up one block away, due 2027. Booking here now means your people already know where it is.',
       ],
     ],
     formats: [
@@ -54,7 +58,7 @@ const V = [
     metaDesc:
       'Company holiday parties in Bonita Springs. Take the rooftop, the yard, or the entire venue with the gates closed. December books first.',
     eyebrow: 'Holiday parties',
-    title: 'December fills first',
+    title: 'Trade the ballroom for the rooftop',
     lead: 'High season here runs December through April, and the holiday calendar goes before anything else. If you are reading this in the fall, you are on time. Barely.',
     image: '/images/events/event-c.jpg',
     imageAlt: 'A large group celebrating at Rooftop at Riverside',
@@ -91,7 +95,7 @@ const V = [
     metaDesc:
       'Milestone birthdays, engagements, showers and reunions at a rooftop bar over a food truck park in downtown Bonita Springs.',
     eyebrow: 'Celebrations',
-    title: 'The good ones run late',
+    title: 'Every milestone deserves a view',
     lead: 'Fortieths, engagements, showers, reunions. The rooftop holds a party that starts at sunset and does not really have a plan for when it ends.',
     image: '/images/events/event-d.jpg',
     imageAlt: 'Guests raising glasses at a celebration at Rooftop at Riverside',
@@ -130,7 +134,7 @@ const V = [
     metaDesc:
       'Spirit nights, nonprofit galas and school fundraisers in the gated yard at Rooftop at Riverside, Bonita Springs.',
     eyebrow: 'Fundraisers',
-    title: 'A room the whole town walks past',
+    title: 'Raise more, spend less on the room',
     lead: 'The yard sits on Old 41 in the middle of downtown, across from Riverside Park. For a community fundraiser that visibility is half the job done.',
     image: '/images/venue-guests.jpg',
     imageAlt: 'A crowd gathered in the yard at Rooftop at Riverside',
@@ -173,9 +177,7 @@ for (const v of V) {
     '',
     '/** Generado por scripts/gen-verticals.mjs. Editá el script, no este archivo. */',
     'export const metadata: Metadata = pageMeta({',
-    `  title: ${q(v.metaTitle)},`,
-    `  description: ${q(v.metaDesc)},`,
-    `  path: '/events/${v.slug}',`,
+    `  route: '/events/${v.slug}',`,
     '  image: {',
     `    url: ${q(v.image)},`,
     '    width: 1800,',

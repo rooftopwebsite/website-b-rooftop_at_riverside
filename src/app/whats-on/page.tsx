@@ -19,10 +19,7 @@ import {
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: "What's On — Live Music & Events Calendar",
-  description:
-    'The full calendar at Rooftop at Riverside in Bonita Springs: live music, Bingo Night, Wooftop Wednesdays and DJ sets. Month and list views, with iCal and Google Calendar export.',
-  path: '/whats-on',
+  route: "/whats-on",
 });
 
 /**
@@ -71,7 +68,7 @@ export default async function WhatsOnPage({
 
       <PageHero
         eyebrow="The calendar"
-        title="What's on"
+        title={"What's on this week"}
         lead="Live music five nights a week, Bingo on Wednesdays, and the dogs get their own day. Most of it is free."
         crumbs={[{ name: "What's On", path: '/whats-on' }]}
       >

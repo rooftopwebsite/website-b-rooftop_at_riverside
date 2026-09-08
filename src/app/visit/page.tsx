@@ -8,10 +8,7 @@ import { BRAND, HAPPY_HOUR, HOURS, addressLine, mapsUrl } from '@/lib/brand';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Visit — Hours, Parking & Directions',
-  description:
-    'Rooftop at Riverside is at 27333 Old 41 Rd in downtown Bonita Springs, across from Riverside Park. Hours for the bar and the food trucks, parking and how to find us from Naples and Estero.',
-  path: '/visit',
+  route: "/visit",
 });
 
 export default function VisitPage() {
@@ -26,7 +23,7 @@ export default function VisitPage() {
 
       <PageHero
         eyebrow="Getting here"
-        title="Downtown Bonita Springs"
+        title="Find us across from Riverside Park"
         lead="On Old 41, across from Riverside Park. Twenty minutes from Naples, fifteen from Estero, and no cover to walk in."
         crumbs={[{ name: 'Visit', path: '/visit' }]}
       >

@@ -4,9 +4,7 @@ import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 /** Generado por scripts/gen-verticals.mjs. Editá el script, no este archivo. */
 export const metadata: Metadata = pageMeta({
-  title: "Holiday Parties",
-  description: "Company holiday parties in Bonita Springs. Take the rooftop, the yard, or the entire venue with the gates closed. December books first.",
-  path: '/events/holiday-parties',
+  route: '/events/holiday-parties',
   image: {
     url: "/images/events/event-c.jpg",
     width: 1800,
@@ -17,7 +15,7 @@ export const metadata: Metadata = pageMeta({
 
 const CONFIG: VerticalConfig = {
   eyebrow: "Holiday parties",
-  title: "December fills first",
+  title: "Trade the ballroom for the rooftop",
   lead: "High season here runs December through April, and the holiday calendar goes before anything else. If you are reading this in the fall, you are on time. Barely.",
   image: "/images/events/event-c.jpg",
   imageAlt: "A large group celebrating at Rooftop at Riverside",

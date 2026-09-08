@@ -8,10 +8,7 @@ import { BRAND } from '@/lib/brand';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  title: 'FAQ',
-  description:
-    'How Rooftop at Riverside works: ordering at the food trucks, the bar menu, parking, dogs, hours and renting the venue in downtown Bonita Springs.',
-  path: '/faq',
+  route: "/faq",
 });
 
 /** `FAQPage` en JSON-LD, requisito de la Fase 3. */
@@ -52,7 +49,7 @@ export default function FaqPage() {
 
       <PageHero
         eyebrow="Questions"
-        title="The things people ask at the gate"
+        title="How this place works"
         lead="Mostly one question in different shapes: how does this place actually work?"
         crumbs={[{ name: 'FAQ', path: '/faq' }]}
       />
