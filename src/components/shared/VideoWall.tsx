@@ -33,9 +33,25 @@ const SLOTS: readonly (string | null)[] = Array.from({ length: 12 }, () => null)
 
 const POR_FILA = 6;
 
+/**
+ * Cuántas veces se repiten los slots de una fila para que UNA copia del track
+ * sea más ancha que la pantalla.
+ *
+ * ⚠️ Esto es lo que hace que el loop sea infinito de verdad, y su falta era un
+ * bug visible: la animación lleva el track a `-50%`, o sea al punto donde la
+ * segunda copia queda donde arrancó la primera. Para que eso no se note, cada
+ * copia tiene que cubrir el viewport entero. Con 6 tiles de 176px una copia
+ * medía 1128px — en una pantalla de 1886 sobraban 758px de verde vacío a la
+ * derecha, que es justo lo que marcó Camila en su captura.
+ *
+ * 6 slots × 3 = 18 tiles por copia. Al ancho más chico de tile (196px con su
+ * separación) son 3528px, más que cualquier pantalla de escritorio.
+ */
+const REPETICIONES = 3;
+
 function Tile({ src }: { readonly src: string | null }) {
   return (
-    <div className="mr-[12px] aspect-[3/4] w-[132px] shrink-0 overflow-hidden rounded-card bg-paper/12 lg:w-[176px]">
+    <div className="mr-[14px] aspect-[3/4] w-[152px] shrink-0 overflow-hidden rounded-card bg-paper/12 lg:w-[196px]">
       {src === null ? (
         <div className="grid h-full place-items-center">
           {/*
@@ -77,7 +93,13 @@ function Fila({
   readonly reverse: boolean;
   readonly etiqueta: string;
 }) {
-  const tiles = slots.map((src, i) => <Tile key={i} src={src} />);
+  /*
+    Una copia del track: los slots repetidos hasta pasar el ancho de pantalla.
+    Ver la nota de `REPETICIONES` — sin esto el loop deja un hueco.
+  */
+  const copia = Array.from({ length: REPETICIONES }, () => slots)
+    .flat()
+    .map((src, i) => <Tile key={i} src={src} />);
   return (
     <div
       className={['rt-wall', reverse ? 'rt-wall-reverse' : ''].filter(Boolean).join(' ')}
@@ -93,10 +115,10 @@ function Fila({
       aria-label={etiqueta}
     >
       <div className="rt-wall-track">
-        <div className="flex shrink-0">{tiles}</div>
+        <div className="flex shrink-0">{copia}</div>
         {/* La copia que cierra el loop. Mismo contenido, así que `aria-hidden`. */}
         <div className="flex shrink-0" aria-hidden="true">
-          {tiles}
+          {copia}
         </div>
       </div>
     </div>

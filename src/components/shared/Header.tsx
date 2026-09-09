@@ -8,15 +8,14 @@ import { BRAND } from '@/lib/brand';
 import { NAV_CTA, NAV_MAIN, NAV_MORE } from '@/lib/nav';
 import { ButtonLink } from './Button';
 import { GUTTER } from './Section';
-import StatusBar from './StatusBar';
 
 /**
  * Header.
  *
- * Nav reducida de 5 + mega-menú «More» con una línea por link, doble CTA con
- * jerarquía distinta, y debajo una barra de estado de una línea.
+ * Nav reducida de 5 + mega-menú «More» con una línea por link y doble CTA con
+ * jerarquía distinta.
  *
- * Alto 67px, 77px desde `desk` (1344). Fijo, opaco, sombra al scrollear.
+ * Alto 64px, 76px desde `desk` (1344). Sticky, opaco, sombra al scrollear.
  *
  * ⚠️ El corte del nav es `desk:` (1344) y NO `lg:` (922). Entre 768 y 1344 la
  * caja mide 880px y el logo + 5 items + 2 CTAs no entran. Regla de la casa: si
@@ -96,11 +95,9 @@ export default function Header() {
         reversado siempre, y el contraste se mide una sola vez.
       */}
       {/*
-        ⚠️ `sticky` y no `fixed`, y las dos franjas —barra y estado— DENTRO del
-        mismo contenedor pegado.
+        ⚠️ `sticky` y no `fixed`.
 
-        Era `fixed top-0` con la `StatusBar` en un segundo `fixed top-[64px]`, y
-        los heroes compensando la altura con `padding-top`. Con el `PromoBar`
+        Era `fixed top-0`, con los heroes compensando la altura con `padding-top`. Con el `PromoBar`
         arriba eso no funciona: un banner que se va con el scroll, debajo de un
         header fijo, queda tapado de entrada y deja un hueco al scrollear.
 
@@ -108,8 +105,6 @@ export default function Header() {
         de JavaScript. Consecuencia: el bloque superior YA OCUPA espacio, así
         que ningún hero compensa más su altura — ver `Hero.tsx` y `PageHero.tsx`.
 
-        ⚠️ Un solo sticky para las dos, no dos sticky hermanos: con `top-0` cada
-        una, al scrollear se superponen.
       */}
       <div className="sticky top-0 z-[99]">
       <div className={`bg-deep ${GUTTER}`}>
@@ -273,20 +268,13 @@ export default function Header() {
       </div>
 
       {/*
-        ⚠️ La barra de estado salió de adentro del contenedor del header y pasó
-        a ser una FRANJA propia sobre `deeper`, pegada abajo de la barra.
+        ⚠️ ACÁ VIVÍA LA FRANJA DE ESTADO — «Closed now · Bar 3–8 · Trucks 4–8».
+        Camila la mandó sacar. No se reemplaza por nada: los horarios están en
+         con los siete días desplegables, en /visit y en /contact, y el
+        header ya cargaba dos franjas encima del contenido.
 
-        Antes era una píldora crema centrada, flotando debajo de un header que
-        también flotaba. Con el header ya oscuro a todo el ancho, esa píldora
-        amarilla quedaba suspendida en el medio del hero, sin pertenecer ni a
-        la barra ni a la página. Como franja se lee como parte del header, que
-        es lo que es: el dato de «¿está abierto?» pertenece a la navegación.
+         se borra con esto: era su único call site.
       */}
-      <div className={`bg-deeper ${GUTTER}`}>
-        <div className="caja flex justify-center py-[7px]">
-          <StatusBar />
-        </div>
-      </div>
       </div>{/* fin del bloque sticky */}
 
       {/* ── Menú full-screen de mobile ─────────────────────────────────── */}
