@@ -56,8 +56,22 @@ export interface PinnedItem {
   readonly tags: readonly string[];
 }
 
-/** Cuánto scroll vale cada ítem, en unidades de viewport. */
-const VH_PER_ITEM = 55;
+/**
+ * Cuánto scroll vale cada ítem, en unidades de viewport.
+ *
+ * ⚠️ BAJÓ de 55 a 42. La referencia —agencefoudre.com— usa 133vh por ítem, y
+ * 55 ya era un recorte deliberado. Con la página compactada, 55 dejaba a esta
+ * sección en 2.577px: **2,9 pantallas de las 9,5 de la home**, casi un tercio
+ * del recorrido para tres ítems cortos.
+ *
+ * A 42 la sección mide ~2.030px (2,3 pantallas) y cada ítem sigue teniendo casi
+ * media pantalla de scroll para leerse, que es de sobra para tres párrafos.
+ *
+ * El piso está en que cada ítem necesite MENOS scroll del que tarda en leerse:
+ * ahí el bloque cambia antes de que termines la frase y se siente arrebatado.
+ * 42vh sobre un párrafo de cuatro líneas está cómodo; bajar de 35 no.
+ */
+const VH_PER_ITEM = 42;
 
 export default function PinnedList({
   items,

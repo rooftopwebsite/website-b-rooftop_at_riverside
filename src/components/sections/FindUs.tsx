@@ -59,7 +59,7 @@ export default function FindUs() {
   }, []);
 
   return (
-    <Section tone="paper" band="lg" labelledBy="find-title" width="full" className="px-0">
+    <Section tone="paper" bandTop="sm" bandBottom="lg" labelledBy="find-title" width="full" className="px-0">
       <div className={GUTTER}>
         <div className="caja">
           <SectionHead

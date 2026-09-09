@@ -41,7 +41,7 @@ const ITEMS = [
 
 export default function EventsBanner() {
   return (
-    <Section tone="paper" band="lg" labelledBy="events-banner-title">
+    <Section tone="paper" bandTop="lg" bandBottom="sm" labelledBy="events-banner-title">
       <Reveal className="overflow-hidden rounded-card bg-deep p-[20px] shadow-float lg:p-[28px]">
         {/* La imagen arriba, inset y con su propio radio. Es lo que separa esta
             forma de una losa a sangre: la card respira alrededor de la foto. */}
