@@ -647,6 +647,95 @@
    Motion
    ========================================================================== */
 
+/**
+ * ── Preloader ─────────────────────────────────────────────────────────────
+ *
+ * El logo sobre el verde y el fondo barrido de izquierda a derecha.
+ *
+ * ⚠️ TODO en CSS, a propósito. La versión anterior movía una barra de progreso
+ * desde estado de React, así que la cortina —que la pinta el servidor— sólo se
+ * podía levantar con JS. Medido en arranque en frío: HTML a los 8.1s, cortina
+ * clavada en «0%» 4.2s más. Una animación de CSS corre sin JS y no puede
+ * trabarse. Ver la nota de Preloader.tsx.
+ *
+ * El corte lo hace `clip-path` y no un `translate`: barriendo el inset
+ * izquierdo, el verde se retira revelando la página por la izquierda y el logo
+ * queda comido por el barrido a medida que pasa. Con un translate el logo se
+ * iría de paseo con el panel, que se lee como «se fue», no como «lo barrió».
+ *
+ * Tiempos: 700ms de espera —el logo tiene que poder leerse— y 560ms de
+ * barrido. Total 1.26s, contra los 2.8s que tardaba la versión con
+ * porcentaje. Ninguno de los dos tramos pasa el tope de 600ms del brief.
+ */
+@keyframes rt-preloader-wipe {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 100%);
+  }
+}
+
+@keyframes rt-preloader-logo {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rt-preloader-edge {
+  from {
+    transform: translateX(-220px);
+  }
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+.rt-preloader {
+  animation: rt-preloader-wipe 560ms var(--ease-brand, cubic-bezier(0.16, 1, 0.3, 1)) 700ms
+    forwards;
+}
+
+.rt-preloader-logo {
+  /* `both` para que el estado inicial valga ANTES de arrancar: si no, el logo
+     aparece a opacidad plena y recién ahí se anima. */
+  animation: rt-preloader-logo 420ms var(--ease-brand, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+
+.rt-preloader-edge {
+  /* Nace y muere en transparente: así se lee como luz y no como un rectángulo
+     con los bordes marcados. Es el mismo criterio del halo del pre-footer de
+     The Orient. */
+  background: linear-gradient(
+    to right,
+    rgba(253, 252, 247, 0) 0%,
+    rgba(253, 252, 247, 0.14) 55%,
+    rgba(253, 252, 247, 0.32) 100%
+  );
+  /* ⚠️ `both` y no `forwards`. Con `forwards` el estado inicial NO se aplica
+     durante los 700ms de espera, así que la banda se quedaba quieta en su
+     posición base —pegada al borde izquierdo— y se leía como una franja de
+     degradado fija al lado del logo. Con `both` arranca fuera de pantalla. */
+  animation: rt-preloader-edge 560ms var(--ease-brand, cubic-bezier(0.16, 1, 0.3, 1)) 700ms both;
+}
+
+/**
+ * ⚠️ Con la animación desactivada NO hay cortina, y no una cortina más lenta.
+ * Es una pantalla que tapa el contenido: dejarla quieta la dejaría tapando la
+ * página para siempre, que es justo el cuelgue que este rediseño vino a
+ * arreglar.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rt-preloader {
+    display: none;
+  }
+}
+
 @keyframes rt-marquee {
   from {
     transform: translateX(0);

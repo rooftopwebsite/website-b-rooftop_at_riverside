@@ -1,122 +1,65 @@
-'use client';
-
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'motion/react';
-import { useEffect, useState } from 'react';
-import { EASE_BRAND } from './Motion';
 
 /**
- * Preloader con el isotipo del food truck y porcentaje.
+ * Cortina de marca: el logo sobre el verde, y el fondo BARRIDO de izquierda a
+ * derecha para dar lugar a la página.
  *
- * ⚠️ NO USA `sessionStorage`. El preloader de Tre Vele —el patrón de la casa—
- * guarda una bandera en `sessionStorage` para no repetirse. El brief de Rooftop
- * prohíbe explícitamente localStorage, sessionStorage y cualquier API de
- * storage del navegador, así que acá la bandera vive en un módulo EN MEMORIA.
+ * ⚠️ Es un SERVER COMPONENT y la animación es 100% CSS. No es un detalle de
+ * implementación, es la corrección de un cuelgue real.
  *
- * Qué cambia en la práctica: navegar entre páginas no vuelve a mostrarlo
- * (el módulo sobrevive a la navegación del App Router), pero recargar sí.
- * Es la diferencia aceptable — y la única forma de cumplir la restricción.
+ * La versión anterior tenía barra de progreso y porcentaje viviendo en estado
+ * de React, con un `setInterval` que los movía: o sea que la cortina la
+ * pintaba el servidor y **sólo el JS podía levantarla**. Medido en arranque en
+ * frío, el HTML se servía a los 8.1s y la cortina se quedaba clavada en «0%»
+ * 4.2s más, hasta que hidrataba. Camila lo reportó como que el sitio no
+ * cargaba, y tenía razón: doce segundos de pantalla crema.
  *
- * ⚠️ `prefers-reduced-motion` lo salta entero: no muestra una versión más
- * lenta, no muestra nada. Es una pantalla que tapa el contenido.
+ * Una animación de CSS corre sin JavaScript. Con esto la cortina se levanta
+ * siempre, incluso si el JS no llega nunca — y el contenido de abajo ya está
+ * completo, porque lo renderiza el servidor.
+ *
+ * ⚠️ Tampoco hay porcentaje. Camila: «saquemos el loading si trae problemas,
+ * sólo pongamos el logo sobre fondo de color». Y de paso el porcentaje era una
+ * mentira: no medía ninguna carga real, era un contador asintótico.
+ *
+ * ⚠️ Con `prefers-reduced-motion` no hay cortina EN ABSOLUTO —ver globals.css—
+ * y no una más lenta. Es una pantalla que tapa el contenido: la versión
+ * accesible es no mostrarla.
+ *
+ * ⚠️ No usa storage del navegador, que el brief prohíbe. Tampoco lo necesita:
+ * al vivir en el layout, el elemento no se vuelve a montar en las navegaciones
+ * del App Router, así que la animación corre una sola vez por carga completa.
  */
-
-/** Vive en el módulo, no en el navegador. Se pierde al recargar, a propósito. */
-let alreadyShown = false;
-
-type Phase = 'loading' | 'exit' | 'hidden';
-
-// ⚠️ Tope del sitio: ninguna animación pasa de 600ms. La salida son dos
-// tramos encadenados, y cada uno respeta el tope por separado.
-const FADE = 0.3;
-const LIFT = 0.6;
-
 export default function Preloader() {
-  const reduced = useReducedMotion();
-  const [phase, setPhase] = useState<Phase>(() => (alreadyShown ? 'hidden' : 'loading'));
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (reduced || alreadyShown) {
-      alreadyShown = true;
-      setPhase('hidden');
-      return;
-    }
-    alreadyShown = true;
-
-    const timers: number[] = [];
-    let current = 0;
-
-    // Incremento asintótico: rápido al principio, se frena cerca de 100.
-    // Es el patrón de Tre Vele; da la sensación de carga real sin mentir
-    // sobre un progreso que no estamos midiendo.
-    const tick = window.setInterval(() => {
-      current = Math.min(100, current + Math.ceil((100 - current) / 12) + 2);
-      setProgress(current);
-      if (current >= 100) {
-        window.clearInterval(tick);
-        timers.push(
-          window.setTimeout(() => {
-            setPhase('exit');
-            timers.push(window.setTimeout(() => setPhase('hidden'), (FADE + LIFT) * 1000 + 120));
-          }, 300),
-        );
-      }
-    }, 80);
-
-    // Corte de seguridad: pase lo que pase, a los 4s se va.
-    const safety = window.setTimeout(() => {
-      window.clearInterval(tick);
-      setProgress(100);
-      setPhase('exit');
-      timers.push(window.setTimeout(() => setPhase('hidden'), (FADE + LIFT) * 1000 + 120));
-    }, 2600);
-    timers.push(safety);
-
-    return () => {
-      window.clearInterval(tick);
-      timers.forEach((t) => window.clearTimeout(t));
-    };
-  }, [reduced]);
-
-  if (phase === 'hidden') return null;
-  const exiting = phase === 'exit';
-
   return (
-    <motion.div
-      // `aria-hidden` + sin foco: es una cortina decorativa. El contenido real
-      // ya está en el DOM debajo y el lector de pantalla lo lee directo.
+    // `aria-hidden` + `pointer-events-none`: es una cortina decorativa. El
+    // contenido real ya está en el DOM debajo y el lector de pantalla lo lee
+    // directo, sin enterarse de esto.
+    <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[120] flex flex-col items-center justify-center bg-paper"
-      initial={{ y: 0 }}
-      animate={{ y: exiting ? '-100%' : 0 }}
-      transition={{ duration: LIFT, ease: EASE_BRAND, delay: exiting ? FADE : 0 }}
+      className="rt-preloader pointer-events-none fixed inset-0 z-[120] overflow-hidden bg-deep"
     >
-      <motion.div
-        className="flex flex-col items-center gap-[28px]"
-        animate={{ opacity: exiting ? 0 : 1 }}
-        transition={{ duration: FADE, ease: 'linear' }}
-      >
+      <div className="grid h-full place-items-center">
         <Image
-          src="/brand/isotype-truck.png"
+          src="/brand/logo-reversed.svg"
           alt=""
-          width={225}
-          height={170}
+          width={303}
+          height={322}
           priority
-          className="h-auto w-[120px] md:w-[160px]"
+          className="rt-preloader-logo w-[150px] lg:w-[190px]"
         />
-        <div className="flex flex-col items-center gap-[12px]">
-          {/* La barra: un filete que se llena. Va en tinta, no en naranja —
-              es un elemento de interfaz y el naranja no llega a 3:1. */}
-          <div className="h-[2px] w-[180px] overflow-hidden bg-ink/10">
-            <div
-              className="h-full bg-ink transition-[width] duration-150 ease-linear"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <p className="eyebrow tabular-nums text-ink/60">{progress}%</p>
-        </div>
-      </motion.div>
-    </motion.div>
+      </div>
+
+      {/*
+        El filo del barrido: una banda de luz que viaja con el corte del
+        `clip-path`. Es lo que hace que se lea como un BARRIDO y no como una
+        desaparición: sin ella el verde simplemente se recorta.
+
+        Va en `mix-blend-mode: screen` para que aclare el verde en vez de
+        ensuciarlo con un gris, y nace y muere en transparente para que se lea
+        como luz y no como un rectángulo con bordes.
+      */}
+      <div className="rt-preloader-edge absolute inset-y-0 left-0 w-[220px] mix-blend-screen" />
+    </div>
   );
 }
