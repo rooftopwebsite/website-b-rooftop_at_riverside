@@ -134,7 +134,7 @@ export default async function WhatsOnPage({
         </div>
 
         {occurrences.length === 0 ? (
-          <p className="mt-[40px] text-lead text-body/70">
+          <p className="mt-[40px] text-lead text-body/75">
             Nothing on the books for {label} yet. The calendar for next month lands around the 10th.
           </p>
         ) : view === 'list' ? (
@@ -180,7 +180,7 @@ function ListView({
     <div className="mt-[32px] flex flex-col">
       {days.map(({ date, events }) => (
         <div key={date} className="grid gap-[8px] border-b border-ink/12 py-[24px] lg:grid-cols-[180px_minmax(0,1fr)] lg:gap-[32px]">
-          <h3 className="eyebrow pt-[4px] text-body/60">{longDate(date)}</h3>
+          <h3 className="eyebrow pt-[4px] text-body/75">{longDate(date)}</h3>
           <ul className="flex flex-col gap-[2px]">
             {events.map(({ event }) => (
               <li key={`${date}-${event.slug}`}>
@@ -192,13 +192,13 @@ function ListView({
                     <span className="font-display text-d5 uppercase transition-colors group-hover:text-deep">
                       {event.title}
                     </span>
-                    <span className="mt-[2px] text-[15px] leading-[1.5] text-body/70">
+                    <span className="mt-[2px] text-[15px] leading-[1.5] text-body/75">
                       {event.summary}
                     </span>
                   </span>
-                  <span className="shrink-0 text-caption font-bold tabular-nums text-body/70">
+                  <span className="shrink-0 text-caption font-bold tabular-nums text-body/75">
                     {timeRange(event)}
-                    <span className="ml-[8px] font-normal text-body/70">{event.space}</span>
+                    <span className="ml-[8px] font-normal text-body/75">{event.space}</span>
                   </span>
                 </Link>
               </li>
@@ -231,7 +231,7 @@ function MonthView({
               <th
                 key={d}
                 scope="col"
-                className="border-b border-ink/20 pb-[10px] text-left eyebrow text-body/65"
+                className="border-b border-ink/20 pb-[10px] text-left eyebrow text-body/75"
               >
                 {d}
               </th>
@@ -254,7 +254,7 @@ function MonthView({
                   >
                     {date ? (
                       <>
-                        <span className="block font-display text-d6 tabular-nums text-body/70">
+                        <span className="block font-display text-d6 tabular-nums text-body/75">
                           {dayNumber(date)}
                         </span>
                         {events ? (

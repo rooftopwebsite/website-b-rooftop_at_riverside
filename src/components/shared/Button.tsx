@@ -151,7 +151,7 @@ export function AnnouncementChip({
         viewBox="0 0 16 10"
         fill="none"
         aria-hidden="true"
-        className="shrink-0 text-body/50 transition-transform duration-200 group-hover:translate-x-[3px]"
+        className="shrink-0 text-body/75 transition-transform duration-200 group-hover:translate-x-[3px]"
       >
         <path
           d="M0 5h14M10 1l4 4-4 4"

@@ -59,13 +59,13 @@ export default function VisitPage() {
             <caption className="sr-only">Opening hours for the bar and the food trucks</caption>
             <thead>
               <tr className="border-b-2 border-ink">
-                <th scope="col" className="py-[12px] pr-[16px] text-left eyebrow text-body/60">
+                <th scope="col" className="py-[12px] pr-[16px] text-left eyebrow text-body/75">
                   Day
                 </th>
-                <th scope="col" className="py-[12px] pr-[16px] text-left eyebrow text-body/60">
+                <th scope="col" className="py-[12px] pr-[16px] text-left eyebrow text-body/75">
                   Sunset Bar
                 </th>
-                <th scope="col" className="py-[12px] text-left eyebrow text-body/60">
+                <th scope="col" className="py-[12px] text-left eyebrow text-body/75">
                   Food Trucks
                 </th>
               </tr>
@@ -91,7 +91,7 @@ export default function VisitPage() {
           </span>
         </p>
 
-        <p className="mt-[16px] max-w-[62ch] text-[15px] leading-[1.65] text-body/70">
+        <p className="mt-[16px] max-w-[62ch] text-[15px] leading-[1.65] text-body/75">
           High season runs December through April, when the calendar is fullest and the yard is
           busiest.
         </p>

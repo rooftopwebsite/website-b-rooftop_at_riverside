@@ -58,7 +58,7 @@ export default function NewsletterForm() {
             placeholder="you@example.com"
             className={[
               'h-[52px] w-full rounded-btn border bg-paper px-[16px]',
-              'font-body text-[16px] text-body placeholder:text-body/45',
+              'font-body text-[16px] text-body placeholder:text-body/75',
               'transition-colors duration-200',
               error ? 'border-2 border-tomato' : 'border-transparent',
             ].join(' ')}

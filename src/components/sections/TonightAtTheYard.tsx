@@ -72,7 +72,7 @@ export default function TonightAtTheYard() {
           <Eyebrow tone="magenta">On the stage</Eyebrow>
 
           {isClosed ? (
-            <p className="mt-[16px] text-lead text-body/70">
+            <p className="mt-[16px] text-lead text-body/75">
               Monday and Tuesday we&rsquo;re dark. The yard opens back up Wednesday at 3.
             </p>
           ) : todaysEvents.length > 0 ? (
@@ -86,7 +86,7 @@ export default function TonightAtTheYard() {
                     <span className="font-display text-d5 uppercase transition-colors group-hover:text-deep">
                       {e.title}
                     </span>
-                    <span className="shrink-0 text-caption font-bold tabular-nums text-body/70">
+                    <span className="shrink-0 text-caption font-bold tabular-nums text-body/75">
                       {timeRange(e)}
                     </span>
                   </Link>
@@ -96,12 +96,12 @@ export default function TonightAtTheYard() {
           ) : (
             /* Fallback: no inventa un evento. Dice qué pasa y hacia dónde ir. */
             <div className="mt-[16px]">
-              <p className="text-lead text-body/70">
+              <p className="text-lead text-body/75">
                 {today === null
                   ? 'Loading tonight&rsquo;s lineup…'
                   : 'No live music on the books for today.'}
               </p>
-              <p className="mt-[8px] text-[15px] text-body/60">
+              <p className="mt-[8px] text-[15px] text-body/75">
                 The bar is open either way, and the calendar has the rest of the week.
               </p>
             </div>
@@ -122,13 +122,13 @@ export default function TonightAtTheYard() {
                   <span className="font-display text-d5 uppercase transition-colors group-hover:text-deep">
                     {t.name}
                   </span>
-                  <span className="shrink-0 text-caption text-body/70">{t.cuisine}</span>
+                  <span className="shrink-0 text-caption text-body/75">{t.cuisine}</span>
                 </Link>
               </li>
             ))}
           </ul>
 
-          <p className="mt-[16px] text-[14px] leading-[1.55] text-body/60">
+          <p className="mt-[16px] text-[14px] leading-[1.55] text-body/75">
             The roster rotates. Check the calendar for which trucks are in on a given night — and
             remember each one takes its own orders and its own payment.
           </p>

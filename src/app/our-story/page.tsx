@@ -79,7 +79,7 @@ export default function OurStoryPage() {
             and coming entrepreneurs and business owners, and a landmark our kids would be proud
             of.&rdquo;
           </p>
-          <footer className="mt-[16px] eyebrow text-body/60">
+          <footer className="mt-[16px] eyebrow text-body/75">
             Chris Magnus — Founder &amp; Operator
           </footer>
         </blockquote>
@@ -151,7 +151,7 @@ export default function OurStoryPage() {
           ))}
         </div>
 
-        <p className="mt-[32px] max-w-[62ch] text-[15px] leading-[1.65] text-body/70">
+        <p className="mt-[32px] max-w-[62ch] text-[15px] leading-[1.65] text-body/75">
           It shut for about six months in each of the last two years while the work got done. The
           point of all of it was to make the place feel less like a lot with tables on it — warmer,
           softer, somewhere you stay past sunset.

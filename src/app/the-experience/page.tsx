@@ -77,36 +77,36 @@ export default function TheExperiencePage() {
           <div>
             <dl className="flex flex-col divide-y divide-ink/12 border-y border-ink/12">
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
-                <dt className="eyebrow text-body/60">Platforms</dt>
+                <dt className="eyebrow text-body/75">Platforms</dt>
                 <dd className="text-[15px] font-bold">{PLATFORMS.join(' · ')}</dd>
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
-                <dt className="eyebrow text-body/60">Consoles</dt>
+                <dt className="eyebrow text-body/75">Consoles</dt>
                 <dd>
                   <PendingData detail="Console counts differ between the brief and the current site — pending confirmation" />
                 </dd>
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
-                <dt className="eyebrow text-body/60">Screens</dt>
+                <dt className="eyebrow text-body/75">Screens</dt>
                 <dd>
                   <PendingData detail="Screen count pending confirmation" />
                 </dd>
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
-                <dt className="eyebrow text-body/60">Ratings</dt>
+                <dt className="eyebrow text-body/75">Ratings</dt>
                 <dd className="text-[15px]">E for Everyone through M for Mature</dd>
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
-                <dt className="eyebrow text-body/60">Staffed</dt>
+                <dt className="eyebrow text-body/75">Staffed</dt>
                 <dd className="text-[15px]">A Game Coach runs every session</dd>
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
-                <dt className="eyebrow text-body/60">Climate</dt>
+                <dt className="eyebrow text-body/75">Climate</dt>
                 <dd className="text-[15px]">Air conditioned</dd>
               </div>
             </dl>
 
-            <p className="mt-[20px] max-w-[60ch] text-[14px] leading-[1.6] text-body/65">
+            <p className="mt-[20px] max-w-[60ch] text-[14px] leading-[1.6] text-body/75">
               Console and screen counts are marked pending because the numbers we have don&rsquo;t
               agree with each other. We&rsquo;d rather show a gap than a wrong number.
             </p>
@@ -156,7 +156,7 @@ export default function TheExperiencePage() {
           </RevealItem>
         </StaggerGroup>
 
-        <p className="mt-[24px] max-w-[62ch] text-[14px] leading-[1.6] text-body/65">
+        <p className="mt-[24px] max-w-[62ch] text-[14px] leading-[1.6] text-body/75">
           Pricing carried over from the current site. Confirm before booking — a waiver is required
           to play.
         </p>

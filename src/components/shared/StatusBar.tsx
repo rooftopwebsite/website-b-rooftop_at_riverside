@@ -98,8 +98,11 @@ export default function StatusBar() {
   const anyOpen = state ? state.barOpen || state.trucksOpen : false;
 
   return (
-    // Píldora, no franja: acompaña al nav sin volver a dibujar un borde.
-    <div className="flex max-w-full items-center gap-[12px] overflow-x-auto rounded-pill bg-cream px-[16px] py-[7px] whitespace-nowrap ring-1 ring-ink/[0.06]">
+    /* ⚠️ Era una píldora crema flotando por debajo del header. Con el header
+       ya oscuro y el hero también, esa píldora quedaba como una pastilla
+       amarilla pegada en el medio de la nada. Ahora es una FRANJA sobre
+       `deeper`, integrada a la barra: informa sin pedir turno. */
+    <div className="flex max-w-full items-center gap-[12px] overflow-x-auto whitespace-nowrap">
       <div className="flex items-center gap-[12px]">
         {/*
           El estado. El punto es decorativo: lo que informa es el TEXTO de al
@@ -110,27 +113,27 @@ export default function StatusBar() {
             aria-hidden="true"
             className={[
               'inline-block h-[7px] w-[7px] rounded-pill',
-              state ? (anyOpen ? 'bg-teal600' : 'bg-terra') : 'bg-ink/25',
+              state ? (anyOpen ? 'bg-mint' : 'bg-sunset') : 'bg-paper/30',
             ].join(' ')}
           />
-          <span className="font-body text-[12px] font-medium text-ink">
+          <span className="font-body text-[12px] font-medium text-paper">
             {state ? (anyOpen ? 'Open now' : 'Closed now') : 'Today'}
           </span>
         </span>
 
-        <span aria-hidden="true" className="h-[12px] w-px shrink-0 bg-ink/20" />
+        <span aria-hidden="true" className="h-[12px] w-px shrink-0 bg-paper/25" />
 
         {/* ⚠️ Las etiquetas «Bar» y «Trucks» se distinguen por PESO, no por
-            color. Tenían `text-body/55`, que sobre el crema de la píldora
+            color. Tenían `text-body/75`, que sobre el crema de la píldora
             (#fdf0b4) da 4.27:1 y no llega al 4.5:1 que pide un texto de 12px.
             Bajar el color para jerarquizar es justo lo que rompe el contraste
             en textos chicos; el peso hace el mismo trabajo gratis. */}
-        <p className="flex shrink-0 items-center gap-[12px] font-body text-[12px] text-body/80">
+        <p className="flex shrink-0 items-center gap-[12px] font-body text-[12px] text-paper/70">
           <span>
             <span className="font-medium">Bar</span>{' '}
             <span className="tabular-nums">{state ? state.bar : '—'}</span>
           </span>
-          <span aria-hidden="true" className="h-[12px] w-px bg-ink/20" />
+          <span aria-hidden="true" className="h-[12px] w-px bg-paper/25" />
           <span>
             <span className="font-medium">Trucks</span>{' '}
             <span className="tabular-nums">{state ? state.trucks : '—'}</span>

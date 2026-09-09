@@ -82,7 +82,7 @@ export default function InquiryForm() {
           We&rsquo;ll come back within one business day
         </Heading>
         <p className="mt-gap-bajada max-w-[54ch] text-lead text-body/80">{state.message}</p>
-        <p className="mt-[16px] max-w-[54ch] text-[15px] leading-[1.65] text-body/70">
+        <p className="mt-[16px] max-w-[54ch] text-[15px] leading-[1.65] text-body/75">
           The events packet — spaces, capacities and food tiers — comes attached to the reply.
         </p>
       </div>
@@ -115,7 +115,7 @@ export default function InquiryForm() {
 
       {/* ── Quién sos ─────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[16px]">
-        <legend className="eyebrow mb-[6px] text-body/60">About you</legend>
+        <legend className="eyebrow mb-[6px] text-body/75">About you</legend>
         <div className="grid gap-[16px] sm:grid-cols-2">
           <Field k="name" fid={fid} eid={eid} errors={errors} required autoComplete="name" />
           <Field k="email" fid={fid} eid={eid} errors={errors} required type="email" autoComplete="email" />
@@ -126,7 +126,7 @@ export default function InquiryForm() {
 
       {/* ── El evento ─────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[16px]">
-        <legend className="eyebrow mb-[6px] text-body/60">The event</legend>
+        <legend className="eyebrow mb-[6px] text-body/75">The event</legend>
         <SelectField k="eventType" fid={fid} eid={eid} errors={errors} required options={EVENT_TYPES} placeholder="Choose one" />
         <div className="grid gap-[16px] sm:grid-cols-3">
           <Field k="date" fid={fid} eid={eid} errors={errors} required type="date" />
@@ -138,10 +138,10 @@ export default function InquiryForm() {
 
       {/* ── Comida ────────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[12px]">
-        <legend className="eyebrow mb-[6px] text-body/60">
+        <legend className="eyebrow mb-[6px] text-body/75">
           Food tier <span className="text-terra">*</span>
         </legend>
-        <p className="text-[14px] leading-[1.55] text-body/65">
+        <p className="text-[14px] leading-[1.55] text-body/75">
           The trucks cook. We coordinate them. Pick how involved you want that to be.
         </p>
         <div className="grid gap-[12px] sm:grid-cols-3">
@@ -161,7 +161,7 @@ export default function InquiryForm() {
                 />
                 <span className="font-body text-[15px] font-bold">{tier.label}</span>
               </span>
-              <span className="text-[13px] leading-[1.5] text-body/65">{tier.hint}</span>
+              <span className="text-[13px] leading-[1.5] text-body/75">{tier.hint}</span>
             </label>
           ))}
         </div>
@@ -174,7 +174,7 @@ export default function InquiryForm() {
 
       {/* ── Cierre ────────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[16px]">
-        <legend className="eyebrow mb-[6px] text-body/60">Anything else</legend>
+        <legend className="eyebrow mb-[6px] text-body/75">Anything else</legend>
         <div className="flex flex-col gap-[8px]">
           <label htmlFor={fid('comments')} className="font-body text-[15px] font-bold">
             {LABELS.comments}
@@ -196,16 +196,16 @@ export default function InquiryForm() {
       </div>
 
       <div className="flex flex-col gap-[12px] border-t border-ink/15 pt-[24px]">
-        <p className="text-[14px] text-body/60">
+        <p className="text-[14px] text-body/75">
           <span className="text-terra">*</span> Required
         </p>
         <div>
           <SubmitButton />
         </div>
-        <p aria-live="polite" className="min-h-[20px] text-[14px] text-body/70">
+        <p aria-live="polite" className="min-h-[20px] text-[14px] text-body/75">
           {state.status === 'error' && errorKeys.length === 0 ? state.message : ''}
         </p>
-        <p className="text-[14px] text-body/60">
+        <p className="text-[14px] text-body/75">
           Prefer email?{' '}
           <a href={`mailto:${BRAND.contact.events}`} className="link-texto">
             {BRAND.contact.events}
@@ -245,7 +245,7 @@ function Field({
       <label htmlFor={fid(k)} className="font-body text-[15px] font-bold">
         {LABELS[k]}
         {required ? <span className="ml-[4px] text-terra">*</span> : null}
-        {hint ? <span className="ml-[8px] font-normal text-body/65">{hint}</span> : null}
+        {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
       </label>
       <input
         id={fid(k)}

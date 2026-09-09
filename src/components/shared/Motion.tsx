@@ -160,13 +160,26 @@ export function MaskedLines({
   as: Tag = 'span',
   className = '',
   delay = 0,
+  accentLast = false,
 }: {
   readonly lines: readonly string[];
   readonly as?: ElementType;
   readonly className?: string;
   readonly delay?: number;
+  /**
+   * Pinta la última línea en Sunset Orange. Es el recurso de Showdown Social:
+   * un titular de dos líneas donde la segunda cambia de color deja de leerse
+   * como un bloque plano.
+   *
+   * ⚠️ SÓLO sobre fondo oscuro. Naranja sobre el hueso claro da 2.54:1 y no
+   * pasa ni el 3:1 de texto grande; sobre `deep` da ≈5.3:1 y, siendo un
+   * titular enorme, sobra. Es exactamente al revés que en los botones, donde
+   * el naranja es el FONDO y el texto va negro.
+   */
+  readonly accentLast?: boolean;
 }) {
   const reduced = useReducedMotion();
+  const tone = (i: number) => (accentLast && i === lines.length - 1 ? 'text-sunset' : undefined);
 
   // ⚠️ El espacio al final de cada línea salvo la última NO es cosmético: sin
   // él el texto del elemento queda «Bonita comestogether», que es lo que lee
@@ -178,7 +191,7 @@ export function MaskedLines({
     return (
       <Tag className={className}>
         {lines.map((line, i) => (
-          <span key={i} className="block">
+          <span key={i} className={['block', tone(i)].filter(Boolean).join(' ')}>
             {withSpace(line, i)}
           </span>
         ))}
@@ -193,7 +206,7 @@ export function MaskedLines({
         // recorte sólo su línea y no las de al lado.
         <span key={i} className="block overflow-hidden">
           <motion.span
-            className="block"
+            className={['block', tone(i)].filter(Boolean).join(' ')}
             initial={{ y: '105%' }}
             animate={{ y: '0%' }}
             transition={{

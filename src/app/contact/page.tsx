@@ -122,7 +122,7 @@ export default function ContactPage() {
 
         <dl className="mt-[28px] grid gap-[24px] sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <dt className="eyebrow text-body/60">Phone</dt>
+            <dt className="eyebrow text-body/75">Phone</dt>
             <dd className="mt-[8px] text-[15px]">
               <a href={BRAND.contact.phoneHref} className="link-texto">
                 {BRAND.contact.phone}
@@ -130,7 +130,7 @@ export default function ContactPage() {
             </dd>
           </div>
           <div>
-            <dt className="eyebrow text-body/60">Address</dt>
+            <dt className="eyebrow text-body/75">Address</dt>
             <dd className="mt-[8px] text-[15px] leading-[1.55]">
               <a href={mapsUrl()} target="_blank" rel="noopener noreferrer" className="link-texto">
                 {addressLine()}
@@ -139,7 +139,7 @@ export default function ContactPage() {
             </dd>
           </div>
           <div>
-            <dt className="eyebrow text-body/60">Instagram</dt>
+            <dt className="eyebrow text-body/75">Instagram</dt>
             <dd className="mt-[8px] text-[15px]">
               <a
                 href={BRAND.social.instagram}
@@ -153,7 +153,7 @@ export default function ContactPage() {
             </dd>
           </div>
           <div>
-            <dt className="eyebrow text-body/60">Gift cards</dt>
+            <dt className="eyebrow text-body/75">Gift cards</dt>
             <dd className="mt-[8px] text-[15px]">
               <a
                 href={BRAND.giftCards}
@@ -168,7 +168,7 @@ export default function ContactPage() {
           </div>
         </dl>
 
-        <p className="mt-[28px] max-w-[62ch] text-[15px] leading-[1.65] text-body/70">
+        <p className="mt-[28px] max-w-[62ch] text-[15px] leading-[1.65] text-body/75">
           We don&rsquo;t take table reservations and we don&rsquo;t deliver. For a group of eight or
           more on a weekend in season, message ahead and we&rsquo;ll do what we can.
         </p>

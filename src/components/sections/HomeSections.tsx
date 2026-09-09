@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import type { CSSProperties } from 'react';
 import { ArrowLink, ButtonLink } from '@/components/shared/Button';
 import { Marquee, Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { PhotoPending } from '@/components/shared/PendingData';
@@ -152,6 +153,27 @@ const VERTICALS = [
   },
 ] as const;
 
+/**
+ * Las tres verticales, como LOSAS oscuras apiladas.
+ *
+ * ⚠️ Eran tres tarjetas 4:3 en una grilla. Es el cambio de layout que más se
+ * nota y sale directo de Showdown Social: cuando la casa presenta sus tres
+ * unidades de negocio no hace una grilla de tres tarjetitas, hace tres LOSAS
+ * anchas apiladas, oscuras, con el texto a un lado y la foto a sangre al otro.
+ *
+ * Por qué funciona mejor acá, y no es sólo gusto:
+ *   · Las tres verticales de Rooftop no son equivalentes ni intercambiables —
+ *     el bar es nuestro, los camiones no, y los eventos son la que factura.
+ *     Una grilla de tres las iguala; una pila las jerarquiza y le da a cada
+ *     una el ancho para contarse.
+ *   · La foto entra a 16:9 y a sangre en vez de 4:3 recortada y chica. Con las
+ *     pocas fotos que hay del lugar, que cada una se vea grande cambia todo.
+ *
+ * ⚠️ El lado de la foto ALTERNA. Tres losas con la foto siempre a la derecha
+ * se leen como una tabla; alternando, cada una se lee como una pieza.
+ *
+ * ⚠️ El chaflán va sólo en las losas. Ver la nota de `@utility chaflan`.
+ */
 export function ThreeVerticals() {
   return (
     <Section band="lg" labelledBy="verticals-title" tone="paper">
@@ -162,44 +184,61 @@ export function ThreeVerticals() {
         title="Pick your night"
       />
 
-      <StaggerGroup as="ul" className="mt-[48px] grid gap-[28px] md:grid-cols-3">
-        {VERTICALS.map((v) => (
+      <StaggerGroup as="ul" className="mt-[44px] flex flex-col gap-[20px]">
+        {VERTICALS.map((v, i) => (
           <RevealItem as="li" key={v.href}>
-            <Link href={v.href} className="group flex h-full flex-col">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint">
+            <Link
+              href={v.href}
+              className="chaflan group grid overflow-hidden bg-deep lg:grid-cols-2"
+              style={{ '--chaflan': '18px' } as CSSProperties}
+            >
+              <div
+                className={[
+                  'relative aspect-[16/10] bg-deeper lg:aspect-auto lg:min-h-[340px]',
+                  /* ⚠️ La foto va PRIMERA en el DOM a propósito: es el ancla
+                     visual de la losa y quien navega con lector la encuentra
+                     antes del texto que la describe. La alternancia se hace
+                     con `order`, sólo desde `lg`, y por eso lo que se mueve es
+                     el índice PAR — el impar ya está en su sitio por defecto. */
+                  i % 2 === 0 ? 'lg:order-last' : '',
+                ].join(' ')}
+              >
                 <Image
                   src={v.photo}
                   alt={v.alt}
                   fill
-                  sizes="(max-width: 767px) 100vw, 33vw"
+                  sizes="(max-width: 1023px) 100vw, 50vw"
                   className="object-cover transition-transform duration-500 ease-brand group-hover:scale-[1.03]"
                 />
               </div>
-              <Eyebrow tone="deep" className="mt-[18px]">
-                {v.eyebrow}
-              </Eyebrow>
-              <Heading level={3} className="mt-[6px]">
-                {v.title}
-              </Heading>
-              <p className="mt-[10px] flex-1 text-[15px] leading-[1.65] text-body/75">{v.body}</p>
-              <span
-                aria-hidden="true"
-                className="mt-[16px] inline-flex items-center gap-[8px] text-caption font-bold uppercase tracking-[0.14em]"
-              >
-                <span className="underline decoration-ink/45 decoration-1 underline-offset-4 transition-[text-decoration-color] group-hover:decoration-sunset group-hover:decoration-2">
-                  See more
+
+              <div className="flex flex-col justify-center p-[28px] lg:p-[48px]">
+                <Eyebrow className="text-sunset">{v.eyebrow}</Eyebrow>
+                <Heading level={3} role="card" className="mt-[10px] text-paper">
+                  {v.title}
+                </Heading>
+                <p className="mt-[14px] max-w-[46ch] text-[15px] leading-[1.65] text-paper/75 lg:text-[16px]">
+                  {v.body}
+                </p>
+                <span
+                  aria-hidden="true"
+                  className="mt-[22px] inline-flex items-center gap-[9px] font-body text-[12px] font-medium uppercase tracking-[0.1em] text-paper"
+                >
+                  <span className="underline decoration-sunset decoration-2 underline-offset-[6px]">
+                    See more
+                  </span>
+                  <svg width="15" height="10" viewBox="0 0 16 10" fill="none">
+                    <path
+                      d="M0 5h14M10 1l4 4-4 4"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="transition-transform duration-200 group-hover:translate-x-[4px]"
+                    />
+                  </svg>
                 </span>
-                <svg width="15" height="10" viewBox="0 0 16 10" fill="none">
-                  <path
-                    d="M0 5h14M10 1l4 4-4 4"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="transition-transform duration-250 group-hover:translate-x-[3px]"
-                  />
-                </svg>
-              </span>
+              </div>
             </Link>
           </RevealItem>
         ))}
@@ -329,7 +368,7 @@ export function ThisWeek() {
                 {e.title}
               </Heading>
               <p className="mt-[10px] flex-1 text-[15px] leading-[1.6] text-body/75">{e.summary}</p>
-              <span className="mt-[16px] text-caption font-bold uppercase tracking-[0.14em] text-body/70">
+              <span className="mt-[16px] text-caption font-bold uppercase tracking-[0.14em] text-body/75">
                 {e.space} · {e.price === null ? 'Free' : `$${e.price}`}
               </span>
             </Link>
@@ -337,7 +376,7 @@ export function ThisWeek() {
         ))}
       </StaggerGroup>
 
-      <p className="mt-[28px] text-[15px] text-body/70">
+      <p className="mt-[28px] text-[15px] text-body/75">
         <span className="eyebrow text-deep">Happy hour</span>{' '}
         <span className="ml-[6px]">
           {HAPPY_HOUR.days}, {HAPPY_HOUR.time} — {HAPPY_HOUR.deals.join(' · ')}
@@ -377,7 +416,7 @@ export function StoryTeaser() {
               up and coming entrepreneurs and business owners, and a landmark our kids would be
               proud of.&rdquo;
             </p>
-            <footer className="mt-[14px] eyebrow text-body/60">
+            <footer className="mt-[14px] eyebrow text-body/75">
               Chris Magnus — Founder &amp; Operator
             </footer>
           </blockquote>
@@ -507,7 +546,7 @@ export function ReviewsMarquee({
             className="flex w-[340px] shrink-0 flex-col rounded-card border border-ink/12 p-[24px]"
           >
             <blockquote className="flex-1 text-[15px] leading-[1.65]">{r.quote}</blockquote>
-            <figcaption className="mt-[16px] eyebrow text-body/60">
+            <figcaption className="mt-[16px] eyebrow text-body/75">
               {r.author} · {r.source}
             </figcaption>
           </figure>

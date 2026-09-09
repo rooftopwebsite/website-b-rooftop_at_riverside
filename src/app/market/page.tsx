@@ -68,23 +68,23 @@ export default function MarketPage() {
         <div className="mt-[40px] grid gap-[28px] lg:grid-cols-2 lg:gap-[56px]">
           <dl className="flex flex-col divide-y divide-ink/15 border-y border-ink/15">
             <div className="flex items-baseline justify-between gap-[16px] py-[16px]">
-              <dt className="eyebrow text-body/60">Fee</dt>
+              <dt className="eyebrow text-body/75">Fee</dt>
               <dd className="font-display text-d5 tabular-nums">$30</dd>
             </div>
             <div className="flex items-baseline justify-between gap-[16px] py-[16px]">
-              <dt className="eyebrow text-body/60">Space</dt>
+              <dt className="eyebrow text-body/75">Space</dt>
               <dd className="text-[15px] font-bold">10 × 10 ft</dd>
             </div>
             <div className="flex items-baseline justify-between gap-[16px] py-[16px]">
-              <dt className="eyebrow text-body/60">Pop-up tents</dt>
+              <dt className="eyebrow text-body/75">Pop-up tents</dt>
               <dd className="text-[15px] font-bold">Allowed</dd>
             </div>
             <div className="flex items-baseline justify-between gap-[16px] py-[16px]">
-              <dt className="eyebrow text-body/60">Power</dt>
+              <dt className="eyebrow text-body/75">Power</dt>
               <dd className="text-[15px] font-bold">On request</dd>
             </div>
             <div className="flex items-baseline justify-between gap-[16px] py-[16px]">
-              <dt className="eyebrow text-body/60">Next dates</dt>
+              <dt className="eyebrow text-body/75">Next dates</dt>
               <dd>
                 <PendingData detail="Upcoming market dates not supplied yet" />
               </dd>

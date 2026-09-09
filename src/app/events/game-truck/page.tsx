@@ -71,13 +71,13 @@ export default function GameTruckPage() {
             <caption className="sr-only">Gaming truck party pricing</caption>
             <thead>
               <tr className="border-b-2 border-ink">
-                <th scope="col" className="py-[12px] pr-[16px] text-left eyebrow text-body/60">
+                <th scope="col" className="py-[12px] pr-[16px] text-left eyebrow text-body/75">
                   When
                 </th>
-                <th scope="col" className="py-[12px] pr-[16px] text-left eyebrow text-body/60">
+                <th scope="col" className="py-[12px] pr-[16px] text-left eyebrow text-body/75">
                   Two hours
                 </th>
-                <th scope="col" className="py-[12px] text-left eyebrow text-body/60">
+                <th scope="col" className="py-[12px] text-left eyebrow text-body/75">
                   Each extra hour
                 </th>
               </tr>
@@ -163,7 +163,7 @@ export default function GameTruckPage() {
               If the truck is coming to you rather than staying here, tell us the address and the
               parking situation in the request — it changes what we can bring.
             </p>
-            <p className="text-body/65">
+            <p className="text-body/75">
               Pricing carried over from the current site. Confirm before booking.
             </p>
             <div className="mt-[8px]">

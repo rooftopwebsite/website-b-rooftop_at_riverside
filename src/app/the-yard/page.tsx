@@ -84,7 +84,7 @@ export default function TheYardPage() {
                   <p className="mt-[10px] flex-1 text-[15px] leading-[1.6] text-body/75">
                     {e.summary}
                   </p>
-                  <p className="mt-[12px] text-caption font-bold tabular-nums text-body/70">
+                  <p className="mt-[12px] text-caption font-bold tabular-nums text-body/75">
                     {timeRange(e)} · {e.price === null ? 'Free' : `$${e.price}`}
                   </p>
                   <div className="mt-[18px] flex flex-wrap gap-[10px]">
@@ -106,7 +106,7 @@ export default function TheYardPage() {
         ) : (
           /* Fallback elegante: no hay nada con entrada cargado todavía. */
           <div className="mt-[40px] flex flex-col gap-[24px]">
-            <p className="max-w-[62ch] text-lead text-body/70">
+            <p className="max-w-[62ch] text-lead text-body/75">
               Nothing ticketed on the books right now. Everything else in the yard this week is free
               and you just walk in.
             </p>
@@ -155,7 +155,7 @@ export default function TheYardPage() {
                   <span className="font-display text-d5 uppercase transition-colors group-hover:text-deep">
                     {e.title}
                   </span>
-                  <span className="shrink-0 text-caption font-bold tabular-nums text-body/70">
+                  <span className="shrink-0 text-caption font-bold tabular-nums text-body/75">
                     {whenLabel(e)}
                   </span>
                 </Link>

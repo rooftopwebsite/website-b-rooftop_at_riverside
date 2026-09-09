@@ -58,7 +58,7 @@ export default function TruckCarousel({ trucks }: { readonly trucks: readonly Tr
         </div>
       </DragCarousel>
 
-      <p className="mt-[16px] text-[13px] text-body/60">
+      <p className="mt-[16px] text-[13px] text-body/75">
         <span aria-hidden="true">← </span>
         Drag or scroll to see the rest
       </p>

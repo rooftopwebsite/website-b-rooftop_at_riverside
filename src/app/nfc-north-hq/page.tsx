@@ -97,7 +97,7 @@ export default function NfcNorthPage() {
           ))}
         </ul>
 
-        <p className="mt-[24px] max-w-[62ch] text-[15px] leading-[1.65] text-body/70">
+        <p className="mt-[24px] max-w-[62ch] text-[15px] leading-[1.65] text-body/75">
           Every screen on the roof, sound on the game that matters most to the room, and four
           kitchens open the whole time so nobody has to leave at halftime.
         </p>

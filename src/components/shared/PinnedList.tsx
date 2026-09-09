@@ -177,7 +177,7 @@ export default function PinnedList({
                         'mt-[5px] inline-flex h-[28px] min-w-[28px] shrink-0 items-center justify-center',
                         'rounded-pill px-[8px] font-display text-[15px] tabular-nums',
                         'transition-colors duration-300',
-                        open ? 'bg-sunset text-ink' : 'bg-ink/[0.06] text-body/70',
+                        open ? 'bg-sunset text-ink' : 'bg-ink/[0.06] text-body/75',
                       ].join(' ')}
                     >
                       {item.n}

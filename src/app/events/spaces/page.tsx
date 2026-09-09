@@ -168,7 +168,7 @@ function SpaceCard({ space, flipped }: { readonly space: Space; readonly flipped
         {/* Los tres números. Todos TBD hasta que el cliente los pase. */}
         <dl className="mt-[24px] grid grid-cols-3 gap-[16px] border-y border-ink/12 py-[18px]">
           <div>
-            <dt className="eyebrow text-body/65">Standing</dt>
+            <dt className="eyebrow text-body/75">Standing</dt>
             <dd className="mt-[6px]">
               {space.standing !== null ? (
                 <span className="font-display text-d5 tabular-nums">{space.standing}</span>
@@ -178,7 +178,7 @@ function SpaceCard({ space, flipped }: { readonly space: Space; readonly flipped
             </dd>
           </div>
           <div>
-            <dt className="eyebrow text-body/65">Seated</dt>
+            <dt className="eyebrow text-body/75">Seated</dt>
             <dd className="mt-[6px]">
               {space.seated !== null ? (
                 <span className="font-display text-d5 tabular-nums">{space.seated}</span>
@@ -188,7 +188,7 @@ function SpaceCard({ space, flipped }: { readonly space: Space; readonly flipped
             </dd>
           </div>
           <div>
-            <dt className="eyebrow text-body/65">Minimum</dt>
+            <dt className="eyebrow text-body/75">Minimum</dt>
             <dd className="mt-[6px]">
               {space.minimum !== null ? (
                 <span className="font-display text-d5 tabular-nums">{space.minimum}</span>
@@ -200,7 +200,7 @@ function SpaceCard({ space, flipped }: { readonly space: Space; readonly flipped
         </dl>
 
         <div className="mt-[18px]">
-          <p className="eyebrow text-body/65">Best for</p>
+          <p className="eyebrow text-body/75">Best for</p>
           <ul className="mt-[8px] flex flex-wrap gap-[8px]">
             {space.bestFor.map((b) => (
               <li

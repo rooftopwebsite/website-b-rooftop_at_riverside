@@ -116,7 +116,7 @@ export default function EventsPage() {
             </RevealItem>
           ))}
         </StaggerGroup>
-        <p className="mt-[32px] max-w-[62ch] text-[15px] leading-[1.65] text-body/70">
+        <p className="mt-[32px] max-w-[62ch] text-[15px] leading-[1.65] text-body/75">
           We don&rsquo;t have a kitchen of our own, and we don&rsquo;t pretend to. What you get
           instead is four different menus in one yard — which is a better problem to hand a room of
           two hundred people than one set entrée.
@@ -199,7 +199,7 @@ export default function EventsPage() {
               <Heading level={3} className="mt-[6px]">
                 The gaming truck
               </Heading>
-              <span className="mt-[6px] block text-[15px] text-body/70">
+              <span className="mt-[6px] block text-[15px] text-body/75">
                 Consoles, screens and a Game Coach, parked at your event.
               </span>
             </span>
@@ -213,7 +213,7 @@ export default function EventsPage() {
               <Heading level={3} className="mt-[6px]">
                 The spaces
               </Heading>
-              <span className="mt-[6px] block text-[15px] text-body/70">
+              <span className="mt-[6px] block text-[15px] text-body/75">
                 Four rooms, from the rooftop to a full buyout.
               </span>
             </span>

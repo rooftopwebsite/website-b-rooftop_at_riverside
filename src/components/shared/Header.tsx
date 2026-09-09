@@ -83,39 +83,40 @@ export default function Header() {
   return (
     <>
       {/*
-        Píldora flotante, no barra a sangre. Es la firma de la referencia: la
-        navegación se lee como un control, no como un borde de la página.
+        ⚠️ Dejó de ser una píldora blanca flotante. Ahora es una BARRA OSCURA a
+        todo el ancho, siempre sólida, que es lo que hacen Showdown Social, The
+        Orient y Baires Grill sin excepción.
 
-        ⚠️ El contenedor exterior es `pointer-events-none` y la píldora lo
-        reactiva. Sin eso, la franja transparente a los costados taparía los
-        clics del contenido que pasa por debajo.
+        Que sea siempre sólida —y no transparente sobre el hero— es una
+        decisión, no una simplificación. La alternativa era alternar según la
+        página: transparente sobre el hero oscuro del home, sólida sobre el
+        `PageHero` claro de las internas. Eso obliga a que el logo cambie de
+        versión según la ruta y a que el contraste del nav se recalcule en cada
+        caso. Una barra oscura fija vale en las 20 páginas, deja usar el lockup
+        reversado siempre, y el contraste se mide una sola vez.
       */}
-      <div className={`pointer-events-none fixed inset-x-0 top-0 z-[99] pt-[12px] ${GUTTER}`}>
+      <div className={`fixed inset-x-0 top-0 z-[99] bg-deep ${GUTTER}`}>
         <header
           className={[
-            'caja pointer-events-auto flex items-center bg-paper',
-            'h-[60px] rounded-pill px-[10px] desk:h-[64px] desk:px-[14px]',
-            'ring-1 ring-fog transition-shadow duration-300',
-            scrolled ? 'shadow-card' : 'shadow-btn',
+            'caja flex items-center',
+            'h-[64px] desk:h-[76px]',
+            'transition-shadow duration-300',
+            scrolled ? 'shadow-[0_10px_30px_-12px_rgba(0,0,0,0.5)]' : '',
           ].join(' ')}
         >
           <div className="flex w-full items-center justify-between gap-[16px]">
-            {/*
-              Logo. Se reduce al scrollear: el lockup completo al tope, y una
-              versión más chica una vez que el hero salió de pantalla. La
-              transición es sobre `height`, no sobre `transform`, para que el
-              resto de la barra no se mueva con él.
-            */}
+            {/* Logo. Se achica al scrollear; la transición va sobre `height`
+                para que el resto de la barra no se mueva con él. */}
             <Link
               href="/"
               aria-label={`${BRAND.name} — home`}
               className="flex shrink-0 items-center"
             >
               <Image
-                src="/brand/logo-lockup.png"
+                src="/brand/logo-reversed.svg"
                 alt=""
-                width={140}
-                height={148}
+                width={303}
+                height={322}
                 priority
                 className={[
                   'w-auto transition-[height] duration-300 ease-brand',
@@ -133,11 +134,13 @@ export default function Header() {
                   href={href}
                   aria-current={isCurrent(href) ? 'page' : undefined}
                   className={[
-                    'rounded-pill px-[14px] py-[8px] font-body text-[14px] font-medium',
+                    'px-[13px] py-[8px] font-body text-[12px] font-medium uppercase tracking-[0.1em]',
                     'whitespace-nowrap transition-colors duration-200',
                     // La página actual se marca con un relleno suave, no con un
                     // filete: dentro de una píldora, una línea recta desentona.
-                    isCurrent(href) ? 'bg-ink/[0.06] text-ink' : 'text-body/65 hover:text-ink',
+                    isCurrent(href)
+                      ? 'text-paper underline decoration-sunset decoration-2 underline-offset-[10px]'
+                      : 'text-paper/70 hover:text-paper',
                   ].join(' ')}
                 >
                   {label}
@@ -156,10 +159,10 @@ export default function Header() {
                   aria-expanded={moreOpen}
                   aria-haspopup="true"
                   className={[
-                    'flex items-center gap-[7px] rounded-pill px-[14px] py-[8px]',
-                    'font-body text-[14px] font-medium whitespace-nowrap',
+                    'flex items-center gap-[7px] px-[13px] py-[8px]',
+                    'font-body text-[12px] font-medium uppercase tracking-[0.1em] whitespace-nowrap',
                     'transition-colors duration-200',
-                    moreActive ? 'bg-ink/[0.06] text-ink' : 'text-body/65 hover:text-ink',
+                    moreActive ? 'text-paper' : 'text-paper/70 hover:text-paper',
                   ].join(' ')}
                 >
                   More
@@ -202,7 +205,7 @@ export default function Header() {
                             {label}
                           </span>
                           {hint ? (
-                            <span className="mt-[2px] block text-[13px] leading-[1.4] text-body/65">
+                            <span className="mt-[2px] block text-[13px] leading-[1.4] text-body/75">
                               {hint}
                             </span>
                           ) : null}
@@ -218,7 +221,7 @@ export default function Header() {
             <div className="flex shrink-0 items-center gap-[10px]">
               <ButtonLink
                 href={NAV_CTA.secondary.href}
-                variant="secondary"
+                variant="ghostDark"
                 className="hidden desk:inline-flex"
               >
                 {NAV_CTA.secondary.label}
@@ -250,7 +253,20 @@ export default function Header() {
         {/* Barra de estado: segunda píldora, más chica, debajo de la del nav.
             Información de alto valor y bajo costo visual — es la pregunta que
             más se hace del negocio y ocupa una línea. */}
-        <div className="caja pointer-events-auto mt-[8px] flex justify-center">
+      </div>
+
+      {/*
+        ⚠️ La barra de estado salió de adentro del contenedor del header y pasó
+        a ser una FRANJA propia sobre `deeper`, pegada abajo de la barra.
+
+        Antes era una píldora crema centrada, flotando debajo de un header que
+        también flotaba. Con el header ya oscuro a todo el ancho, esa píldora
+        amarilla quedaba suspendida en el medio del hero, sin pertenecer ni a
+        la barra ni a la página. Como franja se lee como parte del header, que
+        es lo que es: el dato de «¿está abierto?» pertenece a la navegación.
+      */}
+      <div className={`fixed inset-x-0 top-[64px] z-[98] bg-deeper desk:top-[76px] ${GUTTER}`}>
+        <div className="caja flex justify-center py-[7px]">
           <StatusBar />
         </div>
       </div>

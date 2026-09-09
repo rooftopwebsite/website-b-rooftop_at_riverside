@@ -169,7 +169,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             </div>
 
             <div className="mt-[32px] border-t border-ink/15 pt-[24px]">
-              <p className="max-w-[60ch] text-[15px] leading-[1.65] text-body/70">
+              <p className="max-w-[60ch] text-[15px] leading-[1.65] text-body/75">
                 Food comes from whichever trucks are in the yard that night — each takes its own
                 orders. Drinks are at the Sunset Bar upstairs.
               </p>
@@ -179,23 +179,23 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           <aside className="lg:sticky lg:top-[110px] lg:self-start">
             <dl className="flex flex-col divide-y divide-ink/12 rounded-card border border-ink/12 px-[24px]">
               <div className="py-[18px]">
-                <dt className="eyebrow text-body/60">When</dt>
+                <dt className="eyebrow text-body/75">When</dt>
                 <dd className="mt-[6px] font-display text-d6 uppercase">{whenLabel(event)}</dd>
               </div>
               <div className="py-[18px]">
-                <dt className="eyebrow text-body/60">Time</dt>
+                <dt className="eyebrow text-body/75">Time</dt>
                 <dd className="mt-[6px] text-[15px] tabular-nums">{timeRange(event)}</dd>
               </div>
               <div className="py-[18px]">
-                <dt className="eyebrow text-body/60">Where</dt>
+                <dt className="eyebrow text-body/75">Where</dt>
                 <dd className="mt-[6px] text-[15px]">
                   {event.space}
                   <br />
-                  <span className="text-body/65">{addressLine()}</span>
+                  <span className="text-body/75">{addressLine()}</span>
                 </dd>
               </div>
               <div className="py-[18px]">
-                <dt className="eyebrow text-body/60">Entry</dt>
+                <dt className="eyebrow text-body/75">Entry</dt>
                 <dd className="mt-[6px] text-[15px]">
                   {isTicketed ? `Ticketed · $${event.price}` : 'Free, no ticket needed'}
                 </dd>

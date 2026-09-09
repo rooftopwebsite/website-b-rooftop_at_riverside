@@ -52,7 +52,7 @@ export default function PageHero({
           <div className={hasImage ? 'mx-auto w-full max-w-[640px] desk:mr-[56px] desk:ml-auto' : 'caja'}>
             {crumbs && crumbs.length > 0 ? (
               <nav aria-label="Breadcrumb" className="mb-[20px]">
-                <ol className="flex flex-wrap items-center gap-x-[8px] gap-y-[2px] text-[13px] text-body/65">
+                <ol className="flex flex-wrap items-center gap-x-[8px] gap-y-[2px] text-[13px] text-body/75">
                   <li>
                     <Link href="/" className="link-texto">
                       Home

@@ -147,15 +147,15 @@ export default async function TruckPage({ params }: { params: Promise<{ slug: st
           <aside className="lg:sticky lg:top-[110px] lg:self-start">
             <dl className="flex flex-col divide-y divide-ink/12 rounded-card border border-ink/12 px-[24px]">
               <div className="py-[18px]">
-                <dt className="eyebrow text-body/60">Cuisine</dt>
+                <dt className="eyebrow text-body/75">Cuisine</dt>
                 <dd className="mt-[6px] font-display text-d6 uppercase">{truck.cuisine}</dd>
               </div>
               <div className="py-[18px]">
-                <dt className="eyebrow text-body/60">Known for</dt>
+                <dt className="eyebrow text-body/75">Known for</dt>
                 <dd className="mt-[6px] text-[15px] leading-[1.6]">{truck.specialty}</dd>
               </div>
               <div className="py-[18px]">
-                <dt className="eyebrow text-body/60">When they&rsquo;re here</dt>
+                <dt className="eyebrow text-body/75">When they&rsquo;re here</dt>
                 <dd className="mt-[6px] text-[15px] leading-[1.6]">
                   {truck.schedule ?? (
                     <>
@@ -168,7 +168,7 @@ export default async function TruckPage({ params }: { params: Promise<{ slug: st
                 </dd>
               </div>
               <div className="py-[18px]">
-                <dt className="eyebrow text-body/60">Instagram</dt>
+                <dt className="eyebrow text-body/75">Instagram</dt>
                 <dd className="mt-[6px] text-[15px]">
                   {truck.instagram ? (
                     <a
@@ -182,13 +182,13 @@ export default async function TruckPage({ params }: { params: Promise<{ slug: st
                       <span className="sr-only">(opens in a new tab)</span>
                     </a>
                   ) : (
-                    <span className="text-body/60">Not on file yet.</span>
+                    <span className="text-body/75">Not on file yet.</span>
                   )}
                 </dd>
               </div>
             </dl>
 
-            <p className="mt-[18px] text-[14px] leading-[1.6] text-body/65">
+            <p className="mt-[18px] text-[14px] leading-[1.6] text-body/75">
               {truck.name} takes its own orders and its own payment. Drinks come from the Sunset Bar
               upstairs.
             </p>

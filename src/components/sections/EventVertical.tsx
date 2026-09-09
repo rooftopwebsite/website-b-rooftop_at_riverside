@@ -106,16 +106,16 @@ export default function EventVertical({ config }: { readonly config: VerticalCon
             <caption className="sr-only">Event space capacities at Rooftop at Riverside</caption>
             <thead>
               <tr className="border-b-2 border-ink">
-                <th scope="col" className="py-[10px] pr-[16px] text-left eyebrow text-body/60">
+                <th scope="col" className="py-[10px] pr-[16px] text-left eyebrow text-body/75">
                   Space
                 </th>
-                <th scope="col" className="py-[10px] pr-[16px] text-left eyebrow text-body/60">
+                <th scope="col" className="py-[10px] pr-[16px] text-left eyebrow text-body/75">
                   Standing
                 </th>
-                <th scope="col" className="py-[10px] pr-[16px] text-left eyebrow text-body/60">
+                <th scope="col" className="py-[10px] pr-[16px] text-left eyebrow text-body/75">
                   Seated
                 </th>
-                <th scope="col" className="py-[10px] text-left eyebrow text-body/60">
+                <th scope="col" className="py-[10px] text-left eyebrow text-body/75">
                   Minimum
                 </th>
               </tr>
