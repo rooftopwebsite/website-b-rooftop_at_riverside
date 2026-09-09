@@ -51,7 +51,22 @@ export type ButtonVariant = keyof typeof VARIANTS;
 const BASE = [
   'inline-flex items-center justify-center gap-[9px]',
   'font-body font-medium uppercase tracking-[0.06em]',
-  'rounded-btn',
+  /*
+    ⚠️ PÍLDORA, y sólo acá. Camila lo pidió en el boceto: «CTAs redondos».
+
+    Es una vuelta atrás deliberada — las píldoras se habían sacado porque
+    ninguna de las cuatro referencias que ella misma había fijado las usaba. Lo
+    que cambió es el contexto: ahora TODO el sitio está en 10px, así que un
+    control completamente redondo ya no es «el lenguaje general», es la
+    excepción que marca qué se puede tocar.
+
+    ⚠️ Va en el COMPONENTE y no en el token `--radius-btn`. Ese token lo usan
+    también badges, celdas del calendario de /whats-on, las barras de info del
+    banner de eventos y el skip link: volverlo píldora redondearía todo eso, y
+    una barra de texto de 18px de padding en píldora se lee como una cápsula de
+    medicamento. Acá el radio pertenece al botón, no a la familia de radios.
+  */
+  'rounded-pill',
   'transition-colors duration-200',
   'disabled:opacity-50 disabled:pointer-events-none',
 ].join(' ');

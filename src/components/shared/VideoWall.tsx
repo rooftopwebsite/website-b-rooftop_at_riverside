@@ -1,57 +1,60 @@
 /**
- * El muro del hero: dos filas de piezas cortas del lugar, en loop opuesto.
+ * El muro del hero: columnas de piezas cortas del lugar, corriendo en VERTICAL.
  *
- * Es la forma del hero de Superside, que Camila fijó como referencia: titular,
- * bajada corta, un CTA, y debajo dos filas de tiles que corren.
+ * Camila: «los videos deben correr en vertical como en superside» y «ojo que en
+ * desk el hero se ve de una manera y en mobile de otra».
+ *
+ * ⚠️ ERA HORIZONTAL —dos filas cruzando la pantalla— y el cambio no es
+ * cosmético. En un hero de alto completo con el texto a la izquierda, una cinta
+ * horizontal cruza la composición y compite con la lectura del titular. Las
+ * columnas acompañan el alto y se leen como un panel al costado.
  *
  * ⚠️ TODAVÍA NO HAY VIDEOS. En `public/` no hay ni un `.mp4`. Cada slot es un
- * recuadro gris rotulado «video» —decisión de Camila: «poné los recuadros en
- * gris que digan video»— y el componente ya está cableado para el `<video>`:
- * cuando lleguen los clips se cambia `SLOTS` por sus rutas y no se toca nada
- * más.
+ * recuadro gris rotulado «video» —pedido de Camila— y ya está cableado para el
+ * `<video>`: cuando lleguen los clips se cambia `SLOTS` y no se toca nada más.
  *
- * ⚠️ SON DOCE, seis por fila, y es un mínimo medido y no un número redondo:
- * con menos de seis por fila el loop repite el mismo tile en pantalla al mismo
- * tiempo. Lo ideal son dieciséis.
+ * Especificación para pedírselos al cliente: 3:4 vertical, 4–8 s, sin audio,
+ * ~1–2 MB cada uno, .mp4 H.264.
  *
- * Especificación de los clips, para pedírselos al cliente: 3:4 vertical,
- * 4–8 s, sin audio, ~1–2 MB cada uno, .mp4 H.264.
- *
- * ⚠️ Server component. No hay estado ni medición: el loop es CSS puro y el
- * fallback de reduced-motion también. Ver la nota de `.rt-wall` en globals.css.
+ * ⚠️ Server component. El loop es CSS puro y el fallback de reduced-motion
+ * también. Ver la nota de `.rt-wall` en globals.css.
  */
 
-/**
- * Los doce slots. `null` = todavía no llegó el clip.
- *
- * ⚠️ Cuando lleguen, van acá con su ruta y su descripción. La descripción NO
- * es un `alt` decorativo: si un clip muestra algo que el texto de la página no
- * dice, hay que decidir si el video informa o decora. Los decorativos van con
- * `aria-hidden`, que es lo que hacen hoy los placeholders.
- */
+/** Los slots. `null` = todavía no llegó el clip. */
 const SLOTS: readonly (string | null)[] = Array.from({ length: 12 }, () => null);
 
-const POR_FILA = 6;
+/**
+ * Cuántas columnas y con qué velocidad.
+ *
+ * ⚠️ Las velocidades son DISTINTAS y los sentidos ALTERNAN a propósito. Con
+ * todas iguales el muro se lee como una sola imagen que se desliza; desfasadas
+ * se lee como piezas independientes, que es lo que son.
+ *
+ * ⚠️ El conteo cambia por breakpoint y por eso las columnas de más se ocultan
+ * con CSS en vez de no renderizarse: el server no sabe el ancho de pantalla, y
+ * decidirlo en el cliente significaría un salto después de hidratar.
+ */
+const COLUMNAS = [
+  { duracion: '44s', reverse: false, visible: '' },
+  { duracion: '58s', reverse: true, visible: '' },
+  { duracion: '50s', reverse: false, visible: 'hidden sm:flex' },
+  { duracion: '64s', reverse: true, visible: 'hidden desk:flex' },
+] as const;
 
 /**
- * Cuántas veces se repiten los slots de una fila para que UNA copia del track
- * sea más ancha que la pantalla.
+ * Cuántos slots lleva cada columna antes de duplicarse.
  *
- * ⚠️ Esto es lo que hace que el loop sea infinito de verdad, y su falta era un
- * bug visible: la animación lleva el track a `-50%`, o sea al punto donde la
- * segunda copia queda donde arrancó la primera. Para que eso no se note, cada
- * copia tiene que cubrir el viewport entero. Con 6 tiles de 176px una copia
- * medía 1128px — en una pantalla de 1886 sobraban 758px de verde vacío a la
- * derecha, que es justo lo que marcó Camila en su captura.
- *
- * 6 slots × 3 = 18 tiles por copia. Al ancho más chico de tile (196px con su
- * separación) son 3528px, más que cualquier pantalla de escritorio.
+ * ⚠️ Es lo que hace que el loop sea infinito de verdad: la animación lleva el
+ * track a `-50%`, o sea al punto donde la segunda copia queda donde arrancó la
+ * primera. Para que no se vea el corte, UNA copia tiene que ser más ALTA que el
+ * hero. Con tiles de 3:4 y columnas de ~200px, seis tiles dan ~1.600px, más que
+ * cualquier pantalla de escritorio.
  */
-const REPETICIONES = 3;
+const POR_COLUMNA = 6;
 
 function Tile({ src }: { readonly src: string | null }) {
   return (
-    <div className="mr-[14px] aspect-[3/4] w-[152px] shrink-0 overflow-hidden rounded-card bg-paper/12 lg:w-[196px]">
+    <div className="mb-[14px] aspect-[3/4] w-full shrink-0 overflow-hidden rounded-card bg-paper/12">
       {src === null ? (
         <div className="grid h-full place-items-center">
           {/*
@@ -59,13 +62,10 @@ function Tile({ src }: { readonly src: string | null }) {
             falta esté marcado, porque un hueco silencioso se publica sin que
             nadie lo note.
 
-            ⚠️ Al 75% y no al 55%, que fue el primer intento. Es un color
-            COMPUESTO —`paper` translúcido sobre `paper/12` sobre `deep`— y eso
-            no lo puede prever la tabla de pares de `docs/contrast-audit.md`:
-            sólo se ve midiendo el píxel renderizado, que es lo que hace axe.
-            Y lo midió: al 55% daba **3.51:1** contra el 4.5:1 que pide un
-            texto de 13px. Calculado sobre el fondo real (#1f5b5a): 0.70 da
-            4.65:1 y 0.75 da 5.08:1. Va el 0.75, para tener margen.
+            ⚠️ Al 75%. Es un color COMPUESTO —`paper` translúcido sobre
+            `paper/12` sobre `deep`— y eso no lo puede prever la tabla de pares
+            de contraste: sólo se ve midiendo el píxel renderizado. axe lo midió
+            al 55% en 3.51:1 contra el 4.5:1 que pide un texto de 13px.
           */}
           <span className="eyebrow text-paper/75">video</span>
         </div>
@@ -84,40 +84,43 @@ function Tile({ src }: { readonly src: string | null }) {
   );
 }
 
-function Fila({
+function Columna({
   slots,
+  duracion,
   reverse,
+  visible,
   etiqueta,
 }: {
   readonly slots: readonly (string | null)[];
+  readonly duracion: string;
   readonly reverse: boolean;
+  readonly visible: string;
   readonly etiqueta: string;
 }) {
-  /*
-    Una copia del track: los slots repetidos hasta pasar el ancho de pantalla.
-    Ver la nota de `REPETICIONES` — sin esto el loop deja un hueco.
-  */
-  const copia = Array.from({ length: REPETICIONES }, () => slots)
-    .flat()
-    .map((src, i) => <Tile key={i} src={src} />);
+  const copia = slots.map((src, i) => <Tile key={i} src={src} />);
   return (
     <div
-      className={['rt-wall', reverse ? 'rt-wall-reverse' : ''].filter(Boolean).join(' ')}
+      className={[
+        'rt-wall min-h-0 flex-1',
+        reverse ? 'rt-wall-reverse' : '',
+        visible || 'flex',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      style={{ '--wall-duration': duracion } as React.CSSProperties}
       /*
-        ⚠️ `tabIndex` y `role`: con reduced-motion la fila deja de correr y pasa
-        a scrollearse a mano, y una región scrolleable sin nada enfocable
-        adentro es contenido que existe y no se puede alcanzar con teclado. Es
-        el fallo `scrollable-region-focusable` de axe, el mismo que tenía la
-        franja de horarios.
+        ⚠️ `tabIndex` y `role`: con reduced-motion la columna deja de correr y
+        pasa a scrollearse a mano, y una región scrolleable sin nada enfocable
+        adentro es contenido que existe y no se puede alcanzar con teclado.
       */
       tabIndex={0}
       role="group"
       aria-label={etiqueta}
     >
       <div className="rt-wall-track">
-        <div className="flex shrink-0">{copia}</div>
+        <div className="flex w-full flex-col">{copia}</div>
         {/* La copia que cierra el loop. Mismo contenido, así que `aria-hidden`. */}
-        <div className="flex shrink-0" aria-hidden="true">
+        <div className="flex w-full flex-col" aria-hidden="true">
           {copia}
         </div>
       </div>
@@ -126,15 +129,18 @@ function Fila({
 }
 
 export default function VideoWall() {
-  const primera = SLOTS.slice(0, POR_FILA);
-  const segunda = SLOTS.slice(POR_FILA);
-
   return (
-    <div className="flex flex-col gap-[12px]">
-      <Fila slots={primera} reverse={false} etiqueta="Clips of the venue" />
-      {/* La segunda va al revés: dos filas en la misma dirección se leen como
-          una sola banda ancha y se pierde el juego. */}
-      <Fila slots={segunda} reverse etiqueta="More clips of the venue" />
+    <div className="flex h-full min-h-0 gap-[14px]">
+      {COLUMNAS.map((col, i) => (
+        <Columna
+          key={i}
+          slots={SLOTS.slice(i * 2, i * 2 + POR_COLUMNA)}
+          duracion={col.duracion}
+          reverse={col.reverse}
+          visible={col.visible}
+          etiqueta={`Clips of the venue, column ${i + 1}`}
+        />
+      ))}
     </div>
   );
 }

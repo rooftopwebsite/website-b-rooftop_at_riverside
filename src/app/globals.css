@@ -756,19 +756,43 @@
  * animación llega a `-50%`, así que al terminar el ciclo la segunda copia está
  * donde arrancó la primera y el loop no salta.
  */
+/**
+ * ⚠️ EL MURO CORRE EN VERTICAL. Camila: «los videos deben correr en vertical
+ * como en superside». Eran dos filas horizontales; ahora son COLUMNAS que se
+ * desplazan hacia arriba, alternando dirección.
+ *
+ * El cambio no es cosmético: en un hero de alto completo con el texto a la
+ * izquierda, una cinta horizontal cruza la composición y compite con la lectura
+ * del titular. Columnas verticales acompañan el alto y se leen como un panel.
+ */
 .rt-wall {
   overflow: hidden;
 }
 
 .rt-wall-track {
   display: flex;
-  width: max-content;
-  animation: rt-marquee var(--wall-duration, 64s) linear infinite;
+  flex-direction: column;
+  /* ⚠️  no es decorativo: el track es un flex column y sin ancho
+     propio se dimensiona al contenido, con lo cual el  de cada tile no
+     tiene contra qué medir y los tiles colapsan a su ancho intrínseco. Medido:
+     quedaban en 54px dentro de una columna de 164. */
+  width: 100%;
+  height: max-content;
+  animation: rt-wall-up var(--wall-duration, 48s) linear infinite;
   will-change: transform;
 }
 
 .rt-wall-reverse .rt-wall-track {
   animation-direction: reverse;
+}
+
+@keyframes rt-wall-up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
 }
 
 /* Pausa al pasar el mouse o al enfocar algo adentro: si algo se está mirando,
@@ -779,8 +803,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Sin movimiento la columna no queda congelada y recortada: se scrollea a
+     mano. Cambia el , NO la geometría — las cajas miden lo mismo en
+     los dos modos, que es lo que compara check:motion. */
   .rt-wall {
-    overflow-x: auto;
+    overflow-y: auto;
   }
   .rt-wall-track {
     animation: none;
