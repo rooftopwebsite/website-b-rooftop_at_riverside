@@ -4,6 +4,7 @@ import Hero from '@/components/sections/Hero';
 import FindUs from '@/components/sections/FindUs';
 import { HowThisPlaceWorks } from '@/components/sections/HomeSections';
 import ThreeDoors from '@/components/sections/ThreeDoors';
+import Scallop from '@/components/shared/Scallop';
 import WhatsOn from '@/components/sections/WhatsOn';
 import { pageMeta } from '@/lib/seo';
 
@@ -47,18 +48,27 @@ export default function HomePage() {
     <>
       <Hero />
 
-      {/*
-        ⚠️ ACÁ IBA UN `<Scallop>`, el festón de marca. Se dio de baja con la
-        banda crema: marcaba la entrada del hero oscuro a la crema de `WhatsOn`,
-        y `WhatsOn` ya no es crema. Un festón entre hueso y hueso no separa nada
-        — sería un adorno, que es justo lo que este refinamiento vino a sacar.
-
-        El componente sigue existiendo por si vuelve a haber un cambio de
-        superficie que valga la pena marcar.
-      */}
       <WhatsOn />
 
+      {/*
+        ⚠️ EL FESTÓN VUELVE, y vuelve acá y no en cualquier corte. Camila lo
+        dibujó en el boceto —el zigzag entre secciones— y la regla del propio
+        componente es que va sólo donde el fondo CAMBIA de verdad. Estuvo dado
+        de baja un tiempo justamente por eso: quedó entre hueso y hueso cuando
+        `WhatsOn` dejó de ser crema, y ahí no separaba nada.
+
+        Ahora sí hay qué marcar: `WhatsOn` es blanco y «How this place works»
+        es la losa verde. Son los dos únicos cortes de la home donde el fondo
+        salta de claro a oscuro, así que son los dos únicos festones.
+
+        ⚠️ El trazo sigue siendo PLACEHOLDER —un arco repetido— hasta que
+        llegue el SVG del brand book. Cuando llegue se cambia el `<path>` de
+        `Scallop.tsx` y estos dos usos no se tocan.
+      */}
+      <Scallop from="paper" to="deep" />
       <HowThisPlaceWorks />
+      <Scallop from="deep" to="paper" />
+
       <ThreeDoors />
       <EventsBanner />
       <FindUs />

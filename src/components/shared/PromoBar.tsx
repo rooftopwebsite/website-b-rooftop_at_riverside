@@ -64,8 +64,18 @@ const FACTS = [
 ] as const;
 
 export default function PromoBar() {
+  /*
+    ⚠️ `deeper` y no `deep`. Camila lo anotó en el boceto —«el verde + oscuro»—
+    y el motivo es que la franja y el header eran EL MISMO verde: se leían como
+    una sola barra de 101px, y entonces los cuatro hechos parecían parte de la
+    navegación en vez de un banner. Con `deeper` (#013434) la franja se separa
+    del header sin agregar una línea divisoria.
+
+    El contraste sube, no baja: `paper/80` sobre `deep` daba 12.3:1 y sobre
+    `deeper` da 13.4:1.
+  */
   return (
-    <div className="bg-deep px-gutter md:px-gutter-lg">
+    <div className="bg-deeper px-gutter md:px-gutter-lg">
       <ul className="caja flex flex-wrap items-center justify-center gap-x-[10px] gap-y-[4px] py-[9px]">
         {FACTS.map((fact) => (
           <li
