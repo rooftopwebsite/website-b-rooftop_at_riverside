@@ -20,7 +20,7 @@ import { Accent, Eyebrow, Heading } from '@/components/shared/Type';
  * packet → see the spaces) NO se borraron: se mudaron a `/events`, que es la
  * página que les corresponde. Eran contenido que sólo existía en la home.
  *
- * ⚠️ La card va `deep` DENTRO de una `Section tone="paper"`, y no como
+ * ⚠️ La card va `deep` DENTRO de una `Section tone="bone"`, y no como
  * `Section tone="deep"`. `check:surfaces` permite UNA sola sección deep por
  * página y hay que dejarla libre; es el mismo truco que usaba el bloque
  * anterior con su card naranja.
@@ -41,7 +41,7 @@ const ITEMS = [
 
 export default function EventsBanner() {
   return (
-    <Section tone="paper" bandTop="lg" bandBottom="sm" labelledBy="events-banner-title">
+    <Section tone="bone" bandTop="lg" bandBottom="sm" labelledBy="events-banner-title">
       <Reveal className="overflow-hidden rounded-card bg-deep p-[20px] shadow-float lg:p-[28px]">
         {/* La imagen arriba, inset y con su propio radio. Es lo que separa esta
             forma de una losa a sangre: la card respira alrededor de la foto. */}

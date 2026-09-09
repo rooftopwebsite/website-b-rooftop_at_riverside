@@ -52,16 +52,31 @@ const STEPS: readonly PinnedItem[] = [
  *
  * ⚠️ El `Section` va sin `band`: el alto lo pone `PinnedList`, y un padding
  * vertical grande encima del recorrido de varias pantallas sólo agrega vacío.
+ *
+ * ⚠️ VERDE OSCURO. Está marcado así en el boceto de Camila, y es la única losa
+ * oscura de la home aparte del hero. Tiene sentido que sea ÉSTA: es la sección
+ * que se queda pegada varias pantallas, o sea la que más tiempo ocupa la vista.
+ * Un fondo que cambia sostenido es lo que hace que el scroll largo se sienta
+ * como un capítulo y no como un tramo muerto.
+ *
+ * ⚠️ Obligó a mover las bandas de toda la home. `check:surfaces` prohíbe dos
+ * secciones de color seguidas, y `WhatsOn` y `ThreeDoors` —las vecinas— eran
+ * las dos `bone`. Quedó `paper · deep · paper · bone · paper`: el verde entra
+ * y sale contra blanco, que es lo que lo hace pegar. El `bone` no se perdió,
+ * se corrió a `EventsBanner`.
  */
 export function HowThisPlaceWorks() {
   return (
-    <Section bandTop="lg" bandBottom="sm" labelledBy="how-title">
+    <Section tone="deep" bandTop="lg" bandBottom="sm" labelledBy="how-title">
       <PinnedList
+        superficie="oscuro"
         items={STEPS}
         head={
           <SectionHead
             eyebrow="How this place works"
-            eyebrowTone="deep"
+            /* `cream` y no `deep`: sobre la losa oscura el eyebrow en `deep`
+               daría 1:1. Crema sobre deep da 9.44:1. */
+            eyebrowTone="cream"
             id="how-title"
             title={
               <>

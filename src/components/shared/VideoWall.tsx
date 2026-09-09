@@ -33,12 +33,17 @@ const SLOTS: readonly (string | null)[] = Array.from({ length: 12 }, () => null)
  * ⚠️ El conteo cambia por breakpoint y por eso las columnas de más se ocultan
  * con CSS en vez de no renderizarse: el server no sabe el ancho de pantalla, y
  * decidirlo en el cliente significaría un salto después de hidratar.
+ *
+ * ⚠️ TRES, no cuatro. Lo pidió Camila señalando Superside, y midiendo el hero
+ * de ellos se entiende por qué: con cuatro columnas cada tile queda en ~150px
+ * de ancho y un plano medio filmado en vertical deja de leerse — se ve el
+ * movimiento pero no QUÉ es. A tres, cada tile pasa de 200px y la pieza se
+ * reconoce. En mobile son dos: la tercera aparece recién en `sm`.
  */
 const COLUMNAS = [
   { duracion: '44s', reverse: false, visible: '' },
   { duracion: '58s', reverse: true, visible: '' },
   { duracion: '50s', reverse: false, visible: 'hidden sm:flex' },
-  { duracion: '64s', reverse: true, visible: 'hidden desk:flex' },
 ] as const;
 
 /**

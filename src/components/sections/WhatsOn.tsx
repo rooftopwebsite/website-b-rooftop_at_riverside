@@ -180,7 +180,7 @@ export default function WhatsOn() {
   const trucks = activeTrucks();
 
   return (
-    <Section tone="bone" band="lg" labelledBy="whats-on-title">
+    <Section tone="paper" band="lg" labelledBy="whats-on-title">
       <div className="flex flex-col gap-[10px] sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Eyebrow tone="deep">What&rsquo;s on</Eyebrow>

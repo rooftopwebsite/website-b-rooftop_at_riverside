@@ -50,9 +50,19 @@ export default function Hero() {
   return (
     <section
       aria-labelledby="hero-title"
-      className="flex h-[calc(100svh-101px)] min-h-[620px] overflow-hidden bg-deep desk:h-[calc(100svh-113px)] desk:min-h-[640px]"
+      /* `relative` es lo que ancla el muro: desde `desk` va posicionado contra
+         ESTA caja, que es el hero entero de borde a borde de pantalla. */
+      className="relative flex h-[calc(100svh-101px)] min-h-[620px] overflow-hidden bg-deep desk:h-[calc(100svh-113px)] desk:min-h-[640px]"
     >
-      <div className={`${GUTTER} flex w-full pt-[40px] pb-[40px] lg:pt-[52px] lg:pb-[52px]`}>
+      {/*
+        ⚠️ NINGÚN PADDING VERTICAL ACÁ. Lo tenía —40px arriba y abajo— y era lo
+        que hacía que el muro se viera «recortado», que es como lo describió
+        Camila: los tiles terminaban contra un colchón de verde en vez de
+        contra el borde del hero, y eso lee como una galería metida en una
+        caja. El padding se mudó a la columna de TEXTO, que es la única que lo
+        necesita. Así el muro toma el alto completo de la sección.
+      */}
+      <div className={`${GUTTER} flex w-full`}>
         {/*
           ⚠️ La caja NO envuelve al muro. El texto va dentro de la caja de 1280
           y el muro sale de ella para llegar al borde derecho de la pantalla:
@@ -66,9 +76,17 @@ export default function Hero() {
             `desk` son dos columnas de alto completo. Por eso `flex-col` con un
             `desk:grid` encima, y no una sola grilla responsive.
           */}
-          <div className="flex min-h-0 flex-1 flex-col gap-[28px] desk:grid desk:grid-cols-[minmax(0,0.78fr)_minmax(0,1fr)] desk:items-stretch desk:gap-[56px]">
-            {/* ── La columna de texto ──────────────────────────────────── */}
-            <div className="flex shrink-0 flex-col items-center text-center desk:items-start desk:justify-center desk:text-left">
+          <div className="flex min-h-0 flex-1 flex-col">
+            {/* ── La columna de texto ──────────────────────────────────────
+                Acá SÍ va el padding vertical: el muro de al lado va a sangre
+                de arriba abajo y el texto no puede tocar los bordes.
+
+                `desk:max-w-[48%]` es lo que le deja el aire al muro. El muro
+                desde `desk` sale del flujo, así que ya no hay una grilla que
+                reserve la columna: el ancho del texto es lo único que impide
+                que se le meta debajo. Medido en 1344 —el mínimo de `desk`—
+                quedan ~105px entre el final del texto y el primer tile. */}
+            <div className="flex shrink-0 flex-col items-center pt-[40px] pb-[26px] text-center desk:h-full desk:max-w-[48%] desk:items-start desk:justify-center desk:py-[52px] desk:text-left">
               <HeroFadeUp>
                 <Image
                   src="/brand/isotype-truck.svg"
@@ -107,23 +125,35 @@ export default function Hero() {
             </div>
 
             {/* ── El muro ──────────────────────────────────────────────────
-                `desk:-mr-gutter-lg` lo saca de la caja por la derecha para que
-                los tiles se corten contra el borde de la pantalla.
+                ⚠️ DESDE `desk` SALE DEL FLUJO: `absolute inset-y-0 right-0`
+                contra la sección. Es lo que pidió Camila —«que lleguen al
+                borde de arriba y de abajo del hero» y «no respetar el margen
+                derecho, como en superside»— y las dos cosas salen de la misma
+                línea: `inset-y-0` lo pega a los dos bordes horizontales del
+                hero, `right-0` al borde derecho de la PANTALLA.
 
-                En mobile se apila debajo y va a sangre por los dos lados, que
-                es lo que hacía la versión anterior. */}
-            {/*
-              ⚠️ `min-w-0` y `min-h-0` NO son opcionales. Un ítem de grid y uno
-              de flex traen `min-width`/`min-height: auto`, que les permite
-              crecer más allá de su pista cuando el contenido es más grande — y
-              el track del muro mide miles de píxeles. Sin esto el
-              `overflow:hidden` de la columna no recorta nada: medido antes de
-              ponerlo, la columna se estiraba a 7.560px y reventaba la grilla.
+                ⚠️ Antes esto era una columna de grid con `-mr-gutter-lg`, y no
+                alcanzaba: ese margen sólo se comía los 32px del gutter, así que
+                en cualquier pantalla más ancha que 1344 el muro terminaba en el
+                borde de la caja de 1280 y quedaba una franja de verde muerta a
+                la derecha.
 
-              En mobile `flex-1` le da el alto que sobra después del texto;
-              desde `desk` toma el alto de la fila, que es el del hero.
-            */}
-            <div className="min-h-0 min-w-0 flex-1 -mx-gutter md:-mx-gutter-lg desk:mx-0 desk:-mr-gutter-lg desk:h-full">
+                ⚠️ Y NO se resuelve con un margen negativo en porcentaje
+                (`mr-[calc(50%-50vw)]`): dentro de una grilla, el porcentaje de
+                un margen se resuelve contra la PISTA del ítem, no contra la
+                caja, así que la cuenta da cualquier cosa. Posicionarlo contra
+                la sección no tiene esa ambigüedad.
+
+                ⚠️ `min-w-0` y `min-h-0` NO son opcionales mientras está en
+                flujo. Un ítem de flex trae `min-width`/`min-height: auto`, que
+                le permite crecer más allá de su caja cuando el contenido es más
+                grande — y el track del muro mide miles de píxeles. Sin esto el
+                `overflow:hidden` no recorta nada: medido antes de ponerlo, la
+                columna se estiraba a 7.560px.
+
+                En mobile sigue en flujo: `flex-1` le da el alto que sobra
+                después del texto y va a sangre por los dos lados. */}
+            <div className="-mx-gutter min-h-0 min-w-0 flex-1 md:-mx-gutter-lg desk:absolute desk:inset-y-0 desk:right-0 desk:mx-0 desk:w-[46%]">
               <VideoWall />
             </div>
           </div>

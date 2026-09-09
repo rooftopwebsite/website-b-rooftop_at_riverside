@@ -104,7 +104,7 @@ const DOORS = [
 
 export default function ThreeDoors() {
   return (
-    <Section tone="bone" band="md" labelledBy="doors-title">
+    <Section tone="paper" band="md" labelledBy="doors-title">
       <SectionHead
         eyebrow="Three places, one gate"
         eyebrowTone="terra"

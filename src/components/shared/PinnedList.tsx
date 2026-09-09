@@ -57,6 +57,54 @@ export interface PinnedItem {
 }
 
 /**
+ * Los colores del módulo según la superficie donde cae.
+ *
+ * ⚠️ Existe porque la sección pasó a fondo VERDE OSCURO —está en el boceto de
+ * Camila— y el módulo tenía todos sus colores escritos para claro: `text-ink`,
+ * `border-fog`, `text-terra`. Sobre `deep` el título habría quedado en 1.1:1,
+ * o sea invisible.
+ *
+ * ⚠️ El acento cambia de familia según la superficie, y no es preferencia sino
+ * contraste: sobre claro es `terra` (7.43:1) y sobre oscuro es `cream`
+ * (9.44:1). Terra sobre deep daría 1.46:1, y el naranja de marca 4.26:1 —que
+ * alcanza para un gráfico pero no para texto de 16px. Por eso el naranja se
+ * queda en el riel y el número va en crema.
+ */
+const PALETA = {
+  claro: {
+    riel: 'bg-fog',
+    rielLleno: 'bg-terra/70',
+    filete: 'border-fog',
+    numeroActivo: 'text-terra',
+    numeroInactivo: 'text-body/65',
+    tituloActivo: 'text-ink',
+    tituloInactivo: 'text-ink/50',
+    cuerpo: 'text-body/75',
+    vineta: 'bg-terra/50',
+  },
+  oscuro: {
+    riel: 'bg-paper/20',
+    /* El riel SÍ va en naranja: es un gráfico, no texto, y el mínimo de un
+       componente de interfaz es 3:1. Sunset sobre deep da 4.26:1. */
+    rielLleno: 'bg-sunset',
+    filete: 'border-paper/15',
+    /* ⚠️ CREMA y no naranja, y es medido: `sunset` sobre `deep` da 4.26:1, y
+       el número es texto de 16px en peso normal, que pide 4.5:1. axe lo marcó.
+       En el hero el mismo naranja sí pasa porque ahí es texto grande (3:1).
+       Crema sobre deep da 9.44:1, es el acento cálido que la casa ya usa en
+       losas oscuras —los eyebrows— y el naranja no se pierde: queda en el
+       riel, que es donde se lee el avance. */
+    numeroActivo: 'text-cream',
+    /* `/55` daba 4.34:1 y no llegaba. `/60` da 4.86:1. */
+    numeroInactivo: 'text-paper/60',
+    tituloActivo: 'text-paper',
+    tituloInactivo: 'text-paper/45',
+    cuerpo: 'text-paper/80',
+    vineta: 'bg-sunset/60',
+  },
+} as const;
+
+/**
  * Cuánto scroll vale cada ítem, en unidades de viewport.
  *
  * ⚠️ BAJÓ de 55 a 42. La referencia —agencefoudre.com— usa 133vh por ítem, y
@@ -77,12 +125,21 @@ export default function PinnedList({
   items,
   head,
   className = '',
+  superficie = 'claro',
 }: {
   readonly items: readonly PinnedItem[];
   /** Columna izquierda: el encabezado de la sección. */
   readonly head: ReactNode;
   readonly className?: string;
+  /**
+   * Sobre qué fondo cae el módulo. Decide la paleta entera — ver `PALETA`.
+   *
+   * Es la SUPERFICIE y no el color, igual que en `Accent`: quien lo usa no
+   * tiene que acordarse de cuál acento pasa contraste en cuál fondo.
+   */
+  readonly superficie?: keyof typeof PALETA;
 }) {
+  const c = PALETA[superficie];
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const [enhanced, setEnhanced] = useState(false);
   const [active, setActive] = useState(0);
@@ -171,10 +228,10 @@ export default function PinnedList({
                 riel. */}
             <span
               aria-hidden="true"
-              className="absolute top-[6px] bottom-[6px] left-0 w-px rounded-pill bg-fog"
+              className={`absolute top-[6px] bottom-[6px] left-0 w-px rounded-pill ${c.riel}`}
             >
               <span
-                className="block w-full rounded-pill bg-terra/70 transition-[height] duration-500 ease-brand"
+                className={`block w-full rounded-pill ${c.rielLleno} transition-[height] duration-500 ease-brand`}
                 style={{ height: `${fill}%` }}
               />
             </span>
@@ -182,7 +239,7 @@ export default function PinnedList({
             {items.map((item, i) => {
               const open = !enhanced || i === active;
               return (
-                <li key={item.n} className={i === 0 ? '' : 'mt-[36px] border-t border-fog pt-[36px]'}>
+                <li key={item.n} className={i === 0 ? '' : `mt-[36px] border-t ${c.filete} pt-[36px]`}>
                   <div className="flex items-start gap-[16px]">
                     {/* ⚠️ El número es TEXTO en `terra`, no una píldora rellena.
                         Era una píldora naranja porque Sunset Orange como texto
@@ -205,7 +262,7 @@ export default function PinnedList({
                            axe lo marcó — y lo marca AUNQUE el span sea
                            `aria-hidden`, con razón: sigue siendo texto visible
                            para quien ve, aunque no lo lea un lector. */
-                        open ? 'text-terra' : 'text-body/65',
+                        open ? c.numeroActivo : c.numeroInactivo,
                       ].join(' ')}
                     >
                       {item.n}
@@ -215,7 +272,7 @@ export default function PinnedList({
                         es 3:1, y `/35` daba 2.43:1. */}
                     <Heading
                       level={3}
-                      className={['transition-colors duration-300', open ? 'text-ink' : 'text-ink/50'].join(' ')}
+                      className={['transition-colors duration-300', open ? c.tituloActivo : c.tituloInactivo].join(' ')}
                     >
                       {item.title}
                     </Heading>
@@ -230,7 +287,7 @@ export default function PinnedList({
                     style={{ gridTemplateRows: open ? '1fr' : '0fr' }}
                   >
                     <div className="min-h-0 overflow-hidden">
-                      <p className="pt-[12px] text-[16px] leading-[1.65] text-body/75 lg:text-[16px]">
+                      <p className={`pt-[12px] text-[16px] leading-[1.65] ${c.cuerpo}`}>
                         {item.body}
                       </p>
                       {/* ⚠️ Las etiquetas dejaron de ser CHIPS rellenos. Cuatro
@@ -248,10 +305,10 @@ export default function PinnedList({
                             {t > 0 ? (
                               <span
                                 aria-hidden="true"
-                                className="h-[3px] w-[3px] rounded-pill bg-terra/50"
+                                className={`h-[3px] w-[3px] rounded-pill ${c.vineta}`}
                               />
                             ) : null}
-                            <span className="font-body text-[13px] font-medium tracking-[0.02em] text-body/75">
+                            <span className={`font-body text-[13px] font-medium tracking-[0.02em] ${c.cuerpo}`}>
                               {tag}
                             </span>
                           </li>
