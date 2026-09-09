@@ -858,15 +858,10 @@
  * Anclajes internos (`/visit#parking`). Sin esto el título queda tapado por el
  * header, que es lo único que queda pegado arriba.
  *
- * ⚠️ Sigue haciendo falta aunque el header ya no sea `fixed` sino `sticky`: al
- * saltar a un anclaje el bloque pegado está arriba de todo y taparía el
- * destino igual.
- *
- * ⚠️ Ya NO se suman los 34px de la barra de estado: esa franja se eliminó.
- * Dejarlos habría abierto 34px de aire de más en todos los anclajes del sitio.
- *
- * ⚠️ El `PromoBar` tampoco se suma. Está en el flujo, así que cuando el salto
- * lleva la página hacia abajo ya se fue de pantalla.
+ * ⚠️ Se mide contra el header y contra nada más. Los otros dos bloques que
+ * alguna vez estuvieron ahí arriba —la franja de estado y el `PromoBar` con
+ * los cuatro hechos— ya no existen, y sumarlos abriría aire de más en todos
+ * los anclajes del sitio.
  *
  * Los tokens de header (67/77) son unos píxeles más altos que la barra real
  * (64/76): es holgura a favor, porque de menos taparía el título.

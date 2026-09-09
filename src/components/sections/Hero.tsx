@@ -38,10 +38,14 @@ export default function Hero() {
   /*
     ⚠️ ALTO COMPLETO DE PANTALLA. Camila: «hero full alto de pantalla».
 
-    Se descuenta el bloque pegado de arriba —promo 37 + header 64 en mobile,
-    37 + 76 desde `desk`— porque está EN EL FLUJO: sin descontarlo, el hero
-    empujaría esos píxeles fuera de la pantalla y la primera vista quedaría
-    cortada.
+    ⚠️ Y ahora es `100svh` ENTERO, sin descontar nada. Antes descontaba el
+    bloque pegado de arriba (promo + header) porque estaba en el flujo y lo
+    empujaba. Hoy el header es `fixed` y flota encima, así que el hero arranca
+    en el píxel 0 y el muro de videos corre por DETRÁS del header — que es
+    justamente lo que hace que se le vea el blur.
+
+    Lo que sí compensa su altura es la columna de TEXTO, más abajo: el titular
+    no puede quedar debajo de la barra.
 
     `svh` y no `vh`: en un teléfono, `100vh` cuenta el alto SIN la barra del
     navegador, así que el hero se corta justo cuando la barra está visible, que
@@ -52,7 +56,7 @@ export default function Hero() {
       aria-labelledby="hero-title"
       /* `relative` es lo que ancla el muro: desde `desk` va posicionado contra
          ESTA caja, que es el hero entero de borde a borde de pantalla. */
-      className="relative flex h-[calc(100svh-101px)] min-h-[620px] overflow-hidden bg-deep desk:h-[calc(100svh-113px)] desk:min-h-[640px]"
+      className="relative flex h-[100svh] min-h-[620px] overflow-hidden bg-deep desk:min-h-[700px]"
     >
       {/*
         ⚠️ NINGÚN PADDING VERTICAL ACÁ. Lo tenía —40px arriba y abajo— y era lo
@@ -86,7 +90,12 @@ export default function Hero() {
                 reserve la columna: el ancho del texto es lo único que impide
                 que se le meta debajo. Medido en 1344 —el mínimo de `desk`—
                 quedan ~105px entre el final del texto y el primer tile. */}
-            <div className="flex shrink-0 flex-col items-center pt-[40px] pb-[26px] text-center desk:h-full desk:max-w-[48%] desk:items-start desk:justify-center desk:py-[52px] desk:text-left">
+            {/* ⚠️ El `pt` lleva sumada la altura del header —64px, 76 desde
+                `desk`— porque el header flota encima y taparía el isotipo. En
+                `desk` el bloque está centrado verticalmente, así que el padding
+                de arriba tiene que ser mayor que el de abajo para que el centro
+                ÓPTICO caiga en el medio del área libre y no del hero entero. */}
+            <div className="flex shrink-0 flex-col items-center pt-[104px] pb-[26px] text-center desk:h-full desk:max-w-[48%] desk:items-start desk:justify-center desk:pt-[128px] desk:pb-[52px] desk:text-left">
               <HeroFadeUp>
                 <Image
                   src="/brand/isotype-truck.svg"

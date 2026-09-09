@@ -82,39 +82,62 @@ export default function Header() {
   return (
     <>
       {/*
-        ⚠️ Dejó de ser una píldora blanca flotante. Ahora es una BARRA OSCURA a
-        todo el ancho, siempre sólida, que es lo que hacen Showdown Social, The
-        Orient y Baires Grill sin excepción.
+        ⚠️ Es una BARRA OSCURA a todo el ancho, no una píldora flotante. Es lo
+        que hacen Showdown Social, The Orient y Baires Grill sin excepción.
 
-        Que sea siempre sólida —y no transparente sobre el hero— es una
-        decisión, no una simplificación. La alternativa era alternar según la
-        página: transparente sobre el hero oscuro del home, sólida sobre el
-        `PageHero` claro de las internas. Eso obliga a que el logo cambie de
-        versión según la ruta y a que el contraste del nav se recalcule en cada
-        caso. Una barra oscura fija vale en las 20 páginas, deja usar el lockup
-        reversado siempre, y el contraste se mide una sola vez.
+        ⚠️ VA EN `deeper` (#013434) y no en `deep`. Es el verde del `PromoBar`,
+        que Camila mandó sacar pidiendo en el mismo mensaje que su color pasara
+        acá. Sirve además para otra cosa: sobre el hero, que es `deep`, el
+        header queda un peldaño más oscuro y se distingue del fondo sin una
+        línea divisoria.
       */}
       {/*
-        ⚠️ `sticky` y no `fixed`.
+        ⚠️ VOLVIÓ A SER `fixed`, después de haber sido `sticky`.
 
-        Era `fixed top-0`, con los heroes compensando la altura con `padding-top`. Con el `PromoBar`
-        arriba eso no funciona: un banner que se va con el scroll, debajo de un
-        header fijo, queda tapado de entrada y deja un hueco al scrollear.
+        Fue `fixed`, pasó a `sticky` cuando se sumó el `PromoBar` —un banner que
+        se va con el scroll, debajo de un header fijo, queda tapado de entrada—
+        y ahora que el banner no está vuelve a `fixed`. No es ir y venir: es lo
+        que pide el efecto que Camila pidió. Para que el header se vea
+        translúcido y con blur SOBRE el hero, tiene que haber contenido pasando
+        por detrás, y en `sticky` el header ocupa su lugar en el flujo: no hay
+        nada atrás que difuminar.
 
-        En flujo + sticky el promo se va solo y el header se pega, sin una línea
-        de JavaScript. Consecuencia: el bloque superior YA OCUPA espacio, así
-        que ningún hero compensa más su altura — ver `Hero.tsx` y `PageHero.tsx`.
-
+        Consecuencia: los heroes vuelven a compensar la altura a mano. Ver
+        `Hero.tsx` y `PageHero.tsx`.
       */}
-      <div className="sticky top-0 z-[99]">
-      <div className={`bg-deep ${GUTTER}`}>
+      {/*
+        ⚠️ LOS DOS ESTADOS DEL FONDO, que es el pedido concreto: «blur sobre el
+        hero mientras está fijo, luego sólido al 100 con el scroll pero sino al
+        90 con blur».
+
+          arriba      `deeper/90` + `backdrop-blur`
+          scrolleado  `deeper` sólido, y la sombra
+
+        ⚠️ El 90% no es sólo estética, es el piso de contraste. El fondo detrás
+        del header cambia con el scroll —el muro de videos, una foto, blanco— y
+        el texto no puede depender de qué haya. Al 90% el peor caso concebible
+        es blanco puro detrás, y ahí `paper` sobre el compuesto todavía da
+        9.9:1 y el nav apagado `paper/70` da 5.78:1. Bajar a 80 lo dejaría atado
+        a lo que pase por debajo.
+
+        ⚠️ `backdrop-blur` necesita que el fondo NO sea del todo opaco para
+        notarse. Con `deeper` sólido se apaga solo, así que no hace falta
+        sacarlo al scrollear — pero se saca igual, porque un filtro de fondo
+        activo sobre toda la barra cuesta composición en cada frame del scroll y
+        no dibuja nada.
+      */}
+      <div
+        className={[
+          'fixed inset-x-0 top-0 z-[99]',
+          GUTTER,
+          'transition-[background-color,box-shadow] duration-300',
+          scrolled
+            ? 'bg-deeper shadow-[0_10px_30px_-12px_rgba(0,0,0,0.5)]'
+            : 'bg-deeper/90 backdrop-blur-[14px]',
+        ].join(' ')}
+      >
         <header
-          className={[
-            'caja flex items-center',
-            'h-[64px] desk:h-[76px]',
-            'transition-shadow duration-300',
-            scrolled ? 'shadow-[0_10px_30px_-12px_rgba(0,0,0,0.5)]' : '',
-          ].join(' ')}
+          className="caja flex h-[64px] items-center desk:h-[76px]"
         >
           <div className="flex w-full items-center justify-between gap-[16px]">
             {/* Logo. Se achica al scrollear; la transición va sobre `height`
@@ -262,20 +285,7 @@ export default function Header() {
           </div>
         </header>
 
-        {/* Barra de estado: segunda píldora, más chica, debajo de la del nav.
-            Información de alto valor y bajo costo visual — es la pregunta que
-            más se hace del negocio y ocupa una línea. */}
       </div>
-
-      {/*
-        ⚠️ ACÁ VIVÍA LA FRANJA DE ESTADO — «Closed now · Bar 3–8 · Trucks 4–8».
-        Camila la mandó sacar. No se reemplaza por nada: los horarios están en
-         con los siete días desplegables, en /visit y en /contact, y el
-        header ya cargaba dos franjas encima del contenido.
-
-         se borra con esto: era su único call site.
-      */}
-      </div>{/* fin del bloque sticky */}
 
       {/* ── Menú full-screen de mobile ─────────────────────────────────── */}
       <div

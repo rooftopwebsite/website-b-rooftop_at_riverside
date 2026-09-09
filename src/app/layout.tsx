@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import Footer from '@/components/shared/Footer';
 import Header from '@/components/shared/Header';
 import PageTransition from '@/components/shared/PageTransition';
-import PromoBar from '@/components/shared/PromoBar';
 import Preloader from '@/components/shared/Preloader';
 import SmoothScroll from '@/components/shared/SmoothScroll';
 import { BRAND } from '@/lib/brand';
@@ -56,19 +55,31 @@ export default function RootLayout({ children }: { readonly children: React.Reac
         <Preloader />
         <PageTransition />
 
-        {/* ⚠️ El PromoBar va ARRIBA del Header y en el flujo: se va con el
-            scroll. El Header es sticky y se pega solo. Ver Header.tsx. */}
-        <PromoBar />
+        {/* ⚠️ ACÁ ARRIBA VIVÍA EL `PromoBar` —los cuatro hechos del lugar—.
+            Camila lo mandó sacar y lo tachó sobre una captura. Los cuatro datos
+            no se pierden: «Rooftop bar» y «Four food trucks» están en el
+            titular y en la bajada del hero, «Live music five nights» tiene su
+            sección y su página, y «Walk in, no reservations» está en la FAQ, en
+            /visit y en el hero.
+
+            Su color —`deeper`, el verde más oscuro— pasó al header, que es lo
+            que ella pidió en el mismo mensaje. */}
         <Header />
 
         {/*
-          Sin padding acá, y ahora por una razón distinta: el bloque superior
-          —promo + header + estado— está EN EL FLUJO, así que ya ocupa su
-          espacio y no hay nada que compensar. Antes el header era `fixed` y
-          cada hero tenía que descontar su altura a mano.
+          Sin padding acá, y es a propósito: el header volvió a ser `fixed`
+          —tiene que haber contenido pasando POR DETRÁS para que el blur se vea—
+          así que no ocupa lugar en el flujo y cada hero compensa su altura.
 
-          Los anclajes internos sí siguen necesitando el `scroll-margin-top` de
-          globals.css: el header es sticky y taparía el destino del salto.
+          No se pone el padding en `<main>` justamente por el home: ahí el hero
+          ocupa la pantalla entera y el muro de videos tiene que correr por
+          debajo del header. Un padding acá lo empujaría y el blur no tendría
+          nada que difuminar.
+
+          Ver `PageHero.tsx` (las 22 internas) y `Hero.tsx` (el home).
+
+          Los anclajes internos siguen necesitando el `scroll-margin-top` de
+          globals.css.
         */}
         <main id="main">
           {children}

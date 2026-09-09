@@ -47,7 +47,16 @@ export default function PageHero({
         }
       >
         <div
-          className={`${GUTTER} flex flex-col justify-center pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]`}
+          /* ⚠️ El `pt` lleva sumada la altura del header, que es `fixed` y no
+             ocupa lugar en el flujo. Los tres escalones no son caprichosos: el
+             header mide 64px hasta `desk` (1344) y 76 a partir de ahí, pero el
+             aire propio del hero cambia en `lg` (922). Son dos breakpoints
+             distintos, así que hacen falta tres tramos:
+
+               base   64 + 34 =  98
+               lg     64 + 46 = 110
+               desk   76 + 46 = 122 */
+          className={`${GUTTER} flex flex-col justify-center pt-[98px] pb-[48px] lg:pt-[110px] lg:pb-[64px] desk:pt-[122px]`}
         >
           <div className={hasImage ? 'mx-auto w-full max-w-[640px] desk:mr-[56px] desk:ml-auto' : 'caja'}>
             {crumbs && crumbs.length > 0 ? (
