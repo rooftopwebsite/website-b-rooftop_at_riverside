@@ -24,41 +24,48 @@
 /* --------------------------------------------------------------------------
    TIPOGRAFÍAS
 
-   ESTADO: las 14 caras de marca están instaladas. El bloque de `@font-face`
-   de abajo lo GENERA `npm run fonts` desde `public/fonts/_drop/`; no se toca
-   a mano.
+   ESTADO: DOS familias, las dos libres (OFL de Google Fonts), las dos
+   variables. Ninguna de las tres del brand book original quedó en pie, y en
+   los tres casos el motivo fue LICENCIA y no diseño.
 
-   Lo que hay, verificado en un specimen y no de memoria:
+   Lo que hay:
 
-     Steelfish   condensada alta, en 400 / 700 / 800 más las tres itálicas.
-                 Es el display. A 112px con −0.02em de tracking y 0.95 de
-                 interlínea da el bloque de póster que buscábamos.
-     Steelfish Outline  hueca. Decorativa: a 15px es ilegible, así que sólo
-                 sirve para UNA palabra grande. Nunca en cuerpo ni en UI.
-     Jost        geométrica variable (100–900), revival libre de Futura.
-                 Cubre el cuerpo (400) y los eyebrows/subheads (500, caja
-                 alta, tracking abierto).
+     Big Shoulders Display   condensada de caja alta, variable 100–900. Es el
+                 display: h1, h2, h3, precios y nombres de menú.
+     Jost        geométrica variable 100–900, revival libre de Futura. Cubre
+                 el cuerpo (400) y los eyebrows/subheads (500, caja alta con
+                 tracking abierto).
 
-   ⚠️ BRONX Y FUTURA SE FUERON, y fue por LICENCIA y no por diseño. Lo que
-   dijeron los archivos al leerles la tabla `name`:
+   ⚠️ POR QUÉ SE FUERON LAS TRES. Leído de la tabla `name` interna de cada
+   archivo, no del nombre del archivo:
 
-     · Bronx llegó como `Bronx_PersonalUse.otf` y no trae NI UN metadato:
-       ni copyright ni fundición. Es de uso personal y esto es un sitio
-       comercial.
-     · «Futura PT» era en realidad **Futura Cyrillic** de ParaType, con su
-       EULA comercial declarado adentro. Y la cara servida como `heavy`
-       (peso 600) era la **Demi**: la escalera de pesos mentía.
+     · **Bronx** no traía NI UN metadato: ni copyright ni fundición. El fuente
+       era `Bronx_PersonalUse.otf`. Uso personal, y esto es un sitio comercial.
+     · **«Futura PT»** era en realidad Futura Cyrillic de ParaType, con su EULA
+       comercial declarado adentro. Y la cara servida como `heavy` (peso 600)
+       era la **Demi**: la escalera de pesos mentía.
+     · **Steelfish** es de Typodermic Fonts (© 2001-2024, Raymond Larabie) y no
+       trae campo de licencia. No es de uso libre: se compra.
 
-   Jost es el reemplazo medido contra la Futura que había: misma `a` de un
-   piso, misma `o` circular, cifras casi idénticas, mismo ancho de línea. Y
-   en caja alta a 500 iguala la mancha de Bronx.
+   Los reemplazos NO se eligieron de memoria, se midieron:
 
-   ⚠️ QUEDA UN PROBLEMA DE LICENCIA ABIERTO: **Steelfish es comercial**, de
-   Typodermic Fonts (© 2001-2024, diseño de Raymond Larabie), y el archivo no
-   trae campo de licencia. No es de uso libre: se compra. Si no aparece la
-   factura hay que reemplazarla, y la candidata medida es Big Shoulders
-   Display (OFL), que queda un 10% más ancha — el resto de las condensadas
-   libres de Google están 20% o más arriba.
+     · Jost contra la Futura que había: misma `a` de un piso, misma `o`
+       circular, cifras casi idénticas y el mismo ancho de línea. De seis
+       candidatas de Google es la única que entra en un renglón igual que la
+       original. En caja alta a 500 iguala la mancha de Bronx.
+     · Big Shoulders contra Steelfish: **+10%** de ancho en «BONITA COMES
+       TOGETHER» a 62px. Las otras seis condensadas libres de Google están
+       20% o más arriba — Pathway +20, Saira +21, Bebas +22, Barlow +37,
+       Oswald +52. Es la única que queda a un dígito.
+
+   ⚠️ El +10% es real y hay que tenerlo presente al componer: un titular que
+   entraba justo en Steelfish puede partirse acá. Verificado a mano en las tres
+   rutas de más carga tipográfica —home, /events y /sunset-bar— y en las tres
+   entra.
+
+   ⚠️ Se fue también `Steelfish Outline`, la decorativa hueca. Estaba declarada
+   y NO se usaba en ningún componente. No tiene equivalente libre y tampoco
+   hacía falta.
 
    `font-display: swap` es requisito del brief (Fase 4).
 
@@ -71,7 +78,8 @@
    Lo cubre `npm run check:css`.
    -------------------------------------------------------------------------- */
 
-/* ===== FUENTES DE MARCA — generado por `npm run fonts`. NO EDITAR A MANO. ===== */
+/* ===== FUENTES DE MARCA — las dos vienen de Google Fonts, ya en woff2, así
+   que este bloque ya NO lo genera `npm run fonts`: se escribe a mano. ===== */
 @font-face {
   font-family: 'Jost';
   src: url('/fonts/jost-variable.woff2') format('woff2-variations');
@@ -80,51 +88,9 @@
   font-display: swap;
 }
 @font-face {
-  font-family: 'Steelfish';
-  src: url('/fonts/steelfish-bold-italic.woff2') format('woff2');
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Steelfish';
-  src: url('/fonts/steelfish-bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Steelfish';
-  src: url('/fonts/steelfish-extrabold-italic.woff2') format('woff2');
-  font-weight: 800;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Steelfish';
-  src: url('/fonts/steelfish-extrabold.woff2') format('woff2');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Steelfish Outline';
-  src: url('/fonts/steelfish-outline.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Steelfish';
-  src: url('/fonts/steelfish-italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Steelfish';
-  src: url('/fonts/steelfish-regular.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Big Shoulders Display';
+  src: url('/fonts/big-shoulders-variable.woff2') format('woff2-variations');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -171,53 +137,33 @@
 
   /* ── Tipografías ─────────────────────────────────────────────────────────
      Cada familia lleva su cadena de respaldo. Los respaldos NO son sustitutos
-     de diseño: son lo que se ve mientras faltan los WOFF2.
+     de diseño: son lo que se ve durante el swap.
 
-     display  Steelfish  → condensada de caja alta. Respaldo: las condensadas
-                           del sistema (Haettenschweiler en Windows, Arial
-                           Narrow en todos lados). Mantiene la proporción
-                           angosta, que es lo que sostiene el layout.
-     subhead  Bronx      → eyebrows y subheads, SIEMPRE en caja alta con
-                           tracking abierto.
-                           ⚠️ Es una GEOMÉTRICA ANCHA, verificado en la página 13
-                           del brand book: la «A» es ancha, de asta recta y
-                           vértice plano. NO es condensada y NO es una script
-                           —hay al menos tres fuentes distintas llamadas «Bronx»
-                           y una es de pincel—. Por eso su respaldo es el stack
-                           geométrico y no el de display: con una condensada
-                           detrás, los eyebrows saldrían con el ancho equivocado.
-     body     Futura PT  → geométrica. Respaldo: Futura (macOS),
-                           Century Gothic (Windows), luego el stack del sistema. */
-  /* ⚠️ Sin 'Haettenschweiler'. Estaba primero en la cadena y es la Impact de
-     Windows: mientras faltaron los WOFF2, TODO el sitio se diseñó mirando
-     Impact, que es mucho más ancha de caja que Steelfish. Ese fue el motivo
-     de que los titulares se pisaran y de que el conjunto se viera ajeno.
-     Con Steelfish instalada el respaldo sólo se ve durante el swap, así que
-     conviene que sea lo más parecido posible: Arial Narrow, no Impact. */
-  /* ── Familias ────────────────────────────────────────────────────────────
-     ⚠️ Bronx y Futura SALIERON del proyecto por licencia, no por diseño:
+     display  Big Shoulders Display → condensada de caja alta. Respaldo: Arial
+                           Narrow, que mantiene la proporción angosta — es lo
+                           que sostiene el layout.
+     subhead  Jost        → eyebrows y subheads, SIEMPRE en caja alta, a peso
+                           500 y con tracking abierto.
+     body     Jost        → cuerpo, a 400. Respaldo geométrico: Century Gothic
+                           (Windows), Avenir Next (macOS), luego el sistema.
 
-       · Bronx llegó como `Bronx_PersonalUse.otf` y el archivo no trae ni un
-         metadato de copyright. Es de uso personal y esto es un sitio
-         comercial.
-       · Los archivos de «Futura PT» eran en realidad **Futura Cyrillic** de
-         ParaType, con su EULA comercial declarado adentro del archivo. Y la
-         cara servida como `heavy` (peso 600) era la **Demi**, así que la
-         escalera de pesos mentía.
+     ⚠️ Sin 'Haettenschweiler' en la cadena de display. Estaba primero y es la
+     Impact de Windows: mientras faltaron los WOFF2, TODO el sitio se diseñó
+     mirando Impact, que es mucho más ancha de caja que una condensada de
+     verdad. Ese fue el motivo de que los titulares se pisaran y de que el
+     conjunto se viera ajeno. El respaldo tiene que parecerse a lo que
+     reemplaza: Arial Narrow, no Impact. */
+  /* ⚠️ `subhead` y `body` apuntan a la MISMA familia, y es deliberado: Jost
+     cubre los dos roles, lo que baja el sistema de tres familias a dos. Se
+     sostiene porque el eyebrow ya se distingue por peso (500), caja alta y
+     0.24em de tracking — diferencia de sobra sin pedirle otra familia.
 
-     Las reemplaza **Jost**, que es un revival libre de Futura (OFL, Google
-     Fonts). Medido contra la Futura que había: misma `a` de un piso, misma
-     `o` circular, cifras casi idénticas y el mismo ancho de línea.
+     Los dos tokens se mantienen SEPARADOS igual, para poder volver a divergir
+     sin tocar un solo componente.
 
-     ⚠️ Jost cubre los DOS roles —cuerpo y subhead— y eso baja el sistema de
-     tres familias a dos. Es decisión de Camila, y se sostiene: el eyebrow ya
-     se distingue por peso (500), caja alta y 0.24em de tracking, que es
-     diferencia de sobra sin pedirle otra familia. Los dos tokens se
-     mantienen separados para poder volver a divergir sin tocar componentes.
-
-     ⚠️ Es UNA fuente variable (100–900) en lugar de las seis caras estáticas
-     de Futura: 26 KB contra 134 KB, y la escalera de pesos deja de mentir.  */
-  --font-display: 'Steelfish', 'Arial Narrow', ui-sans-serif, sans-serif;
+     El detalle de por qué se fueron las tres familias del brand book está en
+     el encabezado de TIPOGRAFÍAS, arriba de este archivo. */
+  --font-display: 'Big Shoulders Display', 'Arial Narrow', ui-sans-serif, sans-serif;
   --font-subhead: 'Jost', 'Century Gothic', 'Avenir Next', ui-sans-serif, system-ui,
     sans-serif;
   --font-body: 'Jost', 'Century Gothic', 'Avenir Next', ui-sans-serif, system-ui,
