@@ -156,13 +156,61 @@ y evaluar subir sólo el `d1` del hero.
 | Showdown | +1.82px sobre 13px = **0.14em** |
 
 **→ Rooftop: `--tracking-eyebrow: 0.24em`.** Convergen The Orient, Tre Vele y Santa María
-en la franja 0.22–0.25. Es además lo que pide el brief para Bronx ("caja alta con tracking abierto").
+en la franja 0.22–0.25. Es además lo que pedía el brief para Bronx ("caja alta con tracking
+abierto"), y sigue valiendo con Jost, que la reemplazó.
+
+### Tracking de display — REVISADO el 9 de septiembre de 2026
+
+⚠️ Lo de arriba dice «Rooftop toma The Orient», y de ahí salió
+`--tracking-display: -0.02em`. **Ese token se eliminó.** Camila rechazó el
+resultado: «se ve muy pegada».
+
+El razonamiento original estaba mal por un motivo concreto: The Orient usa
+**Lusitana**, una serif de ancho normal, y Rooftop usa una **condensada de caja
+alta**. Un tracking negativo sobre una condensada es exactamente lo que la
+apelmaza. Y no era la única capa: `Heading` forzaba además `font-bold` en todos
+los niveles, así que no había un solo título del sitio en Regular.
+
+Encima el token sólo se aplicaba en **dos** lugares —el h1 del hero y unas mini
+cards—, así que en el resto de los títulos el tracking era 0. El arreglo no era
+cambiarle el signo: era hacerlo llegar a todos.
+
+Lo reemplaza una **escala óptica** en los sub-tokens de la escala de tamaño,
+que es el mismo mecanismo que ya usaba la interlínea:
+
+| Escalón | Cuerpo | Tracking |
+|---|---|---|
+| `hero` | 72px+ | `0.02em` |
+| `d1` | 72px | `0.02em` |
+| `d2` | 58px | `0.03em` |
+| `d3` | 46px | `0.035em` |
+| `d4` | 36px | `0.04em` |
+| `d5` | 28px | `0.045em` |
+| `d6` | 22px | `0.05em` |
+| `d7` | 18px | `0.05em` |
+
+A menor cuerpo la condensada se cierra más y necesita **más** aire: por eso es
+una escala y no un valor único.
+
+⚠️ Los siete escalones llevan tracking, `d5`/`d6`/`d7` incluidos. El primer
+intento los dejó afuera suponiendo que de ese cuerpo para abajo ya era la sans,
+y es falso: los usan el h3, los precios con `tabular-nums` y los nombres del
+menú, y todos son `font-display`. Medido en el navegador, el h3 quedaba en
+`letter-spacing: normal`.
 
 ### Pesos
 
 The Orient: 400 regular / 700 strong (100 thin, excepcional).
-Rooftop tiene tres caras de display (Steelfish Regular/Bold/ExtraBold) y tres de body
-(Futura PT Book/Medium/Bold): más rango del que la casa usa hoy.
+
+**Rooftop usa 400 en TODOS los títulos.** `Heading` iba en `font-bold` en todos
+los niveles; pasó a `font-normal` por pedido de Camila —«en regular nunca en
+peso alto»— y fue, junto con el tracking negativo, la causa de que la display se
+viera apelmazada.
+
+⚠️ Las familias cambiaron enteras el 9 de septiembre, y las tres por **licencia**
+y no por diseño. Hoy son dos, las dos OFL de Google y las dos variables:
+**Big Shoulders Display** en display y **Jost** en cuerpo (400) y eyebrows (500).
+El detalle está en el encabezado de `globals.css` y en `public/fonts/_drop/LEEME.md`.
 
 ---
 

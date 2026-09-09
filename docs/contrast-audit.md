@@ -105,14 +105,59 @@ Implementado en la utilidad `link-texto` de `globals.css`.
 
 ---
 
+## El acento del titular — agregado el 9 de septiembre de 2026
+
+El rediseño sumó un acento tipográfico dentro del titular, en **color y no en
+itálica**. Necesita **dos** colores y no uno, y este es el motivo medido:
+
+| Par | Uso | Ratio | Veredicto |
+|---|---|---|---|
+| `sunset` sobre `paper` | acento sobre claro | **2.48:1** | ❌ no llega ni al 3:1 de texto grande |
+| `terra` sobre `paper` | acento sobre claro | **7.43:1** | ✅ AAA |
+| `terra` sobre `cream` | acento sobre crema | **6.47:1** | ✅ AA |
+| `sunset` sobre `deep` | acento sobre oscuro | **4.26:1** | ✅ AA |
+
+Medidos y descartados para claro: `river` 2.43:1 (falla), `tomato` 3.77:1 (pasa
+raspando, sólo texto grande), `plum` 13.15:1 y `deep` 10.55:1 (pasan, pero
+siendo oscuros como el titular el acento no se lee como acento).
+
+**Regla:** sobre superficie clara el acento es `terra`; sobre `deep` es
+`sunset`. Lo encapsula el componente `Accent`, cuya prop es la **superficie** y
+no el color, justamente para que nadie tenga que acordarse de esto.
+
+---
+
+## Colores COMPUESTOS — lo que esta tabla no puede prever
+
+⚠️ Tres fallos reales de esta sesión, y los tres los encontró `npm run a11y`
+midiendo el píxel renderizado, no esta tabla:
+
+| Dónde | Declarado | Medido | Arreglo |
+|---|---|---|---|
+| Rótulo «video» del muro | `paper/55` sobre `paper/12` sobre `deep` | **3.51:1** | `paper/75` → 5.08:1 |
+| Rótulos Bar/Trucks de FindUs | `body/60` sobre `paper` | **3.92:1** | `body/70` → 5.30:1 |
+| Número inactivo de PinnedList | `body/45` sobre `paper` | **2.61:1** | `body/65` → 4.57:1 |
+
+Los tres son **una opacidad sobre otra**, o una opacidad sobre un fondo que ya
+es una opacidad. Un par de paleta no los describe: el color real no está
+declarado en ninguna parte, sale de la composición.
+
+⚠️ Y el tercero enseña algo más: axe marca el contraste **aunque el elemento
+sea `aria-hidden`**. Tiene razón — sigue siendo texto visible para quien ve,
+aunque no lo lea un lector de pantalla. Esconder algo del árbol de
+accesibilidad no es una salida para un contraste que no pasa.
+
+---
+
 ## Lo que todavía no está cubierto
 
 Esta tabla cubre los pares del **sistema**. Falta verificar, cuando existan:
 
-- **Texto sobre fotografía.** No hay ningún par medido todavía porque el hero está sin
-  cerrar. Cualquier texto sobre imagen necesita un velo opaco detrás, y el par real se
-  mide sobre el color compuesto — no sobre el color declarado, que es el error clásico
-  que ningún checker automático detecta.
+- **Texto sobre fotografía.** Ya no aplica al hero —se quedó sin foto de fondo y
+  hoy es `deep` sólido, donde `paper` da 15.4:1 sin depender de nada—, pero
+  sigue valiendo para cualquier texto que se ponga sobre imagen en otra página.
+  El par real se mide sobre el color compuesto y no sobre el declarado, que es
+  el error clásico que ningún checker automático detecta.
 - **El patrón de azulejo**, que hoy es un placeholder propio. Cuando llegue el asset real
   hay que medir el contraste de lo que se apoye encima.
 - **Estados de error de formulario.** Van con texto además de color (requisito de Fase 4),
