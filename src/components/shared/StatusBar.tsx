@@ -102,7 +102,25 @@ export default function StatusBar() {
        ya oscuro y el hero también, esa píldora quedaba como una pastilla
        amarilla pegada en el medio de la nada. Ahora es una FRANJA sobre
        `deeper`, integrada a la barra: informa sin pedir turno. */
-    <div className="flex max-w-full items-center gap-[12px] overflow-x-auto whitespace-nowrap">
+    /* ⚠️ `tabIndex`, `role` y `aria-label`: la franja DESBORDA y se scrollea a
+       mano en teléfonos —medido a 390px: 393 de contenido en 358 de caja—, y
+       una región scrolleable sin nada enfocable adentro es inalcanzable con
+       teclado. Es el fallo `scrollable-region-focusable` de axe, [serious], y
+       aparecía en las 20 páginas porque esta franja está en todas.
+
+       Preexistente, no lo trajo el cambio de tipografía: con Futura y Bronx
+       desbordaba igual (362 en 358). Las fuentes nuevas sólo lo ensanchan.
+
+       Es el patrón que ya usan los otros cinco contenedores con scroll del
+       repo —la tabla de precios del game truck, los horarios de /visit, el
+       calendario de /whats-on, las capacidades de EventVertical—. Este era el
+       único que se había quedado afuera. */
+    <div
+      tabIndex={0}
+      role="region"
+      aria-label="Today's hours, scrollable"
+      className="flex max-w-full items-center gap-[12px] overflow-x-auto whitespace-nowrap"
+    >
       <div className="flex items-center gap-[12px]">
         {/*
           El estado. El punto es decorativo: lo que informa es el TEXTO de al
