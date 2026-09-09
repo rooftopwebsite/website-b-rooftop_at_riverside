@@ -74,7 +74,7 @@ export default function EventsBanner() {
             {ITEMS.map((item) => (
               <li
                 key={item}
-                className="rounded-btn bg-deeper px-[18px] py-[14px] text-[15px] leading-[1.5] text-paper/90"
+                className="rounded-btn bg-deeper px-[18px] py-[14px] text-[16px] leading-[1.5] text-paper/90"
               >
                 {item}
               </li>

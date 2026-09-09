@@ -150,7 +150,7 @@ export default async function WhatsOnPage({
           <Heading level={2} className="text-d5 lg:text-d4">
             The standing lineup
           </Heading>
-          <div className="flex flex-col gap-[12px] text-[15px] leading-[1.7] text-body/80">
+          <div className="flex flex-col gap-[12px] text-[16px] leading-[1.7] text-body/80">
             <p>
               Most of what&rsquo;s here repeats every week — Wooftop Wednesdays, Bingo Night, Ross
               Brown on Thursdays, DJ David Cast on Saturdays. One-off shows and festivals show up on
@@ -192,7 +192,7 @@ function ListView({
                     <span className="font-display text-d5 uppercase transition-colors group-hover:text-deep">
                       {event.title}
                     </span>
-                    <span className="mt-[2px] text-[15px] leading-[1.5] text-body/75">
+                    <span className="mt-[2px] text-[16px] leading-[1.5] text-body/75">
                       {event.summary}
                     </span>
                   </span>

@@ -108,7 +108,7 @@ export default function Card({
       </Heading>
 
       {body ? (
-        <p className="mt-[8px] flex-1 text-[15px] leading-[1.6] text-body/75">{body}</p>
+        <p className="mt-[8px] flex-1 text-[16px] leading-[1.6] text-body/75">{body}</p>
       ) : null}
 
       {children}

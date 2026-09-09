@@ -96,9 +96,9 @@ export default function ContactPage() {
               <Heading level={2} role="card" className="mt-[8px]">
                 {r.title}
               </Heading>
-              <p className="mt-[10px] flex-1 text-[15px] leading-[1.65] text-body/75">{r.body}</p>
+              <p className="mt-[10px] flex-1 text-[16px] leading-[1.65] text-body/75">{r.body}</p>
 
-              <p className="mt-[18px] text-[15px]">
+              <p className="mt-[18px] text-[16px]">
                 <a href={`mailto:${r.email}`} className="link-texto break-all">
                   {r.email}
                 </a>
@@ -123,7 +123,7 @@ export default function ContactPage() {
         <dl className="mt-[28px] grid gap-[24px] sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <dt className="eyebrow text-body/75">Phone</dt>
-            <dd className="mt-[8px] text-[15px]">
+            <dd className="mt-[8px] text-[16px]">
               <a href={BRAND.contact.phoneHref} className="link-texto">
                 {BRAND.contact.phone}
               </a>
@@ -131,7 +131,7 @@ export default function ContactPage() {
           </div>
           <div>
             <dt className="eyebrow text-body/75">Address</dt>
-            <dd className="mt-[8px] text-[15px] leading-[1.55]">
+            <dd className="mt-[8px] text-[16px] leading-[1.55]">
               <a href={mapsUrl()} target="_blank" rel="noopener noreferrer" className="link-texto">
                 {addressLine()}
                 <span className="sr-only">(opens in a new tab)</span>
@@ -140,7 +140,7 @@ export default function ContactPage() {
           </div>
           <div>
             <dt className="eyebrow text-body/75">Instagram</dt>
-            <dd className="mt-[8px] text-[15px]">
+            <dd className="mt-[8px] text-[16px]">
               <a
                 href={BRAND.social.instagram}
                 target="_blank"
@@ -154,7 +154,7 @@ export default function ContactPage() {
           </div>
           <div>
             <dt className="eyebrow text-body/75">Gift cards</dt>
-            <dd className="mt-[8px] text-[15px]">
+            <dd className="mt-[8px] text-[16px]">
               <a
                 href={BRAND.giftCards}
                 target="_blank"
@@ -168,7 +168,7 @@ export default function ContactPage() {
           </div>
         </dl>
 
-        <p className="mt-[28px] max-w-[62ch] text-[15px] leading-[1.65] text-body/75">
+        <p className="mt-[28px] max-w-[62ch] text-[16px] leading-[1.65] text-body/75">
           We don&rsquo;t take table reservations and we don&rsquo;t deliver. For a group of eight or
           more on a weekend in season, message ahead and we&rsquo;ll do what we can.
         </p>

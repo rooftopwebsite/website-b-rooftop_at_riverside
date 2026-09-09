@@ -85,7 +85,7 @@ export default function SpacesPage() {
           <Heading level={2} className="text-d5 lg:text-d4">
             What comes with every space
           </Heading>
-          <ul className="flex flex-col gap-[10px] text-[15px] leading-[1.7] text-body/80">
+          <ul className="flex flex-col gap-[10px] text-[16px] leading-[1.7] text-body/80">
             <li className="border-b border-ink/12 pb-[10px]">
               The Sunset Bar and our team running it.
             </li>
@@ -161,7 +161,7 @@ function SpaceCard({ space, flipped }: { readonly space: Space; readonly flipped
           {space.name}
         </Heading>
 
-        <p className="mt-[12px] max-w-[52ch] text-[15px] leading-[1.65] text-body/75">
+        <p className="mt-[12px] max-w-[52ch] text-[16px] leading-[1.65] text-body/75">
           {space.description}
         </p>
 

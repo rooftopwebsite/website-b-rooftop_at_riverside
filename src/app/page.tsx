@@ -5,7 +5,6 @@ import FindUs from '@/components/sections/FindUs';
 import { HowThisPlaceWorks } from '@/components/sections/HomeSections';
 import ThreeDoors from '@/components/sections/ThreeDoors';
 import WhatsOn from '@/components/sections/WhatsOn';
-import Scallop from '@/components/shared/Scallop';
 import { pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
@@ -49,14 +48,14 @@ export default function HomePage() {
       <Hero />
 
       {/*
-        Festón sólo donde la superficie CAMBIA de verdad. Uno solo en la home:
-        la entrada del hero oscuro a la crema de `WhatsOn`. Puesto en cada corte
-        dejaría de ser un gesto de marca y sería un patrón de fondo.
+        ⚠️ ACÁ IBA UN `<Scallop>`, el festón de marca. Se dio de baja con la
+        banda crema: marcaba la entrada del hero oscuro a la crema de `WhatsOn`,
+        y `WhatsOn` ya no es crema. Un festón entre hueso y hueso no separa nada
+        — sería un adorno, que es justo lo que este refinamiento vino a sacar.
 
-        ⚠️ Antes eran dos porque había dos entradas a crema. Al fusionar
-        `ThisWeek` en `WhatsOn` quedó una sola.
+        El componente sigue existiendo por si vuelve a haber un cambio de
+        superficie que valga la pena marcar.
       */}
-      <Scallop from="paper" to="cream" />
       <WhatsOn />
 
       <HowThisPlaceWorks />

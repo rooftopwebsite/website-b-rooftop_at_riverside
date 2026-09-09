@@ -169,7 +169,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             </div>
 
             <div className="mt-[32px] border-t border-ink/15 pt-[24px]">
-              <p className="max-w-[60ch] text-[15px] leading-[1.65] text-body/75">
+              <p className="max-w-[60ch] text-[16px] leading-[1.65] text-body/75">
                 Food comes from whichever trucks are in the yard that night — each takes its own
                 orders. Drinks are at the Sunset Bar upstairs.
               </p>
@@ -184,11 +184,11 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               </div>
               <div className="py-[18px]">
                 <dt className="eyebrow text-body/75">Time</dt>
-                <dd className="mt-[6px] text-[15px] tabular-nums">{timeRange(event)}</dd>
+                <dd className="mt-[6px] text-[16px] tabular-nums">{timeRange(event)}</dd>
               </div>
               <div className="py-[18px]">
                 <dt className="eyebrow text-body/75">Where</dt>
-                <dd className="mt-[6px] text-[15px]">
+                <dd className="mt-[6px] text-[16px]">
                   {event.space}
                   <br />
                   <span className="text-body/75">{addressLine()}</span>
@@ -196,7 +196,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               </div>
               <div className="py-[18px]">
                 <dt className="eyebrow text-body/75">Entry</dt>
-                <dd className="mt-[6px] text-[15px]">
+                <dd className="mt-[6px] text-[16px]">
                   {isTicketed ? `Ticketed · $${event.price}` : 'Free, no ticket needed'}
                 </dd>
               </div>

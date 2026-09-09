@@ -78,7 +78,7 @@ export default function TheExperiencePage() {
             <dl className="flex flex-col divide-y divide-ink/12 border-y border-ink/12">
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
                 <dt className="eyebrow text-body/75">Platforms</dt>
-                <dd className="text-[15px] font-bold">{PLATFORMS.join(' · ')}</dd>
+                <dd className="text-[16px] font-bold">{PLATFORMS.join(' · ')}</dd>
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
                 <dt className="eyebrow text-body/75">Consoles</dt>
@@ -94,19 +94,19 @@ export default function TheExperiencePage() {
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
                 <dt className="eyebrow text-body/75">Ratings</dt>
-                <dd className="text-[15px]">E for Everyone through M for Mature</dd>
+                <dd className="text-[16px]">E for Everyone through M for Mature</dd>
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
                 <dt className="eyebrow text-body/75">Staffed</dt>
-                <dd className="text-[15px]">A Game Coach runs every session</dd>
+                <dd className="text-[16px]">A Game Coach runs every session</dd>
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
                 <dt className="eyebrow text-body/75">Climate</dt>
-                <dd className="text-[15px]">Air conditioned</dd>
+                <dd className="text-[16px]">Air conditioned</dd>
               </div>
             </dl>
 
-            <p className="mt-[20px] max-w-[60ch] text-[14px] leading-[1.6] text-body/75">
+            <p className="mt-[20px] max-w-[60ch] text-[15px] leading-[1.6] text-body/75">
               Console and screen counts are marked pending because the numbers we have don&rsquo;t
               agree with each other. We&rsquo;d rather show a gap than a wrong number.
             </p>
@@ -139,7 +139,7 @@ export default function TheExperiencePage() {
             <p className="mt-[10px] font-display text-d2 uppercase">
               $10<span className="text-d5"> / 30 min</span>
             </p>
-            <p className="mt-[10px] text-[15px] leading-[1.6] text-body/75">
+            <p className="mt-[10px] text-[16px] leading-[1.6] text-body/75">
               Per person, plus tax. Keep going for $5 every extra 15 minutes.
             </p>
           </RevealItem>
@@ -149,14 +149,14 @@ export default function TheExperiencePage() {
             <p className="mt-[10px] font-display text-d2 uppercase">
               $400<span className="text-d5"> / 2 hrs</span>
             </p>
-            <p className="mt-[10px] text-[15px] leading-[1.6] text-body/75">
+            <p className="mt-[10px] text-[16px] leading-[1.6] text-body/75">
               Monday to Thursday, extra hour $200. Friday to Sunday it&rsquo;s $500 for two hours,
               extra hour $250. Includes the Game Coach and the full library.
             </p>
           </RevealItem>
         </StaggerGroup>
 
-        <p className="mt-[24px] max-w-[62ch] text-[14px] leading-[1.6] text-body/75">
+        <p className="mt-[24px] max-w-[62ch] text-[15px] leading-[1.6] text-body/75">
           Pricing carried over from the current site. Confirm before booking — a waiver is required
           to play.
         </p>

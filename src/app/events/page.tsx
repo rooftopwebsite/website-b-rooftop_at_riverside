@@ -141,11 +141,11 @@ export default function EventsPage() {
           {WHAT_WE_DO.map((w) => (
             <RevealItem as="li" key={w.title} className="border-t-2 border-ink pt-[18px]">
               <Heading level={3}>{w.title}</Heading>
-              <p className="mt-[10px] text-[15px] leading-[1.65] text-body/75">{w.body}</p>
+              <p className="mt-[10px] text-[16px] leading-[1.65] text-body/75">{w.body}</p>
             </RevealItem>
           ))}
         </StaggerGroup>
-        <p className="mt-[32px] max-w-[62ch] text-[15px] leading-[1.65] text-body/75">
+        <p className="mt-[32px] max-w-[62ch] text-[16px] leading-[1.65] text-body/75">
           We don&rsquo;t have a kitchen of our own, and we don&rsquo;t pretend to. What you get
           instead is four different menus in one yard — which is a better problem to hand a room of
           two hundred people than one set entrée.
@@ -181,7 +181,7 @@ export default function EventsPage() {
               <Heading level={3} className="mt-[10px]">
                 {s.title}
               </Heading>
-              <p className="mt-[10px] flex-1 text-[15px] leading-[1.65] text-body/75">{s.body}</p>
+              <p className="mt-[10px] flex-1 text-[16px] leading-[1.65] text-body/75">{s.body}</p>
               <div className="mt-[18px]">
                 <ButtonLink href={s.href} variant="outline">
                   {s.cta}
@@ -213,7 +213,7 @@ export default function EventsPage() {
             <Heading level={2} id="proof-title" className="text-d5 lg:text-d4">
               People downtown for one night
             </Heading>
-            <p className="mt-[12px] max-w-[52ch] text-[15px] leading-[1.65] text-body/75">
+            <p className="mt-[12px] max-w-[52ch] text-[16px] leading-[1.65] text-body/75">
               That&rsquo;s what the Fourth of July pulled into downtown Bonita Springs. The yard sits
               in the middle of it, on Old 41, across from Riverside Park. For a brand activation or
               a fundraiser, that footfall is the room.
@@ -246,7 +246,7 @@ export default function EventsPage() {
                 <Heading level={3} className="mt-[18px]">
                   {v.title}
                 </Heading>
-                <p className="mt-[8px] flex-1 text-[15px] leading-[1.6] text-body/75">{v.body}</p>
+                <p className="mt-[8px] flex-1 text-[16px] leading-[1.6] text-body/75">{v.body}</p>
                 <span
                   aria-hidden="true"
                   className="mt-[14px] text-caption font-bold uppercase tracking-[0.14em] underline decoration-ink/45 decoration-1 underline-offset-4 transition-[text-decoration-color] group-hover:decoration-sunset group-hover:decoration-2"
@@ -268,7 +268,7 @@ export default function EventsPage() {
               <Heading level={3} className="mt-[6px]">
                 The gaming truck
               </Heading>
-              <span className="mt-[6px] block text-[15px] text-body/75">
+              <span className="mt-[6px] block text-[16px] text-body/75">
                 Consoles, screens and a Game Coach, parked at your event.
               </span>
             </span>
@@ -282,7 +282,7 @@ export default function EventsPage() {
               <Heading level={3} className="mt-[6px]">
                 The spaces
               </Heading>
-              <span className="mt-[6px] block text-[15px] text-body/75">
+              <span className="mt-[6px] block text-[16px] text-body/75">
                 Four rooms, from the rooftop to a full buyout.
               </span>
             </span>

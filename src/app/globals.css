@@ -128,11 +128,33 @@
   --color-plum: #402639;
   --color-magenta: #a24584;
 
-  --color-ink: #101418; /* titulares sobre claro. No #000 */
+  /* ── El color del texto ─────────────────────────────────────────────────
+     ⚠️ UNO SOLO, y es el verde de la marca. `ink` y `body` apuntan al MISMO
+     valor a propósito.
+
+     Había dos: `ink` #101418 para títulos y `body` #2a2b28 para cuerpo. Ni uno
+     ni otro pertenecía a la paleta —eran grises de sistema— y entre los dos
+     hacían el mismo trabajo con dos tonos distintos. Medido contra
+     superside.com, que fue la referencia que puso Camila: ellos tienen UN color
+     de texto, `#0a211f`, en 234 nodos, y es su verde oscuro de marca. Nosotros
+     teníamos ocho colores de texto en la home contra sus cuatro.
+
+     `#0A1F1E` es `deep` llevado a casi negro. El texto pasa a pertenecer a la
+     marca en vez de ser un gris cualquiera, y eso es lo que hace que una página
+     se lea diseñada.
+
+     Contraste: 16.65:1 sobre `paper`, 15.19:1 sobre `bone`. Holgura de sobra.
+
+     ⚠️ Los DOS tokens se mantienen, no se fusionan en uno. Los usan 163 call
+     sites entre `text-ink` y `text-body`, y renombrarlos sería un cambio
+     mecánico enorme con riesgo de romper algo por un reemplazo mal puesto. Los
+     nombres además siguen diciendo la intención —titular contra cuerpo—, así
+     que si mañana hay motivo para que diverjan, el token ya está.           */
+  --color-ink: #0a1f1e; /* titulares sobre claro */
   --color-paper: #fdfcf7; /* fondo base: hueso cálido, NO blanco */
   --color-bone: #f7f1e3; /* banda alterna, un tono más cálido que paper */
   --color-chalk: #ffffff; /* blanco real: SÓLO tarjetas que deben separarse del hueso */
-  --color-body: #2a2b28; /* cuerpo de texto sobre claro */
+  --color-body: #0a1f1e; /* cuerpo de texto — MISMO valor que `ink`, ver arriba */
   --color-fog: #e6e1d4; /* filetes y bordes, calibrado sobre hueso y no sobre blanco */
 
   /* ── Tipografías ─────────────────────────────────────────────────────────
@@ -345,16 +367,31 @@
      lenguaje general. Las cuatro usan radios CHICOS, de 4 a 12px.
 
      Así que:
-       · controles y tarjetas → radio chico (8 / 14 / 20)
+       · controles y tarjetas → radio chico
        · `pill` sobrevive sólo para lo que de verdad es una etiqueta: chips,
          badges, el riel de progreso. No para botones ni tarjetas.
        · el CHAFLÁN (ver `.chaflan` abajo) queda reservado para las losas
-         oscuras, que es de donde sale la firma de Showdown.                */
+         oscuras, que es de donde sale la firma de Showdown.
+
+     ⚠️ AHORA HAY UN SOLO RADIO: 10px, más la píldora.
+
+     Había cinco valores distintos —8, 10, 14, 20 y pill— y se veían todos en la
+     misma pantalla: un botón de 8 al lado de una card de 14 dentro de un panel
+     de 20. Eso no se lee como un sistema, se lee como decisiones sueltas, y era
+     una de las cinco causas medidas del «se percibe tosco».
+
+     Medido en superside.com: **10px en 88 nodos**, píldoras en 13, y un 4px
+     residual en 3. Un radio dominante y una excepción con oficio.
+
+     ⚠️ Los NOMBRES se mantienen aunque hoy compartan valor. `--radius-btn` y
+     `--radius-card` dicen para qué es cada cosa, y el día que alguno tenga
+     motivo para divergir el token ya existe y no hay que ir a buscar los call
+     sites. Cambiar el valor acá cambia el sitio entero; ese es el punto.     */
   --radius-pill: 9999px;
-  --radius-btn: 8px;
-  --radius-card: 14px;
-  --radius-panel: 20px;
-  --radius-input: 8px;
+  --radius-btn: 10px;
+  --radius-card: 10px;
+  --radius-panel: 10px;
+  --radius-input: 10px;
   --radius-image: 10px;
 
   /* ⚠️ `--color-fog` y `--color-linen` VIVÍAN ACÁ y eran grises fríos

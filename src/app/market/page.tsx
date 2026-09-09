@@ -73,15 +73,15 @@ export default function MarketPage() {
             </div>
             <div className="flex items-baseline justify-between gap-[16px] py-[16px]">
               <dt className="eyebrow text-body/75">Space</dt>
-              <dd className="text-[15px] font-bold">10 × 10 ft</dd>
+              <dd className="text-[16px] font-bold">10 × 10 ft</dd>
             </div>
             <div className="flex items-baseline justify-between gap-[16px] py-[16px]">
               <dt className="eyebrow text-body/75">Pop-up tents</dt>
-              <dd className="text-[15px] font-bold">Allowed</dd>
+              <dd className="text-[16px] font-bold">Allowed</dd>
             </div>
             <div className="flex items-baseline justify-between gap-[16px] py-[16px]">
               <dt className="eyebrow text-body/75">Power</dt>
-              <dd className="text-[15px] font-bold">On request</dd>
+              <dd className="text-[16px] font-bold">On request</dd>
             </div>
             <div className="flex items-baseline justify-between gap-[16px] py-[16px]">
               <dt className="eyebrow text-body/75">Next dates</dt>
@@ -91,7 +91,7 @@ export default function MarketPage() {
             </div>
           </dl>
 
-          <div className="flex flex-col gap-[14px] text-[15px] leading-[1.7] text-body/80">
+          <div className="flex flex-col gap-[14px] text-[16px] leading-[1.7] text-body/80">
             <p>
               Spots are first come, first served and get approved at check-in. Anything bigger than
               10 × 10 needs the OK ahead of time.

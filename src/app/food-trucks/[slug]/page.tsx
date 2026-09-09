@@ -152,11 +152,11 @@ export default async function TruckPage({ params }: { params: Promise<{ slug: st
               </div>
               <div className="py-[18px]">
                 <dt className="eyebrow text-body/75">Known for</dt>
-                <dd className="mt-[6px] text-[15px] leading-[1.6]">{truck.specialty}</dd>
+                <dd className="mt-[6px] text-[16px] leading-[1.6]">{truck.specialty}</dd>
               </div>
               <div className="py-[18px]">
                 <dt className="eyebrow text-body/75">When they&rsquo;re here</dt>
-                <dd className="mt-[6px] text-[15px] leading-[1.6]">
+                <dd className="mt-[6px] text-[16px] leading-[1.6]">
                   {truck.schedule ?? (
                     <>
                       The roster rotates.{' '}
@@ -169,7 +169,7 @@ export default async function TruckPage({ params }: { params: Promise<{ slug: st
               </div>
               <div className="py-[18px]">
                 <dt className="eyebrow text-body/75">Instagram</dt>
-                <dd className="mt-[6px] text-[15px]">
+                <dd className="mt-[6px] text-[16px]">
                   {truck.instagram ? (
                     <a
                       href={truck.instagram}
@@ -188,7 +188,7 @@ export default async function TruckPage({ params }: { params: Promise<{ slug: st
               </div>
             </dl>
 
-            <p className="mt-[18px] text-[14px] leading-[1.6] text-body/75">
+            <p className="mt-[18px] text-[15px] leading-[1.6] text-body/75">
               {truck.name} takes its own orders and its own payment. Drinks come from the Sunset Bar
               upstairs.
             </p>

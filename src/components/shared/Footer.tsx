@@ -80,7 +80,7 @@ const COLUMNAS = [
  * necesitan para no apretarse.
  */
 const LINK_BASE =
-  'block py-[7px] font-body text-[14px] leading-[1.4] tracking-[0.08em] uppercase text-paper/70 transition-colors duration-200 hover:text-paper';
+  'block py-[7px] font-body text-[15px] leading-[1.4] tracking-[0.08em] uppercase text-paper/70 transition-colors duration-200 hover:text-paper';
 
 export default function Footer() {
   return (
@@ -100,7 +100,7 @@ export default function Footer() {
               <span className="sr-only">{BRAND.name}</span>
             </Link>
 
-            <p className="max-w-[34ch] text-[15px] leading-[1.6] text-paper/80">
+            <p className="max-w-[34ch] text-[16px] leading-[1.6] text-paper/80">
               A rooftop bar over a curated food truck park, in downtown Bonita Springs.
             </p>
 

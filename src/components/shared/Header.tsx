@@ -213,7 +213,7 @@ export default function Header() {
                           aria-current={isCurrent(href) ? 'page' : undefined}
                           className="block rounded-input px-[12px] py-[10px] transition-colors duration-200 hover:bg-ink/[0.04]"
                         >
-                          <span className="block font-body text-[15px] font-medium text-ink">
+                          <span className="block font-body text-[16px] font-medium text-ink">
                             {label}
                           </span>
                           {hint ? (

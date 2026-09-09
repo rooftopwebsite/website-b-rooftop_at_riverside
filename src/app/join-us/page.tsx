@@ -89,7 +89,7 @@ export default function JoinUsPage() {
                 <Heading level={2} className="mt-[8px] text-d4 lg:text-d3">
                   {t.title}
                 </Heading>
-                <p className="mt-[14px] max-w-[52ch] text-[15px] leading-[1.7] text-body/80">
+                <p className="mt-[14px] max-w-[52ch] text-[16px] leading-[1.7] text-body/80">
                   {t.body}
                 </p>
                 <div className="mt-[24px]">
@@ -104,7 +104,7 @@ export default function JoinUsPage() {
                   What to include
                 </Heading>
                 <span aria-hidden="true" className="mt-[8px] block h-[2px] w-[28px] bg-river" />
-                <ul className="mt-[14px] flex flex-col gap-[8px] text-[15px] leading-[1.6] text-body/80">
+                <ul className="mt-[14px] flex flex-col gap-[8px] text-[16px] leading-[1.6] text-body/80">
                   {t.what.map((w) => (
                     <li key={w} className="border-b border-ink/10 pb-[8px] last:border-0">
                       {w}
@@ -130,7 +130,7 @@ export default function JoinUsPage() {
           <Heading level={2} className="text-d5 lg:text-d4">
             Selling handmade goods?
           </Heading>
-          <div className="flex flex-col gap-[12px] text-[15px] leading-[1.7] text-body/80">
+          <div className="flex flex-col gap-[12px] text-[16px] leading-[1.7] text-body/80">
             <p>
               That&rsquo;s the Neighborhood Market, and it works differently — a $30 spot for the
               afternoon rather than an ongoing arrangement.

@@ -59,7 +59,7 @@ export default function FoodTrucksPage() {
           <Heading level={2} id="how-pay" className="text-d5 lg:text-d4">
             One yard, five registers
           </Heading>
-          <div className="flex flex-col gap-[14px] text-[15px] leading-[1.7] text-body/80">
+          <div className="flex flex-col gap-[14px] text-[16px] leading-[1.7] text-body/80">
             <p>
               Every truck runs its own business. You order at the window you want and you pay that
               truck — separate line, separate card, separate receipt.

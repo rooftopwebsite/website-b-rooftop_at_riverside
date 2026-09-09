@@ -67,7 +67,7 @@ export default function EventVertical({ config }: { readonly config: VerticalCon
           {config.highlights.map((h) => (
             <RevealItem as="li" key={h.title} className="border-t-2 border-ink pt-[18px]">
               <Heading level={3}>{h.title}</Heading>
-              <p className="mt-[10px] text-[15px] leading-[1.65] text-body/75">{h.body}</p>
+              <p className="mt-[10px] text-[16px] leading-[1.65] text-body/75">{h.body}</p>
             </RevealItem>
           ))}
         </StaggerGroup>
@@ -82,7 +82,7 @@ export default function EventVertical({ config }: { readonly config: VerticalCon
             {config.formats.map((f) => (
               <li
                 key={f}
-                className="rounded-pill border border-ink/25 bg-paper px-[16px] py-[8px] text-[15px]"
+                className="rounded-pill border border-ink/25 bg-paper px-[16px] py-[8px] text-[16px]"
               >
                 {f}
               </li>
@@ -102,7 +102,7 @@ export default function EventVertical({ config }: { readonly config: VerticalCon
           lead="Numbers are pending — we're not estimating them."
         />
         <div className="mt-[32px] overflow-x-auto" tabIndex={0} role="region" aria-label="Space capacities, scrollable">
-          <table className="w-full min-w-[560px] border-collapse text-[15px]">
+          <table className="w-full min-w-[560px] border-collapse text-[16px]">
             <caption className="sr-only">Event space capacities at Rooftop at Riverside</caption>
             <thead>
               <tr className="border-b-2 border-ink">

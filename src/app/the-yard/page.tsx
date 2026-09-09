@@ -81,7 +81,7 @@ export default function TheYardPage() {
                   <Heading level={3} className="mt-[10px]">
                     {e.title}
                   </Heading>
-                  <p className="mt-[10px] flex-1 text-[15px] leading-[1.6] text-body/75">
+                  <p className="mt-[10px] flex-1 text-[16px] leading-[1.6] text-body/75">
                     {e.summary}
                   </p>
                   <p className="mt-[12px] text-caption font-bold tabular-nums text-body/75">
@@ -170,7 +170,7 @@ export default function TheYardPage() {
           <Heading level={2} className="text-d5 lg:text-d4">
             Or take the yard yourself
           </Heading>
-          <div className="flex flex-col gap-[14px] text-[15px] leading-[1.7] text-body/80">
+          <div className="flex flex-col gap-[14px] text-[16px] leading-[1.7] text-body/80">
             <p>
               The gate means the yard can be closed off and run as its own room — a ticketed door, a
               private festival, a fundraiser with a headcount you actually control.

@@ -55,7 +55,7 @@ export default function VisitPage() {
         </div>
 
         <div className="mt-[32px] overflow-x-auto" tabIndex={0} role="region" aria-label="Opening hours, scrollable">
-          <table className="w-full min-w-[520px] border-collapse text-[15px]">
+          <table className="w-full min-w-[520px] border-collapse text-[16px]">
             <caption className="sr-only">Opening hours for the bar and the food trucks</caption>
             <thead>
               <tr className="border-b-2 border-ink">
@@ -84,14 +84,14 @@ export default function VisitPage() {
           </table>
         </div>
 
-        <p className="mt-[20px] text-[15px] text-body/75">
+        <p className="mt-[20px] text-[16px] text-body/75">
           <span className="eyebrow text-deep">Happy hour</span>{' '}
           <span className="ml-[6px]">
             {HAPPY_HOUR.days}, {HAPPY_HOUR.time} — {HAPPY_HOUR.deals.join(' · ')}
           </span>
         </p>
 
-        <p className="mt-[16px] max-w-[62ch] text-[15px] leading-[1.65] text-body/75">
+        <p className="mt-[16px] max-w-[62ch] text-[16px] leading-[1.65] text-body/75">
           High season runs December through April, when the calendar is fullest and the yard is
           busiest.
         </p>
@@ -107,7 +107,7 @@ export default function VisitPage() {
         />
 
         <div className="mt-[32px] grid gap-[28px] lg:grid-cols-2 lg:gap-[56px]">
-          <ul className="flex flex-col gap-[14px] text-[15px] leading-[1.7] text-body/80">
+          <ul className="flex flex-col gap-[14px] text-[16px] leading-[1.7] text-body/80">
             <li className="border-b border-ink/15 pb-[14px]">
               <strong className="font-bold">Street parking on Old 41.</strong> Directly out front
               and along the block, free.
@@ -164,14 +164,14 @@ export default function VisitPage() {
 
             <div>
               <Eyebrow tone="deep">Neighborhood</Eyebrow>
-              <p className="mt-[6px] text-[15px] leading-[1.65] text-body/75">
+              <p className="mt-[6px] text-[16px] leading-[1.65] text-body/75">
                 {BRAND.address.neighborhood}.
               </p>
             </div>
 
             <div>
               <Eyebrow tone="deep">Contact</Eyebrow>
-              <p className="mt-[6px] flex flex-col gap-[4px] text-[15px]">
+              <p className="mt-[6px] flex flex-col gap-[4px] text-[16px]">
                 <a href={BRAND.contact.phoneHref} className="link-texto">
                   {BRAND.contact.phone}
                 </a>

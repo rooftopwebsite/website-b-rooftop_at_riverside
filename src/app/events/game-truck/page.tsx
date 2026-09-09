@@ -67,7 +67,7 @@ export default function GameTruckPage() {
         />
 
         <div className="mt-[40px] overflow-x-auto" tabIndex={0} role="region" aria-label="Gaming truck pricing, scrollable">
-          <table className="w-full min-w-[520px] border-collapse text-[15px]">
+          <table className="w-full min-w-[520px] border-collapse text-[16px]">
             <caption className="sr-only">Gaming truck party pricing</caption>
             <thead>
               <tr className="border-b-2 border-ink">
@@ -115,7 +115,7 @@ export default function GameTruckPage() {
               What&rsquo;s included
             </Heading>
             <span aria-hidden="true" className="mt-[8px] block h-[2px] w-[28px] bg-river" />
-            <ul className="mt-[14px] flex flex-col gap-[8px] text-[15px] leading-[1.65] text-body/80">
+            <ul className="mt-[14px] flex flex-col gap-[8px] text-[16px] leading-[1.65] text-body/80">
               <li className="border-b border-ink/12 pb-[8px]">A Game Coach for the full session</li>
               <li className="border-b border-ink/12 pb-[8px]">
                 PlayStation 5, Xbox Series X and Nintendo Switch 2
@@ -139,7 +139,7 @@ export default function GameTruckPage() {
               {GOOD_FOR.map((g) => (
                 <li
                   key={g}
-                  className="rounded-pill border border-ink/20 px-[14px] py-[7px] text-[14px]"
+                  className="rounded-pill border border-ink/20 px-[14px] py-[7px] text-[15px]"
                 >
                   {g}
                 </li>
@@ -154,7 +154,7 @@ export default function GameTruckPage() {
           <Heading level={2} className="text-d5 lg:text-d4">
             Before you book
           </Heading>
-          <div className="flex flex-col gap-[12px] text-[15px] leading-[1.7] text-body/80">
+          <div className="flex flex-col gap-[12px] text-[16px] leading-[1.7] text-body/80">
             <p>
               Every player signs a waiver. For under-18s a parent or guardian signs, and we can send
               it ahead so nobody fills in paperwork at the door.

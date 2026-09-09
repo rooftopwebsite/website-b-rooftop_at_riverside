@@ -18,6 +18,28 @@ import { GUTTER } from './Section';
  * Contrastes verificados en the-orient, y valen igual acá porque la barra trae
  * su propio fondo claro: `#5c5c5c` sobre `#f5f5f5` da 6.13:1, y sobre el blanco
  * de la fila 6.69:1.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ESTE COMPONENTE NO SE AJUSTA AL SITIO. Camila: «el footer de la agencia
+ * debe quedar tal cual a los otros proyectos de la agencia».
+ *
+ * Es la firma de la casa y tiene que verse IGUAL en todos los sitios, así que
+ * sus medidas están copiadas de the-orient y NO siguen los tokens de Rooftop:
+ *
+ *   powered by      16px   (text-base)      logo         24px  (h-6)
+ *   tagline desktop 14px   (text-sm)        pastilla     px-16 py-6
+ *   año desktop     14px   (text-sm)        fila desktop 72px de alto
+ *   tagline mobile  12px   (text-xs)        separador    40px (h-10)
+ *   año mobile      14px   (text-sm)        filete móvil 283px
+ *
+ * Lo ÚNICO que cambia por proyecto es la fuente auxiliar: acá `font-body`
+ * (Jost), en the-orient DM Sans.
+ *
+ * ⚠️ Ya se rompió una vez: un reemplazo masivo que subió el piso de texto del
+ * sitio (15px → 16, 14px → 15) se llevó puesto este archivo y dejó el tagline
+ * y el año en 15px. Si volvés a hacer un cambio global de tamaños, EXCLUÍ este
+ * archivo.
+ * ══════════════════════════════════════════════════════════════════════════
  */
 export default function AgencyBar() {
   const poweredBy = (
@@ -35,7 +57,7 @@ export default function AgencyBar() {
       aria-label={`Powered by ${AGENCY.label}, visit restoexp.com (opens in a new tab)`}
       className="flex max-w-full flex-wrap items-center justify-center gap-x-[12px] gap-y-[4px] rounded-pill bg-[#f5f5f5] px-[16px] py-[6px] transition-opacity duration-200 hover:opacity-80"
     >
-      <span className="font-body text-[15px] leading-none whitespace-nowrap text-[#5c5c5c]">
+      <span className="font-body text-[16px] leading-none whitespace-nowrap text-[#5c5c5c]">
         powered by
       </span>
       {/* eslint-disable-next-line @next/next/no-img-element -- SVG estático de
@@ -74,7 +96,7 @@ export default function AgencyBar() {
           aria-hidden="true"
           className="h-px w-[283px] max-w-full bg-gradient-to-r from-transparent via-[#7c7c7c]/50 to-transparent opacity-70"
         />
-        <div className="flex flex-wrap items-center justify-center gap-x-[12px] gap-y-[2px] text-center">
+        <div className="flex flex-wrap items-center justify-center gap-x-[12px] gap-y-[4px] text-center">
           <p className="font-body text-[12px] leading-[1.3] text-[#5c5c5c]">{AGENCY.tagline}</p>
           <p className="font-body text-[14px] leading-[1.3] text-[#5c5c5c]">{año}</p>
         </div>

@@ -79,7 +79,7 @@ export default function FaqPage() {
                       </svg>
                     </span>
                   </summary>
-                  <p className="pb-[18px] pr-[42px] text-[15px] leading-[1.7] text-body/80">
+                  <p className="pb-[18px] pr-[42px] text-[16px] leading-[1.7] text-body/80">
                     {f.a}
                   </p>
                 </details>
@@ -95,7 +95,7 @@ export default function FaqPage() {
             <Heading level={2} className="text-d5 lg:text-d4">
               Still stuck?
             </Heading>
-            <p className="mt-[8px] text-[15px] text-body/75">
+            <p className="mt-[8px] text-[16px] text-body/75">
               Call{' '}
               <a href={BRAND.contact.phoneHref} className="link-texto">
                 {BRAND.contact.phone}

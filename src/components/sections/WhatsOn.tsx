@@ -57,14 +57,31 @@ function venueWeekday(): Weekday {
 /**
  * Los tres colores de bloque, en orden.
  *
- * ⚠️ El texto de cada uno NO es intercambiable. Sobre `sunset` va `ink`
- * (8.26:1); `paper` daría 2.54:1 y es el error que más veces estuvo a punto de
- * colarse en este proyecto.
+ * ⚠️ El primero era `sunset`. Se cambió a `deep` en el refinamiento visual, y
+ * el motivo está medido: esa card sola —413×200— era **82.600 px², el 81% de
+ * todo el naranja de la home**. Camila pidió «el naranja solo en puntos muy
+ * claves», y una card de eventos no es un punto clave: un CTA sí.
+ *
+ * Sigue habiendo tres superficies distintas, así que la fila no se aplana. Lo
+ * que cambia es que la primera deja de gritar.
+ *
+ * ⚠️ Las dos claras llevan FILETE de 1px y las dos son `chalk`. Al sacar la
+ * banda crema quedaron sobre hueso, y ahí `bone` y `chalk` dejaron de
+ * distinguirse del fondo: la tercera card flotaba sin borde. El filete las
+ * devuelve a ser objetos, y es el lenguaje de las referencias —estructura por
+ * filetes finos, no por relleno—.
+ *
+ * Que las dos sean iguales es deliberado: la primera es la de HOY y el verde
+ * es lo que la ancla. Tres colores distintos competían entre sí; uno oscuro y
+ * dos neutras dicen cuál importa.
+ *
+ * ⚠️ El texto no es intercambiable: sobre `deep` va `paper`, sobre `chalk` va
+ * `ink`.
  */
 const BLOQUES = [
-  { fondo: 'bg-sunset', texto: 'text-ink', sub: 'text-ink/75', borde: 'border-ink/30' },
-  { fondo: 'bg-deep', texto: 'text-paper', sub: 'text-paper/75', borde: 'border-paper/30' },
-  { fondo: 'bg-chalk', texto: 'text-ink', sub: 'text-body/75', borde: 'border-ink/20' },
+  { fondo: 'bg-deep', filo: '', texto: 'text-paper', sub: 'text-paper/75', borde: 'border-paper/30' },
+  { fondo: 'bg-chalk', filo: 'ring-1 ring-ink/10', texto: 'text-ink', sub: 'text-body/75', borde: 'border-ink/20' },
+  { fondo: 'bg-chalk', filo: 'ring-1 ring-ink/10', texto: 'text-ink', sub: 'text-body/75', borde: 'border-ink/20' },
 ] as const;
 
 function EventCard({
@@ -79,7 +96,7 @@ function EventCard({
   return (
     <Link
       href={`/whats-on/${evento.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-card"
+      className={`group flex h-full flex-col overflow-hidden rounded-card ${bloque.filo}`}
     >
       {/*
         La foto arriba. El `overflow-hidden` va acá y el zoom en la imagen: si
@@ -132,9 +149,11 @@ function EventCard({
           {evento.title}
         </Heading>
 
-        <p className={`mt-[8px] text-[14px] leading-[1.55] ${bloque.sub}`}>{evento.summary}</p>
+        <p className={`mt-[8px] text-[15px] leading-[1.55] ${bloque.sub}`}>{evento.summary}</p>
 
-        <span className={`mt-auto pt-[16px] eyebrow ${bloque.sub}`}>
+        {/* El pie es un dato —hora y espacio—, no una etiqueta de bloque. Iba
+            en versalita a 13px y competía con el tag de arriba, que sí lo es. */}
+        <span className={`mt-auto pt-[16px] font-body text-[15px] tabular-nums ${bloque.sub}`}>
           {timeRange(evento)} · {evento.space}
         </span>
       </div>
@@ -161,7 +180,7 @@ export default function WhatsOn() {
   const trucks = activeTrucks();
 
   return (
-    <Section tone="cream" band="lg" labelledBy="whats-on-title">
+    <Section band="lg" labelledBy="whats-on-title">
       <div className="flex flex-col gap-[10px] sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Eyebrow tone="deep">What&rsquo;s on</Eyebrow>
@@ -201,11 +220,11 @@ export default function WhatsOn() {
             All four trucks
           </ArrowLink>
         </div>
-        <p className="mt-[10px] text-[15px] leading-[1.6] text-body/75">
+        <p className="mt-[10px] text-[16px] leading-[1.6] text-body/75">
           {trucks.map((t) => t.name).join(' · ')}. The roster rotates, and each truck takes its own
           orders and its own payment.
         </p>
-        <p className="mt-[12px] text-[15px] text-body/75">
+        <p className="mt-[12px] text-[16px] text-body/75">
           <span className="eyebrow text-deep">Happy hour</span>{' '}
           <span className="ml-[6px]">
             {HAPPY_HOUR.days}, {HAPPY_HOUR.time} — {HAPPY_HOUR.deals.join(' · ')}

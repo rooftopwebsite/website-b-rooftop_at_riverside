@@ -77,6 +77,12 @@ export default function FindUs() {
           <div className="flex flex-col gap-[26px]">
             <div>
               <Eyebrow tone="terra">Hours</Eyebrow>
+              {/* ⚠️ Los días y los rótulos Bar/Trucks NO son versalitas.
+                  Lo fueron, y eran 21 de los 26 eyebrows de esta sección — más
+                  que cualquier otra del sitio. Una versalita es una ETIQUETA de
+                  bloque; siete días seguidos y catorce términos de un <dl> son
+                  DATOS, y en versalita a 13px se leían como un panel de control.
+                  Quedan las cuatro de verdad: Hours, Address, Phone, Parking. */}
               <div ref={lista} className="mt-[12px] border-t border-ink/12">
                 {HOURS.map((fila) => (
                   <details
@@ -87,7 +93,7 @@ export default function FindUs() {
                     <summary
                       className="flex cursor-pointer list-none items-center justify-between gap-[14px] py-[13px] transition-colors duration-200 hover:text-deep [&::-webkit-details-marker]:hidden"
                     >
-                      <span className="eyebrow text-ink group-data-[hoy]:text-terra">
+                      <span className="font-body text-[16px] font-medium text-ink group-data-[hoy]:text-terra">
                         {fila.day}
                         {/* El «hoy» se marca con TEXTO y no sólo con color:
                             WCAG 1.4.1 no permite que el color sea el único
@@ -127,10 +133,10 @@ export default function FindUs() {
                           3.92:1 contra el 4.5:1 que pide un texto de 13px. Al
                           70% da 5.30:1. Un rótulo apagado no puede estarlo
                           tanto que deje de leerse. */}
-                      <dt className="eyebrow text-body/70">Bar</dt>
-                      <dd className="text-[15px] tabular-nums">{fila.bar}</dd>
-                      <dt className="eyebrow text-body/70">Trucks</dt>
-                      <dd className="text-[15px] tabular-nums">{fila.trucks}</dd>
+                      <dt className="font-body text-[15px] font-medium text-body/70">Bar</dt>
+                      <dd className="text-[16px] tabular-nums">{fila.bar}</dd>
+                      <dt className="font-body text-[15px] font-medium text-body/70">Trucks</dt>
+                      <dd className="text-[16px] tabular-nums">{fila.trucks}</dd>
                     </dl>
                   </details>
                 ))}
@@ -146,7 +152,7 @@ export default function FindUs() {
                   href={mapsUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link-texto text-[15px]"
+                  className="link-texto text-[16px]"
                 >
                   Open in Google Maps
                   <span className="sr-only">(opens in a new tab)</span>
@@ -166,7 +172,7 @@ export default function FindUs() {
 
               <div>
                 <Eyebrow tone="terra">Parking</Eyebrow>
-                <p className="mt-[8px] text-[15px] leading-[1.65] text-body/75">
+                <p className="mt-[8px] text-[16px] leading-[1.65] text-body/75">
                   Street parking on Old 41 and public lots around Riverside Park.
                 </p>
                 <div className="mt-[12px]">

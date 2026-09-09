@@ -53,7 +53,7 @@ export default function InquirePage() {
 
         <div className="mt-[32px] border-t border-ink/15 pt-[24px]">
           <Eyebrow tone="deep">Rather just email?</Eyebrow>
-          <p className="mt-[8px] text-[15px] leading-[1.65] text-body/75">
+          <p className="mt-[8px] text-[16px] leading-[1.65] text-body/75">
             <a href={`mailto:${BRAND.contact.events}`} className="link-texto">
               {BRAND.contact.events}
             </a>{' '}

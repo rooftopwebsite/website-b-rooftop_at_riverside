@@ -144,7 +144,7 @@ export default function SunsetBarPage() {
       {/* ── Pie legal + cierre ─────────────────────────────────────────── */}
       <Section band="md">
         <div className="flex flex-col gap-[24px] border-t border-ink/15 pt-[28px] lg:flex-row lg:items-start lg:justify-between">
-          <p className="max-w-[52ch] text-[14px] leading-[1.6] text-body/75">{MENU_LEGAL}</p>
+          <p className="max-w-[52ch] text-[15px] leading-[1.6] text-body/75">{MENU_LEGAL}</p>
           <div className="flex flex-col gap-[12px] sm:flex-row">
             <ButtonLink href="/food-trucks" variant="secondary">
               See the food trucks
@@ -154,7 +154,7 @@ export default function SunsetBarPage() {
             </ButtonLink>
           </div>
         </div>
-        <p className="mt-[20px] max-w-[60ch] text-[14px] leading-[1.6] text-body/75">
+        <p className="mt-[20px] max-w-[60ch] text-[15px] leading-[1.6] text-body/75">
           Food comes from the trucks in the yard, and each one takes its own orders and its own
           payment. We don&rsquo;t have a kitchen — what we have is the bar.
         </p>
@@ -195,12 +195,12 @@ function MenuRow({ item, detailed = false }: { readonly item: MenuItem; readonly
         </p>
       </div>
       {detailed && item.description ? (
-        <p className="mt-[4px] max-w-[52ch] text-[15px] leading-[1.55] text-body/75">
+        <p className="mt-[4px] max-w-[52ch] text-[16px] leading-[1.55] text-body/75">
           {item.description}
         </p>
       ) : null}
       {detailed && item.note ? (
-        <p className="mt-[2px] max-w-[52ch] text-[14px] leading-[1.5] text-body/75 italic">
+        <p className="mt-[2px] max-w-[52ch] text-[15px] leading-[1.5] text-body/75 italic">
           {item.note}
         </p>
       ) : null}

@@ -184,7 +184,7 @@ export default function PinnedList({
                     <span
                       aria-hidden="true"
                       className={[
-                        'mt-[6px] shrink-0 font-display text-[15px] tabular-nums tracking-[0.08em]',
+                        'mt-[6px] shrink-0 font-display text-[16px] tabular-nums tracking-[0.08em]',
                         'transition-colors duration-300',
                         /* ⚠️ El apagado llega hasta `/65` y no más: a 15px el
                            mínimo es 4.5:1, y `/65` da 4.57. `/45` daba 2.61 y
@@ -216,7 +216,7 @@ export default function PinnedList({
                     style={{ gridTemplateRows: open ? '1fr' : '0fr' }}
                   >
                     <div className="min-h-0 overflow-hidden">
-                      <p className="pt-[12px] text-[15px] leading-[1.65] text-body/75 lg:text-[16px]">
+                      <p className="pt-[12px] text-[16px] leading-[1.65] text-body/75 lg:text-[16px]">
                         {item.body}
                       </p>
                       {/* ⚠️ Las etiquetas dejaron de ser CHIPS rellenos. Cuatro

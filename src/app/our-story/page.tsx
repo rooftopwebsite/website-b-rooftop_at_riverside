@@ -93,7 +93,7 @@ export default function OurStoryPage() {
             <Heading level={2} id="history-title" className="mt-gap-kicker text-d4 lg:text-d3">
               Borrowed from the Historical Society
             </Heading>
-            <div className="mt-gap-bajada flex flex-col gap-[14px] text-[15px] leading-[1.7] text-body/80">
+            <div className="mt-gap-bajada flex flex-col gap-[14px] text-[16px] leading-[1.7] text-body/80">
               <p>
                 The pieces hanging around the bar came from the Bonita Springs Historical Society.
                 Real relics from this town, a few steps from the river they came off.
@@ -146,12 +146,12 @@ export default function OurStoryPage() {
               <Heading level={3} role="label">
                 {title}
               </Heading>
-              <p className="mt-[8px] text-[15px] leading-[1.6] text-body/75">{body}</p>
+              <p className="mt-[8px] text-[16px] leading-[1.6] text-body/75">{body}</p>
             </div>
           ))}
         </div>
 
-        <p className="mt-[32px] max-w-[62ch] text-[15px] leading-[1.65] text-body/75">
+        <p className="mt-[32px] max-w-[62ch] text-[16px] leading-[1.65] text-body/75">
           It shut for about six months in each of the last two years while the work got done. The
           point of all of it was to make the place feel less like a lot with tables on it — warmer,
           softer, somewhere you stay past sunset.
@@ -177,7 +177,7 @@ export default function OurStoryPage() {
             <Heading level={2} id="giveback-title" className="mt-gap-kicker text-d5 lg:text-d4">
               A dollar at a time
             </Heading>
-            <div className="mt-gap-bajada flex flex-col gap-[14px] text-[15px] leading-[1.7] text-body/80">
+            <div className="mt-gap-bajada flex flex-col gap-[14px] text-[16px] leading-[1.7] text-body/80">
               <p>
                 Close your tab and you can add a dollar, three or five. All of the net proceeds go
                 to a different local organisation every month.

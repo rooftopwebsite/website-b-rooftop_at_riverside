@@ -97,7 +97,7 @@ export default function NfcNorthPage() {
           ))}
         </ul>
 
-        <p className="mt-[24px] max-w-[62ch] text-[15px] leading-[1.65] text-body/75">
+        <p className="mt-[24px] max-w-[62ch] text-[16px] leading-[1.65] text-body/75">
           Every screen on the roof, sound on the game that matters most to the room, and four
           kitchens open the whole time so nobody has to leave at halftime.
         </p>
@@ -109,7 +109,7 @@ export default function NfcNorthPage() {
           <Heading level={2} id="sunday-title" className="text-d5 lg:text-d4">
             How Sunday runs
           </Heading>
-          <ul className="flex flex-col gap-[14px] text-[15px] leading-[1.7] text-body/80">
+          <ul className="flex flex-col gap-[14px] text-[16px] leading-[1.7] text-body/80">
             <li className="border-b border-ink/12 pb-[14px]">
               <strong className="font-bold">Doors at 11.</strong> The bar opens Sunday at 11 AM and
               the trucks roll in at noon.

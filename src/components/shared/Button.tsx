@@ -43,7 +43,7 @@ const VARIANTS = {
 const SIZES = {
   sm: 'h-[38px] px-[16px] text-[12px]',
   md: 'h-[46px] px-[22px] text-[13px]',
-  lg: 'h-[54px] px-[28px] text-[14px]',
+  lg: 'h-[54px] px-[28px] text-[15px]',
 } as const;
 
 export type ButtonVariant = keyof typeof VARIANTS;
@@ -152,7 +152,7 @@ export function AnnouncementChip({
       <span className="rounded-pill bg-cream px-[9px] py-[3px] font-body text-[11px] font-bold uppercase tracking-[0.1em] text-terra">
         {tag}
       </span>
-      <span className="font-body text-[14px] font-medium text-body">{children}</span>
+      <span className="font-body text-[15px] font-medium text-body">{children}</span>
       <svg
         width="13"
         height="9"
@@ -235,7 +235,7 @@ export function ArrowLink({
     </>
   );
 
-  const cls = ['group inline-flex items-center gap-[9px] font-body text-[15px] font-medium', className]
+  const cls = ['group inline-flex items-center gap-[9px] font-body text-[16px] font-medium', className]
     .filter(Boolean)
     .join(' ');
 

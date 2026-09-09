@@ -122,7 +122,7 @@ export function ReviewsMarquee({
             key={i}
             className="flex w-[340px] shrink-0 flex-col rounded-card border border-ink/12 p-[24px]"
           >
-            <blockquote className="flex-1 text-[15px] leading-[1.65]">{r.quote}</blockquote>
+            <blockquote className="flex-1 text-[16px] leading-[1.65]">{r.quote}</blockquote>
             <figcaption className="mt-[16px] eyebrow text-body/75">
               {r.author} · {r.source}
             </figcaption>

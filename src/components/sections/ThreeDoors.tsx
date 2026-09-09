@@ -139,7 +139,7 @@ export default function ThreeDoors() {
                 {title}
               </Heading>
 
-              <p className="mt-[10px] flex-1 text-[15px] leading-[1.6] text-body/75">{body}</p>
+              <p className="mt-[10px] flex-1 text-[16px] leading-[1.6] text-body/75">{body}</p>
 
               {/* No es un `ArrowLink`: la fila entera ya es el link, y anidar
                   uno adentro sería un `<a>` dentro de otro `<a>`. */}

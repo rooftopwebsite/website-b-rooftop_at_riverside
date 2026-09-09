@@ -82,7 +82,7 @@ export default function InquiryForm() {
           We&rsquo;ll come back within one business day
         </Heading>
         <p className="mt-gap-bajada max-w-[54ch] text-lead text-body/80">{state.message}</p>
-        <p className="mt-[16px] max-w-[54ch] text-[15px] leading-[1.65] text-body/75">
+        <p className="mt-[16px] max-w-[54ch] text-[16px] leading-[1.65] text-body/75">
           The events packet — spaces, capacities and food tiers — comes attached to the reply.
         </p>
       </div>
@@ -98,12 +98,12 @@ export default function InquiryForm() {
           role="alert"
           className="rounded-card border-2 border-tomato bg-tomato/5 p-[20px]"
         >
-          <p className="font-body text-[15px] font-bold text-terra">{state.message}</p>
+          <p className="font-body text-[16px] font-bold text-terra">{state.message}</p>
           {errorKeys.length > 0 ? (
             <ul className="mt-[10px] flex flex-col gap-[4px]">
               {errorKeys.map((k) => (
                 <li key={k}>
-                  <a href={`#${fid(k)}`} className="link-texto text-[15px] text-terra">
+                  <a href={`#${fid(k)}`} className="link-texto text-[16px] text-terra">
                     {errors[k]}
                   </a>
                 </li>
@@ -141,7 +141,7 @@ export default function InquiryForm() {
         <legend className="eyebrow mb-[6px] text-body/75">
           Food tier <span className="text-terra">*</span>
         </legend>
-        <p className="text-[14px] leading-[1.55] text-body/75">
+        <p className="text-[15px] leading-[1.55] text-body/75">
           The trucks cook. We coordinate them. Pick how involved you want that to be.
         </p>
         <div className="grid gap-[12px] sm:grid-cols-3">
@@ -159,14 +159,14 @@ export default function InquiryForm() {
                   aria-describedby={errors.foodTier ? eid('foodTier') : undefined}
                   className="h-[18px] w-[18px] accent-black"
                 />
-                <span className="font-body text-[15px] font-bold">{tier.label}</span>
+                <span className="font-body text-[16px] font-bold">{tier.label}</span>
               </span>
               <span className="text-[13px] leading-[1.5] text-body/75">{tier.hint}</span>
             </label>
           ))}
         </div>
         {errors.foodTier ? (
-          <p id={eid('foodTier')} className="text-[14px] font-bold text-terra">
+          <p id={eid('foodTier')} className="text-[15px] font-bold text-terra">
             {errors.foodTier}
           </p>
         ) : null}
@@ -176,7 +176,7 @@ export default function InquiryForm() {
       <fieldset className="flex flex-col gap-[16px]">
         <legend className="eyebrow mb-[6px] text-body/75">Anything else</legend>
         <div className="flex flex-col gap-[8px]">
-          <label htmlFor={fid('comments')} className="font-body text-[15px] font-bold">
+          <label htmlFor={fid('comments')} className="font-body text-[16px] font-bold">
             {LABELS.comments}
           </label>
           <textarea
@@ -196,16 +196,16 @@ export default function InquiryForm() {
       </div>
 
       <div className="flex flex-col gap-[12px] border-t border-ink/15 pt-[24px]">
-        <p className="text-[14px] text-body/75">
+        <p className="text-[15px] text-body/75">
           <span className="text-terra">*</span> Required
         </p>
         <div>
           <SubmitButton />
         </div>
-        <p aria-live="polite" className="min-h-[20px] text-[14px] text-body/75">
+        <p aria-live="polite" className="min-h-[20px] text-[15px] text-body/75">
           {state.status === 'error' && errorKeys.length === 0 ? state.message : ''}
         </p>
-        <p className="text-[14px] text-body/75">
+        <p className="text-[15px] text-body/75">
           Prefer email?{' '}
           <a href={`mailto:${BRAND.contact.events}`} className="link-texto">
             {BRAND.contact.events}
@@ -242,7 +242,7 @@ function Field({
   const err = errors[k];
   return (
     <div className="flex flex-col gap-[8px]">
-      <label htmlFor={fid(k)} className="font-body text-[15px] font-bold">
+      <label htmlFor={fid(k)} className="font-body text-[16px] font-bold">
         {LABELS[k]}
         {required ? <span className="ml-[4px] text-terra">*</span> : null}
         {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
@@ -258,7 +258,7 @@ function Field({
         className={[INPUT_BASE, err ? 'border-2 border-tomato' : 'border-ink/25 focus:border-ink'].join(' ')}
       />
       {err ? (
-        <p id={eid(k)} className="text-[14px] font-bold text-terra">
+        <p id={eid(k)} className="text-[15px] font-bold text-terra">
           {err}
         </p>
       ) : null}
@@ -286,7 +286,7 @@ function SelectField({
   const err = errors[k];
   return (
     <div className="flex flex-col gap-[8px]">
-      <label htmlFor={fid(k)} className="font-body text-[15px] font-bold">
+      <label htmlFor={fid(k)} className="font-body text-[16px] font-bold">
         {LABELS[k]}
         {required ? <span className="ml-[4px] text-terra">*</span> : null}
       </label>
@@ -307,7 +307,7 @@ function SelectField({
         ))}
       </select>
       {err ? (
-        <p id={eid(k)} className="text-[14px] font-bold text-terra">
+        <p id={eid(k)} className="text-[15px] font-bold text-terra">
           {err}
         </p>
       ) : null}
