@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import Hero from '@/components/sections/Hero';
-import TonightAtTheYard from '@/components/sections/TonightAtTheYard';
+import WhatsOn from '@/components/sections/WhatsOn';
 import {
   FeaturesMarquee,
   FindUs,
   ForEventPlanners,
   HowThisPlaceWorks,
   StoryTeaser,
-  ThisWeek,
   ThreeVerticals,
 } from '@/components/sections/HomeSections';
 import Scallop from '@/components/shared/Scallop';
@@ -45,15 +44,13 @@ export default function HomePage() {
           home: las dos entradas a crema. Puesto en cada corte dejaría de ser
           un gesto de marca y sería un patrón de fondo. */}
       <Scallop from="paper" to="cream" />
-      <TonightAtTheYard />
+      <WhatsOn />
 
       <FeaturesMarquee />
       <HowThisPlaceWorks />
       <ThreeVerticals />
       <ForEventPlanners />
 
-      <Scallop from="paper" to="cream" />
-      <ThisWeek />
 
       <StoryTeaser />
       <FindUs />

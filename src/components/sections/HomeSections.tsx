@@ -335,58 +335,6 @@ export function ForEventPlanners() {
 }
 
 /* ==========================================================================
-   This week
-   ========================================================================== */
-
-export function ThisWeek() {
-  const events = recurringEvents();
-
-  return (
-    <Section tone="cream" band="lg" labelledBy="week-title">
-      <div className="flex flex-col gap-[10px] sm:flex-row sm:items-end sm:justify-between">
-        <SectionHead
-          eyebrow="This week"
-          eyebrowTone="deep"
-          id="week-title"
-          title="Every week, on repeat"
-          lead="The standing lineup. One-off shows and festivals live on the calendar."
-        />
-        <ArrowLink href="/whats-on" className="shrink-0 text-deep">
-          All events
-        </ArrowLink>
-      </div>
-
-      <StaggerGroup as="ul" className="mt-[40px] grid gap-[20px] sm:grid-cols-2">
-        {events.map((e) => (
-          <RevealItem as="li" key={e.slug}>
-            <Link
-              href={`/whats-on/${e.slug}`}
-              className="group flex h-full flex-col rounded-card border border-ink/12 bg-paper p-[24px] transition-colors duration-250 hover:border-ink/35"
-            >
-              <Eyebrow tone="terra">{whenLabel(e)}</Eyebrow>
-              <Heading level={3} className="mt-[10px]">
-                {e.title}
-              </Heading>
-              <p className="mt-[10px] flex-1 text-[15px] leading-[1.6] text-body/75">{e.summary}</p>
-              <span className="mt-[16px] text-caption font-bold uppercase tracking-[0.14em] text-body/75">
-                {e.space} · {e.price === null ? 'Free' : `$${e.price}`}
-              </span>
-            </Link>
-          </RevealItem>
-        ))}
-      </StaggerGroup>
-
-      <p className="mt-[28px] text-[15px] text-body/75">
-        <span className="eyebrow text-deep">Happy hour</span>{' '}
-        <span className="ml-[6px]">
-          {HAPPY_HOUR.days}, {HAPPY_HOUR.time} — {HAPPY_HOUR.deals.join(' · ')}
-        </span>
-      </p>
-    </Section>
-  );
-}
-
-/* ==========================================================================
    Our story — teaser
    ========================================================================== */
 

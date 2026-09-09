@@ -21,9 +21,18 @@ import path from 'node:path';
 const PAGE_GLOB = 'src/app';
 
 /** Módulos que exportan secciones y hay que expandir donde se usan. */
+/**
+ * ⚠️ Este mapa hay que MANTENERLO. Una sección que no esté acá no se cuenta, y
+ * el guard da verde por omisión — que es peor que dar rojo. Pasó al fusionar
+ * `TonightAtTheYard` + `ThisWeek` en `WhatsOn`: la home reportaba
+ * «paper · paper · paper · paper · paper» y la sección crema no aparecía.
+ *
+ * Regla: si creás un archivo en `sections/` que renderiza un `<Section>`,
+ * agregalo acá en el mismo commit.
+ */
 const SECTION_MODULES = {
   '@/components/sections/HomeSections': 'src/components/sections/HomeSections.tsx',
-  '@/components/sections/TonightAtTheYard': 'src/components/sections/TonightAtTheYard.tsx',
+  '@/components/sections/WhatsOn': 'src/components/sections/WhatsOn.tsx',
   '@/components/sections/Hero': 'src/components/sections/Hero.tsx',
   '@/components/sections/EventVertical': 'src/components/sections/EventVertical.tsx',
   '@/components/shared/PageHero': null, // el hero es siempre blanco
