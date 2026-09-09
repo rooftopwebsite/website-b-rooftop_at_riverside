@@ -676,6 +676,55 @@
   }
 }
 
+/**
+ * ── El muro del hero ───────────────────────────────────────────────────────
+ *
+ * Dos filas de piezas cortas del lugar corriendo en direcciones opuestas. Es
+ * la forma del hero de Superside, la referencia que fijó Camila.
+ *
+ * Mismo loop que `.rt-marquee`, con UNA diferencia que importa: bajo
+ * `prefers-reduced-motion` la fila no queda congelada y recortada —con los
+ * tiles de la derecha inalcanzables— sino que se vuelve scrolleable a mano.
+ *
+ * ⚠️ Lo que cambia con reduced-motion es el `overflow`, NO el tamaño ni la
+ * posición: las cajas de los tiles miden lo mismo en los dos modos, que es
+ * exactamente lo que compara `npm run check:motion`.
+ *
+ * ⚠️ El track se duplica en el markup y la copia va `aria-hidden`. La
+ * animación llega a `-50%`, así que al terminar el ciclo la segunda copia está
+ * donde arrancó la primera y el loop no salta.
+ */
+.rt-wall {
+  overflow: hidden;
+}
+
+.rt-wall-track {
+  display: flex;
+  width: max-content;
+  animation: rt-marquee var(--wall-duration, 64s) linear infinite;
+  will-change: transform;
+}
+
+.rt-wall-reverse .rt-wall-track {
+  animation-direction: reverse;
+}
+
+/* Pausa al pasar el mouse o al enfocar algo adentro: si algo se está mirando,
+   no debería escaparse. Es el mismo gesto que ya tiene el marquee. */
+.rt-wall:hover .rt-wall-track,
+.rt-wall:focus-within .rt-wall-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-wall {
+    overflow-x: auto;
+  }
+  .rt-wall-track {
+    animation: none;
+  }
+}
+
 @keyframes rt-marquee {
   from {
     transform: translateX(0);

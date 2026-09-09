@@ -1,179 +1,90 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { ButtonLink } from '@/components/shared/Button';
 import { HeroFadeUp, MaskedLines } from '@/components/shared/Motion';
 import { GUTTER } from '@/components/shared/Section';
 import { Heading } from '@/components/shared/Type';
+import VideoWall from '@/components/shared/VideoWall';
 
 /**
- * Hero del home — foto a sangre con losa oscura encima.
+ * Hero del home — forma Superside: titular, una frase, un CTA y el muro.
  *
- * ⚠️ TERCERA versión, y las dos anteriores fallaron por la misma razón de
- * fondo. Primero fueron dos paneles con la tipografía a la izquierda; después,
- * con visitors.now de referencia, una pila centrada sobre blanco con la foto
- * flotando en una tarjeta. Camila rechazó las dos: «no se asemeja en nada a
- * nuestros proyectos».
+ * ⚠️ CUARTA versión. Las tres anteriores, para que no se repitan:
+ *   1. dos paneles con la tipografía a la izquierda — rechazado
+ *   2. pila centrada sobre blanco con la foto en una tarjeta — «no se asemeja
+ *      en nada a nuestros proyectos»
+ *   3. foto a sangre con velo `deep` al 72% y el titular encima — funcionó,
+ *      pero era el hero de Showdown Social, no el de Superside
  *
- * Fui a medir los sitios de la casa y el diagnóstico fue claro. Baires Grill,
- * The Orient y Showdown Social abren TODOS con una imagen a sangre y el
- * titular encima. Ninguno abre con tipografía sobre blanco. Lo que yo tenía
- * era una landing de software, y encima diseñada contra Impact, porque los
- * WOFF2 de Steelfish todavía no habían llegado.
+ * Camila fijó Superside como la forma de este hero: «colocaremos muchos videos
+ * cortos del lugar, de la experiencia. Por lo que necesitamos acortar el texto
+ * del hero. Que vaya más al grano, que sea una frase contundente, de impacto».
  *
- * Lo que se toma de Showdown Social, que Camila fijó como referencia máxima:
+ * ⚠️ SE FUE LA FOTO DE FONDO, y no por descuido. Con el muro de videos abajo,
+ * la foto y los clips compiten por la misma atención; Superside apoya sus
+ * tiles sobre fondo plano justamente por eso. Queda `deep` sólido, que además
+ * se continúa con el header —también `deep`— en un solo campo oscuro.
  *
- *   · imagen a sangre, oscura, con el isotipo chico centrado arriba
- *   · titular enorme en condensada, caja alta, dos líneas, centrado
- *   · **la segunda línea en el color de acento** — es lo que evita que un
- *     titular de dos líneas se lea como un bloque plano
- *   · una fila de micro-datos en caja alta debajo, separados por viñetas
- *   · doble CTA: uno relleno y uno de filo
+ * Y de paso se cae el problema que la foto obligaba a resolver: el velo al 72%
+ * existía para garantizar contraste sobre una imagen que no controlamos. Sobre
+ * `deep` sólido, `paper` da 15.4:1 sin depender de nada.
  *
- * ⚠️ El velo NO es un degradado suave. Es un color sólido de marca a 72% más
- * un degradado sólo abajo. Un velo suave deja zonas de la foto donde el texto
- * cae sobre un fondo claro y el contraste se vuelve imposible de garantizar —
- * y axe no lo puede medir sobre una imagen, así que el fallo pasaría callado.
- * Con `deep` al 72% el fondo efectivo es ≈#123A3A en el peor punto y el texto
- * en `paper` da más de 15:1 en toda la superficie.
+ * ⚠️ UN SOLO CTA. «Plan an event» ya está en el header como píldora naranja en
+ * todas las páginas, así que acá era la segunda puerta al mismo lugar. Es
+ * también la forma de la referencia: Superside abre con un botón.
  *
- * ⚠️ El texto va sobre la foto sólo porque hay velo sólido. Sin él, la regla
- * anterior seguía valiendo: el titular nunca encima de una imagen sin control.
+ * ⚠️ Los cuatro hechos (`FACTS`) se fueron al `PromoBar`, arriba del header. El
+ * selector de intención (`INTENTS`) se fue a `ThreeDoors`, donde se funde con
+ * las tres losas oscuras que decían lo mismo más abajo.
  */
-
-/** Micro-datos del hero. Son hechos verificados, no promesas de marketing. */
-const FACTS = ['Four food trucks', 'Rooftop bar', 'Live music five nights', 'Walk in, no reservations'] as const;
-
-/**
- * El selector de intención. Sobrevive a los tres rediseños porque es la
- * corrección más importante del sitio —el visitante llega asumiendo que es un
- * restaurante y acá ve tres puertas—, pero sale del hero: apretado contra el
- * titular y los CTA competía con la conversión. Ahora es su propia banda.
- */
-const INTENTS = [
-  { href: '/food-trucks', label: 'Eat and drink', note: 'Four kitchens in the yard' },
-  { href: '/whats-on', label: "See what's on", note: 'Music, bingo, DJ sets' },
-  { href: '/events', label: 'Rent the place', note: 'Buyouts and private nights' },
-] as const;
-
 export default function Hero() {
   return (
-    <>
-      <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-deep">
-        <Image
-          src="/images/hero-live-music.jpg"
-          alt=""
-          fill
-          priority
-          fetchPriority="high"
-          sizes="100vw"
-          className="object-cover"
-        />
-        {/* Velo sólido + refuerzo abajo. Ver la nota del encabezado. */}
-        <div aria-hidden="true" className="absolute inset-0 bg-deep/72" />
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-deep to-transparent"
-        />
+    <section aria-labelledby="hero-title" className="bg-deep pb-[52px] lg:pb-[64px]">
+      <div className={`${GUTTER} pt-[52px] lg:pt-[66px]`}>
+        <div className="mx-auto flex max-w-[860px] flex-col items-center text-center">
+          <HeroFadeUp>
+            <Image
+              src="/brand/isotype-truck.svg"
+              alt=""
+              width={552}
+              height={390}
+              priority
+              className="w-[62px] lg:w-[74px]"
+            />
+          </HeroFadeUp>
 
-        <div className={`relative ${GUTTER} pt-[52px] pb-[56px] lg:pt-[66px] lg:pb-[68px]`}>
-          <div className="mx-auto flex max-w-[900px] flex-col items-center text-center">
-            <HeroFadeUp>
-              <Image
-                src="/brand/isotype-truck.svg"
-                alt=""
-                width={552}
-                height={390}
-                className="w-[64px] lg:w-[76px]"
-              />
-            </HeroFadeUp>
+          <Heading level={1} role="hero" id="hero-title" className="mt-[20px] text-paper">
+            {/* `accentOn="dark"` es el default, pero va escrito: es la
+                superficie la que decide el color del acento y dejarlo
+                implícito invita a copiar esto a una sección clara, donde
+                `sunset` da 2.48:1 y no pasa. */}
+            <MaskedLines lines={['Bonita comes', 'together']} delay={0.08} accentLast accentOn="dark" />
+          </Heading>
 
-            <Heading
-              level={1}
-              role="hero"
-              id="hero-title"
-              className="mt-[22px] text-paper"
-            >
-              <MaskedLines lines={['Bonita comes', 'together']} delay={0.08} accentLast />
-            </Heading>
+          {/*
+            Una línea, tres hechos, tres golpes. Reemplaza al párrafo de 24
+            palabras que había: contesta la confusión de «restaurante» sin
+            explicarla, que es lo que pedía «que vaya más al grano».
+          */}
+          <HeroFadeUp delay={0.26} className="mt-[18px]">
+            <p className="text-[19px] leading-[1.4] text-paper/85 lg:text-[23px]">
+              Rooftop bar. Four kitchens. Walk in.
+            </p>
+          </HeroFadeUp>
 
-            <HeroFadeUp delay={0.26} className="mt-[20px]">
-              <p className="max-w-[52ch] text-[17px] leading-[1.55] text-paper/85 lg:text-[19px]">
-                A rooftop bar over four food trucks in downtown Bonita Springs. Our bar upstairs,
-                four independent kitchens in the yard.
-              </p>
-            </HeroFadeUp>
-
-            <HeroFadeUp delay={0.34} className="mt-[32px]">
-              <div className="flex flex-wrap items-center justify-center gap-[12px]">
-                <ButtonLink href="/whats-on" variant="primary" size="lg">
-                  What&rsquo;s on tonight
-                </ButtonLink>
-                <ButtonLink href="/events/inquire" variant="ghostDark" size="lg">
-                  Plan an event
-                </ButtonLink>
-              </div>
-            </HeroFadeUp>
-
-            {/* Micro-datos en Jost 500, caja alta. La separación es una viñeta
-                `aria-hidden`: un lector de pantalla no tiene que oír «punto»
-                cuatro veces, y la lista ya se anuncia como lista. */}
-            <HeroFadeUp delay={0.42} className="mt-[38px]">
-              <ul className="flex flex-wrap items-center justify-center gap-x-[10px] gap-y-[8px]">
-                {FACTS.map((fact, i) => (
-                  <li key={fact} className="flex items-center gap-[10px]">
-                    {i > 0 ? (
-                      <span aria-hidden="true" className="h-[3px] w-[3px] rounded-pill bg-sunset" />
-                    ) : null}
-                    <span className="eyebrow text-paper/75">{fact}</span>
-                  </li>
-                ))}
-              </ul>
-            </HeroFadeUp>
-          </div>
+          <HeroFadeUp delay={0.34} className="mt-[28px]">
+            <ButtonLink href="/whats-on" variant="primary" size="lg">
+              What&rsquo;s on tonight
+            </ButtonLink>
+          </HeroFadeUp>
         </div>
-      </section>
+      </div>
 
-      {/* ── Las tres puertas ─────────────────────────────────────────────── */}
-      <section aria-labelledby="intents-title" className={`bg-cream ${GUTTER} py-[26px]`}>
-        <h2 id="intents-title" className="sr-only">
-          What brings you here
-        </h2>
-        <ul className="caja grid gap-[10px] md:grid-cols-3">
-          {INTENTS.map((intent) => (
-            <li key={intent.href}>
-              <Link
-                href={intent.href}
-                className="group flex items-center justify-between gap-[14px] rounded-card bg-chalk/70 px-[20px] py-[16px] transition-colors duration-200 hover:bg-chalk"
-              >
-                <span>
-                  <span className="block font-display text-d6 uppercase text-ink">
-                    {intent.label}
-                  </span>
-                  <span className="mt-[2px] block font-body text-[13px] text-body/75">
-                    {intent.note}
-                  </span>
-                </span>
-                <svg
-                  width="17"
-                  height="11"
-                  viewBox="0 0 16 10"
-                  fill="none"
-                  aria-hidden="true"
-                  className="shrink-0 text-terra transition-transform duration-200 group-hover:translate-x-[4px]"
-                >
-                  <path
-                    d="M0 5h14M10 1l4 4-4 4"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </>
+      {/* El muro va A SANGRE: sin gutter y sin caja. Es lo que hace que se lea
+          como una cinta que sigue más allá de la pantalla, y no como una
+          galería contenida. */}
+      <div className="mt-[40px] lg:mt-[52px]">
+        <VideoWall />
+      </div>
+    </section>
   );
 }
