@@ -17,17 +17,33 @@ export type HeadingLevel = 1 | 2 | 3 | 4;
  * cuerpo se lee bastante más chica que la Lusitana sobre la que se midió la
  * escala. Se usa SÓLO en el h1 del hero del home.
  */
+/**
+ * ⚠️ Steelfish llega hasta h3 y NO MÁS. Camila: «usémosla sólo para títulos
+ * grandes, o sea h1, h2 y h3». El h4 y los títulos de card pasan a Futura PT
+ * Medium en caja MIXTA, y eso es lo que hace `FUERA_DE_DISPLAY`.
+ *
+ * El motivo no es sólo gusto: a 20–24px una condensada de caja alta se lee
+ * como una ETIQUETA y no como un título, así que competía con los eyebrows
+ * —que son literalmente eso— en vez de encabezar el bloque.
+ *
+ * Tampoco va en Bronx. Bronx es caja alta con tracking abierto por
+ * definición, es la de los eyebrows, y en un título de card de dos líneas se
+ * vuelve ilegible.
+ */
+const FUERA_DE_DISPLAY =
+  'font-body font-medium text-[20px] leading-[1.3] tracking-[0.01em] normal-case lg:text-[24px]';
+
 const SIZES: Record<HeadingLevel, string> = {
   1: 'text-d4 md:text-d3 lg:text-d2',
   2: 'text-d5 md:text-d4 lg:text-d3',
   3: 'text-d6 lg:text-d5',
-  4: 'text-[20px] leading-[1.3] lg:text-d6',
+  4: FUERA_DE_DISPLAY,
 };
 
 const ROLES = {
   section: null,
   hero: 'text-hero',
-  card: 'text-d6 lg:text-d5',
+  card: FUERA_DE_DISPLAY,
   /** Rótulo de columna de footer y encabezados de bloque chico. */
   label: 'text-d7',
 } as const;
@@ -54,7 +70,19 @@ export function Heading({
       className={[
         // Steelfish va SIEMPRE en caja alta: es una condensada de display,
         // en caja baja pierde el color de página que sostiene el diseño.
-        'font-display font-bold uppercase',
+        //
+        // ⚠️ Peso REGULAR, nunca alto. Camila: «en regular nunca en peso
+        // alto». Estaba en `font-bold` en TODOS los niveles —no había un solo
+        // título del sitio en Regular— y junto con el tracking negativo era la
+        // causa de que la Steelfish se viera apelmazada.
+        //
+        // ⚠️ El tracking NO va acá. Lo pone cada escalón de la escala con su
+        // `--text-*--letter-spacing`, así cada tamaño se lleva el suyo en
+        // todos los breakpoints. Ver globals.css.
+        //
+        // `font-display` y `uppercase` los apagan h4 y `role="card"` con
+        // `font-body` y `normal-case`, que ganan por venir después.
+        'font-display font-normal uppercase',
         ROLES[role] ?? SIZES[level],
         className,
       ]

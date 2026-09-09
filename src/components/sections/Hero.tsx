@@ -91,7 +91,7 @@ export default function Hero() {
               level={1}
               role="hero"
               id="hero-title"
-              className="mt-[22px] tracking-display text-paper"
+              className="mt-[22px] text-paper"
             >
               <MaskedLines lines={['Bonita comes', 'together']} delay={0.08} accentLast />
             </Heading>
@@ -146,7 +146,7 @@ export default function Hero() {
                 className="group flex items-center justify-between gap-[14px] rounded-card bg-chalk/70 px-[20px] py-[16px] transition-colors duration-200 hover:bg-chalk"
               >
                 <span>
-                  <span className="block font-display text-d6 uppercase tracking-display text-ink">
+                  <span className="block font-display text-d6 uppercase text-ink">
                     {intent.label}
                   </span>
                   <span className="mt-[2px] block font-body text-[13px] text-body/75">

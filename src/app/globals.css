@@ -296,6 +296,43 @@
   --text-d7: 18px;
   --text-d7--line-height: 1.3;
 
+  /* ── Tracking de display — escala ÓPTICA, no un valor único ──────────────
+     Steelfish es una condensada de caja alta: a menor cuerpo se cierra más y
+     necesita MÁS aire. Un solo número deja el d3 apretado o el d1 desarmado,
+     así que cada escalón lleva el suyo. Va acá y no en los componentes porque
+     es el mismo mecanismo que la interlínea: la utilidad de tamaño se lleva su
+     tracking a todos los breakpoints sola.
+
+     ⚠️ REEMPLAZA a `--tracking-display: -0.02em`, que era NEGATIVO y venía
+     heredado de The Orient — que usa Lusitana, una serif de ancho normal. Un
+     tracking negativo sobre una condensada de caja alta es exactamente lo que
+     la apelmaza, y era el motivo por el que Camila rechazó la Steelfish: «se
+     ve muy pegada». Ver docs/house-tokens.md.
+
+     ⚠️ Y encima aquel token sólo se aplicaba en DOS lugares —el h1 del hero y
+     las mini cards—, así que en el resto de los títulos el tracking era 0. El
+     arreglo no era cambiarle el signo: era hacer que llegue a todos.
+
+     ⚠️ Los SIETE escalones llevan tracking, d5/d6/d7 incluidos. El primer
+     intento los dejó afuera suponiendo que de ese cuerpo para abajo ya era
+     Futura, y es falso: los usan el h3, los precios con `tabular-nums`, los
+     nombres del menú y las etiquetas de cocina, y TODOS son `font-display`.
+     Medido en el navegador, el h3 quedaba en `letter-spacing: normal` — o sea
+     Steelfish a 28px sin aire, que es el cuerpo donde una condensada más lo
+     necesita.
+
+     Los títulos de card y el h4, que sí son Futura, no usan estos escalones:
+     llevan su tamaño y su tracking explícitos. Ver `FUERA_DE_DISPLAY` en
+     Type.tsx.                                                                */
+  --text-hero--letter-spacing: 0.02em;
+  --text-d1--letter-spacing: 0.02em;
+  --text-d2--letter-spacing: 0.03em;
+  --text-d3--letter-spacing: 0.035em;
+  --text-d4--letter-spacing: 0.04em;
+  --text-d5--letter-spacing: 0.045em;
+  --text-d6--letter-spacing: 0.05em;
+  --text-d7--letter-spacing: 0.05em;
+
   /*
    * `hero` — la ÚNICA extensión a la escala de la casa, y está justificada.
    *
@@ -347,22 +384,18 @@
   --tracking-eyebrow: 0.24em;
 
   /*
-   * Tracking del display.
+   * ⚠️ Acá vivía `--tracking-display: -0.02em`, el tracking NEGATIVO del
+   * display, argumentado desde Showdown Social. Se eliminó: Camila lo rechazó
+   * al verlo con la Steelfish real puesta —«se ve muy pegada»— y tenía razón.
    *
-   * ⚠️ La referencia usa −0.05em a 60px, y ese apretado es lo que le da el
-   * aire «engineered». Pero lo hace sobre OpenRunde, una geométrica de ancho
-   * normal. Steelfish ya es una condensada extrema: aplicarle −0.05em le
-   * cierra los contraformas y la vuelve una mancha. Acá el equivalente
-   * expresivo es un negativo LEVE, que junta las astas sin cerrarlas.
+   * Lo que falló del razonamiento original: medía el apretado de la referencia
+   * pero no el efecto acumulado de las tres decisiones juntas —condensada
+   * extrema + caja alta + peso Bold en TODOS los niveles—. El negativo era la
+   * cuarta capa sobre una mancha que ya estaba cerrada.
    *
-   * ⚠️ AJUSTADO a −0.02em: es el valor medido en Showdown Social (84px con
-   * −1.68px, 72px con −1.44px — exactamente −0.02em en las dos). Con la
-   * Steelfish real puesta —antes se veía Impact, que es más ancha de caja—
-   * −0.012em quedaba flojo y el titular perdía el bloque compacto que tiene
-   * la casa. −0.02em es el mismo apretado de Showdown y las contraformas de
-   * Steelfish lo aguantan; verificado en el specimen a 112px.
+   * Su reemplazo es la escala óptica de `--text-*--letter-spacing`, arriba en
+   * este mismo bloque, junto a los tamaños.
    */
-  --tracking-display: -0.02em;
 
   /* ── Motion ─────────────────────────────────────────────────────────────*/
   --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);

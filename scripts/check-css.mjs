@@ -33,7 +33,11 @@ const CANARIES = [
   'text-d4',
   'rounded-pill',
   'shadow-btn',
-  'tracking-display',
+  /* ⚠️ Era `tracking-display`, el token de tracking del display, que se
+     eliminó al pasar a la escala óptica de `--text-*--letter-spacing`. El
+     canario de tracking ahora es `tracking-eyebrow`, que sigue siendo un
+     token propio del tema y cubre el mismo namespace. */
+  'tracking-eyebrow',
   'caja',
   'eyebrow',
 ];
