@@ -96,6 +96,35 @@ export function Heading({
 }
 
 /**
+ * El acento tipográfico DENTRO del titular.
+ *
+ * ⚠️ Va en COLOR y no en itálica. Camila: «usar cambio de color no itálica,
+ * porque el brand no usa itálica». La referencia —wework, superside— lo hace
+ * con una serif itálica de otra familia; acá no hay serif y no vamos a sumar
+ * una cuarta familia por un acento, así que el contraste lo da el color.
+ *
+ * ⚠️ DOS colores según la superficie, y no uno. `sunset` sobre claro da
+ * **2.48:1**: no alcanza ni el 3:1 que pide el texto grande (WCAG 1.4.3).
+ * Sobre `deep` sí, 4.26:1. Sobre claro va `terra`, que da 7.43:1 sobre `paper`
+ * y 6.47:1 sobre `cream` — y de paso es el color que ya usan los eyebrows, así
+ * que no entra un color nuevo a la paleta.
+ *
+ * Medidos y descartados para claro: `river` 2.43:1 (falla), `tomato` 3.77:1
+ * (pasa raspando, sólo texto grande), `plum` 13.15:1 y `deep` 10.55:1 (pasan,
+ * pero siendo oscuros como el titular el acento no se lee como acento).
+ */
+export function Accent({
+  on,
+  children,
+}: {
+  /** La superficie sobre la que cae el titular, NO el color que se quiere. */
+  readonly on: 'light' | 'dark';
+  readonly children: ReactNode;
+}) {
+  return <span className={on === 'dark' ? 'text-sunset' : 'text-terra'}>{children}</span>;
+}
+
+/**
  * Eyebrow. Jost 500 en caja alta con 0.24em de tracking, siempre.
  *
  * ⚠️ Los tonos son sólo los que PASAN AA. No hay `sunset` ni `river`: sobre

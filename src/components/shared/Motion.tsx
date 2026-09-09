@@ -161,25 +161,36 @@ export function MaskedLines({
   className = '',
   delay = 0,
   accentLast = false,
+  accentOn = 'dark',
 }: {
   readonly lines: readonly string[];
   readonly as?: ElementType;
   readonly className?: string;
   readonly delay?: number;
   /**
-   * Pinta la última línea en Sunset Orange. Es el recurso de Showdown Social:
-   * un titular de dos líneas donde la segunda cambia de color deja de leerse
-   * como un bloque plano.
-   *
-   * ⚠️ SÓLO sobre fondo oscuro. Naranja sobre el hueso claro da 2.54:1 y no
-   * pasa ni el 3:1 de texto grande; sobre `deep` da ≈5.3:1 y, siendo un
-   * titular enorme, sobra. Es exactamente al revés que en los botones, donde
-   * el naranja es el FONDO y el texto va negro.
+   * Pinta la última línea en el color de acento. Es el recurso de Showdown
+   * Social: un titular de dos líneas donde la segunda cambia de color deja de
+   * leerse como un bloque plano.
    */
   readonly accentLast?: boolean;
+  /**
+   * Sobre qué superficie cae el titular. Decide el color del acento, y NO es
+   * opcional en la práctica: son dos colores distintos porque uno solo no
+   * pasa contraste en las dos superficies.
+   *
+   * ⚠️ `sunset` sobre claro da **2.48:1** y no pasa ni el 3:1 de texto grande;
+   * sobre `deep` da 4.26:1. Sobre claro el acento es `terra` (7.43:1 sobre
+   * `paper`). Es exactamente al revés que en los botones, donde el naranja es
+   * el FONDO y el texto va negro.
+   *
+   * El default es `dark` porque el único call site cuando esto se escribió era
+   * el hero, que va sobre `deep`.
+   */
+  readonly accentOn?: 'light' | 'dark';
 }) {
   const reduced = useReducedMotion();
-  const tone = (i: number) => (accentLast && i === lines.length - 1 ? 'text-sunset' : undefined);
+  const acento = accentOn === 'light' ? 'text-terra' : 'text-sunset';
+  const tone = (i: number) => (accentLast && i === lines.length - 1 ? acento : undefined);
 
   // ⚠️ El espacio al final de cada línea salvo la última NO es cosmético: sin
   // él el texto del elemento queda «Bonita comestogether», que es lo que lee
