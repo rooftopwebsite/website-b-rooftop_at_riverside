@@ -150,12 +150,17 @@ export default function PinnedList({
           <ol className="relative pl-[26px]">
             {/* Riel de progreso. Decorativo: el número de cada ítem ya dice
                 dónde estás, así que anunciarlo sería repetir. */}
+            {/* ⚠️ 1px y no 2px. A 2px el riel competía con los filetes de los
+                pasos y el bloque se leía como una tabla. Camila pidió «más
+                sutil, más actual y de identidad sofisticado», y en una lista
+                fijada lo que tiene que llevar el ojo es el título activo, no el
+                riel. */}
             <span
               aria-hidden="true"
-              className="absolute top-[6px] bottom-[6px] left-0 w-[2px] rounded-pill bg-fog"
+              className="absolute top-[6px] bottom-[6px] left-0 w-px rounded-pill bg-fog"
             >
               <span
-                className="block w-full rounded-pill bg-sunset transition-[height] duration-500 ease-brand"
+                className="block w-full rounded-pill bg-terra/70 transition-[height] duration-500 ease-brand"
                 style={{ height: `${fill}%` }}
               />
             </span>
@@ -163,21 +168,30 @@ export default function PinnedList({
             {items.map((item, i) => {
               const open = !enhanced || i === active;
               return (
-                <li key={item.n} className={i === 0 ? '' : 'mt-[26px] border-t border-fog pt-[26px]'}>
-                  <div className="flex items-start gap-[14px]">
-                    {/* ⚠️ El número va en una PÍLDORA rellena, no en texto
-                        naranja. Sunset Orange como texto sobre blanco da
-                        2.54:1 — no llega ni al 3:1 de texto grande, así que
-                        naranja sobre blanco NUNCA puede ser texto. Relleno
-                        naranja con número negro da 8.26:1 y además pega más
-                        fuerte. Es la misma regla que el botón primario. */}
+                <li key={item.n} className={i === 0 ? '' : 'mt-[36px] border-t border-fog pt-[36px]'}>
+                  <div className="flex items-start gap-[16px]">
+                    {/* ⚠️ El número es TEXTO en `terra`, no una píldora rellena.
+                        Era una píldora naranja porque Sunset Orange como texto
+                        sobre blanco da 2.54:1 y no llega ni al 3:1 — la píldora
+                        resolvía el contraste invirtiendo. Pero tres píldoras
+                        naranjas apiladas eran justo lo que hacía que el bloque
+                        se leyera pesado.
+
+                        `terra` sí puede ser texto sobre claro: 7.43:1 sobre
+                        `paper`. Es además el acento que el sitio ya usa en
+                        superficies claras, así que el módulo deja de tener su
+                        propio color. */}
                     <span
                       aria-hidden="true"
                       className={[
-                        'mt-[5px] inline-flex h-[28px] min-w-[28px] shrink-0 items-center justify-center',
-                        'rounded-pill px-[8px] font-display text-[15px] tabular-nums',
+                        'mt-[6px] shrink-0 font-display text-[15px] tabular-nums tracking-[0.08em]',
                         'transition-colors duration-300',
-                        open ? 'bg-sunset text-ink' : 'bg-ink/[0.06] text-body/75',
+                        /* ⚠️ El apagado llega hasta `/65` y no más: a 15px el
+                           mínimo es 4.5:1, y `/65` da 4.57. `/45` daba 2.61 y
+                           axe lo marcó — y lo marca AUNQUE el span sea
+                           `aria-hidden`, con razón: sigue siendo texto visible
+                           para quien ve, aunque no lo lea un lector. */
+                        open ? 'text-terra' : 'text-body/65',
                       ].join(' ')}
                     >
                       {item.n}
@@ -205,13 +219,27 @@ export default function PinnedList({
                       <p className="pt-[12px] text-[15px] leading-[1.65] text-body/75 lg:text-[16px]">
                         {item.body}
                       </p>
-                      <ul className="mt-[14px] flex flex-wrap gap-[8px]">
-                        {item.tags.map((tag) => (
-                          <li
-                            key={tag}
-                            className="rounded-pill bg-ink/[0.04] px-[13px] py-[7px] font-body text-[13px] font-medium text-body/75"
-                          >
-                            {tag}
+                      {/* ⚠️ Las etiquetas dejaron de ser CHIPS rellenos. Cuatro
+                          píldoras grises por paso, doce en la sección, hacían
+                          que el bloque pareciera un panel de filtros. Ahora son
+                          texto separado por una viñeta: la misma información,
+                          sin doce cajas.
+
+                          Es el criterio de las referencias que fijó Camila —
+                          wework y superside separan con filetes y aire, no con
+                          tarjetas. */}
+                      <ul className="mt-[16px] flex flex-wrap items-center gap-x-[10px] gap-y-[6px]">
+                        {item.tags.map((tag, t) => (
+                          <li key={tag} className="flex items-center gap-[10px]">
+                            {t > 0 ? (
+                              <span
+                                aria-hidden="true"
+                                className="h-[3px] w-[3px] rounded-pill bg-terra/50"
+                              />
+                            ) : null}
+                            <span className="font-body text-[13px] font-medium tracking-[0.02em] text-body/75">
+                              {tag}
+                            </span>
                           </li>
                         ))}
                       </ul>
