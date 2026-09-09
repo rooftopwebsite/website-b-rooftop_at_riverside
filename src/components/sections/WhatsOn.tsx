@@ -96,7 +96,7 @@ function EventCard({
   return (
     <Link
       href={`/whats-on/${evento.slug}`}
-      className={`group flex h-full flex-col overflow-hidden rounded-card ${bloque.filo}`}
+      className={`group flex h-full flex-col overflow-hidden rounded-card shadow-card transition-shadow duration-300 hover:shadow-float ${bloque.filo}`}
     >
       {/*
         La foto arriba. El `overflow-hidden` va acá y el zoom en la imagen: si
@@ -180,7 +180,7 @@ export default function WhatsOn() {
   const trucks = activeTrucks();
 
   return (
-    <Section band="lg" labelledBy="whats-on-title">
+    <Section tone="bone" band="lg" labelledBy="whats-on-title">
       <div className="flex flex-col gap-[10px] sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Eyebrow tone="deep">What&rsquo;s on</Eyebrow>

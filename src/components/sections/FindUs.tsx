@@ -187,7 +187,7 @@ export default function FindUs() {
             y un iframe de Google pesa; `title` porque un iframe sin título es
             un fallo de WCAG 4.1.2.
           */}
-          <div className="overflow-hidden rounded-card border border-ink/12">
+          <div className="overflow-hidden rounded-card shadow-photo">
             <iframe
               title={`Map showing ${BRAND.name} at ${addressLine()}`}
               src={`https://www.google.com/maps?q=${BRAND.address.mapsQuery}&output=embed`}

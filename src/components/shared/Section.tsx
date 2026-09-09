@@ -20,6 +20,20 @@ import type { ReactNode } from 'react';
 
 const TONES = {
   paper: 'bg-paper text-body',
+  /**
+   * ⚠️ `bone` es el tono que da RITMO sin gritar, y se agregó porque faltaba.
+   *
+   * La home había quedado en cinco secciones `paper` seguidas: sin alternancia
+   * de fondo, una página larga se lee como un documento. Camila: «genera ritmo
+   * en la página con uso de cambio de fondos».
+   *
+   * Los proyectos de la casa alternan MUCHO —yava tiene 24 secciones crema, 24
+   * navy, 21 naranja; the-orient 24 crema— pero acá la alternancia tiene que
+   * ser sutil, porque el crema saturado ya se descartó por ruidoso. `bone`
+   * (#f7f1e3) contra `paper` (#fdfcf7) es un escalón chico y suficiente: marca
+   * el corte sin meter un campo de color.
+   */
+  bone: 'bg-bone text-body',
   cream: 'bg-cream text-body',
   /** `on-dark` invierte el anillo de foco a crema. Ver globals.css. */
   deep: 'bg-deep text-paper on-dark',

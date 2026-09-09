@@ -42,10 +42,10 @@ const ITEMS = [
 export default function EventsBanner() {
   return (
     <Section tone="paper" band="lg" labelledBy="events-banner-title">
-      <Reveal className="overflow-hidden rounded-card bg-deep p-[20px] lg:p-[28px]">
+      <Reveal className="overflow-hidden rounded-card bg-deep p-[20px] shadow-float lg:p-[28px]">
         {/* La imagen arriba, inset y con su propio radio. Es lo que separa esta
             forma de una losa a sangre: la card respira alrededor de la foto. */}
-        <div className="relative aspect-[16/9] overflow-hidden rounded-card lg:aspect-[21/9]">
+        <div className="relative aspect-[16/9] overflow-hidden rounded-card shadow-photo lg:aspect-[21/9]">
           <Image
             src="/images/events/event-a.jpg"
             alt="Guests at a private event at Rooftop at Riverside"
