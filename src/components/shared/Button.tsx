@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
+import { cn } from '@/lib/cn';
 
 /**
  * Botones y CTAs.
@@ -55,8 +56,15 @@ const BASE = [
   'disabled:opacity-50 disabled:pointer-events-none',
 ].join(' ');
 
+/**
+ * ⚠️ Va con `cn` y NO con `join(' ')`. Con el join, una clase que venga por
+ * props no PISA la de `BASE`: queda al lado, y en Tailwind el ganador lo
+ * decide el orden del CSS emitido. Concretamente `className="hidden"` contra
+ * el `inline-flex` de `BASE` perdía, así que el CTA del header no se ocultaba
+ * en mobile y desbordaba la barra. Ver la nota de `lib/cn.ts`.
+ */
 function classes(variant: ButtonVariant, size: keyof typeof SIZES, className?: string) {
-  return [BASE, VARIANTS[variant], SIZES[size], className].filter(Boolean).join(' ');
+  return cn(BASE, VARIANTS[variant], SIZES[size], className);
 }
 
 export function ButtonLink({
