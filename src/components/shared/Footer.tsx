@@ -1,101 +1,113 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { BRAND, HAPPY_HOUR, HOURS, addressLine, mapsUrl } from '@/lib/brand';
-import { FOOTER_QUICK_LINKS, NAV_CTA } from '@/lib/nav';
-import { ButtonLink, ExternalIcon } from './Button';
+import { BRAND } from '@/lib/brand';
+import AgencyBar from './AgencyBar';
+import { ButtonLink } from './Button';
 import { GUTTER } from './Section';
-import { Eyebrow, Heading } from './Type';
-import NewsletterForm from './NewsletterForm';
+import { Heading } from './Type';
 
 /**
- * Footer, en cuatro columnas.
+ * Footer con la estructura compartida de la casa (the-orient, santa-maria,
+ * casa-pirul, pretty-hens): columna de identidad a la izquierda y columnas de
+ * links a la derecha, con la barra de la agencia al pie.
  *
- *   1. logo + una línea de posicionamiento + redes (IG, FB, Google)
- *   2. contacto — dirección, teléfono, info@, botón de direcciones
- *   3. horarios — LOS DOS SETS, barra y trucks, en filas separadas
- *   4. quick links
- *   franja inferior: legales + badge de Resto Experience
+ * Camila: «el footer no tiene el tipo de estructura que trabajamos en la
+ * agencia y falta el footer de la agencia, modifícalo, debe tener la estructura
+ * de nuestros proyectos; los horarios y dirección, teléfonos, etc. no van
+ * allí».
  *
- * ⚠️ `events@eatdrinkparadise.com` NO va acá. Vive sólo en el hub de eventos y
- * en /contact: una consulta de $20.000 no puede caer en el mismo buzón que una
- * pregunta sobre estacionamiento.
+ * ⚠️ SIN HORARIOS, SIN DIRECCIÓN Y SIN TELÉFONO. Es un pedido explícito y tiene
+ * una consecuencia que Camila aceptó sabiéndola: en las 20 rutas que no son la
+ * home, `/visit` ni `/contact`, esos datos ya no están en ninguna parte. Se le
+ * ofreció la alternativa —convertir `FindUs` en un pre-footer global, como hace
+ * the-orient— y eligió esto.
  *
- * ⚠️ Va sobre `#014545`, que junto con la sección del Sunset Bar es la única
- * superficie oscura grande del sitio. Todo el texto va en papel (10.83:1) o
- * crema (9.44:1).
+ * ⚠️ SE FUERON dos bloques que estaban acá:
+ *   · «Last call», la franja de cierre. Pedido de Camila.
+ *   · El formulario de newsletter. No figura en `docs/current-site-inventory.md`
+ *     —o sea que la web actual no tiene nada parecido— y el cliente no lo pidió:
+ *     «si el cliente no lo pidió y la web actual no tiene nada similar, no lo
+ *     pongamos». Con él se fue `subscribeToNewsletter` de `app/actions.ts`.
  *
- * ⚠️ La columna 3 es donde el footer hace trabajo de POSICIONAMIENTO: mostrar
- * los dos horarios uno al lado del otro dice «bar y trucks son cosas distintas»
- * sin una sola línea de copy explicándolo.
+ * ⚠️ NO hay links legales en la franja inferior. El sitio todavía no tiene
+ * páginas de privacidad, términos ni cookies: poner los links ahora sería
+ * mandar a un 404. Cuando existan, van en la franja de abajo, al lado del
+ * copyright.
  */
+
+/** Lo que pasa EN el lugar: cómo comés, qué ves, qué alquilás. */
+const LINKS_LUGAR = [
+  { label: 'Sunset Bar', href: '/sunset-bar' },
+  { label: 'Food Trucks', href: '/food-trucks' },
+  { label: 'The Yard', href: '/the-yard' },
+  { label: "What's On", href: '/whats-on' },
+  { label: 'The Market', href: '/market' },
+] as const;
+
+/** La vertical que factura, con sus puertas de entrada. */
+const LINKS_EVENTOS = [
+  { label: 'Private Events', href: '/events' },
+  { label: 'Event Spaces', href: '/events/spaces' },
+  { label: 'Corporate', href: '/events/corporate' },
+  { label: 'Holiday Parties', href: '/events/holiday-parties' },
+  { label: 'Request a Proposal', href: '/events/inquire' },
+] as const;
+
+/**
+ * Conocernos y lo práctico.
+ *
+ * ⚠️ `/visit` y `/contact` están acá y NO en una columna de datos: los datos
+ * salieron del footer, pero las páginas que los tienen siguen a un clic. Es la
+ * única compensación honesta que admite el pedido.
+ */
+const LINKS_CONOCERNOS = [
+  { label: 'Our Story', href: '/our-story' },
+  { label: 'The Experience', href: '/the-experience' },
+  { label: 'Visit Us', href: '/visit' },
+  { label: 'Contact', href: '/contact' },
+  { label: 'FAQ', href: '/faq' },
+  { label: 'Join Us', href: '/join-us' },
+] as const;
+
+const COLUMNAS = [
+  { titulo: 'The place', links: LINKS_LUGAR },
+  { titulo: 'Events', links: LINKS_EVENTOS },
+  { titulo: 'Get to know us', links: LINKS_CONOCERNOS },
+] as const;
+
+/**
+ * ⚠️ En MAYÚSCULAS, como el header, con el interletrado que las mayúsculas
+ * necesitan para no apretarse.
+ */
+const LINK_BASE =
+  'block py-[7px] font-body text-[14px] leading-[1.4] tracking-[0.08em] uppercase text-paper/70 transition-colors duration-200 hover:text-paper';
+
 export default function Footer() {
   return (
-    <footer className="on-dark bg-deep text-paper">
-      {/* ── Last call ──────────────────────────────────────────────────── */}
-      <div className={`${GUTTER} pt-band-sm pb-[48px] lg:pt-band lg:pb-[64px]`}>
-        <div className="caja">
-          <div className="flex flex-col gap-[36px] lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-[620px]">
-              <Eyebrow tone="cream">Last call</Eyebrow>
-              <Heading level={2} className="mt-gap-kicker text-d4 lg:text-d2">
-                The sun sets at 7. <br className="hidden sm:block" />
-                We stay open a lot later.
-              </Heading>
-            </div>
-            <div className="flex flex-wrap gap-[12px]">
-              <ButtonLink href={NAV_CTA.primary.href} variant="primary" size="lg">
-                Plan an Event
-              </ButtonLink>
-              <ButtonLink href="/whats-on" variant="onDark" size="lg">
-                What&rsquo;s On
-              </ButtonLink>
-            </div>
-          </div>
-        </div>
-      </div>
+    <footer className="bg-deep text-paper">
+      <div className={GUTTER}>
+        <div className="caja grid gap-[48px] py-[64px] desk:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] desk:gap-[64px] desk:py-[80px]">
+          {/* ── Identidad ────────────────────────────────────────────── */}
+          <div className="flex flex-col items-center gap-[20px] text-center desk:items-start desk:text-left">
+            <Link href="/" aria-label={`${BRAND.name} — home`}>
+              <Image
+                src="/brand/logo-reversed.svg"
+                alt=""
+                width={303}
+                height={322}
+                className="h-[76px] w-auto"
+              />
+              <span className="sr-only">{BRAND.name}</span>
+            </Link>
 
-      {/* ── Newsletter ─────────────────────────────────────────────────── */}
-      <div className={`${GUTTER} border-t border-paper/15 py-[48px]`}>
-        <div className="caja">
-          <div className="grid gap-[28px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:gap-[64px]">
-            <div>
-              <Heading level={2} className="text-d5">
-                Get on the list
-              </Heading>
-              <p className="mt-[10px] max-w-[46ch] text-[15px] leading-[1.6] text-paper/75">
-                What&rsquo;s playing this weekend, which trucks are in, and the first word when
-                season starts back up in December.
-              </p>
-            </div>
-            <NewsletterForm />
-          </div>
-        </div>
-      </div>
-
-      {/* ── Las cuatro columnas ────────────────────────────────────────── */}
-      <div className={`${GUTTER} border-t border-paper/15 py-[52px]`}>
-        <div className="caja grid gap-[40px] sm:grid-cols-2 desk:grid-cols-4 desk:gap-[40px]">
-          {/* 1 — Identidad */}
-          <div className="flex flex-col gap-[18px]">
-            {/*
-              RESUELTO: éste es el lockup reversado de verdad, sacado del Figma
-              de marca (`logo-blanco`). Antes acá había un `brightness-0 invert`
-              sobre el logo a color, porque el wordmark es negro y desaparecía
-              sobre #014545; ese filtro se lo comía el aro naranja y la onda.
-
-              ⚠️ `alt=""` a propósito: el nombre ya está en el texto de al lado
-              y en el `<h2>` del footer. Un alt acá lo repetiría dos veces.
-            */}
-            <Image
-              src="/brand/logo-reversed.svg"
-              alt=""
-              width={303}
-              height={322}
-              className="h-auto w-[112px]"
-            />
-            <p className="max-w-[30ch] text-[15px] leading-[1.6] text-paper/80">
+            <p className="max-w-[34ch] text-[15px] leading-[1.6] text-paper/80">
               A rooftop bar over a curated food truck park, in downtown Bonita Springs.
             </p>
+
+            <ButtonLink href="/events/inquire" variant="onDark">
+              Plan an event
+            </ButtonLink>
+
             <ul className="flex items-center gap-[10px]">
               <li>
                 <SocialLink href={BRAND.social.instagram} label="Instagram">
@@ -118,146 +130,52 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* 2 — Contacto */}
-          <div>
-            <Heading level={3} role="label" className="text-paper">
-              Come by
-            </Heading>
-            <span aria-hidden="true" className="mt-[10px] block h-[2px] w-[28px] bg-sunset" />
-            <address className="mt-[16px] flex flex-col gap-[8px] text-[15px] not-italic leading-[1.6]">
-              <span className="text-paper/80">
-                {BRAND.address.street}
-                <br />
-                {BRAND.address.locality}, {BRAND.address.region} {BRAND.address.postalCode}
-              </span>
-              <a href={BRAND.contact.phoneHref} className="link-texto text-paper/80">
-                {BRAND.contact.phone}
-              </a>
-              <a href={`mailto:${BRAND.contact.email}`} className="link-texto break-all text-paper/80">
-                {BRAND.contact.email}
-              </a>
-            </address>
-            <div className="mt-[18px]">
-              <ButtonLink href={mapsUrl()} variant="onDark" external>
-                Get directions
-              </ButtonLink>
-            </div>
-          </div>
-
-          {/* 3 — Horarios, los DOS sets */}
-          <div>
-            <Heading level={3} role="label" className="text-paper">
-              Hours
-            </Heading>
-            <span aria-hidden="true" className="mt-[10px] block h-[2px] w-[28px] bg-sunset" />
-
-            <table className="mt-[16px] w-full border-collapse text-[13px]">
-              <caption className="sr-only">
-                Opening hours. The bar and the food trucks keep different hours.
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col" className="pb-[6px] text-left eyebrow text-[10px] text-paper/70">
-                    Day
-                  </th>
-                  <th scope="col" className="pb-[6px] text-left eyebrow text-[10px] text-paper/70">
-                    Bar
-                  </th>
-                  <th scope="col" className="pb-[6px] text-left eyebrow text-[10px] text-paper/70">
-                    Trucks
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {HOURS.map((h) => (
-                  <tr key={h.day} className="border-t border-paper/10">
-                    <th
-                      scope="row"
-                      className="py-[6px] pr-[8px] text-left font-bold whitespace-nowrap text-paper/90"
-                    >
-                      {h.day.slice(0, 3)}
-                    </th>
-                    <td className="py-[6px] pr-[8px] tabular-nums whitespace-nowrap text-paper/70">
-                      {h.bar === 'Closed' ? '—' : h.bar.replace(/:00/g, '').replace(/\s/g, '')}
-                    </td>
-                    <td className="py-[6px] tabular-nums whitespace-nowrap text-paper/70">
-                      {h.trucks === 'Closed' ? '—' : h.trucks.replace(/:00/g, '').replace(/\s/g, '')}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <p className="mt-[14px] text-[13px] leading-[1.5] text-paper/70">
-              <span className="eyebrow text-[10px] text-cream">Happy hour</span>
-              <br />
-              {HAPPY_HOUR.days}, {HAPPY_HOUR.time}
-              <br />
-              {HAPPY_HOUR.deals.join(' · ')}
-            </p>
-          </div>
-
-          {/* 4 — Quick links */}
-          <div>
-            <Heading level={3} role="label" className="text-paper">
-              Quick links
-            </Heading>
-            <span aria-hidden="true" className="mt-[10px] block h-[2px] w-[28px] bg-sunset" />
-            <nav aria-label="Quick links">
-              <ul className="mt-[16px] flex flex-col gap-[8px]">
-                {FOOTER_QUICK_LINKS.map((l) => {
-                  // `GIFT_CARDS` es un centinela: la URL real vive en `brand.ts`
-                  // y no se duplica en la config de navegación.
-                  const href = l.href === 'GIFT_CARDS' ? BRAND.giftCards : l.href;
-                  return (
-                    <li key={l.label}>
-                      {l.external ? (
-                        <a
-                          href={href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="link-texto inline-flex items-center gap-[6px] text-[15px] text-paper/80"
-                        >
-                          {l.label}
-                          <ExternalIcon />
-                          <span className="sr-only">(opens in a new tab)</span>
-                        </a>
-                      ) : (
-                        <Link href={href} className="link-texto text-[15px] text-paper/80">
-                          {l.label}
-                        </Link>
-                      )}
+          {/* ── Las tres columnas de links ───────────────────────────── */}
+          <nav
+            aria-label="Footer"
+            className="grid gap-[36px] sm:grid-cols-3 sm:gap-[24px]"
+          >
+            {COLUMNAS.map(({ titulo, links }) => (
+              <div
+                key={titulo}
+                className="flex flex-col items-center text-center sm:items-start sm:text-left"
+              >
+                <Heading level={2} role="label" className="text-paper">
+                  {titulo}
+                </Heading>
+                {/* El filete corto bajo el rótulo: es el remate de la casa, y en
+                    naranja porque es decorativo y no le debe contraste a nadie. */}
+                <span aria-hidden="true" className="mt-[10px] block h-[2px] w-[28px] bg-sunset" />
+                <ul className="mt-[12px] flex flex-col">
+                  {links.map(({ label, href }) => (
+                    <li key={href}>
+                      <Link href={href} className={LINK_BASE}>
+                        {label}
+                      </Link>
                     </li>
-                  );
-                })}
-              </ul>
-            </nav>
-          </div>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
         </div>
       </div>
 
-      {/* ── Franja inferior ────────────────────────────────────────────── */}
+      {/* ── Franja inferior ──────────────────────────────────────────── */}
       <div className="border-t border-paper/15">
         <div className={GUTTER}>
-          <div className="caja flex flex-col items-center justify-between gap-[12px] py-[22px] text-[13px] text-paper/60 sm:flex-row">
+          <div className="caja flex flex-col items-center justify-between gap-[10px] py-[20px] text-[13px] text-paper/60 sm:flex-row">
             <p>
               © {new Date().getFullYear()} {BRAND.name}. {BRAND.group}.
             </p>
-            <p>
-              Content, marketing &amp; web design by{' '}
-              <a
-                href={BRAND.credit.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link-texto"
-              >
-                {BRAND.credit.label}
-                <span className="sr-only">(opens in a new tab)</span>
-              </a>
-            </p>
+            <p>Bonita Springs, Florida</p>
           </div>
         </div>
       </div>
+
+      {/* La barra de la agencia trae su propio fondo claro: cierra el sitio y
+          no pertenece al bloque oscuro de arriba. */}
+      <AgencyBar />
     </footer>
   );
 }

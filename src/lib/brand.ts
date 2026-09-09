@@ -152,6 +152,24 @@ export const BRAND = {
   credit: { label: 'Resto Experience', url: 'https://restoexp.com' },
 } as const;
 
+/**
+ * La agencia, para la barra del pie.
+ *
+ * ⚠️ `BRAND.credit` ya tenía la etiqueta y la URL y se queda donde está: lo usa
+ * el `<meta name="author">` del layout. Esto es lo que necesita ADEMÁS la barra
+ * «powered by» —el tagline y el año—, que en los otros sitios de la casa vive
+ * en su propia constante.
+ *
+ * El año se calcula al renderizar. Es un server component y el sitio se
+ * regenera en cada build, así que no hay riesgo de que quede un año viejo
+ * cacheado en el cliente.
+ */
+export const AGENCY = {
+  url: 'https://restoexp.com',
+  label: 'Resto Experience',
+  tagline: 'Content, marketing & web design',
+} as const;
+
 export const SEO_LOCAL = {
   primary: 'Bonita Springs',
   secondary: ['Naples', 'Estero'],

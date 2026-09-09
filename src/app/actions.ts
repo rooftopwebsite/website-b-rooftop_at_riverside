@@ -114,45 +114,14 @@ export async function submitEventInquiry(
 }
 
 /* ==========================================================================
-   Newsletter
+   ⚠️ ACÁ VIVÍA `subscribeToNewsletter`, y NO se puede volver a agregar sin
+   pedirlo al cliente.
+
+   Se eliminó con el formulario del footer. El motivo no fue técnico: la web
+   actual no tiene nada parecido —no figura en docs/current-site-inventory.md—
+   y el cliente nunca lo pidió. Camila: «si el cliente no lo pidió y la web
+   actual no tiene nada similar, no lo pongamos».
+
+   `submitEventInquiry` y `lib/mail.ts` NO se tocaron: comparten el envío con
+   el formulario de eventos, que sí es una capacidad real del sitio.
    ========================================================================== */
-
-const newsletterSchema = z.object({
-  email: z.string().trim().email('Enter a valid email address, like you@example.com.'),
-  website: z.string().max(0).optional().default(''),
-});
-
-export async function subscribeToNewsletter(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const parsed = newsletterSchema.safeParse(Object.fromEntries(formData));
-
-  if (!parsed.success) {
-    const issue = parsed.error.issues[0];
-    if (String(issue?.path[0]) === 'website') {
-      return { status: 'ok', message: "You're on the list." };
-    }
-    return {
-      status: 'error',
-      message: issue?.message ?? 'Enter a valid email address.',
-      fieldErrors: { email: issue?.message ?? 'Enter a valid email address.' },
-    };
-  }
-
-  /**
-   * ⚠️ Por ahora esto MANDA UN MAIL al buzón del venue, no da de alta en una
-   * lista. El cliente usa Toast para email/SMS y todavía no tenemos ni el
-   * acceso ni la lista de destino. Cuando estén, se reemplaza este envío por
-   * el alta en la lista y el resto del formulario no cambia.
-   */
-  const res = await sendMail({
-    to: process.env.NEWSLETTER_INBOX ?? BRAND.contact.email,
-    subject: 'Newsletter signup',
-    text: `New newsletter signup: ${parsed.data.email}`,
-    replyTo: parsed.data.email,
-  });
-
-  if (!res.ok) return { status: 'error', message: res.message };
-  return { status: 'ok', message: "You're on the list. See you at sunset." };
-}
