@@ -33,6 +33,8 @@ const PAGE_GLOB = 'src/app';
 const SECTION_MODULES = {
   '@/components/sections/HomeSections': 'src/components/sections/HomeSections.tsx',
   '@/components/sections/WhatsOn': 'src/components/sections/WhatsOn.tsx',
+  '@/components/sections/ThreeDoors': 'src/components/sections/ThreeDoors.tsx',
+  '@/components/sections/EventsBanner': 'src/components/sections/EventsBanner.tsx',
   '@/components/sections/Hero': 'src/components/sections/Hero.tsx',
   '@/components/sections/EventVertical': 'src/components/sections/EventVertical.tsx',
   '@/components/shared/PageHero': null, // el hero es siempre blanco

@@ -49,6 +49,35 @@ const VERTICALS = [
   },
 ] as const;
 
+/**
+ * Los tres pasos del proceso. VIENEN DE LA HOME: eran `PLANNER_STEPS` en
+ * `HomeSections.tsx` y sólo existían allá, así que al reducir el bloque de
+ * eventos de la home a un banner se mudaron acá en vez de borrarse.
+ */
+const PLANNER_STEPS = [
+  {
+    n: '01',
+    href: '/events/inquire',
+    title: 'Request a proposal',
+    body: 'One screen, two minutes. You get the events packet the moment you send it.',
+    cta: 'Start the request',
+  },
+  {
+    n: '02',
+    href: '/events/inquire',
+    title: 'Get the events packet',
+    body: 'Spaces, food tiers, what we coordinate and what the trucks handle. A PDF, immediately.',
+    cta: 'Download the packet',
+  },
+  {
+    n: '03',
+    href: '/events/spaces',
+    title: 'See the spaces',
+    body: 'The rooftop, the yard, the patio, or the whole place with the doors closed.',
+    cta: 'View spaces',
+  },
+] as const;
+
 const WHAT_WE_DO = [
   {
     title: 'We coordinate the trucks',
@@ -121,6 +150,46 @@ export default function EventsPage() {
           instead is four different menus in one yard — which is a better problem to hand a room of
           two hundred people than one set entrée.
         </p>
+      </Section>
+
+      {/*
+        ⚠️ Estos tres pasos VENÍAN DE LA HOME. Camila mandó el bloque de eventos
+        de la home a ser sólo un banner: «que toda esa info esté en la página
+        que le corresponda». Esta es esa página.
+
+        No duplica a «What we actually do», que está justo arriba: ese dice QUÉ
+        hacemos —el reparto entre el venue y los trucks— y esto dice CÓMO
+        EMPIEZA. Son las dos preguntas que hace alguien que está evaluando el
+        lugar, en ese orden.
+
+        Va numerado, y acá la numeración sí informa: es una secuencia real. Se
+        pide, llega el packet, se ven los espacios.
+      */}
+      <Section band="lg" labelledBy="process-title">
+        <SectionHead
+          eyebrow="Getting started"
+          eyebrowTone="terra"
+          id="process-title"
+          title="Three steps, and the first one takes two minutes"
+        />
+        <StaggerGroup as="ol" className="mt-[40px] grid gap-[28px] md:grid-cols-3">
+          {PLANNER_STEPS.map((s) => (
+            <RevealItem as="li" key={s.n} className="flex flex-col border-t border-ink/20 pt-[18px]">
+              <span aria-hidden="true" className="eyebrow text-terra">
+                Step {s.n}
+              </span>
+              <Heading level={3} className="mt-[10px]">
+                {s.title}
+              </Heading>
+              <p className="mt-[10px] flex-1 text-[15px] leading-[1.65] text-body/75">{s.body}</p>
+              <div className="mt-[18px]">
+                <ButtonLink href={s.href} variant="outline">
+                  {s.cta}
+                </ButtonLink>
+              </div>
+            </RevealItem>
+          ))}
+        </StaggerGroup>
       </Section>
 
       {/*
