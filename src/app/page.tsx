@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import EventsBanner from '@/components/sections/EventsBanner';
 import Hero from '@/components/sections/Hero';
-import { FindUs, HowThisPlaceWorks } from '@/components/sections/HomeSections';
+import FindUs from '@/components/sections/FindUs';
+import { HowThisPlaceWorks } from '@/components/sections/HomeSections';
 import ThreeDoors from '@/components/sections/ThreeDoors';
 import WhatsOn from '@/components/sections/WhatsOn';
 import Scallop from '@/components/shared/Scallop';
