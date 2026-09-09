@@ -49,20 +49,30 @@ interface RevealProps {
   readonly className?: string;
   readonly id?: string;
   readonly amount?: number;
+  /**
+   * ⚠️ Existe para la GEOMETRÍA que no se puede escribir como clase. El caso
+   * que lo trajo es `StepStair`: la grilla tiene tantas columnas como pasos
+   * haya, y `grid-cols-${n}` armada con una plantilla no existe en el CSS
+   * emitido porque Tailwind no la ve al escanear el fuente.
+   *
+   * No es una puerta para estilar por inline lo que ya hay como clase: hay que
+   * pasar por acá sólo lo que depende de un valor que el componente recibe.
+   */
+  readonly style?: CSSProperties;
 }
 
 /* ==========================================================================
    3 · Reveal de sección al scroll
    ========================================================================== */
 
-export function Reveal({ children, as = 'div', className, id, amount = REVEAL_AMOUNT }: RevealProps) {
+export function Reveal({ children, as = 'div', className, id, amount = REVEAL_AMOUNT, style }: RevealProps) {
   const reduced = useReducedMotion();
   const MotionTag = useMemo(() => motion.create(as), [as]);
 
   if (reduced) {
     const Tag = as;
     return (
-      <Tag id={id} className={className}>
+      <Tag id={id} className={className} style={style}>
         {children}
       </Tag>
     );
@@ -72,6 +82,7 @@ export function Reveal({ children, as = 'div', className, id, amount = REVEAL_AM
     <MotionTag
       id={id}
       className={className}
+      style={style}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount }}
@@ -88,6 +99,7 @@ export function StaggerGroup({
   className,
   id,
   amount = REVEAL_AMOUNT,
+  style,
 }: RevealProps) {
   const reduced = useReducedMotion();
   const MotionTag = useMemo(() => motion.create(as), [as]);
@@ -105,6 +117,7 @@ export function StaggerGroup({
     <MotionTag
       id={id}
       className={className}
+      style={style}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount }}
@@ -119,20 +132,26 @@ export function RevealItem({
   children,
   as = 'div',
   className,
+  style,
 }: {
   readonly children: ReactNode;
   readonly as?: ElementType;
   readonly className?: string;
+  readonly style?: CSSProperties;
 }) {
   const reduced = useReducedMotion();
   const MotionTag = useMemo(() => motion.create(as), [as]);
 
   if (reduced) {
     const Tag = as;
-    return <Tag className={className}>{children}</Tag>;
+    return (
+      <Tag className={className} style={style}>
+        {children}
+      </Tag>
+    );
   }
   return (
-    <MotionTag className={className} variants={revealVariants}>
+    <MotionTag className={className} style={style} variants={revealVariants}>
       {children}
     </MotionTag>
   );

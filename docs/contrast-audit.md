@@ -136,7 +136,7 @@ midiendo el píxel renderizado, no esta tabla:
 |---|---|---|---|
 | Rótulo «video» del muro | `paper/55` sobre `paper/12` sobre `deep` | **3.51:1** | `paper/75` → 5.08:1 |
 | Rótulos Bar/Trucks de FindUs | `body/60` sobre `paper` | **3.92:1** | `body/70` → 5.30:1 |
-| Número inactivo de PinnedList | `body/45` sobre `paper` | **2.61:1** | `body/65` → 4.57:1 |
+| Número inactivo de la lista de pasos | `body/45` sobre `paper` | **2.61:1** | corregido a `/65` (4.57:1); hoy el módulo es `StepStair` sobre `deep` y va `paper/70` → 8.05:1 |
 
 Los tres son **una opacidad sobre otra**, o una opacidad sobre un fondo que ya
 es una opacidad. Un par de paleta no los describe: el color real no está

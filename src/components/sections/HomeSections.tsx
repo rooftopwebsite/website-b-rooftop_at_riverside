@@ -4,7 +4,7 @@ import type { CSSProperties } from 'react';
 import { ArrowLink, ButtonLink } from '@/components/shared/Button';
 import { Marquee, Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { PhotoPending } from '@/components/shared/PendingData';
-import PinnedList, { type PinnedItem } from '@/components/shared/PinnedList';
+import StepStair, { type Step } from '@/components/shared/StepStair';
 import Section, { GUTTER } from '@/components/shared/Section';
 import TilePattern from '@/components/shared/TilePattern';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
@@ -20,7 +20,7 @@ import { recurringEvents, whenLabel } from '@/content/events';
  * sitio: los cuatro camiones, el happy hour de `HAPPY_HOUR`, las cinco noches
  * de música. No hay ni un dato nuevo acá. Este módulo explica, no anuncia.
  */
-const STEPS: readonly PinnedItem[] = [
+const STEPS: readonly Step[] = [
   {
     n: '01',
     title: 'Order at whichever window you want',
@@ -42,61 +42,67 @@ const STEPS: readonly PinnedItem[] = [
 ];
 
 /**
- * El módulo que desarma la confusión, contado con el scroll.
+ * El módulo que desarma la confusión, contado como una ESCALERA.
  *
- * ⚠️ Cambia la FORMA, no el contenido: eran tres columnas que se leían de un
- * vistazo y ahora es una lista fijada que se abre de a un paso. La razón es que
- * el orden importa —primero pedís, después subís, después te quedás— y tres
- * columnas en paralelo no dicen que hay una secuencia. Ver `PinnedList` para
- * el mecanismo y para qué pasa sin JS.
+ * ⚠️ TERCERA forma. Fueron tres columnas en paralelo, después una lista fijada
+ * que abría un paso por vez con el scroll, y ahora una escalera con los tres
+ * pasos abiertos. La referencia la mandó Camila: for-living.it, el bloque «We
+ * handle all the complexity».
  *
- * ⚠️ El `Section` va sin `band`: el alto lo pone `PinnedList`, y un padding
- * vertical grande encima del recorrido de varias pantallas sólo agrega vacío.
+ * Por qué la escalera gana a la lista fijada, que es lo que reemplaza:
+ *
+ *   · **El orden se ve de una.** Primero pedís, después subís, después te
+ *     quedás. Una escalera dice «esto va en orden» de un vistazo; la lista
+ *     fijada obligaba a scrollear tres pantallas para descubrir que había un
+ *     orden.
+ *   · **Devuelve 2,3 pantallas.** A 42vh por paso la sección medía 2.226px en
+ *     un viewport de 900 — casi un tercio del recorrido de la home para tres
+ *     párrafos cortos.
+ *
+ * Ver `StepStair` para la geometría y para qué pasa en mobile.
  *
  * ⚠️ VERDE OSCURO. Está marcado así en el boceto de Camila, y es la única losa
- * oscura de la home aparte del hero. Tiene sentido que sea ÉSTA: es la sección
- * que se queda pegada varias pantallas, o sea la que más tiempo ocupa la vista.
- * Un fondo que cambia sostenido es lo que hace que el scroll largo se sienta
- * como un capítulo y no como un tramo muerto.
+ * oscura de la home aparte del hero.
  *
- * ⚠️ Obligó a mover las bandas de toda la home. `check:surfaces` prohíbe dos
- * secciones de color seguidas, y `WhatsOn` y `ThreeDoors` —las vecinas— eran
- * las dos `bone`. Quedó `paper · deep · paper · bone · paper`: el verde entra
- * y sale contra blanco, que es lo que lo hace pegar. El `bone` no se perdió,
- * se corrió a `EventsBanner`.
+ * ⚠️ Las bandas de toda la home dependen de esto. `check:surfaces` prohíbe dos
+ * secciones de color seguidas, y las vecinas —`WhatsOn` y `ThreeDoors`— eran
+ * las dos `bone`. Quedó `paper · deep · paper · bone · paper`: el verde entra y
+ * sale contra blanco, que es lo que lo hace pegar.
+ *
+ * ⚠️ El encabezado ya NO va en una columna al costado. Con la lista fijada eran
+ * dos columnas —el título quieto a la izquierda, los pasos a la derecha—
+ * porque el título tenía que acompañar tres pantallas de recorrido. La escalera
+ * necesita el ancho completo para desplegar la diagonal, así que el título pasa
+ * arriba, que es además como está en la referencia.
  */
 export function HowThisPlaceWorks() {
   return (
-    <Section tone="deep" bandTop="lg" bandBottom="sm" labelledBy="how-title">
-      <PinnedList
-        superficie="oscuro"
-        items={STEPS}
-        head={
-          <SectionHead
-            eyebrow="How this place works"
-            /* `cream` y no `deep`: sobre la losa oscura el eyebrow en `deep`
-               daría 1:1. Crema sobre deep da 9.44:1. */
-            eyebrowTone="cream"
-            id="how-title"
-            title={
-              <>
-                Five businesses, <br className="hidden sm:block" />
-                one set of stairs.
-              </>
-            }
-            lead="It catches people out the first time, so here it is plainly."
-          >
-            {/* La columna izquierda queda fijada varias pantallas: sin una
-                salida, es mucho aire sostenido sin nada que hacer. El enlace
-                va ACÁ y no dentro de los ítems, que se pliegan — un enlace
-                enfocable dentro de un bloque con `overflow: hidden` recibe
-                foco en una zona que no se ve. */}
-            <ArrowLink href="/the-yard" className="mt-[26px]">
-              See how the yard is laid out
-            </ArrowLink>
-          </SectionHead>
-        }
-      />
+    <Section tone="deep" bandTop="lg" bandBottom="lg" labelledBy="how-title">
+      <div className="caja">
+        <SectionHead
+          eyebrow="How this place works"
+          /* `cream` y no `deep`: sobre la losa oscura el eyebrow en `deep`
+             daría 1:1. Crema sobre deep da 9.44:1. */
+          eyebrowTone="cream"
+          id="how-title"
+          title={
+            <>
+              Five businesses, <br className="hidden sm:block" />
+              one set of stairs.
+            </>
+          }
+          lead="It catches people out the first time, so here it is plainly."
+        />
+
+        <StepStair items={STEPS} className="mt-[52px] lg:mt-[68px]" />
+
+        {/* El enlace va al pie de la escalera y no dentro de un paso: los
+            peldaños son la secuencia y meter una salida en el medio invita a
+            abandonarla antes de terminar de leerla. */}
+        <ArrowLink href="/the-yard" className="mt-[44px]">
+          See how the yard is laid out
+        </ArrowLink>
+      </div>
     </Section>
   );
 }

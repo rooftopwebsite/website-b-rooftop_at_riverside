@@ -55,9 +55,34 @@ de la home por pedido de Camila. De ronnsquare sobrevive **sólo la transición*
 | Ítem activo | abre su bloque con `min-height`, `cubic-bezier(.23, 1, .32, 1)`, 0.8s |
 | Título activo | 46px, peso 900, en el rosa de marca; los inactivos apagados |
 
-Adoptado en `PinnedList` (ver `src/components/shared/PinnedList.tsx`), con tres
-desvíos deliberados: recorrido más corto (55vh por ítem, no 133), etiquetas
-neutras en vez de rellenas de color, y un riel de progreso agregado.
+**DADO DE BAJA.** Se adoptó en `PinnedList` para «how this place works» y Camila
+lo cambió por la escalera de for-living.it (abajo). El módulo se borró.
+
+Lo que dejó aprendido, que vale para la próxima vez que aparezca la tentación:
+un recorrido de varias pantallas para tres párrafos cortos cuesta caro. Con
+42vh por ítem —ya recortado desde los 133 de la referencia— la sección se
+llevaba 2.226px, casi un tercio del scroll de la home.
+
+### for-living.it — los pasos en escalera
+
+El bloque «We handle all the complexity». Cuatro pasos bajando en diagonal:
+cada uno un peldaño más abajo y más a la derecha, con un filete que corre por
+la izquierda del bloque y dobla en horizontal hasta el arranque del siguiente.
+
+| Elemento | Medido |
+|---|---|
+| Pasos | 4, todos abiertos y visibles a la vez |
+| Desplazamiento | cada peldaño arranca donde termina el filete horizontal del anterior |
+| Bloque | número tenue + título + descripción en gris, sin caja ni relleno |
+| Filete | 1px, en L: vertical por la izquierda del bloque, horizontal al pie |
+
+Adoptado en `StepStair` → `HowThisPlaceWorks`. La geometría sale de una grilla
+de N×N con el paso *i* en la celda *(fila i, columna i)*: la diagonal cae sola y
+el ancho de la celda ES la distancia hasta el siguiente, así que el filete
+horizontal termina exactamente en su arranque sin un número calculado a mano.
+
+Dos desvíos: son tres pasos y no cuatro —son los que hay—, y cada uno lleva sus
+etiquetas de datos debajo de la descripción, que la referencia no tiene.
 
 ### designproject.io
 
@@ -133,7 +158,7 @@ Actualizado el 9 de septiembre de 2026, después del rediseño de la home.
 | Gesto | Dónde | Referencia |
 |---|---|---|
 | Transición de página | `PageTransition` | ronnsquare.fr |
-| Lista fijada que se cuenta sola | `PinnedList` → `HowThisPlaceWorks` | agencefoudre.com |
+| Pasos en escalera diagonal con filete en L | `StepStair` → `HowThisPlaceWorks` | for-living.it |
 | Acento tipográfico dentro del titular | `Accent`, `MaskedLines` | wework / superside |
 | Filas de ícono + versalita + título, con filetes | `ThreeDoors` | wework / superside |
 | Hero de titular + una frase + un CTA + muro | `Hero`, `VideoWall` | superside |
