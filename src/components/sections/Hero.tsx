@@ -114,7 +114,7 @@ export default function Hero() {
               </div>
             </HeroFadeUp>
 
-            {/* Micro-datos en Bronx, caja alta. La separación es una viñeta
+            {/* Micro-datos en Jost 500, caja alta. La separación es una viñeta
                 `aria-hidden`: un lector de pantalla no tiene que oír «punto»
                 cuatro veces, y la lista ya se anuncia como lista. */}
             <HeroFadeUp delay={0.42} className="mt-[38px]">

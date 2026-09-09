@@ -17,7 +17,7 @@ import type { ComponentProps, ReactNode } from 'react';
  * Es el error que más veces estuvo a punto de colarse.
  *
  * ⚠️ La etiqueta va en CAJA ALTA con tracking, como en las cuatro referencias.
- * Con Futura PT en 500 y 0.06em de tracking el botón deja de parecer un
+ * Con Jost en 500 y 0.06em de tracking el botón deja de parecer un
  * control de aplicación y pasa a leerse como señalética, que es el registro
  * del rubro.
  *

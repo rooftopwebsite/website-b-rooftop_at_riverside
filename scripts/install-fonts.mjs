@@ -63,15 +63,20 @@ const FACES = [
   { file: 'steelfish-italic.woff2', family: 'Steelfish', weight: 400, style: 'italic', match: (n) => n.includes('steelfish') && isItalic(n) },
   { file: 'steelfish-regular.woff2', family: 'Steelfish', weight: 400, style: 'normal', match: (n) => n.includes('steelfish') },
 
-  { file: 'bronx-regular.woff2', family: 'Bronx', weight: 400, style: 'normal', match: (n) => n.includes('bronx') },
+  /* ⚠️ Acá había una entrada de Bronx y seis de «Futura PT», y NO se pueden
+     volver a agregar. Las dos familias salieron del proyecto por licencia:
+     Bronx llegó como `Bronx_PersonalUse.otf` (uso personal, sin un solo
+     metadato de copyright) y los archivos de Futura eran en realidad Futura
+     Cyrillic de ParaType, con EULA comercial adentro del archivo.
 
-  // Futura — cuerpo. `book` es la redonda; ojo que «book» no colisione con «bold».
-  { file: 'futura-pt-extrabold.woff2', family: 'Futura PT', weight: 800, style: 'normal', match: (n) => n.includes('futura') && hasFace(n, 'extrabold', 'xbold') },
-  { file: 'futura-pt-bold.woff2', family: 'Futura PT', weight: 700, style: 'normal', match: (n) => n.includes('futura') && n.includes('bold') },
-  { file: 'futura-pt-heavy.woff2', family: 'Futura PT', weight: 600, style: 'normal', match: (n) => n.includes('futura') && hasFace(n, 'heavy', 'demi') },
-  { file: 'futura-pt-medium.woff2', family: 'Futura PT', weight: 500, style: 'normal', match: (n) => n.includes('futura') && n.includes('medium') },
-  { file: 'futura-pt-light.woff2', family: 'Futura PT', weight: 300, style: 'normal', match: (n) => n.includes('futura') && n.includes('light') },
-  { file: 'futura-pt-book.woff2', family: 'Futura PT', weight: 400, style: 'normal', match: (n) => n.includes('futura') },
+     Las reemplaza **Jost**, que es una variable de Google Fonts (OFL) y por lo
+     tanto NO pasa por este script: se baja ya en woff2 y vive versionada en
+     `public/fonts/jost-variable.woff2`. Este script existe para convertir los
+     .otf/.ttf que suelta el cliente, y Jost no es eso.
+
+     Si algún día alguien vuelve a soltar un `bronx.otf` o un `futura.otf` en
+     `_drop/`, el script los va a ignorar por diseño y va a avisar que quedaron
+     afuera. Es lo correcto: entrarían sin licencia. */
 ];
 
 const normalise = (name) => path.parse(name).name.toLowerCase().replace(/[\s_\-.]/g, '');
@@ -183,7 +188,9 @@ if (missing.length) {
   for (const f of missing) console.log(`   ${f.family} ${f.weight}${f.style === 'italic' ? ' itálica' : ''}`);
 }
 
-const critical = ['steelfish-regular.woff2', 'futura-pt-book.woff2'];
+/* Sólo Steelfish: el cuerpo lo pone Jost, que no pasa por este script porque
+   viene de Google Fonts ya en woff2. Ver la nota de FACES. */
+const critical = ['steelfish-regular.woff2'];
 const missingCritical = critical.filter((c) => !installed.has(c));
 if (missingCritical.length) {
   console.log('\n⚠️  Falta alguna de las dos caras que más se notan:');

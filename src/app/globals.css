@@ -35,22 +35,30 @@
                  interlínea da el bloque de póster que buscábamos.
      Steelfish Outline  hueca. Decorativa: a 15px es ilegible, así que sólo
                  sirve para UNA palabra grande. Nunca en cuerpo ni en UI.
-     Bronx       GEOMÉTRICA ANCHA en caja alta, de aire déco. No es script
-                 —hay al menos tres fuentes con ese nombre y una lo es—.
-                 Va en eyebrows y subheads, siempre en caja alta y con
-                 tracking abierto.
-     Futura PT   geométrica, de 300 a 800. Es el cuerpo.
+     Jost        geométrica variable (100–900), revival libre de Futura.
+                 Cubre el cuerpo (400) y los eyebrows/subheads (500, caja
+                 alta, tracking abierto).
 
-   ⚠️ El par que sostiene el sistema es **Steelfish estrechísima contra Bronx
-   anchísima**. Ese contraste de ancho es de la marca y es lo que le da
-   carácter propio al sitio; no hace falta pedirle personalidad a las sombras
-   ni a las píldoras.
+   ⚠️ BRONX Y FUTURA SE FUERON, y fue por LICENCIA y no por diseño. Lo que
+   dijeron los archivos al leerles la tabla `name`:
 
-   ⚠️ DOS PROBLEMAS DE LICENCIA, avisados a Camila y sin resolver:
-     · `Bronx_PersonalUse.otf` — la cara que llegó es de USO PERSONAL. Esto es
-       un sitio comercial. Hay que comprar la licencia o cambiar la fuente.
-     · Los archivos de Futura vienen como `FuturaCyrillic*`, que no es la
-       Futura PT de Adobe sino un repackage. Conviene confirmar la licencia.
+     · Bronx llegó como `Bronx_PersonalUse.otf` y no trae NI UN metadato:
+       ni copyright ni fundición. Es de uso personal y esto es un sitio
+       comercial.
+     · «Futura PT» era en realidad **Futura Cyrillic** de ParaType, con su
+       EULA comercial declarado adentro. Y la cara servida como `heavy`
+       (peso 600) era la **Demi**: la escalera de pesos mentía.
+
+   Jost es el reemplazo medido contra la Futura que había: misma `a` de un
+   piso, misma `o` circular, cifras casi idénticas, mismo ancho de línea. Y
+   en caja alta a 500 iguala la mancha de Bronx.
+
+   ⚠️ QUEDA UN PROBLEMA DE LICENCIA ABIERTO: **Steelfish es comercial**, de
+   Typodermic Fonts (© 2001-2024, diseño de Raymond Larabie), y el archivo no
+   trae campo de licencia. No es de uso libre: se compra. Si no aparece la
+   factura hay que reemplazarla, y la candidata medida es Big Shoulders
+   Display (OFL), que queda un 10% más ancha — el resto de las condensadas
+   libres de Google están 20% o más arriba.
 
    `font-display: swap` es requisito del brief (Fase 4).
 
@@ -65,51 +73,9 @@
 
 /* ===== FUENTES DE MARCA — generado por `npm run fonts`. NO EDITAR A MANO. ===== */
 @font-face {
-  font-family: 'Bronx';
-  src: url('/fonts/bronx-regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Futura PT';
-  src: url('/fonts/futura-pt-bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Futura PT';
-  src: url('/fonts/futura-pt-book.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Futura PT';
-  src: url('/fonts/futura-pt-heavy.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Futura PT';
-  src: url('/fonts/futura-pt-extrabold.woff2') format('woff2');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Futura PT';
-  src: url('/fonts/futura-pt-light.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Futura PT';
-  src: url('/fonts/futura-pt-medium.woff2') format('woff2');
-  font-weight: 500;
+  font-family: 'Jost';
+  src: url('/fonts/jost-variable.woff2') format('woff2-variations');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -228,11 +194,34 @@
      de que los titulares se pisaran y de que el conjunto se viera ajeno.
      Con Steelfish instalada el respaldo sólo se ve durante el swap, así que
      conviene que sea lo más parecido posible: Arial Narrow, no Impact. */
+  /* ── Familias ────────────────────────────────────────────────────────────
+     ⚠️ Bronx y Futura SALIERON del proyecto por licencia, no por diseño:
+
+       · Bronx llegó como `Bronx_PersonalUse.otf` y el archivo no trae ni un
+         metadato de copyright. Es de uso personal y esto es un sitio
+         comercial.
+       · Los archivos de «Futura PT» eran en realidad **Futura Cyrillic** de
+         ParaType, con su EULA comercial declarado adentro del archivo. Y la
+         cara servida como `heavy` (peso 600) era la **Demi**, así que la
+         escalera de pesos mentía.
+
+     Las reemplaza **Jost**, que es un revival libre de Futura (OFL, Google
+     Fonts). Medido contra la Futura que había: misma `a` de un piso, misma
+     `o` circular, cifras casi idénticas y el mismo ancho de línea.
+
+     ⚠️ Jost cubre los DOS roles —cuerpo y subhead— y eso baja el sistema de
+     tres familias a dos. Es decisión de Camila, y se sostiene: el eyebrow ya
+     se distingue por peso (500), caja alta y 0.24em de tracking, que es
+     diferencia de sobra sin pedirle otra familia. Los dos tokens se
+     mantienen separados para poder volver a divergir sin tocar componentes.
+
+     ⚠️ Es UNA fuente variable (100–900) en lugar de las seis caras estáticas
+     de Futura: 26 KB contra 134 KB, y la escalera de pesos deja de mentir.  */
   --font-display: 'Steelfish', 'Arial Narrow', ui-sans-serif, sans-serif;
-  --font-subhead: 'Bronx', 'Futura PT', 'Futura', 'Century Gothic', 'Avenir Next',
-    ui-sans-serif, system-ui, sans-serif;
-  --font-body: 'Futura PT', 'Futura', 'Century Gothic', 'Avenir Next', ui-sans-serif,
-    system-ui, sans-serif;
+  --font-subhead: 'Jost', 'Century Gothic', 'Avenir Next', ui-sans-serif, system-ui,
+    sans-serif;
+  --font-body: 'Jost', 'Century Gothic', 'Avenir Next', ui-sans-serif, system-ui,
+    sans-serif;
 
   /* ── Breakpoints ─────────────────────────────────────────────────────────
      `desk` (1344) es el de la casa: 1280 de caja + 32×2 de gutter. Es el ancho
@@ -563,7 +552,12 @@
   line-height: var(--text-caption--line-height);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  font-weight: 400;
+  /* ⚠️ 500 y no 400. Bronx era una regular PESADA: a 400, Jost queda visiblemente
+     más liviana que el eyebrow que había. Medido lado a lado en caja alta con
+     0.24em, el 500 de Jost es el que iguala la mancha de Bronx —el 600 ya se
+     pasa—. Es también lo que distingue el eyebrow del cuerpo, que va en 400,
+     ahora que las dos comparten familia. */
+  font-weight: 500;
 }
 
 /**

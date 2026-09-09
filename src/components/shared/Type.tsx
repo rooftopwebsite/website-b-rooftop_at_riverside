@@ -19,16 +19,17 @@ export type HeadingLevel = 1 | 2 | 3 | 4;
  */
 /**
  * ⚠️ Steelfish llega hasta h3 y NO MÁS. Camila: «usémosla sólo para títulos
- * grandes, o sea h1, h2 y h3». El h4 y los títulos de card pasan a Futura PT
+ * grandes, o sea h1, h2 y h3». El h4 y los títulos de card pasan a Jost
  * Medium en caja MIXTA, y eso es lo que hace `FUERA_DE_DISPLAY`.
  *
  * El motivo no es sólo gusto: a 20–24px una condensada de caja alta se lee
  * como una ETIQUETA y no como un título, así que competía con los eyebrows
  * —que son literalmente eso— en vez de encabezar el bloque.
  *
- * Tampoco va en Bronx. Bronx es caja alta con tracking abierto por
- * definición, es la de los eyebrows, y en un título de card de dos líneas se
- * vuelve ilegible.
+ * Va en caja MIXTA y a peso 500, que es lo que lo separa del eyebrow: los dos
+ * comparten familia desde que Jost reemplazó a Bronx y a Futura, así que la
+ * diferencia la hacen la caja y el tracking. Un título de card en caja alta
+ * con 0.24em sería un eyebrow grande, no un título.
  */
 const FUERA_DE_DISPLAY =
   'font-body font-medium text-[20px] leading-[1.3] tracking-[0.01em] normal-case lg:text-[24px]';
@@ -95,7 +96,7 @@ export function Heading({
 }
 
 /**
- * Eyebrow. Bronx en caja alta con 0.24em de tracking, siempre.
+ * Eyebrow. Jost 500 en caja alta con 0.24em de tracking, siempre.
  *
  * ⚠️ Los tonos son sólo los que PASAN AA. No hay `sunset` ni `river`: sobre
  * blanco dan 2.54:1 y 2.50:1. Ver docs/contrast-audit.md.
