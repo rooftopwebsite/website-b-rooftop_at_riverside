@@ -75,7 +75,7 @@ export default function Hero() {
           className="absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-deep to-transparent"
         />
 
-        <div className={`relative ${GUTTER} pt-[150px] pb-[56px] lg:pt-[176px] lg:pb-[68px]`}>
+        <div className={`relative ${GUTTER} pt-[52px] pb-[56px] lg:pt-[66px] lg:pb-[68px]`}>
           <div className="mx-auto flex max-w-[900px] flex-col items-center text-center">
             <HeroFadeUp>
               <Image

@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next';
-import BrandTrail from '@/components/shared/BrandTrail';
 import Footer from '@/components/shared/Footer';
 import Header from '@/components/shared/Header';
 import PageTransition from '@/components/shared/PageTransition';
+import PromoBar from '@/components/shared/PromoBar';
 import Preloader from '@/components/shared/Preloader';
 import SmoothScroll from '@/components/shared/SmoothScroll';
 import { BRAND } from '@/lib/brand';
@@ -55,14 +55,20 @@ export default function RootLayout({ children }: { readonly children: React.Reac
         <SmoothScroll />
         <Preloader />
         <PageTransition />
-        <BrandTrail />
+
+        {/* ⚠️ El PromoBar va ARRIBA del Header y en el flujo: se va con el
+            scroll. El Header es sticky y se pega solo. Ver Header.tsx. */}
+        <PromoBar />
         <Header />
 
         {/*
-          Sin padding acá. El header pasó a ser una píldora FLOTANTE, así que no
-          empuja el contenido: cada hero se hace cargo de su propio aire de
-          arriba (`PageHero` y `Hero`). Los anclajes internos siguen
-          compensados por el `scroll-margin-top` de globals.css.
+          Sin padding acá, y ahora por una razón distinta: el bloque superior
+          —promo + header + estado— está EN EL FLUJO, así que ya ocupa su
+          espacio y no hay nada que compensar. Antes el header era `fixed` y
+          cada hero tenía que descontar su altura a mano.
+
+          Los anclajes internos sí siguen necesitando el `scroll-margin-top` de
+          globals.css: el header es sticky y taparía el destino del salto.
         */}
         <main id="main">
           {children}

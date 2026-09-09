@@ -718,7 +718,19 @@
 
 /**
  * Anclajes internos (`/visit#parking`). Sin esto el título queda tapado por el
- * header fijo más la barra de estado. Es el alto de los dos, sumado.
+ * header más la barra de estado. Es el alto de los dos, sumado.
+ *
+ * ⚠️ Sigue haciendo falta aunque el header ya no sea `fixed` sino `sticky`: al
+ * saltar a un anclaje el bloque pegado está arriba de todo y taparía el
+ * destino igual.
+ *
+ * ⚠️ El `PromoBar` NO se suma acá. Está en el flujo, así que cuando el salto
+ * lleva la página hacia abajo ya se fue de pantalla: sumarlo dejaría 34px de
+ * aire de más en todos los anclajes.
+ *
+ * Los tokens de header (67/77) son unos píxeles más altos que la barra real
+ * (64/76), así que estos valores quedan con holgura sobre el bloque de 98/110.
+ * Es holgura a favor: de menos taparía el título.
  */
 :target {
   scroll-margin-top: calc(var(--spacing-header-sm) + 34px + 16px);

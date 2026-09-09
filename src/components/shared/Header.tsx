@@ -95,7 +95,24 @@ export default function Header() {
         caso. Una barra oscura fija vale en las 20 páginas, deja usar el lockup
         reversado siempre, y el contraste se mide una sola vez.
       */}
-      <div className={`fixed inset-x-0 top-0 z-[99] bg-deep ${GUTTER}`}>
+      {/*
+        ⚠️ `sticky` y no `fixed`, y las dos franjas —barra y estado— DENTRO del
+        mismo contenedor pegado.
+
+        Era `fixed top-0` con la `StatusBar` en un segundo `fixed top-[64px]`, y
+        los heroes compensando la altura con `padding-top`. Con el `PromoBar`
+        arriba eso no funciona: un banner que se va con el scroll, debajo de un
+        header fijo, queda tapado de entrada y deja un hueco al scrollear.
+
+        En flujo + sticky el promo se va solo y el header se pega, sin una línea
+        de JavaScript. Consecuencia: el bloque superior YA OCUPA espacio, así
+        que ningún hero compensa más su altura — ver `Hero.tsx` y `PageHero.tsx`.
+
+        ⚠️ Un solo sticky para las dos, no dos sticky hermanos: con `top-0` cada
+        una, al scrollear se superponen.
+      */}
+      <div className="sticky top-0 z-[99]">
+      <div className={`bg-deep ${GUTTER}`}>
         <header
           className={[
             'caja flex items-center',
@@ -265,11 +282,12 @@ export default function Header() {
         la barra ni a la página. Como franja se lee como parte del header, que
         es lo que es: el dato de «¿está abierto?» pertenece a la navegación.
       */}
-      <div className={`fixed inset-x-0 top-[64px] z-[98] bg-deeper desk:top-[76px] ${GUTTER}`}>
+      <div className={`bg-deeper ${GUTTER}`}>
         <div className="caja flex justify-center py-[7px]">
           <StatusBar />
         </div>
       </div>
+      </div>{/* fin del bloque sticky */}
 
       {/* ── Menú full-screen de mobile ─────────────────────────────────── */}
       <div
