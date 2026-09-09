@@ -63,8 +63,21 @@ y la onda teal.
 
 Verificado en cada build: `node scripts/surface-rhythm.mjs`.
 
-Festones (`<Scallop>`) sólo donde la superficie cambia de verdad, dos o tres por
-página. En cada corte dejaría de ser un gesto de marca y sería un patrón de fondo.
+La cenefa de olas (`<WaveBorder>`) sólo donde la superficie cambia de verdad, dos
+o tres por página. En cada corte dejaría de ser un gesto de marca y sería un
+patrón de fondo.
+
+Es el separador del brand book, sacado del Figma —página «Elementos», nodo
+2001:2414—, no un dibujo propio. Reemplazó a `<Scallop>`, que era un festón de
+arcos inventado mientras no teníamos el archivo.
+
+Dos cosas que hay que respetar al usarla:
+
+- **El color va en la sección de ABAJO.** Las olas tienen las crestas hacia
+  arriba: pintadas del color de arriba quedarían colgando dadas vuelta.
+- **El período de repetición es 383,5px, no los 422 que mide el dibujo.** La
+  tira no cierra sola; en el archivo el diseñador superpone las copias. Medido
+  renderizando 422, 400 y 383,5 en paralelo: sólo 383,5 corre sin hueco.
 
 ---
 

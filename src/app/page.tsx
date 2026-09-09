@@ -4,7 +4,7 @@ import Hero from '@/components/sections/Hero';
 import FindUs from '@/components/sections/FindUs';
 import { HowThisPlaceWorks } from '@/components/sections/HomeSections';
 import ThreeDoors from '@/components/sections/ThreeDoors';
-import Scallop from '@/components/shared/Scallop';
+import WaveBorder from '@/components/shared/WaveBorder';
 import WhatsOn from '@/components/sections/WhatsOn';
 import { pageMeta } from '@/lib/seo';
 
@@ -51,23 +51,24 @@ export default function HomePage() {
       <WhatsOn />
 
       {/*
-        ⚠️ EL FESTÓN VUELVE, y vuelve acá y no en cualquier corte. Camila lo
-        dibujó en el boceto —el zigzag entre secciones— y la regla del propio
-        componente es que va sólo donde el fondo CAMBIA de verdad. Estuvo dado
-        de baja un tiempo justamente por eso: quedó entre hueso y hueso cuando
-        `WhatsOn` dejó de ser crema, y ahí no separaba nada.
+        ⚠️ LA CENEFA DE OLAS, que es el separador real del brand book. Camila
+        la dibujó en el boceto como un zigzag entre secciones; el archivo de
+        Figma la tiene en la página «Elementos», tres veces y en tres colores.
+        Antes acá había un festón de arcos que era invento mío mientras no
+        estaba el archivo.
 
-        Ahora sí hay qué marcar: `WhatsOn` es blanco y «How this place works»
-        es la losa verde. Son los dos únicos cortes de la home donde el fondo
-        salta de claro a oscuro, así que son los dos únicos festones.
+        ⚠️ Va acá y no en cualquier corte: la regla del componente es que sólo
+        donde el fondo CAMBIA de verdad. `WhatsOn` es blanco y «How this place
+        works» es la losa verde — son los dos únicos cortes de la home donde el
+        fondo salta de claro a oscuro, así que son las dos únicas cenefas.
 
-        ⚠️ El trazo sigue siendo PLACEHOLDER —un arco repetido— hasta que
-        llegue el SVG del brand book. Cuando llegue se cambia el `<path>` de
-        `Scallop.tsx` y estos dos usos no se tocan.
+        ⚠️ El color va en la sección de ABAJO: las olas tienen las crestas hacia
+        arriba, así que es la sección que viene la que emerge sobre la que
+        termina. Ver la nota del componente.
       */}
-      <Scallop from="paper" to="deep" />
+      <WaveBorder from="paper" to="deep" />
       <HowThisPlaceWorks />
-      <Scallop from="deep" to="paper" />
+      <WaveBorder from="deep" to="paper" />
 
       <ThreeDoors />
       <EventsBanner />

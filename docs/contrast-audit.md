@@ -158,7 +158,14 @@ Esta tabla cubre los pares del **sistema**. Falta verificar, cuando existan:
   sigue valiendo para cualquier texto que se ponga sobre imagen en otra página.
   El par real se mide sobre el color compuesto y no sobre el declarado, que es
   el error clásico que ningún checker automático detecta.
-- **El patrón de azulejo**, que hoy es un placeholder propio. Cuando llegue el asset real
-  hay que medir el contraste de lo que se apoye encima.
+- **El patrón de azulejo.** Ya llegó el asset real (`public/brand/tile-pattern.svg`,
+  del Figma) y va como banda decorativa `aria-hidden`, así que hoy no hay texto
+  encima de él. Si alguna vez se apoya texto, hay que medirlo sobre el píxel
+  renderizado: son cuatro colores y el par cambia según dónde caiga la letra.
+- **Texto sobre foto desenfocada** (el banner de eventos de la home). Resuelto con
+  un velo `deep/90`, que es un piso calculado: con una foto blanca pura el peor
+  caso da 5,3:1. Medido sobre el píxel renderizado con la foto real —axe informa
+  «incomplete» cuando el fondo es imagen— da entre 6,4:1 y 8,2:1. Si se cambia la
+  foto no hace falta volver a medir, pero si se baja el velo, sí.
 - **Estados de error de formulario.** Van con texto además de color (requisito de Fase 4),
   pero el par de color todavía no está definido.

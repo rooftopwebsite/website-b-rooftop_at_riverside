@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { ButtonLink } from '@/components/shared/Button';
 import PageHero from '@/components/shared/PageHero';
-import Scallop from '@/components/shared/Scallop';
+import WaveBorder from '@/components/shared/WaveBorder';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import {
@@ -59,7 +59,7 @@ export default function SunsetBarPage() {
       />
 
       {/* ── Happy hour: la única superficie oscura de la página ────────── */}
-      <Scallop from="paper" to="deep" />
+      <WaveBorder from="paper" to="deep" />
       <Section tone="deep" band="md" labelledBy="hh-title">
         <div className="flex flex-col gap-[20px] lg:flex-row lg:items-end lg:justify-between">
           <div>
