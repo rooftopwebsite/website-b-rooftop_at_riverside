@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ComponentType, SVGProps } from 'react';
 import { ArrowRight, ArrowUpRight, Confetti, Martini, Truck } from '@/components/shared/Icon';
+import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 
 /**
  * «Not a restaurant. Three of them.» — las tres unidades de negocio.
@@ -123,25 +124,36 @@ export default function ThreeDoors() {
   return (
     <section aria-labelledby="doors-title" className="bg-bone pt-16 pb-10 lg:pt-30 lg:pb-18">
       <div className="caja-ancha">
-        <h2
-          id="doors-title"
-          className="mx-auto max-w-[18ch] text-center font-display text-banda font-extrabold uppercase"
-        >
-          <span className="text-ink">Not a restaurant.</span> <span className="text-terra">Three of them</span>
-        </h2>
-        <p className="mx-auto mt-6 max-w-[60ch] text-center font-body text-lead font-light text-ink">
-          A rooftop bar, a yard of independent kitchens, and a venue you can rent. Same address,
-          three different nights.
-        </p>
+        {/* El encabezado entra como un bloque —titular y bajada juntos— y las
+            tarjetas después, en cascada. Separar el titular de su bajada en
+            dos entradas parte una sola idea en dos tiempos. */}
+        <Reveal>
+          <h2
+            id="doors-title"
+            className="mx-auto max-w-[18ch] text-center font-display text-banda font-extrabold uppercase"
+          >
+            <span className="text-ink">Not a restaurant.</span>{' '}
+            <span className="text-terra">Three of them</span>
+          </h2>
+          <p className="mx-auto mt-6 max-w-[60ch] text-center font-body text-lead font-light text-ink">
+            A rooftop bar, a yard of independent kitchens, and a venue you can rent. Same address,
+            three different nights.
+          </p>
+        </Reveal>
 
-        <ul className="mt-10 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 p-0 lg:mt-18">
+        <StaggerGroup as="ul" className="mt-10 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 p-0 lg:mt-18">
           {DOORS.map(({ title, body, link, href, field, Icon }) => (
-            <li key={href}>
+            <RevealItem as="li" key={href}>
               <Link href={href} className="group flex flex-col gap-3">
                 <div
-                  className={`relative mb-2.5 grid h-50 place-items-center rounded-door lg:h-65 ${field}`}
+                  className={`relative mb-2.5 grid h-50 place-items-center overflow-hidden rounded-door lg:h-65 ${field}`}
                 >
-                  <Icon className="size-18 text-ink lg:size-26" />
+                  {/* ⚠️ El icono crece un 6 % en el hover y NADA MÁS se mueve.
+                      El campo de color es la mitad de la tarjeta: escalarlo
+                      entero movería el título y el párrafo de abajo, y una
+                      tarjeta que se reacomoda al pasar el mouse se lee como
+                      inestable. Sólo respira el dibujo. */}
+                  <Icon className="size-18 text-ink transition-transform duration-300 ease-brand group-hover:scale-106 lg:size-26" />
                   {/*
                     La flecha es DECORATIVA: el destino ya lo dice el título y
                     el texto de abajo. Con `aria-hidden` en el `<span>` no se
@@ -165,9 +177,9 @@ export default function ThreeDoors() {
                   <ArrowRight className="size-3.5 text-terra transition-transform duration-200 group-hover:translate-x-1" />
                 </span>
               </Link>
-            </li>
+            </RevealItem>
           ))}
-        </ul>
+        </StaggerGroup>
       </div>
     </section>
   );

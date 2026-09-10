@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import HoursCard from '@/components/shared/HoursCard';
+import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { ArrowSquareOut, Facebook, Google, Instagram } from '@/components/shared/Icon';
 import { BRAND, addressLine, mapsUrl } from '@/lib/brand';
 
@@ -60,7 +61,7 @@ export default function FindUs() {
       className="relative z-[3] -mt-22 rounded-t-band bg-bone pt-16 pb-14 lg:pt-32 lg:pb-26"
     >
       <div className="caja-ancha">
-        <div className="flex flex-wrap items-center gap-3">
+        <Reveal className="flex flex-wrap items-center gap-3">
           <h2
             id="find-us-title"
             className="m-0 flex-1 font-display text-banda font-extrabold uppercase leading-[0.88] text-ink"
@@ -89,11 +90,11 @@ export default function FindUs() {
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
 
-        <div className="mt-11 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-stretch gap-7 lg:mt-20">
+        <StaggerGroup className="mt-11 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-stretch gap-7 lg:mt-20">
           {/* ── Contacto ─────────────────────────────────────────────── */}
-          <div className="flex flex-col gap-6.5 rounded-shell bg-deep p-6.5 text-bone on-dark lg:p-9">
+          <RevealItem className="flex flex-col gap-6.5 rounded-shell bg-deep p-6.5 text-bone on-dark lg:p-9">
             <h3 className="m-0 font-display text-d5 font-bold uppercase leading-none tracking-[0.02em] text-paper">
               {BRAND.name}
             </h3>
@@ -147,25 +148,27 @@ export default function FindUs() {
               <ArrowSquareOut className="size-4.25" />
               <span className="sr-only">(opens in a new tab)</span>
             </a>
-          </div>
+          </RevealItem>
 
           {/* ── Mapa ─────────────────────────────────────────────────── */}
           {/* ⚠️ `loading="lazy"` es obligatorio y no una optimización: el
               embed de Maps trae su propio bundle y se carga incluso cuando la
               sección está tres pantallas más abajo. Es el recurso más pesado
               de la home. */}
-          <div className="min-h-80 overflow-hidden rounded-shell border border-fog lg:min-h-110">
+          <RevealItem className="min-h-80 overflow-hidden rounded-shell border border-fog lg:min-h-110">
             <iframe
               title={`Map showing ${BRAND.name} at ${addressLine()}`}
               src={`https://maps.google.com/maps?q=${BRAND.address.mapsQuery}&z=15&output=embed`}
               loading="lazy"
               className="block size-full min-h-80 border-0 lg:min-h-110"
             />
-          </div>
+          </RevealItem>
 
           {/* ── Horarios ─────────────────────────────────────────────── */}
-          <HoursCard />
-        </div>
+          <RevealItem>
+            <HoursCard />
+          </RevealItem>
+        </StaggerGroup>
       </div>
     </section>
   );

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { HOURS } from '@/lib/brand';
 import { venueStatus } from '@/lib/hours';
-import { CaretDown, CaretUp, Dot } from './Icon';
+import { CaretDown, CaretUp } from './Icon';
 
 /**
  * La tarjeta de horarios, con el día de HOY abierto.
@@ -110,23 +110,18 @@ export default function HoursCard() {
         })}
       </dl>
 
-      {status ? (
-        <p className="mt-6.5 m-0">
-          <span className="inline-flex items-center gap-2.5 rounded-pill px-5.5 py-3 font-body text-micro font-medium uppercase tracking-cta text-cream ring-1 ring-muted-dark">
-            {/* El punto es decorativo: el estado lo dice el TEXTO de al lado.
-                Sin eso el dato dependería del color, que es lo que WCAG 1.4.1
-                no permite. */}
-            <Dot aria-hidden="true" className="size-2" />
-            {status.isOpen
-              ? status.closesAt
-                ? `Open · closes ${status.closesAt}`
-                : 'Open now'
-              : status.reopensOn && status.reopensOn !== 'today'
-                ? `Closed · opens ${status.reopensOn}`
-                : 'Closed right now'}
-          </span>
-        </p>
-      ) : null}
+      {/*
+        ⚠️ ACÁ ABAJO IBA LA PÍLDORA «Open · closes 8 PM», y se saca por pedido
+        de Camila. Queda anotado para que no vuelva por inercia: el dato NO se
+        pierde, está dos veces más arriba en la misma pantalla —el pill del
+        hero lo dice con el mismo cálculo, y la fila de hoy de esta misma
+        tarjeta ya está resaltada en crema y desplegada—. Una tercera copia
+        del mismo estado, al pie de la tabla que acaba de decirlo, era
+        redundancia dentro de un mismo componente.
+
+        La lógica que la alimentaba (`venueStatus`) se queda: es la que sabe
+        cuál es HOY y lo que resalta la fila.
+      */}
     </div>
   );
 }

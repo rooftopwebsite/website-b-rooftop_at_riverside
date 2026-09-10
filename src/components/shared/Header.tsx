@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { BRAND } from '@/lib/brand';
-import { NAV_CTA, NAV_MAIN, NAV_MORE } from '@/lib/nav';
+import { NAV_CTA, NAV_MAIN, NAV_MORE, NAV_MORE_FEATURED, NAV_MORE_GROUPS } from '@/lib/nav';
 import { ButtonLink } from './Button';
 import { CaretDown } from './Icon';
 import { GUTTER } from './Section';
@@ -13,7 +13,8 @@ import { GUTTER } from './Section';
 /**
  * Header.
  *
- * Nav reducida de 5 + mega-menú «More» con una línea por link, un link de
+ * Nav reducida de 5 + mega-menú «More» —tres bloques rotulados de links con
+ * una línea de descripción cada uno, más una tarjeta destacada—, un link de
  * contacto y un CTA. Debajo de la barra de servicio (`UtilityBar`).
  *
  * ══════════════════════════════════════════════════════════════════════════
@@ -95,7 +96,8 @@ export default function Header() {
 
   const route = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
   const isCurrent = (href: string) => route === href || route.startsWith(`${href}/`);
-  const moreActive = NAV_MORE.some((l) => isCurrent(l.href));
+  const moreActive =
+    NAV_MORE.some((l) => isCurrent(l.href)) || isCurrent(NAV_MORE_FEATURED.href);
 
   useEffect(() => {
     const onOutside = (e: MouseEvent) => {
@@ -133,13 +135,39 @@ export default function Header() {
         className="relative z-40 border-b border-fog bg-bone"
         onMouseLeave={() => setMoreOpen(false)}
       >
-        <header className="caja-ancha flex min-h-19.5 items-center justify-between gap-6">
+        <header className="caja-ancha relative flex min-h-19.5 items-center gap-6">
           {/*
-            ⚠️ EL LOCKUP EN SVG, y esto cierra una deuda anotada en este mismo
+            ══════════════════════════════════════════════════════════════
+            ⚠️ EL LOGO VA CENTRADO Y EN UN MEDALLÓN, por pedido de Camila.
+
+            Está `absolute` y no en el flujo, y esa es la única forma de que
+            quede centrado respecto de la PÁGINA. Con el logo como primer
+            item de un `justify-between`, el centro visual lo decide el ancho
+            de los dos grupos que tiene al lado —cinco items de nav a la
+            izquierda contra un link y un botón a la derecha— y el logo se
+            corre del eje. Fuera del flujo, `left-1/2` es el eje real y no
+            se mueve aunque mañana la nav tenga cuatro items o seis.
+
+            ⚠️ EL CÍRCULO ES EL «ESPACIO REDONDO» y cuelga por debajo de la
+            barra a propósito. Es `bone` opaco —el mismo color del header y
+            del hero— así que tapa el filete de `fog` justo donde pasa, y lo
+            que se ve es la línea entrando y saliendo de un medallón. Si
+            fuera transparente o del mismo tamaño que la barra, el filete lo
+            cruzaría por el medio y el efecto se pierde.
+
+            ⚠️ El `ring` va en `fog`, el mismo token del filete que corta: es
+            lo que hace que el círculo se lea como una continuación de la
+            barra y no como una pieza pegada encima.
+
+            ⚠️ Los dos grupos de los costados llevan `pr`/`pl` en `desk` para
+            no meterse debajo del medallón. Sin eso, el último item de la nav
+            pasa por atrás del círculo en las pantallas donde la nav crece.
+            ══════════════════════════════════════════════════════════════
+
+            ⚠️ EL LOCKUP EN SVG cierra una deuda anotada en este mismo
             archivo. Decía: «Es un PNG y no un SVG, y no es una elección: del
-            lockup no hay versión vectorial en `public/brand`. Queda anotado en
-            `docs/media.md` como pedido — un logo raster en un header es lo
-            único del sitio que no escala».
+            lockup no hay versión vectorial en `public/brand`. Un logo raster
+            en un header es lo único del sitio que no escala».
 
             El bundle de Claude Design lo trajo. `logo-primary.svg` es el mismo
             lockup full color, vectorial y 4× más liviano que el PNG (37 KB
@@ -153,7 +181,7 @@ export default function Header() {
           <Link
             href="/"
             aria-label={`${BRAND.name} — home`}
-            className="flex shrink-0 items-center"
+            className="group absolute top-1 left-1/2 z-30 grid size-25 -translate-x-1/2 place-items-center rounded-pill bg-bone ring-1 ring-fog transition-shadow duration-300 ease-brand hover:shadow-btn desk:size-30"
           >
             <Image
               src="/brand/logo-primary.svg"
@@ -161,7 +189,7 @@ export default function Header() {
               width={240}
               height={254}
               priority
-              className="h-11 w-auto desk:h-14.5"
+              className="h-13 w-auto transition-transform duration-300 ease-brand group-hover:scale-105 desk:h-16"
             />
             <span className="sr-only">{BRAND.name}</span>
           </Link>
@@ -169,7 +197,7 @@ export default function Header() {
           {/* ── Nav desktop ────────────────────────────────────────────── */}
           <nav
             aria-label="Main"
-            className="hidden min-w-0 flex-1 items-center gap-x-4.5 gap-y-1.5 desk:flex"
+            className="hidden min-w-0 flex-1 items-center gap-x-4.5 gap-y-1.5 desk:flex desk:pr-20"
           >
             {NAV_MAIN.map(({ label, href }) => (
               <Link
@@ -206,8 +234,12 @@ export default function Header() {
             </button>
           </nav>
 
-          {/* ── Contacto + CTA ─────────────────────────────────────────── */}
-          <div className="flex shrink-0 items-center gap-3 desk:gap-6">
+          {/* ── Contacto + CTA ───────────────────────────────────────────
+              ⚠️ `flex-1` + `justify-end` y no `shrink-0`: con el logo fuera
+              del flujo, los dos grupos tienen que repartirse el ancho en
+              partes iguales o el eje del medallón deja de coincidir con el
+              centro óptico de la barra. */}
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-3 desk:gap-6 desk:pl-20">
             {/*
               ⚠️ «Contact» va como TEXTO PLANO y no como botón, y es lo que
               deja respirar la barra. Con dos botones —era «What's On» en
@@ -250,12 +282,34 @@ export default function Header() {
           ⚠️ ES UNA BANDA A TODO EL ANCHO, no la tarjeta flotante de 560px que
           había antes. Con ocho destinos, la tarjeta los apretaba en dos
           columnas de 260px y la línea de descripción caía en tres renglones.
-          A todo el ancho entran cuatro columnas y cada descripción es una
-          línea, que es para lo que existe.
 
-          ⚠️ Cada item lleva un FILETE ARRIBA y no una caja con hover de
-          fondo. Ocho cajas grises al abrir el menú son ocho rectángulos; ocho
-          filetes son una grilla. El hover vive en el color del título.
+          ⚠️ AHORA VA EN CUATRO COLUMNAS FIJAS Y ROTULADAS, no en una grilla
+          `auto-fit` de ocho links sueltos: tres bloques con rótulo de
+          categoría más una tarjeta destacada a la derecha. El porqué del
+          agrupamiento —y de ese orden— está en `nav.ts`; lo que se resolvió
+          acá es la forma.
+
+          ⚠️ SE FUERON LOS FILETES POR ITEM. Cada link tenía un `border-t` en
+          `fog`, y con ocho links del mismo peso ese filete era lo único que
+          armaba grilla. Ahora la estructura la dan los rótulos, y ocho
+          filetes más tres rótulos son dos sistemas de agrupación peleando por
+          decir lo mismo. El único filete que queda es el que cierra la banda
+          contra la página.
+
+          ⚠️ LA CUARTA COLUMNA ES LA ÚNICA CAJA DEL PANEL. Va en `bone` sobre
+          `paper` — el mismo escalón de 1.08:1 que en la barra se evitó a
+          propósito, pero acá se busca: es un rectángulo chico, con radio y
+          con `ring` en `fog`, así que se lee como tarjeta y no como un
+          cambio de fondo. Es lo que la separa de las tres columnas de texto.
+
+          ⚠️ SU ANCHO ES FIJO (21rem) y las otras tres se reparten el resto. Si
+          entrara al reparto, en 1400px la tarjeta se comería el mismo cuarto
+          que un bloque de links y el destacado dejaría de leerse destacado.
+
+          ⚠️ LA GRILLA ES `desk:` Y NADA MÁS. Abajo de 1344 no existe el botón
+          que abre esto —la nav de desktop entera es `desk:`—, así que el
+          panel no se muestra nunca en mobile. Los mismos links viven en el
+          drawer, en una sola lista.
         */}
         <div
           className={[
@@ -266,27 +320,122 @@ export default function Header() {
               : 'invisible pointer-events-none -translate-y-1 opacity-0',
           ].join(' ')}
         >
-          <ul className="caja-ancha grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-10 gap-y-7 pt-9 pb-11">
-            {NAV_MORE.map(({ label, href, hint }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  onClick={() => setMoreOpen(false)}
-                  aria-current={isCurrent(href) ? 'page' : undefined}
-                  className="group block border-t border-fog pt-3.5"
-                >
-                  <span className="block font-display text-d5 font-bold uppercase leading-none text-ink transition-colors duration-200 group-hover:text-terra">
-                    {label}
-                  </span>
-                  {hint ? (
-                    <span className="mt-1.5 block font-body text-dato font-light leading-[1.5] text-muted">
-                      {hint}
-                    </span>
-                  ) : null}
-                </Link>
-              </li>
+          {/*
+            ⚠️ EL `pt-16` NO ES AIRE DE DISEÑO: ES LA SOMBRA DEL MEDALLÓN. El
+            logo mide 120px (`desk:size-30`) y arranca en `top-1` sobre una
+            barra de 78px, así que cuelga 46px POR DEBAJO del filete — justo
+            encima de donde empieza el panel, y justo en el centro de la
+            página, que es donde cae la tercera columna. Con el `pt-9` que
+            tenía la grilla vieja, el rótulo de esa columna quedaba tapado por
+            el círculo, que es opaco y va en `z-30`.
+
+            Los 64px dejan 18px de aire entre el borde de abajo del medallón y
+            la primera línea de texto. Si el medallón cambia de tamaño, este
+            número cambia con él.
+          */}
+          <div className="caja-ancha grid gap-x-10 gap-y-9 pt-16 pb-11 desk:grid-cols-[repeat(3,minmax(0,1fr))_21rem]">
+            {NAV_MORE_GROUPS.map((group) => (
+              <div key={group.label}>
+                {/* El rótulo NO es un link: es una etiqueta. Ver `nav.ts`. */}
+                <p className="eyebrow text-muted">{group.label}</p>
+
+                <ul className="mt-4.5 flex flex-col gap-4.5">
+                  {group.links.map(({ label, href, hint, badge }) => (
+                    <li key={href}>
+                      <Link
+                        href={href}
+                        onClick={() => setMoreOpen(false)}
+                        aria-current={isCurrent(href) ? 'page' : undefined}
+                        className="group block"
+                      >
+                        <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                          {/*
+                            ⚠️ `d7` (18px) y no `d5` (28px), que es lo que tenían.
+                            Con un rótulo arriba, el título del link ya no carga
+                            solo con marcar dónde empieza cada cosa; y a 28px,
+                            tres bloques de links no entran en la altura de la
+                            tarjeta sin que el panel mida media pantalla.
+                          */}
+                          <span
+                            className={[
+                              'font-display text-d7 font-bold uppercase leading-none',
+                              'transition-colors duration-200',
+                              isCurrent(href) ? 'text-terra' : 'text-ink group-hover:text-terra',
+                            ].join(' ')}
+                          >
+                            {label}
+                          </span>
+
+                          {/*
+                            ⚠️ LA PASTILLA ES `sunset` CON TEXTO NEGRO, que es lo
+                            que manda el token: en blanco da 2.54:1. Y va
+                            rellena y no en outline porque mide 12px — un borde
+                            de 1px a ese tamaño se lee como suciedad.
+                          */}
+                          {badge ? (
+                            <span className="eyebrow rounded-pill bg-sunset px-1.75 py-0.5 text-ink">
+                              {badge}
+                            </span>
+                          ) : null}
+                        </span>
+
+                        {hint ? (
+                          <span className="mt-1.5 block font-body text-dato font-light leading-[1.5] text-muted">
+                            {hint}
+                          </span>
+                        ) : null}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+
+            {/*
+              ⚠️ LA TARJETA ES UN SOLO LINK y no una caja con un link adentro.
+              El «See Sundays» es texto dentro del mismo `<a>`: dos targets
+              anidados al mismo destino le suman una parada al tabulador y un
+              anuncio duplicado al lector de pantalla, sin sumar nada.
+            */}
+            <Link
+              href={NAV_MORE_FEATURED.href}
+              onClick={() => setMoreOpen(false)}
+              aria-current={isCurrent(NAV_MORE_FEATURED.href) ? 'page' : undefined}
+              className="group flex flex-col rounded-card bg-bone p-5 ring-1 ring-fog transition-shadow duration-300 ease-brand hover:shadow-btn"
+            >
+              <span className="eyebrow text-muted">{NAV_MORE_FEATURED.eyebrow}</span>
+
+              <span className="mt-2.5 font-display text-d6 font-bold uppercase leading-[1.1] text-ink transition-colors duration-200 group-hover:text-terra">
+                {NAV_MORE_FEATURED.label}
+              </span>
+
+              <span className="mt-2 font-body text-dato font-light leading-[1.5] text-muted">
+                {NAV_MORE_FEATURED.hint}
+              </span>
+
+              {/* `mt-auto`: el CTA se apoya en el piso de la tarjeta aunque la
+                  bajada mida dos renglones o tres. */}
+              <span className="mt-auto flex items-center gap-1.5 pt-4 font-body text-dato font-medium text-terra">
+                {NAV_MORE_FEATURED.cta}
+                <svg
+                  width="14"
+                  height="9"
+                  viewBox="0 0 14 9"
+                  fill="none"
+                  aria-hidden="true"
+                  className="transition-transform duration-200 ease-brand group-hover:translate-x-0.5"
+                >
+                  <path
+                    d="M0 4.5h12M8.5 1l3.5 3.5-3.5 3.5"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -333,7 +482,7 @@ export default function Header() {
           {/* La lista scrollea; los CTAs quedan fijos abajo. */}
           <nav aria-label="Site" className={`flex-1 overflow-y-auto pb-6 ${GUTTER}`}>
             <ul className="flex flex-col border-t border-ink/12">
-              {[...NAV_MAIN, ...NAV_MORE].map(({ label, href }) => (
+              {[...NAV_MAIN, ...NAV_MORE, NAV_MORE_FEATURED].map(({ label, href }) => (
                 <li key={href}>
                   <Link
                     href={href}

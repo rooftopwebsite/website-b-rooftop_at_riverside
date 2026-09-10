@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from '@/components/shared/Icon';
+import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 
 /**
  * «We close the whole place / For you» — la banda de eventos privados.
@@ -124,7 +125,11 @@ export default function EventsBanner() {
       className="relative overflow-hidden rounded-t-band bg-deep pt-14 pb-30 text-bone on-dark lg:pt-28 lg:pb-46"
     >
       <div className="caja-ancha relative">
-        <div className="relative">
+        {/* ⚠️ El titular, la bajada y el sello entran JUNTOS. La bajada está
+            anclada al pie del titular, así que si entraran por separado se
+            moverían una respecto de la otra durante la animación y el ancla
+            se vería trabajando. */}
+        <Reveal className="relative">
           <h2 id="events-banner-title" className="m-0 font-display text-banda font-extrabold uppercase leading-[0.86]">
             {/*
               ⚠️ Las dos mitades son UN SOLO h2. Visualmente están separadas y
@@ -169,7 +174,7 @@ export default function EventsBanner() {
             height={113}
             className="absolute top-40 right-6 z-40 hidden size-28 -translate-y-[45%] lg:block"
           />
-        </div>
+        </Reveal>
 
         <Link
           href="/events/inquire"
@@ -179,16 +184,16 @@ export default function EventsBanner() {
           <ArrowRight className="size-4" />
         </Link>
 
-        <ul className="mt-9 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 p-0 lg:mt-15">
+        <StaggerGroup as="ul" className="mt-9 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 p-0 lg:mt-15">
           {CARDS.map(({ title, src, alt }) => (
-            <li key={src} className="flex flex-col overflow-hidden rounded-shell bg-deeper">
+            <RevealItem as="li" key={src} className="group flex flex-col overflow-hidden rounded-shell bg-deeper">
               <div className="relative h-45 bg-ink lg:h-60">
                 <Image
                   src={src}
                   alt={alt}
                   fill
                   sizes="(min-width: 1024px) 420px, 100vw"
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
                 />
               </div>
               <div className="flex flex-1 flex-col gap-4 px-6.5 pt-6 pb-7">
@@ -209,9 +214,9 @@ export default function EventsBanner() {
                   <ArrowRight className="size-4.5" />
                 </span>
               </div>
-            </li>
+            </RevealItem>
           ))}
-        </ul>
+        </StaggerGroup>
       </div>
     </section>
   );

@@ -1,3 +1,4 @@
+import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { type Step } from '@/components/shared/StepStair';
 import { HAPPY_HOUR } from '@/lib/brand';
 
@@ -95,10 +96,23 @@ export default function YardSteps() {
         un dato visual. Un `ol` lo dice en la estructura, que es donde lo lee
         quien no ve la página.
       */}
-      <ol className="caja-ancha grid list-none grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6 p-0">
+      {/*
+        ⚠️ ENTRAN EN CASCADA Y NO LAS TRES JUNTAS, y acá el escalonado dice
+        algo: los tickets son PASOS numerados, así que aparecer 01, 02, 03 en
+        ese orden repite con el movimiento lo que dice el contenido. Es el
+        único lugar de la home donde el stagger no es decoración.
+
+        `StaggerGroup` + `RevealItem` ya resuelven `prefers-reduced-motion`:
+        con movimiento reducido renderizan la etiqueta pelada, sin `motion`.
+      */}
+      <StaggerGroup
+        as="ol"
+        className="caja-ancha grid list-none grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6 p-0"
+      >
         {STEPS.map((step) => (
-          <li
+          <RevealItem
             key={step.n}
+            as="li"
             /* La sombra va acá y no en la tarjeta. Ver la nota de `troquel`. */
             className="relative flex pt-9.5 [filter:drop-shadow(0_12px_26px_rgba(10,31,30,0.14))]"
           >
@@ -111,7 +125,15 @@ export default function YardSteps() {
               </span>
             </span>
 
-            <div className="troquel relative flex flex-1 flex-col items-center gap-3.5 rounded-ticket bg-paper px-5.5 pt-12 pb-13 text-center lg:px-8 lg:pt-15 lg:pb-16">
+            {/*
+              ⚠️ EL HOVER VA EN ESTE `div` Y NO EN EL `<li>` DE AFUERA, aunque
+              ahí quedaría mejor con la sombra. El `<li>` es un `RevealItem`,
+              o sea un elemento de `motion` que escribe `transform` INLINE
+              para su entrada: una clase `hover:-translate-y` de Tailwind
+              pierde contra el estilo inline y no hace nada. Vale para todas
+              las tarjetas de la home que entran con reveal.
+            */}
+            <div className="troquel relative flex flex-1 flex-col items-center gap-3.5 rounded-ticket bg-paper px-5.5 pt-12 pb-13 text-center transition-transform duration-300 ease-brand hover:-translate-y-1.5 lg:px-8 lg:pt-15 lg:pb-16">
               <span className="font-body text-[11px] font-medium uppercase tracking-[0.18em] text-muted">
                 {step.kicker}
               </span>
@@ -136,9 +158,9 @@ export default function YardSteps() {
                 ))}
               </ul>
             </div>
-          </li>
+          </RevealItem>
         ))}
-      </ol>
+      </StaggerGroup>
     </section>
   );
 }

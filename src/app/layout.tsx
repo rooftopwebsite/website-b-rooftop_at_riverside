@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import Footer from '@/components/shared/Footer';
 import Header from '@/components/shared/Header';
+import NavLock from '@/components/shared/NavLock';
 import PageTransition from '@/components/shared/PageTransition';
 import Preloader from '@/components/shared/Preloader';
 import SmoothScroll from '@/components/shared/SmoothScroll';
@@ -121,6 +122,12 @@ export default function RootLayout({ children }: { readonly children: React.Reac
         <SmoothScroll />
         <Preloader />
         <PageTransition />
+
+        {/* ⚠️ TEMPORAL. Bloquea la navegación a las otras páginas mientras el
+            rediseño está en revisión: la home ya está y las 22 internas
+            todavía no. Se apaga poniendo `SOLO_HOME` en `false` dentro de
+            `lib/flags.ts`, que es donde está el razonamiento completo. */}
+        <NavLock />
 
         {/* ⚠️ ACÁ ARRIBA VIVÍA EL `PromoBar` —los cuatro hechos del lugar—.
             Camila lo mandó sacar y lo tachó sobre una captura. Los cuatro datos

@@ -1,85 +1,104 @@
-import Link from 'next/link';
-import { BRAND } from '@/lib/brand';
-import { Facebook, Google, Instagram } from './Icon';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { HOURS } from '@/lib/brand';
+import { venueStatus } from '@/lib/hours';
 
 /**
  * La barra de servicio: la franja verde de 40px arriba de todo.
  *
- * Entra con el rediseño `food-truck-club` y ocupa el lugar que había dejado
- * vacante el `PromoBar` —el banner de los cuatro hechos del lugar que Camila
- * mandó sacar—. No es el mismo elemento y conviene que no se confundan: el
- * PromoBar VENDÍA (cuatro claims sobre el lugar), esta barra sólo DESPEJA.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ AHORA LLEVA LOS HORARIOS DE LA SEMANA EN UN MARQUEE, y antes llevaba las
+ * tres redes más Gift Cards y FAQ. El cambio lo pidió Camila y mejora la
+ * barra por un motivo concreto: los cinco destinos anteriores eran links, y
+ * los links de arriba de todo compiten con la nav que tienen justo debajo.
+ * Un horario no compite con nada — no se puede clickear, sólo se lee.
  *
- * ⚠️ QUÉ HACE ACÁ ARRIBA, que es la única pregunta que importa. Son cuatro
- * destinos que no pueden estar en la nav y tampoco pueden estar sólo en el
- * footer:
+ * Y es el dato que más se busca en el sitio de un bar. Estaba una sola vez,
+ * al fondo de la home, en la tarjeta de `FindUs`. Ahora está antes que
+ * cualquier otra cosa, sin que nadie tenga que scrollear ni abrir nada.
  *
- *   · Las tres redes. Un bar con música en vivo cinco noches se sigue por
- *     Instagram, no por el sitio. Enterrarlas en el footer es pedirle a la
- *     mitad del tráfico que scrollee una home de nueve secciones.
- *   · Gift Cards. Es el ÚNICO enlace de comercio del sitio —Toast, ver
- *     `BRAND.giftCards`— y es estacional: en diciembre se busca desde arriba.
- *   · FAQ. Absorbe las tres preguntas que si no llegan por teléfono
- *     (estacionamiento, perros, cómo se ordena).
+ * ⚠️ LOS CINCO DESTINOS QUE SALIERON NO SE PIERDEN:
+ *   · Instagram, Facebook y Google están en `FindUs`, en círculos de 62px —
+ *     que es donde de verdad se usan: cuando alguien está decidiendo si va.
+ *   · Gift Cards y FAQ están en el footer.
+ * ══════════════════════════════════════════════════════════════════════════
  *
- * Ninguno de los cuatro merece un lugar en la nav principal, que tiene cinco
- * items y ya está llena.
+ * ⚠️ EL MARQUEE NO SE PAUSA Y NO ES INTERACTIVO. Es la única animación en
+ * bucle del sitio que muestra TEXTO, así que hay que justificarla: son siete
+ * filas de día + horario, o sea ~450px de contenido que no entran en una
+ * franja de 40px de alto sin achicar el cuerpo a 9px. El bucle es lo que
+ * permite mostrarlas enteras y legibles. La alternativa —mostrar sólo hoy—
+ * ya está en la tarjeta de `FindUs` y en el pill del hero.
  *
- * ⚠️ SE VA CON EL SCROLL, y es a propósito. El header quedó en flujo normal
- * (ver la nota de `Header.tsx`), así que esta barra sube y no vuelve. Es
- * correcto: son destinos de INTENCIÓN —alguien que ya sabe que quiere una
- * gift card— y no de navegación. Si estuviera fija, 40px de alto se comerían
- * el 5 % de la pantalla de un teléfono para siempre.
+ * ⚠️ Y por eso mismo va DUPLICADO en el DOM con la copia en `aria-hidden`:
+ * un lector de pantalla tiene que oír los siete días una vez, no catorce.
+ * La segunda copia existe sólo para que el bucle no muestre un hueco al
+ * volver al origen.
  *
- * ⚠️ El contraste. `muted-dark` (#A8C6C4) sobre `deep` da 5.95:1 — pasa AA
- * para cuerpo, y sobra para los 12px en caja alta con tracking que se usan
- * acá. El hover va a `bone`, que da 10.4:1.
+ * ⚠️ ES CLIENT, y sólo por una cosa: marcar cuál es HOY. El servidor no sabe
+ * qué hora es en Bonita Springs para el visitante, y una página cacheada
+ * resaltaría el día equivocado. Antes de montar las siete filas se pintan
+ * iguales, que ya es información correcta y completa.
  */
 
-const SOCIAL = [
-  { label: 'Instagram', href: BRAND.social.instagram, Icon: Instagram },
-  { label: 'Facebook', href: BRAND.social.facebook, Icon: Facebook },
-  { label: 'Google', href: BRAND.social.google, Icon: Google },
-] as const;
+/** Cuántas veces se repite la tira. Dos es el mínimo para que el bucle cierre. */
+const COPIAS = 2;
 
 export default function UtilityBar() {
-  return (
-    <div className="bg-deep text-muted-dark">
-      <div className="caja-ancha flex h-10 items-center justify-between gap-4">
-        <ul className="flex items-center gap-4.5">
-          {SOCIAL.map(({ label, href, Icon }) => (
-            <li key={label} className="flex">
-              <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex transition-colors duration-200 hover:text-bone"
-              >
-                <Icon className="size-4.25" />
-                <span className="sr-only">{label} (opens in a new tab)</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+  const [todayIdx, setTodayIdx] = useState(-1);
 
-        <div className="flex items-center gap-5.5 font-body text-caption font-medium uppercase tracking-eyebrow">
-          <a
-            href={BRAND.giftCards}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors duration-200 hover:text-bone"
-          >
-            Gift Cards
-            <span className="sr-only"> (opens in a new tab)</span>
-          </a>
-          {/* El punto separador es DECORATIVO: sin `aria-hidden` un lector de
-              pantalla lo lee como «punto medio» entre los dos destinos. */}
-          <span aria-hidden="true" className="opacity-40">
-            ·
+  useEffect(() => {
+    const s = venueStatus('bar');
+    if (s) setTodayIdx(s.dayIndex);
+  }, []);
+
+  const fila = (copia: number) =>
+    HOURS.map((row, i) => {
+      const isToday = i === todayIdx;
+      return (
+        <span
+          key={`${copia}-${row.day}`}
+          className="flex shrink-0 items-center gap-2.5 font-body text-caption font-medium uppercase tracking-eyebrow"
+        >
+          <span className={isToday ? 'text-cream' : 'text-muted-dark'}>
+            {row.day}
+            {isToday ? ' · today' : ''}
           </span>
-          <Link href="/faq" className="transition-colors duration-200 hover:text-bone">
-            FAQ
-          </Link>
+          <span className={isToday ? 'text-paper' : 'text-bone/80'}>
+            {/* ⚠️ `tabular-nums` para que los horarios no bailen de ancho
+                mientras la tira se mueve: con cifras proporcionales, un «11»
+                y un «3» cambian el largo de la fila en cada vuelta. */}
+            <span className="tabular-nums">{row.bar}</span>
+          </span>
+          {/* El separador es decorativo y va aparte del texto para que un
+              lector de pantalla no lea «barra» entre cada día. */}
+          <span aria-hidden="true" className="pl-4 text-muted-dark/40">
+            /
+          </span>
+        </span>
+      );
+    });
+
+  return (
+    <div className="overflow-hidden bg-deep">
+      <div className="flex h-10 items-center">
+        {/*
+          ⚠️ `w-max` en la tira y `overflow-hidden` en el padre: sin el ancho
+          automático, el flex se comprime al ancho de la pantalla y el
+          `translateX(-50%)` del keyframe deja de significar «media tira».
+        */}
+        <div className="rt-marquee flex w-max items-center gap-8 pl-borde [--marquee-duration:38s]">
+          <span className="sr-only">Hours this week</span>
+          {Array.from({ length: COPIAS }, (_, copia) => (
+            <span
+              key={copia}
+              aria-hidden={copia > 0}
+              className="flex shrink-0 items-center gap-8"
+            >
+              {fila(copia)}
+            </span>
+          ))}
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Marquee } from '@/components/shared/Motion';
+import { Marquee, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import Section, { GUTTER } from '@/components/shared/Section';
 import { SectionHead } from '@/components/shared/Type';
 import { ArrowRight } from '@/components/shared/Icon';
@@ -52,8 +52,8 @@ export function HowThisPlaceWorks() {
       aria-labelledby="how-title"
       className="relative z-[3] -mt-22 rounded-t-band bg-bone pt-16 pb-10 lg:pt-32 lg:pb-18"
     >
-      <div className="caja-ancha grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-start gap-7 lg:gap-18">
-        <div className="flex flex-col gap-3">
+      <StaggerGroup className="caja-ancha grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-start gap-7 lg:gap-18">
+        <RevealItem className="flex flex-col gap-3">
           <h2
             id="how-title"
             className="m-0 font-display text-h2 font-extrabold uppercase leading-[0.9] text-ink"
@@ -78,15 +78,15 @@ export function HowThisPlaceWorks() {
             See how the yard is laid out
             <ArrowRight className="size-3.75 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
-        </div>
+        </RevealItem>
 
-        <p className="m-0 font-body text-lead font-light text-ink">
+        <RevealItem as="p" className="m-0 font-body text-lead font-light text-ink">
           It catches people out the first time, so here it is plainly. Four independent kitchens
           park in the yard and each one is somebody’s own business — you order at the window and you
           pay that truck. The Sunset Bar on the roof is ours, and it is the one tab we run. There is
           no table service.
-        </p>
-      </div>
+        </RevealItem>
+      </StaggerGroup>
     </section>
   );
 }
