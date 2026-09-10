@@ -1,179 +1,186 @@
 import Image from 'next/image';
-import { ButtonLink } from '@/components/shared/Button';
-import { Reveal } from '@/components/shared/Motion';
-import ScrollExit from '@/components/shared/ScrollExit';
-import Section from '@/components/shared/Section';
-import { Accent, Heading } from '@/components/shared/Type';
+import Link from 'next/link';
+import { ArrowRight } from '@/components/shared/Icon';
 
 /**
- * El banner de eventos privados — foto de fondo desenfocada, dos columnas.
+ * «We close the whole place / For you» — la banda de eventos privados.
  *
- * ⚠️ SEGUNDA versión. La primera tomaba la forma «Our global team» de
- * superside.com/our-creative-talent: card oscura con la foto inset arriba y el
- * texto debajo. Camila la cambió en el boceto: «foto fondo blur y info como
- * sección mercado de superside».
- *
- * Qué gana el cambio: la foto pasa de ser una franja ilustrativa arriba del
- * texto a ser el AMBIENTE del bloque. Es un banner de eventos privados — lo que
- * se vende es el lugar lleno de gente de noche—, y desenfocada cumple ese
- * trabajo sin competir con el titular, que es exactamente lo que hacía cuando
- * estaba nítida y a 21:9.
- *
- * ⚠️ Los tres pasos del proceso que vivían acá (request a proposal → get the
- * packet → see the spaces) NO se borraron: se mudaron a `/events`, que es la
- * página que les corresponde. Eran contenido que sólo existía en la home.
+ * Es la vertical que más factura y la segunda (y última) superficie oscura de
+ * la home. Va después de las tres puertas: primero se explica qué es el
+ * lugar, después se ofrece alquilarlo entero.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ ES LA BANDA OSCURA DE LA HOME — `redesign/light-tropical`.
+ * ⚠️ EL TITULAR ES UNA SOLA FRASE PARTIDA EN DOS BLOQUES DESALINEADOS, y esa
+ * es toda la idea de la sección.
  *
- * Antes era una card `deep/90` DENTRO de una `Section tone="bone"`, porque la
- * única sección oscura permitida la usaba «How this place works». Ahora es al
- * revés: esa sección pasó a clara y el corte oscuro se mudó acá.
+ *     «We close the whole place»   a la izquierda, en blanco
+ *     «For you»                    a la derecha, en naranja
  *
- * Por qué acá y no en otro lado, con tres razones concretas:
+ * La frase se completa cruzando la pantalla. No es un efecto: es que el
+ * argumento tiene dos mitades —lo que hacemos, para quién— y el desalineado
+ * las separa sin partir la oración. Con las dos alineadas a la izquierda es
+ * un titular de dos renglones más y se pierde.
  *
- *   · **Es la vertical que más factura.** El único énfasis fuerte de la página
- *     le corresponde al bloque que vende.
- *   · **Mide una banda, no una losa.** Contra los 1.430px que ocupaba la
- *     escalera, esto es una franja: un corte, no un fondo.
- *   · **Una card oscura dentro de una sección clara hacía que la sección
- *     entera leyera oscura sin serlo.** Medido sobre el píxel, era uno de los
- *     cinco focos que sumaban el 55,4 % de verde de la home. Como banda a
- *     sangre el oscuro está declarado en vez de disimulado.
- *
- * Es el movimiento de `IMG_2909` del moodboard: página clara entera, UNA losa
- * saturada, y el resto callado.
- *
- * ⚠️ Se cayeron la `rounded-card` y la `shadow-float`. Una banda a sangre no
- * lleva radio ni sombra: es una superficie, no un objeto apoyado encima.
+ * ⚠️ EL PÁRRAFO VA EN FLUJO Y NO EN ABSOLUTO. En el prototipo estaba
+ * posicionado con `position:absolute; top:100px; height:70px` — un artefacto
+ * del editor visual, no una decisión: a cualquier ancho distinto del que
+ * estaba abierto en Claude Design, ese párrafo se monta sobre «For you». Va
+ * después de las dos mitades del titular, que es donde se lee.
  * ══════════════════════════════════════════════════════════════════════════
  *
- * ── El velo, que es lo único delicado acá ─────────────────────────────────
+ * ⚠️ LA FOTO DE FONDO AL 28 % Y SIN BLUR — antes era `blur-[22px]` con una
+ * capa de `deep/90` encima. Con las tarjetas nuevas apoyadas sobre la banda,
+ * el desenfoque dejaba de leerse como foto y pasaba a leerse como una mancha
+ * verde: la sección perdía el único lugar donde se ve el venue lleno. Al
+ * 28 % de opacidad sobre `deep` la foto se distingue y el texto encima sigue
+ * midiendo lo mismo, porque la superficie de referencia del contraste sigue
+ * siendo `deep` opaco debajo.
  *
- * ⚠️ El velo es `deep/90` y ese 90 es un PISO calculado, no un gusto. Sobre una
- * foto, el contraste del texto depende de qué píxel le toque debajo, y el peor
- * caso posible es una foto blanca pura. Con el velo al 90%:
+ * ⚠️ Y TIENE QUE SER UNA FOTO DE NOCHE. La primera versión usó la aérea del
+ * patio entero, razonando que «para un bloque que dice cerramos el lugar
+ * completo, la toma correcta es la que muestra el lugar completo». Se ve en
+ * pantalla que no: la aérea es de día y a pleno sol, y al 28 % sobre `deep`
+ * lo que hace es LAVAR la banda — el verde profundo se vuelve un verde claro
+ * lechoso y la única superficie oscura de la mitad de abajo de la home deja
+ * de serlo.
  *
- *     luminancia máxima = 0.9 × L(deep) + 0.1 × 1.0 = 0.142
- *     paper sobre eso   = 5.3:1     cream sobre eso = 4.8:1
+ * El slot del diseño pide «private event on the rooftop», que es una mesa
+ * larga de gente a la noche. Ésta es esa toma, y además es oscura, así que
+ * suma atmósfera sin tocar el contraste del texto.
  *
- * O sea que ni con la foto más clara imaginable el texto baja de AA. Bajar el
- * velo a 80% deja el peor caso en 3.9:1 y ahí ya depende de la foto — que es
- * justo lo que no se puede verificar una sola vez, porque la foto la cambia el
- * cliente.
- *
- * ⚠️ El desenfoque AYUDA al contraste además de al ambiente: promedia los
- * píxeles, así que desaparecen los brillos puntuales que son los que rompen la
- * legibilidad de una línea suelta.
- *
- * ⚠️ `scale-110` no es decorativo. Un `filter: blur()` difumina también contra
- * el borde del elemento y deja los cuatro cantos semitransparentes; agrandar la
- * foto un 10% saca esos bordes fuera del recorte.
+ * ⚠️ El `pb` grande de abajo NO es aire decorativo: la sección siguiente
+ * (`FindUs`) se le monta encima con `-mt-22`, y encima de eso las tarjetas
+ * tienen que terminar bastante antes del borde o quedan cortadas por el arco.
  */
 
 /**
- * Los tres items. Son los ya confirmados en `/events`, no promesas nuevas.
+ * ⚠️ CADA FOTO MUESTRA LO QUE DICE SU TÍTULO, y esto hubo que corregirlo
+ * mirando la página. La primera versión repartió las fotos por «esto parece
+ * un evento» y quedó una clase de yoga al aire libre ilustrando «coordinamos
+ * los camiones» y una barra ilustrando «el lugar entero con los portones
+ * cerrados». Tres fotos de eventos genéricos debajo de tres frases muy
+ * concretas no acompañan al texto: lo contradicen.
  *
- * ⚠️ «We coordinate the trucks» es el que más importa y por eso va primero: el
- * venue NO tiene cocina, la comida la sirven los trucks y nosotros
- * coordinamos. Es la confusión que más caro sale en una venta.
+ * Ahora es literal: camiones / barra / el lugar completo. Y la aérea —que
+ * salió del fondo de esta misma sección por ser de día— encuentra acá su
+ * lugar, que es donde el texto habla justamente del lugar completo.
  */
-const ITEMS = [
-  'We coordinate the trucks, so you deal with one person and not four vendors',
-  'The bar is ours: open bar, drink tickets or consumption, however you want to run it',
-  'The rooftop, the yard, the patio — or the entire venue with the gates shut',
+const CARDS = [
+  {
+    title: 'We coordinate the trucks, so you deal with one person and not four vendors',
+    src: '/images/venue/truck-window-night.jpg',
+    alt: 'A food truck window in the yard at night',
+  },
+  {
+    title: 'The bar is ours: open bar, drink tickets or consumption, however you want to run it',
+    src: '/images/venue/wall-bartender.jpg',
+    alt: 'A bartender making cocktails at the Sunset Bar',
+  },
+  {
+    title: 'The rooftop, the yard, the patio — or the entire venue with the gates shut',
+    src: '/images/venue/wall-dancing-night.jpg',
+    alt: 'Guests dancing at a private party at Rooftop at Riverside',
+  },
 ] as const;
+
+/*
+ * ⚠️ Y NO la aérea del patio, aunque «el lugar entero» la pida literalmente.
+ * La aérea ya es la foto del hero, tres pantallas más arriba, y repetirla en
+ * la misma página la gasta: la segunda vez deja de ser el establecimiento del
+ * lugar y pasa a leerse como que no hay más material. Ésta es una fiesta de
+ * noche con gente vestida, que además es lo que alguien que está evaluando
+ * alquilar el venue quiere ver.
+ */
 
 export default function EventsBanner() {
   return (
-    /* `tone="deep"` pinta la sección ENTERA, de borde a borde de pantalla, y
-       el contenido sigue dentro de la caja de 1280. `on-dark` viene con el
-       tono: es lo que invierte el anillo de foco y lo que hace que la bajada
-       resuelva a `muted-dark` sin que este archivo lo diga. */
-    <Section tone="deep" band="lg" labelledBy="events-banner-title">
-      {/* La foto, de fondo y desenfocada, a lo ancho de la banda. `alt=""`
-          porque acá no informa nada: es la atmósfera del bloque, y describirla
-          obligaría a un lector de pantalla a escuchar una foto que no aporta al
-          mensaje.
-
-          ⚠️ Es la AÉREA del patio entero, de la entrega nueva. Reemplaza a
-          `event-a.jpg`, que era una foto de un evento particular: para un
-          bloque que dice «cerramos el lugar completo para vos», la toma que
-          corresponde es la que muestra el lugar completo.
-
-          ⚠️ El archivo es de 1000×667 y eso es DELIBERADO, no un descuido: el
-          `blur-[22px]` de abajo destruye todo el detalle, así que una imagen
-          grande acá sería peso puro. 96 KB para una banda a todo el ancho. */}
-      <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
+    <section
+      id="events"
+      aria-labelledby="events-banner-title"
+      className="relative overflow-hidden rounded-t-band bg-deep pt-14 pb-30 text-bone on-dark lg:pt-28 lg:pb-46"
+    >
+      <div aria-hidden="true" className="absolute inset-0 opacity-28">
         <Image
-          src="/images/venue/venue-aerial.jpg"
+          src="/images/venue/event-yard-night.jpg"
           alt=""
           fill
           sizes="100vw"
-          className="scale-110 object-cover blur-[22px]"
+          className="object-cover"
         />
-        <div className="absolute inset-0 bg-deep/90" />
       </div>
 
-      {/* ⚠️ La SEGUNDA y última salida del sitio, y va sobre el contenido y no
-          sobre la banda: si se moviera la sección, las dos cenefas que la
-          enmarcan quedarían separadas de su propio color. La banda oscura se
-          queda quieta; lo que se despide es el mensaje. Ver `ScrollExit.tsx`.
+      <div className="caja-ancha relative">
+        <div className="relative">
+          <h2 id="events-banner-title" className="m-0 font-display text-banda font-extrabold uppercase leading-[0.86]">
+            {/*
+              ⚠️ Las dos mitades son UN SOLO h2. Visualmente están separadas y
+              alineadas a lados opuestos, pero es una frase: partirla en dos
+              encabezados metería «For you» en el índice de la página como si
+              fuera una sección.
+            */}
+            <span className="block text-paper">We close the whole place</span>
+            <span className="block pr-27 text-right text-sunset lg:pr-39">For you</span>
+          </h2>
 
-          ⚠️ `Reveal` adentro y `ScrollExit` afuera, en ese orden: la entrada la
-          resuelve el `whileInView` del reveal y la salida el progreso del
-          scroll. Al revés, el transform de la salida sería el ancestro del
-          reveal y los dos escribirían el mismo `y`. */}
-      <ScrollExit>
-      <Reveal className="relative grid gap-8.5 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:items-center lg:gap-14">
-        {/* ── La columna del mensaje ───────────────────────────────── */}
-        <div>
-          {/* ⚠️ Sin eyebrow. «Planning a work event?» era una pregunta que el
-              h2 ya contesta, y era uno de los 14 eyebrows que tenía la home. */}
-          <Heading level={2} id="events-banner-title" className="text-paper">
-            We close the whole place <Accent on="dark">for you</Accent>
-          </Heading>
-
-          {/* ⚠️ `bajada` en lugar de `text-paper/85`. La utilidad lee
-              `--lead-ink`, que dentro de `.on-dark` vale `muted-dark` —5.95:1
-              medido contra `deep`—. Con la opacidad el color dependía de lo que
-              hubiera detrás, que acá es una FOTO: imposible de auditar. */}
-          <p className="mt-gap-bajada max-w-[46ch] text-lead bajada">
-            Holiday parties, client nights, fundraisers and reunions. You get the rooftop, the yard
-            and four kitchens — and one person coordinating all of it.
-          </p>
-
-          <div className="mt-7">
-            <ButtonLink href="/events" variant="onDark" size="lg">
-              Plan your event
-            </ButtonLink>
-          </div>
+          {/* El sello. Se corre hacia arriba sobre el titular, que es donde el
+              diseño lo apoya: en el aire que deja «For you» al alinearse a la
+              derecha. */}
+          <Image
+            src="/brand/badge-sun-teal.svg"
+            alt=""
+            width={113}
+            height={113}
+            className="absolute top-40 right-6 z-40 hidden size-28 -translate-y-[45%] lg:block"
+          />
         </div>
 
-        {/* ── Los tres puntos ──────────────────────────────────────────
-            ⚠️ FILAS SEPARADAS POR FILETE, no tres tarjetas. Eran tres cajas
-            `bg-paper/10` con el mismo radio y el mismo filo — o sea el kit de
-            tarjetas idénticas otra vez, tres veces en la misma pantalla.
+        <p className="mt-7 max-w-[62ch] font-body text-lead font-light text-paper lg:mt-11">
+          Holiday parties, client nights, fundraisers and reunions. You get the rooftop, the yard
+          and four kitchens, and one person coordinating all of it.
+        </p>
 
-            El filete de 1px es el lenguaje que ya usa `ThreeDoors` (el mandato
-            de WeWork) y acá gana algo más: sin relleno translúcido, la foto de
-            fondo se ve pasar por detrás del texto en lugar de quedar tapada por
-            tres rectángulos. El contraste no depende de eso — el velo al 90 %
-            ya garantiza el piso. */}
-        <ul className="flex flex-col">
-          {ITEMS.map((item, i) => (
-            <li
-              key={item}
-              className={`text-base leading-[1.5] text-paper ${
-                i === 0 ? 'pb-4' : 'border-t border-paper/25 py-4 last:pb-0'
-              }`}
-            >
-              {item}
+        <Link
+          href="/events/inquire"
+          className="mt-7 flex min-h-11 w-fit items-center gap-2.5 rounded-pill bg-sunset px-8 py-4 font-body text-dato font-medium text-ink transition-colors duration-200 hover:bg-sunset-hover lg:mt-11"
+        >
+          Plan your event
+          <ArrowRight className="size-4" />
+        </Link>
+
+        <ul className="mt-9 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 p-0 lg:mt-15">
+          {CARDS.map(({ title, src, alt }) => (
+            <li key={src} className="flex flex-col overflow-hidden rounded-shell bg-deeper">
+              <div className="relative h-45 bg-ink lg:h-60">
+                <Image
+                  src={src}
+                  alt={alt}
+                  fill
+                  sizes="(min-width: 1024px) 420px, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex flex-1 flex-col gap-4 px-6.5 pt-6 pb-7">
+                <h3 className="m-0 font-display text-d5 font-bold uppercase leading-[1.02] text-paper">
+                  {title}
+                </h3>
+                {/*
+                  ⚠️ La flecha NO es un link. Las tres tarjetas describen el
+                  MISMO servicio desde tres ángulos y las tres irían al mismo
+                  destino que el CTA de arriba: tres links idénticos apilados
+                  bajo un botón que dice lo mismo es ruido para quien tabula.
+                  Queda como remate visual, y `aria-hidden`.
+                */}
+                <span
+                  aria-hidden="true"
+                  className="mt-auto grid size-11 place-items-center rounded-pill text-cream ring-1 ring-muted-dark"
+                >
+                  <ArrowRight className="size-4.5" />
+                </span>
+              </div>
             </li>
           ))}
         </ul>
-      </Reveal>
-      </ScrollExit>
-    </Section>
+      </div>
+    </section>
   );
 }

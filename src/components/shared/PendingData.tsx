@@ -68,16 +68,64 @@ export function PendingBlock({
  *
  * No usa `next/image` porque no hay imagen que optimizar.
  */
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LOS DOS TONOS DEL HUECO, y por qué hubo que agregar el oscuro.
+ *
+ * El placeholder estaba escrito con un solo juego de colores —`ink` a
+ * distintas opacidades— porque hasta el rediseño siempre caía sobre `paper` o
+ * `bone`. Con el carrusel de `WhatsOn`, el hueco pasó a vivir DENTRO de una
+ * tarjeta `deeper` sobre una banda `deep`: tinta al 6 % sobre tinta es tinta,
+ * así que el hueco se publicaba como un rectángulo NEGRO con el brief
+ * invisible adentro.
+ *
+ * Es el peor final posible para este componente: existe justamente para que
+ * un hueco no pase callado, y ahí pasaba más callado que si no estuviera —
+ * un cuadro negro se lee como una foto oscura, no como un pendiente.
+ *
+ * ⚠️ Y NO LO DETECTÓ `npm run a11y`. El nodo tiene `role="img"` con su
+ * `aria-label`, así que axe no audita el contraste del texto de adentro: para
+ * axe es una imagen. Esto sólo se ve mirando la página.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const TONOS_HUECO = {
+  light: {
+    caja: 'border-ink/25 bg-ink/[0.06]',
+    icono: 'text-ink/35',
+    rotulo: 'text-ink/65',
+    /* `ink/70` y no `/60`: al unificar el color de texto del sitio en `ink`
+       la luminancia bajó lo justo para que el brief dejara de pasar —axe lo
+       midió en 4.33:1 sobre el gris del placeholder, contra el 4.5:1 que pide
+       un texto de 13px—. Al 70 % da 5.98:1. */
+    brief: 'text-ink/70',
+  },
+  dark: {
+    caja: 'border-muted-dark/40 bg-paper/[0.07]',
+    icono: 'text-muted-dark/70',
+    rotulo: 'text-muted-dark',
+    /* Sobre la tarjeta `deeper`, `muted-dark` opaco da 5.4:1. No se usa
+       `paper/70` —una opacidad sobre un fondo oscuro da un color distinto en
+       cada superficie y no se puede auditar—, que es el mismo motivo por el
+       que existe el token `muted-dark`. */
+    brief: 'text-muted-dark',
+  },
+} as const;
+
 export function PhotoPending({
   brief,
   ratio = 'aspect-[4/3]',
   className = '',
+  tone = 'light',
 }: {
   /** Qué toma va acá. Concreto: «El truck abierto, de noche, con gente en la ventanilla». */
   readonly brief: string;
   readonly ratio?: string;
   readonly className?: string;
+  /** La superficie sobre la que cae. Ver `TONOS_HUECO`. */
+  readonly tone?: keyof typeof TONOS_HUECO;
 }) {
+  const t = TONOS_HUECO[tone];
+
   return (
     <div
       role="img"
@@ -85,7 +133,8 @@ export function PhotoPending({
       className={[
         ratio,
         'relative flex flex-col items-center justify-center gap-3 overflow-hidden',
-        'rounded-card border border-dashed border-ink/25 bg-ink/[0.06] p-6 text-center',
+        'rounded-card border border-dashed p-6 text-center',
+        t.caja,
         className,
       ]
         .filter(Boolean)
@@ -97,7 +146,7 @@ export function PhotoPending({
         viewBox="0 0 34 30"
         fill="none"
         aria-hidden="true"
-        className="shrink-0 text-ink/35"
+        className={`shrink-0 ${t.icono}`}
       >
         <rect x="1" y="1" width="32" height="28" rx="2" stroke="currentColor" strokeWidth="1.6" />
         <circle cx="10.5" cy="10" r="3" stroke="currentColor" strokeWidth="1.6" />
@@ -109,19 +158,12 @@ export function PhotoPending({
         />
       </svg>
 
-      <p className="eyebrow text-ink/65">Image missing</p>
+      <p className={`eyebrow ${t.rotulo}`}>Image missing</p>
 
-      {/* El brief de la toma. Es lo único que hace útil a este placeholder. */}
-      {/* ⚠️ `ink/70` y no `/60`. Al unificar el color de texto del sitio en
-          `ink` —el verde de marca llevado a casi negro, en vez del gris de
-          sistema anterior— la luminancia bajó lo justo para que este brief
-          dejara de pasar: axe lo
-          midió en 4.33:1 sobre el gris del placeholder, contra el 4.5:1 que
-          pide un texto de 13px. Al 70% da 5.98:1.
-
-          Es el tipo de regresión que un cambio de token produce lejos de donde
-          se hizo, y que sólo aparece midiendo el píxel compuesto. */}
-      <p className="max-w-[34ch] font-body text-micro leading-[1.5] text-ink/70">{brief}</p>
+      {/* El brief de la toma. Es lo único que hace útil a este placeholder.
+          Los colores de los dos tonos —y sus ratios medidos— están en
+          `TONOS_HUECO`, arriba. */}
+      <p className={`max-w-[34ch] font-body text-micro leading-[1.5] ${t.brief}`}>{brief}</p>
     </div>
   );
 }

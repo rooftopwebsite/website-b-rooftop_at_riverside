@@ -47,16 +47,17 @@ export default function PageHero({
         }
       >
         <div
-          /* ⚠️ El `pt` lleva sumada la altura del header, que es `fixed` y no
-             ocupa lugar en el flujo. Los tres escalones no son caprichosos: el
-             header mide 64px hasta `desk` (1344) y 76 a partir de ahí, pero el
-             aire propio del hero cambia en `lg` (922). Son dos breakpoints
-             distintos, así que hacen falta tres tramos:
+          /* ⚠️ EL `pt` YA NO COMPENSA AL HEADER, y por eso bajó de 98/110/122
+             a 34/46. Los tres escalones anteriores llevaban sumada la altura
+             de un header `fixed` (64px hasta `desk`, 76 a partir de ahí)
+             encima del aire propio del hero (34 base, 46 desde `lg`).
 
-               base   64 + 34 =  98
-               lg     64 + 46 = 110
-               desk   76 + 46 = 122 */
-          className={`${GUTTER} flex flex-col justify-center pt-[98px] pb-[48px] lg:pt-[110px] lg:pb-[64px] desk:pt-[122px]`}
+             Con el rediseño el header volvió al flujo normal y ocupa su
+             lugar, así que sumarle la altura otra vez abría el doble de aire
+             en las 22 internas. Quedan sólo los dos tramos del aire propio,
+             y por eso desaparece el escalón de `desk`: era del header, no del
+             hero. Ver la nota grande de `Header.tsx`. */
+          className={`${GUTTER} flex flex-col justify-center pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]`}
         >
           <div className={hasImage ? 'mx-auto w-full max-w-[640px] desk:mr-[56px] desk:ml-auto' : 'caja'}>
             {crumbs && crumbs.length > 0 ? (

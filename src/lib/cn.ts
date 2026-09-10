@@ -62,6 +62,10 @@ const TAMANOS_DE_TEXTO = [
   'h1',
   'h2',
   'h3',
+  // Display del rediseño `food-truck-club` (la home y el header)
+  'titan',
+  'banda',
+  'nav',
   'd1',
   'd2',
   'd3',

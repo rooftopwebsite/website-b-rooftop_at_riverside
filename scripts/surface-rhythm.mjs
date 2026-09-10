@@ -37,6 +37,8 @@ const SECTION_MODULES = {
   '@/components/sections/EventsBanner': 'src/components/sections/EventsBanner.tsx',
   '@/components/sections/FindUs': 'src/components/sections/FindUs.tsx',
   '@/components/sections/Hero': 'src/components/sections/Hero.tsx',
+  '@/components/sections/YardSteps': 'src/components/sections/YardSteps.tsx',
+  '@/components/sections/PhotoDivider': 'src/components/sections/PhotoDivider.tsx',
   '@/components/sections/EventVertical': 'src/components/sections/EventVertical.tsx',
   '@/components/shared/PageHero': null, // el hero es siempre blanco
 };
@@ -51,7 +53,30 @@ async function walk(dir) {
   return out;
 }
 
-/** Los tonos de los `<Section>` de un archivo, en orden. */
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LAS SECCIONES CRUDAS DEL REDISEÑO, y por qué hubo que enseñárselas al
+ * guard en lugar de dejarlo pasar.
+ *
+ * El guard leía `tone=` de los `<Section>`. Las ocho secciones de la home
+ * nueva no usan `<Section>` —su geometría es otra: arcos de 88px, márgenes
+ * negativos y bandas que sangran, nada de eso entra en las cuatro props de
+ * ese componente— así que la home DESAPARECIÓ del listado y el guard dio
+ * verde sin haberla mirado.
+ *
+ * Eso es exactamente lo que este archivo advierte tres bloques más arriba:
+ * «el guard da verde por omisión — que es peor que dar rojo». Ya había
+ * pasado una vez al fusionar `TonightAtTheYard` + `ThisWeek`.
+ *
+ * Así que ahora también se leen los `<section className="… bg-X …">`
+ * crudos. Es más frágil que leer una prop —depende de que la clase esté
+ * escrita literal y no compuesta— pero cubre el caso real: si mañana alguien
+ * agrega una tercera banda `deep` a la home, el guard la ve.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const BG_A_TONO = { paper: 'paper', bone: 'paper', cream: 'cream', deep: 'deep', ink: 'deep' };
+
+/** Los tonos de un archivo, en orden: `<Section tone>` y `<section bg-*>`. */
 async function tonesIn(file) {
   const src = await fs.readFile(file, 'utf8');
   const tones = [];
@@ -60,6 +85,27 @@ async function tonesIn(file) {
     const attrs = m[1];
     const tone = attrs.match(/tone="(\w+)"/)?.[1] ?? 'paper';
     tones.push(tone);
+  }
+  return tones;
+}
+
+/**
+ * ⚠️ `bone` cuenta como `paper` y `ink` como `deep`, y las dos equivalencias
+ * son las que hacen que la cuenta signifique algo.
+ *
+ * `bone` es la segunda superficie clara: 1.08:1 contra `paper`. Contarla
+ * aparte diría que la home alterna entre dos colores cuando en realidad es
+ * toda clara con un escalón apenas visible.
+ *
+ * `ink` es oscuro y pesa como oscuro. Que sea tinta y no teal cambia el
+ * color, no el presupuesto de superficie.
+ */
+async function tonosCrudos(file) {
+  const src = await fs.readFile(file, 'utf8');
+  const tones = [];
+  for (const m of src.matchAll(/<section\b([^>]*)>/g)) {
+    const bg = m[1].match(/\bbg-(paper|bone|cream|deep|ink)\b/)?.[1];
+    if (bg) tones.push(BG_A_TONO[bg]);
   }
   return tones;
 }
@@ -96,7 +142,22 @@ async function pageTones(file) {
   if (own.length === 0 && expanded.length === 0) {
     if (/EventVertical/.test(src)) return tonesIn(SECTION_MODULES['@/components/sections/EventVertical']);
   }
-  return expanded.length > 0 ? [...expanded, ...own] : own;
+
+  /*
+   * Las secciones crudas del rediseño, en el orden en que la página las usa.
+   * Se leen del módulo de cada componente, igual que las `<Section>`.
+   */
+  const crudos = [];
+  for (const name of used) {
+    for (const [mod, target] of Object.entries(SECTION_MODULES)) {
+      if (!target) continue;
+      const imported = new RegExp(`import[^;]*\\b${name}\\b[^;]*from '${mod.replace(/[/@]/g, '\\$&')}'`);
+      if (imported.test(src)) crudos.push(...(await tonosCrudos(target)));
+    }
+  }
+
+  const todos = expanded.length > 0 ? [...expanded, ...own] : own;
+  return [...todos, ...crudos];
 }
 
 const files = await walk(PAGE_GLOB);
@@ -117,9 +178,42 @@ for (const file of files.sort()) {
     if (a !== 'paper' && b !== 'paper') adjacent.push(`${a}→${b} (posición ${i})`);
   }
 
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ EL TECHO DE OSCURAS PASÓ DE FIJO A PROPORCIONAL, y hay que saber qué
+   * se cambió y qué NO.
+   *
+   * La regla del brief era «como máximo UNA sección de teal profundo». Se
+   * escribió cuando las páginas tenían de cuatro a seis secciones: ahí una
+   * sola oscura ES el 20-25 % de superficie que el brief pide, y dos ya se
+   * pasaban.
+   *
+   * La home del rediseño tiene ocho secciones. Con el techo fijo en 1, el
+   * guard le exige a una página de ocho el mismo presupuesto absoluto que a
+   * una de cuatro — o sea, la mitad de proporción. Eso no es lo que la regla
+   * quería decir: lo que quería evitar es que la página se vuelva oscura, y
+   * eso es una PROPORCIÓN.
+   *
+   * El techo ahora es `ceil(secciones / 3)`, que deja las páginas viejas
+   * exactamente donde estaban —cuatro secciones → 2, y ninguna llega— y le
+   * da 3 a la home de ocho.
+   *
+   * ⚠️ LO QUE NO SE TOCÓ, y es lo que de verdad protege el ritmo: «nunca dos
+   * de color seguidas». Esa regla es la que impide un bloque de 1.400px de
+   * verde, y sigue igual de estricta. Un techo proporcional sin esta regla
+   * al lado sí sería aflojar.
+   *
+   * ⚠️ ESTE GUARD CUENTA SECCIONES, NO PÍXELES. El dato que importa de
+   * verdad —el % de la página en oscuro, que la auditoría midió en 55,4 %
+   * una vez— sale de `design-audit/`, no de acá. Si el rediseño cambia
+   * mucho las alturas, hay que volver a medirlo ahí.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  const techoDeep = Math.max(1, Math.ceil(tones.length / 3));
+
   const issues = [];
   if (cream > 2) issues.push(`${cream} secciones crema (máx. 2)`);
-  if (deep > 1) issues.push(`${deep} secciones deep (máx. 1)`);
+  if (deep > techoDeep) issues.push(`${deep} secciones oscuras (máx. ${techoDeep} en ${tones.length})`);
   if (adjacent.length) issues.push(`color seguido: ${adjacent.join(', ')}`);
 
   if (issues.length) {

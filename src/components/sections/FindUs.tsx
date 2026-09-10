@@ -1,439 +1,172 @@
-'use client';
-
-import { useEffect, useRef, useState } from 'react';
-import { ButtonLink } from '@/components/shared/Button';
-import Section, { GUTTER } from '@/components/shared/Section';
-import { SocialLinks } from '@/components/shared/Social';
-import TilePattern from '@/components/shared/TilePattern';
-import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
-import { BRAND, HOURS, addressLine, mapsUrl } from '@/lib/brand';
+import Link from 'next/link';
+import HoursCard from '@/components/shared/HoursCard';
+import { ArrowSquareOut, Facebook, Google, Instagram } from '@/components/shared/Icon';
+import { BRAND, addressLine, mapsUrl } from '@/lib/brand';
 
 /**
- * «Find us» — contacto, mapa y horarios, en tres columnas.
+ * «Downtown, across from Riverside Park» — la conversión física.
  *
- * ⚠️ SEGUNDA versión, y sale de una referencia que mandó Camila: el bloque de
- * contacto de Luci's Ristorante. Losa de datos a la izquierda, mapa recortado
- * en el medio, losa de horarios a la derecha. Su frase fue «el tema del visit
- * sino podemos resolverlo así en tres columnas», y resuelve justo lo que no
- * cerraba: los horarios eran un panel largo colgando al costado del mapa, y
- * acá pasan a ser una de las tres piezas, con el mismo peso que las otras dos.
+ * Cierra la home: dónde queda, cómo se llega, a qué hora abre y cómo se
+ * contacta. Es la última sección clara antes del footer.
  *
- * Lo que se toma de la referencia: la estructura de tres, los grupos rotulados
- * (CONTACT / LOCATION / FOLLOW), el día de hoy destacado y la píldora de estado
- * al pie de los horarios.
- *
- * ⚠️ Lo que NO se toma: el borde de encaje. Es la identidad de ESE restaurante
- * —un italiano— y acá sería un disfraz.
+ * ⚠️ YA NO ES CLIENT COMPONENT. Lo era entera por una sola cosa —saber qué
+ * día es hoy para resaltar la fila de horarios— y eso ahora vive en
+ * `shared/HoursCard.tsx`. Todo lo demás se renderiza en el servidor. Ver la
+ * nota de ese archivo.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LAS TRES COLUMNAS YA NO SON TARJETAS — `redesign/light-tropical`.
+ * ⚠️ EL TITULAR ESTÁ PARTIDO EN DOS Y ES UNA SOLA FRASE: «Downtown, / across
+ * from Riverside Park». La primera mitad a la izquierda con las redes al
+ * lado, la segunda alineada a la derecha y en naranja.
  *
- * Eran dos losas `bg-deep` con radio y sombra flanqueando el mapa, y ese par
- * hacía que la sección leyera oscura sin ser una sección oscura: medido sobre
- * el píxel, era uno de los cinco focos que sumaban el 55,4 % de verde de la
- * home.
+ * Es el mismo mecanismo del titular de eventos, y está a propósito: son las
+ * dos últimas secciones de la home y el eco las emparenta. Pero acá la frase
+ * dice una dirección, no un argumento — «Downtown» es el dato que la mitad de
+ * la gente busca y por eso va primero, grande y solo.
  *
- * ⚠️ Y el primer arreglo fue peor: pasarlas a `bg-paper` con `ring-1 ring-fog`
- * dejó TRES cajas con el mismo radio y el mismo filete. Cambiar el color de un
- * anti-patrón no lo arregla — seguía siendo el kit de tarjetas idénticas, sólo
- * que en claro.
+ * ⚠️ La segunda mitad va en `terra` y no en `sunset` como el prototipo: el
+ * naranja sobre superficie clara da 2.35:1 y no pasa AA ni como titular. El
+ * razonamiento completo está en el encabezado de `ThreeDoors.tsx`, que es
+ * donde vive esa decisión para toda la home.
  *
- * Ahora las columnas de datos son LISTAS: filete de 1px arriba y el contenido
- * apoyado en la superficie, igual que `ThreeDoors`. El mapa se queda como la
- * única pieza con borde, y ahí está justificado: es un `<iframe>` de Google con
- * su propio fondo, un objeto ajeno de verdad que necesita un límite.
+ * ⚠️ LAS REDES VAN ACÁ ADEMÁS DE EN LA BARRA DE SERVICIO, y no es
+ * duplicación por descuido. Arriba son tres iconos de 17px en una franja de
+ * servicio: están para quien ya los busca. Acá son tres círculos de 62px en
+ * la sección donde alguien decide si va — que es exactamente el momento en
+ * que se quiere ver fotos recientes del lugar antes de salir de casa.
  * ══════════════════════════════════════════════════════════════════════════
  *
- * ⚠️ Tampoco se toma el CTA «Reserve a table». No tomamos reservas: el sitio
- * entero dice «walk-ins only, no reservations», y un botón de reserva sería el
- * dato más contradictorio de la home. En su lugar va «Get directions», que es
- * la acción real que alguien quiere desde este bloque.
+ * ⚠️ La grilla es de TRES columnas iguales y el mapa es la del medio. Con el
+ * mapa a un costado, las dos tarjetas verdes quedaban pegadas y se leían como
+ * un solo bloque de 800px de verde. En el medio, cada tarjeta tiene su
+ * respiro y el mapa hace de separador.
  *
- * ── El acordeón ───────────────────────────────────────────────────────────
- *
- * Se mantiene lo aprobado antes: cada día se despliega y muestra los DOS
- * horarios, el del bar y el de los trucks. Es la única parte del bloque que no
- * estaba en la referencia, y tiene que quedar porque acá hay dos juegos de
- * horarios y la referencia tenía uno solo.
- *
- * ⚠️ Es `<details name="hours">` NATIVO. El atributo `name` compartido hace que
- * abrir uno cierre el otro **sin una línea de JavaScript**, y trae gratis el
- * foco, el teclado y el anuncio del estado a los lectores de pantalla. Un
- * acordeón propio necesitaría `aria-expanded`, manejo de teclas y estado, y
- * sería peor en las tres cosas. Donde el navegador no soporte `name` degrada a
- * siete desplegables independientes: se pueden abrir varios a la vez y nada
- * más.
- *
- * ⚠️ HOVER NO. Camila dijo «con el hover o el click», y hay que elegir uno: en
- * táctil no hay hover, y los dos a la vez pelean —el panel se abre solo al
- * pasar el mouse camino a otra cosa—.
- *
- * ⚠️ Los siete días se renderizan en el SERVIDOR. Lo único que aporta el JS es
- * cuál arranca abierto y la píldora de estado, porque las dos cosas dependen de
- * `America/New_York` y el servidor no lo sabe sin arriesgar una página cacheada
- * con el día equivocado. Sin JS la información igual se lee: están los siete,
- * cerrados pero alcanzables.
+ * ⚠️ Se monta con `-mt-22` sobre la banda de eventos, igual que
+ * `HowThisPlaceWorks` sobre la de What's On. Los dos arcos son el mismo
+ * gesto: la superficie clara emerge sobre la oscura.
  */
 
-/* ── La hora del local ──────────────────────────────────────────────────────
-   Todo esto trabaja en minutos desde la medianoche. Es la forma más simple de
-   comparar rangos que cruzan las 12, que acá son dos de siete: el viernes
-   cierra a las 12 AM y el sábado a las 2 AM. */
-
-/** `'3:00 PM'` → `900`. Devuelve `null` si el texto no tiene esa forma. */
-function aMinutos(t: string): number | null {
-  const m = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(t.trim());
-  if (!m) return null;
-  const h = Number(m[1]) % 12;
-  return (h + (/pm/i.test(m[3]) ? 12 : 0)) * 60 + Number(m[2]);
-}
-
-/**
- * `'11:00 AM – 2:00 AM'` → `{ desde: 660, hasta: 1560 }`.
- *
- * ⚠️ Si el cierre cae ANTES que la apertura, el tramo cruzó la medianoche y el
- * cierre se lleva al día siguiente sumándole 1440. Sin esto, el sábado se
- * leería como «abre 11:00 y cierra 02:00», o sea un rango negativo, y la
- * píldora diría «cerrado» justo en la noche de más gente de la semana.
- */
-function tramo(rango: string): { readonly desde: number; readonly hasta: number } | null {
-  const partes = rango.split('–');
-  if (partes.length !== 2) return null;
-  const desde = aMinutos(partes[0]);
-  const hasta = aMinutos(partes[1]);
-  if (desde === null || hasta === null) return null;
-  return { desde, hasta: hasta <= desde ? hasta + 1440 : hasta };
-}
-
-/** `1320` → `'10 PM'`. Sin los `:00`, que en una píldora son ruido. */
-function etiquetaHora(min: number): string {
-  const m = ((min % 1440) + 1440) % 1440;
-  const h24 = Math.floor(m / 60);
-  const mm = m % 60;
-  const h = h24 % 12 === 0 ? 12 : h24 % 12;
-  const suf = h24 >= 12 ? 'PM' : 'AM';
-  return mm === 0 ? `${h} ${suf}` : `${h}:${String(mm).padStart(2, '0')} ${suf}`;
-}
-
-/** Qué día y qué hora es EN EL LOCAL, no en el navegador de quien mira. */
-function ahoraEnElVenue(): { readonly indice: number; readonly minutos: number } {
-  const partes = new Intl.DateTimeFormat('en-US', {
-    timeZone: BRAND.address.timezone,
-    weekday: 'long',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: false,
-  }).formatToParts(new Date());
-  const leer = (t: string) => partes.find((p) => p.type === t)?.value ?? '';
-  return {
-    indice: HOURS.findIndex((h) => h.day === leer('weekday')),
-    // `hour12: false` puede devolver «24» a la medianoche según el runtime.
-    minutos: (Number(leer('hour')) % 24) * 60 + Number(leer('minute')),
-  };
-}
-
-interface Estado {
-  readonly abierto: boolean;
-  readonly texto: string;
-}
-
-/**
- * Si el BAR está abierto ahora, y hasta cuándo.
- *
- * ⚠️ Mira el día de hoy Y el de ayer. Un sábado que cierra a las 2 AM sigue
- * abierto a la 1 de la madrugada del domingo, y a esa hora el tramo que
- * corresponde es el de AYER, no el de hoy.
- *
- * ⚠️ Es el horario del bar y no el de los trucks, y va dicho en la píldora. El
- * bar abre primero y cierra último —está en la FAQ y en /visit—, así que es el
- * que contesta «¿puedo ir ahora?».
- */
-function estadoDelBar(): Estado | null {
-  const { indice, minutos } = ahoraEnElVenue();
-  if (indice < 0) return null;
-
-  const hoy = tramo(HOURS[indice].bar);
-  if (hoy && minutos >= hoy.desde && minutos < hoy.hasta) {
-    return { abierto: true, texto: `Open · closes ${etiquetaHora(hoy.hasta)}` };
-  }
-
-  const ayer = tramo(HOURS[(indice + 6) % 7].bar);
-  const arrastre = minutos + 1440;
-  if (ayer && arrastre >= ayer.desde && arrastre < ayer.hasta) {
-    return { abierto: true, texto: `Open · closes ${etiquetaHora(ayer.hasta)}` };
-  }
-
-  if (hoy && minutos < hoy.desde) {
-    return { abierto: false, texto: `Closed · opens ${etiquetaHora(hoy.desde)}` };
-  }
-
-  // Busca el próximo día con horario. Como mucho da la vuelta entera.
-  for (let salto = 1; salto <= 7; salto += 1) {
-    const siguiente = HOURS[(indice + salto) % 7];
-    const t = tramo(siguiente.bar);
-    if (t) {
-      return {
-        abierto: false,
-        texto: `Closed · opens ${siguiente.day} ${etiquetaHora(t.desde)}`,
-      };
-    }
-  }
-  return { abierto: false, texto: 'Closed' };
-}
+const SOCIAL = [
+  { label: 'Instagram', href: BRAND.social.instagram, Icon: Instagram },
+  { label: 'Facebook', href: BRAND.social.facebook, Icon: Facebook },
+  { label: 'Google', href: BRAND.social.google, Icon: Google },
+] as const;
 
 export default function FindUs() {
-  const lista = useRef<HTMLDivElement>(null);
-  /*
-    ⚠️ Arranca en `null` y la píldora no se dibuja hasta que hay valor. No es
-    pereza: la página es estática y cacheada, así que cualquier estado que
-    saliera del servidor sería el de la hora del build. «OPEN» impreso a las
-    3 AM es peor que no decir nada.
-  */
-  const [estado, setEstado] = useState<Estado | null>(null);
-
-  useEffect(() => {
-    setEstado(estadoDelBar());
-
-    const i = ahoraEnElVenue().indice;
-    if (i < 0) return;
-    const hoy = lista.current?.querySelectorAll('details')[i];
-    if (!hoy) return;
-    hoy.open = true;
-    hoy.dataset.hoy = 'true';
-  }, []);
-
   return (
-    <Section
-      tone="paper"
-      bandTop="sm"
-      bandBottom="lg"
-      labelledBy="find-title"
-      width="full"
-      className="px-0"
+    <section
+      id="find-us"
+      aria-labelledby="find-us-title"
+      className="relative z-[3] -mt-22 rounded-t-band bg-bone pt-16 pb-14 lg:pt-32 lg:pb-26"
     >
-      <div className={GUTTER}>
-        <div className="caja">
-          {/* ⚠️ Sin eyebrow: «Find us» sólo repetía en versalitas el título de
-              abajo. Los rótulos de DATO —Contact, Location, Parking, Follow—
-              sí se quedan: clasifican contenido real. */}
-          <SectionHead
-            id="find-title"
-            title="Downtown, across from Riverside Park"
-          />
-        </div>
-      </div>
+      <div className="caja-ancha">
+        <div className="flex flex-wrap items-center gap-3">
+          <h2
+            id="find-us-title"
+            className="m-0 flex-1 font-display text-banda font-extrabold uppercase leading-[0.88] text-ink"
+          >
+            {/* Las dos mitades, un solo h2. Ver la nota del encabezado. */}
+            <span className="block">Downtown,</span>
+            <span className="mt-1 block text-right text-terra">Across from Riverside Park</span>
+          </h2>
 
-      <div className={`${GUTTER} mt-10`}>
-        {/*
-          ⚠️ Las columnas laterales son MÁS ANGOSTAS que el mapa. En la
-          referencia las tres se ven parejas porque el panel del medio es una
-          foto recortada, no un mapa: un mapa necesita ancho para que se
-          reconozca el barrio, y a un tercio exacto quedaba en una estampilla.
-          Las losas de datos, en cambio, son listas de una línea y no ganan
-          nada con más ancho.
-
-          Hasta `lg` se apila en el orden en que hay que leerlo: quién sos,
-          dónde estás, cuándo abrís.
-        */}
-        {/*
-          ══════════════════════════════════════════════════════════════════
-          ⚠️ LAS DOS COLUMNAS DE DATOS NO SON TARJETAS — y esto fue un error que
-          cometí y corregí en el mismo día, así que queda escrito.
-
-          Eran dos losas `bg-deep` con sombra, o sea dos bloques oscuros de
-          ~620px dentro de una sección clara: en la captura la sección leía
-          oscura sin serlo, y era uno de los focos que sumaban el 55,4 % de
-          verde de la home.
-
-          El primer arreglo fue pasarlas a `bg-paper` con `ring-1 ring-fog`… y
-          eso dejó TRES cajas con el mismo radio y el mismo filete —contacto,
-          mapa y horarios— o sea el kit de tarjetas idénticas que el brief
-          prohíbe, sólo que en claro. Cambiar el color de un anti-patrón no lo
-          arregla.
-
-          La forma correcta: las columnas de datos son LISTAS, no objetos.
-          Filete de 1px arriba y el contenido apoyado en la superficie, igual
-          que `ThreeDoors`. **El mapa se queda como la única pieza con borde**,
-          y ahí sí está justificado: es un `<iframe>` de Google con su propio
-          fondo, un objeto ajeno de verdad que necesita un límite.
-          ══════════════════════════════════════════════════════════════════
-        */}
-        <div className="caja grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.1fr)_minmax(0,0.95fr)] lg:items-start lg:gap-9">
-          {/* ══ 1. Contacto ══════════════════════════════════════════════ */}
-          <div className="flex flex-col border-t border-fog pt-6.5">
-            <Heading level={3}>
-              {BRAND.name}
-            </Heading>
-
-            <div className="mt-6.5">
-              <Eyebrow tone="deep">Contact</Eyebrow>
-              <p className="mt-2.5 text-base leading-[1.5]">
-                <a href={BRAND.contact.phoneHref} className="link-texto text-ink">
-                  {BRAND.contact.phone}
-                </a>
-              </p>
-              <p className="mt-1 text-base leading-[1.5]">
-                <a href={`mailto:${BRAND.contact.email}`} className="link-texto text-ink">
-                  {BRAND.contact.email}
-                </a>
-              </p>
-            </div>
-
-            <div className="mt-6">
-              <Eyebrow tone="deep">Location</Eyebrow>
-              <address className="mt-2.5 text-base leading-[1.5] not-italic">
+          {/* ⚠️ Sin `order-*`: las redes van DESPUÉS del titular en el DOM y
+              en pantalla, alineadas a la derecha por el `justify-between` del
+              contenedor. Tenían `order-first` y quedaban a la izquierda de
+              «Downtown,», que es al revés que el diseño. */}
+          <ul className="flex list-none flex-wrap items-center justify-end gap-3 p-0">
+            {SOCIAL.map(({ label, href, Icon }) => (
+              <li key={label}>
                 <a
-                  href={mapsUrl()}
+                  href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link-texto text-ink"
+                  className="grid size-13 place-items-center rounded-pill bg-deep text-cream transition-colors duration-200 hover:bg-sunset hover:text-ink lg:size-15.5"
                 >
-                  {addressLine()}
-                  <span className="sr-only">, open in Google Maps (opens in a new tab)</span>
+                  <Icon className="size-5.5 lg:size-6.5" />
+                  <span className="sr-only">{label} (opens in a new tab)</span>
                 </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-11 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-stretch gap-7 lg:mt-20">
+          {/* ── Contacto ─────────────────────────────────────────────── */}
+          <div className="flex flex-col gap-6.5 rounded-shell bg-deep p-6.5 text-bone on-dark lg:p-9">
+            <h3 className="m-0 font-display text-d5 font-bold uppercase leading-none tracking-[0.02em] text-paper">
+              {BRAND.name}
+            </h3>
+
+            <div>
+              <span className="mb-2.5 block font-body text-caption font-medium uppercase tracking-eyebrow text-cream">
+                Contact
+              </span>
+              <a
+                href={BRAND.contact.phoneHref}
+                className="block font-body text-dato leading-[1.6] text-paper transition-colors duration-200 hover:text-cream"
+              >
+                {BRAND.contact.phone}
+              </a>
+              <a
+                href={`mailto:${BRAND.contact.email}`}
+                className="block font-body text-dato leading-[1.6] text-paper transition-colors duration-200 hover:text-cream"
+              >
+                {BRAND.contact.email}
+              </a>
+            </div>
+
+            <div>
+              <span className="mb-2.5 block font-body text-caption font-medium uppercase tracking-eyebrow text-cream">
+                Location
+              </span>
+              <address className="m-0 font-body text-dato leading-[1.6] text-paper not-italic">
+                {addressLine()}
               </address>
             </div>
 
-            {/* Parking. Camila lo anotó en el boceto y no estaba en la
-                referencia; entra acá porque es lo segundo que pregunta
-                cualquiera que viene en auto a un centro sin playa propia. */}
-            <div className="mt-6">
-              <Eyebrow tone="deep">Parking</Eyebrow>
-              <p className="mt-2.5 text-base text-ink">
+            <div>
+              <span className="mb-2.5 block font-body text-caption font-medium uppercase tracking-eyebrow text-cream">
+                Parking
+              </span>
+              <p className="m-0 font-body text-dato font-light leading-[1.6] text-paper">
                 Street parking on Old 41 and public lots around Riverside Park.{' '}
-                <a href="/visit#parking" className="link-texto text-ink">
+                <Link href="/visit#parking" className="border-b border-cream text-cream">
                   Details
-                </a>
+                </Link>
               </p>
             </div>
 
-            <div className="mt-6">
-              <Eyebrow tone="deep">Follow</Eyebrow>
-              <SocialLinks surface="light" className="mt-3" />
-            </div>
-
-            {/* ⚠️ Margen fijo y NO `mt-auto`. El `mt-auto` empujaba el botón al
-                pie de una columna que estiraba a la altura del mapa; al dejar
-                de ser tarjetas las columnas alinean arriba (`items-start`) y
-                ya no hay altura sobrante que rellenar. Con `mt-auto` el botón
-                quedaba pegado al texto de arriba. */}
-            <div className="mt-7.5">
-              <ButtonLink href={mapsUrl()} variant="secondary" external>
-                Get directions
-              </ButtonLink>
-            </div>
+            <a
+              href={mapsUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-auto flex min-h-11 w-fit items-center gap-3 rounded-pill bg-cream px-7 py-3.75 font-body text-micro font-medium uppercase tracking-cta text-ink transition-colors duration-200 hover:bg-paper"
+            >
+              Get directions
+              <ArrowSquareOut className="size-4.25" />
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
           </div>
 
-          {/* ══ 2. El mapa ═══════════════════════════════════════════════
-              `loading="lazy"` porque está bien abajo de la página y un iframe
-              de Google pesa; `title` porque un iframe sin título es un fallo
-              de WCAG 4.1.2. */}
-          <div className="overflow-hidden rounded-card ring-1 ring-fog">
+          {/* ── Mapa ─────────────────────────────────────────────────── */}
+          {/* ⚠️ `loading="lazy"` es obligatorio y no una optimización: el
+              embed de Maps trae su propio bundle y se carga incluso cuando la
+              sección está tres pantallas más abajo. Es el recurso más pesado
+              de la home. */}
+          <div className="min-h-80 overflow-hidden rounded-shell border border-fog lg:min-h-110">
             <iframe
               title={`Map showing ${BRAND.name} at ${addressLine()}`}
-              src={`https://www.google.com/maps?q=${BRAND.address.mapsQuery}&output=embed`}
+              src={`https://maps.google.com/maps?q=${BRAND.address.mapsQuery}&z=15&output=embed`}
               loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="h-85 w-full border-0 lg:h-full lg:min-h-155"
+              className="block size-full min-h-80 border-0 lg:min-h-110"
             />
           </div>
 
-          {/* ══ 3. La losa de horarios ═══════════════════════════════════ */}
-          <div className="flex flex-col border-t border-fog pt-6.5">
-            <Heading level={3}>
-              Hours
-            </Heading>
-
-            {/* ⚠️ Los días NO son versalitas. Lo fueron, y eran 21 de los 26
-                eyebrows de esta sección — más que cualquier otra del sitio. Una
-                versalita es una ETIQUETA de bloque; siete días seguidos son
-                DATOS, y en versalita a 13px se leían como un panel de control. */}
-            <div ref={lista} className="mt-5.5">
-              {HOURS.map((fila) => (
-                <details
-                  key={fila.day}
-                  name="hours"
-                  className="group border-b border-fog data-[hoy]:border-ink"
-                >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-3 transition-colors duration-200 [&::-webkit-details-marker]:hidden">
-                    <span className="whitespace-nowrap font-body text-dato font-medium text-ink group-data-[hoy]:font-bold group-data-[hoy]:text-deep">
-                      {fila.day}
-                      {/* El «hoy» se marca con TEXTO y no sólo con color y
-                          peso: WCAG 1.4.1 no permite que el color sea el único
-                          portador de un dato. */}
-                      <span className="hidden group-data-[hoy]:inline"> · today</span>
-                    </span>
-
-                    <span className="flex items-center gap-2.5">
-                      {/* El resumen de una línea, para no obligar a abrir los
-                          siete días sólo para saber si hoy abren.
-
-                          ⚠️ `paper/75` y no menos. Es texto de 15px sobre
-                          `deep`: al 55% da 4.34:1 contra el 4.5:1 que pide AA.
-                          Al 75% da 8.05:1. */}
-                      <span className="whitespace-nowrap text-dato tabular-nums text-muted group-data-[hoy]:text-deep">
-                        {fila.bar}
-                      </span>
-                      <svg
-                        width="10"
-                        height="7"
-                        viewBox="0 0 11 7"
-                        fill="none"
-                        aria-hidden="true"
-                        className="shrink-0 text-muted transition-transform duration-200 group-open:rotate-180"
-                      >
-                        <path
-                          d="M1 1l4.5 4.5L10 1"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                  </summary>
-
-                  {/* Los dos horarios del día. Van como `<dl>` porque son
-                      exactamente eso: pares de término y definición. */}
-                  <dl className="grid grid-cols-[auto_1fr] gap-x-3.5 gap-y-1.25 pb-3.5">
-                    <dt className="font-body text-dato font-medium text-muted">Bar</dt>
-                    <dd className="text-dato tabular-nums text-ink">{fila.bar}</dd>
-                    <dt className="font-body text-dato font-medium text-muted">Trucks</dt>
-                    <dd className="text-dato tabular-nums text-ink">{fila.trucks}</dd>
-                  </dl>
-                </details>
-              ))}
-            </div>
-
-            {/*
-              La píldora de estado, al pie de los horarios como en la
-              referencia.
-
-              ⚠️ Es lo MISMO que se sacó del header, y no vuelve por
-              distracción: ahí molestaba porque era una barra fija peleando con
-              la navegación en cada pantalla del sitio. Acá está al lado de los
-              horarios, que es donde el dato significa algo.
-
-              ⚠️ El punto lleva `aria-hidden`: el estado ya está en el texto.
-            */}
-            <div className="mt-auto pt-6.5">
-              {estado ? (
-                <p className="inline-flex items-center gap-2.25 rounded-pill bg-bone px-4 py-2.25 ring-1 ring-fog">
-                  <span
-                    aria-hidden="true"
-                    className={`h-1.75 w-1.75 shrink-0 rounded-pill ${
-                      estado.abierto ? 'bg-sunset' : 'bg-muted'
-                    }`}
-                  />
-                  <span className="eyebrow text-deep">{estado.texto}</span>
-                </p>
-              ) : null}
-            </div>
-          </div>
+          {/* ── Horarios ─────────────────────────────────────────────── */}
+          <HoursCard />
         </div>
       </div>
-
-      <TilePattern className="mt-14" />
-    </Section>
+    </section>
   );
 }

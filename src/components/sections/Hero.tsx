@@ -1,144 +1,344 @@
-import { ButtonLink } from '@/components/shared/Button';
-import CardArc from '@/components/shared/CardArc';
-import { HeroFadeUp, MaskedLines } from '@/components/shared/Motion';
-import ScrollExit from '@/components/shared/ScrollExit';
-import { GUTTER } from '@/components/shared/Section';
-import { Heading } from '@/components/shared/Type';
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ArrowUpRight, SunHorizon } from '@/components/shared/Icon';
+import { venueStatus } from '@/lib/hours';
 
 /**
- * Hero del home — pila centrada con un abanico de cards al pie.
+ * El hero de la home.
+ *
+ * Tres bloques apilados: el titular partido en dos placas con el pill de
+ * estado al lado, el marco de foto con el recorte, y la bajada con los dos
+ * CTAs.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ SÉPTIMA versión, y sale de un mockup de Camila. Las seis anteriores, para
- * que no vuelvan por inercia:
+ * ⚠️ EL MECANISMO — la placa, el marco y el recorte.
  *
- *   1. dos paneles con la tipografía a la izquierda — rechazado
- *   2. pila centrada sobre blanco con la foto en una tarjeta — «no se asemeja
- *      en nada a nuestros proyectos»
- *   3. foto a sangre con velo y el titular encima — era Showdown, no Superside
- *   4. centrado con el muro a lo ancho debajo — la forma de Superside, pero el
- *      muro quedaba asomando al pie en vez de ser parte del hero
- *   5. dos columnas: titular a la izquierda, muro vertical a la derecha
- *   6. la 5 invertida a clave clara, con el muro en huecos rotulados
+ * Es lo único no evidente del archivo, así que va explicado entero.
  *
- * ⚠️ La 2 también era una pila centrada y se rechazó. Qué es distinto acá: lo
- * que había debajo del titular era UNA foto en una tarjeta. Ahora es un
- * abanico de nueve piezas apoyado en un arco, sangrando por los dos costados
- * — o sea una composición, no una imagen suelta.
+ * El titular es «BONITA COMES / TOGETHER» partido en dos elementos. El
+ * segundo, «TOGETHER», NO está en el flujo: es una placa posicionada en
+ * absoluto que se monta sobre la esquina superior izquierda del marco de la
+ * foto, corrida un 56 % de su propio alto hacia arriba.
  *
- * ⚠️ `VideoWall` NO SE BORRA. Sigue en el árbol con sus tres columnas y su loop
- * CSS, y comparte el material con el abanico vía `wall-slots.ts`. Volver a la
- * forma 5 o 6 es cambiar un import.
+ * ⚠️ La placa va en `terra` y no en `sunset` como el prototipo. El naranja
+ * sobre `bone` da 2.35:1 y no pasa AA ni a 144px. Acá axe NO lo marca —la
+ * placa es `aria-hidden`, porque el h1 ya dice el texto completo— así que el
+ * guard no habría avisado nunca: el problema es para quien VE la página. El
+ * razonamiento completo está en el encabezado de `ThreeDoors.tsx`.
+ *
+ * Si la placa se apoyara encima de la foto, el naranja quedaría sobre la
+ * imagen y el titular sería ilegible sobre cualquier foto clara. La solución
+ * del diseño es un RECORTE: un rectángulo del color del fondo (`bone`) pegado
+ * a la esquina del marco, con el radio de 44px espejado abajo a la derecha.
+ * La placa cae dentro de ese recorte y la foto arranca donde la placa
+ * termina. Se lee como si el marco estuviera mordido.
+ *
+ * ⚠️ EL RECORTE SE MIDE, NO SE ESCRIBE. Su ancho es «dónde termina la placa,
+ * más 26px de aire» y su alto «dónde termina la placa, más 14». Esos dos
+ * números dependen del ancho del texto, y el texto está en una condensada
+ * variable a un `clamp` de 9vw: cambia con el viewport, con el idioma y con
+ * si la fuente ya cargó o todavía está la Arial ajustada de respaldo.
+ * Escribirlo como porcentaje da bien en una medida y mal en las otras.
+ *
+ * Por eso se mide con `getBoundingClientRect` y se re-mide en tres momentos:
+ * al montar, en cada resize, y cuando `document.fonts.ready` resuelve. El
+ * tercero es el que importa y el que es fácil olvidar — sin él, el recorte
+ * queda dimensionado para la fuente de respaldo y al llegar Big Shoulders la
+ * placa (que es un 10 % más ancha, ver la nota de `globals.css`) se sale del
+ * recorte por la derecha.
+ *
+ * ⚠️ Hay un valor de arranque en porcentaje (`38%` / `76px`) para el primer
+ * pintado y para cuando JS no corre. No es el valor correcto, es el que hace
+ * que el hero se vea razonable sin medir: un recorte de más es aire, uno de
+ * menos es texto naranja sobre foto.
  * ══════════════════════════════════════════════════════════════════════════
  *
- * ── Dos cosas del mockup que se resolvieron distinto ──────────────────────
- *
- * ⚠️ **EL ACENTO DEL TITULAR NO VA EN NARANJA.** En el mockup «TOGETHER» está
- * en `sunset`, y sobre superficie clara eso da **2.54:1**: no pasa el 4.5:1 de
- * cuerpo ni el 3:1 de texto grande, en ningún tamaño. Va en `terra`, el
- * rojo-naranja de la paleta, que da **7.43:1** sobre `paper` y 6.87:1 sobre
- * `bone` — es lo más cerca del naranja que se puede llegar sin romper el
- * contraste. Es la misma regla que ya aplica `Accent`, y está medida en
- * `design-audit/CONTRASTE.md`.
- *
- * ⚠️ **NO HAY CIELO DE ATARDECER.** El mockup tiene un fondo de nubes doradas.
- * En las 36 fotos entregadas no hay ni una de cielo, y menos de golden hour, y
- * el brief prohíbe explícitamente recrear en CSS lo que tendría que ser un
- * asset real. Así que el fondo es `bone` —la superficie clara cálida— y el
- * cielo queda pedido. Ver `docs/media.md`.
+ * ⚠️ ES CLIENT, y por dos motivos independientes: el recorte se mide en el
+ * navegador y el pill de estado depende de la hora en Bonita Springs. Los dos
+ * arrancan sin resolver y se completan después de montar, que es lo que evita
+ * el mismatch de hidratación y que se publique un «Open until 8 PM» viejo
+ * desde una página cacheada.
  */
+
+/** Cuánto aire queda entre el borde de la placa y el borde del recorte. */
+const NOTCH_PAD_X = 26;
+const NOTCH_PAD_Y = 14;
+
+/** Cada cuánto rota el mensaje del pill. */
+const STATUS_MS = 3400;
+
 export default function Hero() {
+  const frameRef = useRef<HTMLDivElement | null>(null);
+  const plateRef = useRef<HTMLParagraphElement | null>(null);
+  const [notch, setNotch] = useState<{ w: number; h: number } | null>(null);
+
+  const [statusIdx, setStatusIdx] = useState(0);
+  const [status, setStatus] = useState<ReturnType<typeof venueStatus>>(null);
+
+  /* ── El recorte ──────────────────────────────────────────────────────── */
+
+  const syncNotch = useCallback(() => {
+    const frame = frameRef.current;
+    const plate = plateRef.current;
+    if (!frame || !plate) return;
+    const f = frame.getBoundingClientRect();
+    const p = plate.getBoundingClientRect();
+    const w = Math.max(0, Math.round(p.right - f.left + NOTCH_PAD_X));
+    const h = Math.max(0, Math.round(p.bottom - f.top + NOTCH_PAD_Y));
+    setNotch((prev) => (prev && prev.w === w && prev.h === h ? prev : { w, h }));
+  }, []);
+
+  /*
+   * ⚠️ `useLayoutEffect` y no `useEffect`. La medición tiene que ocurrir ANTES
+   * del pintado: con `useEffect` el navegador alcanza a dibujar un frame con
+   * el recorte del 38 % y después lo corrige, y ese salto se ve como un
+   * parpadeo del bloque naranja justo en lo primero que mira el visitante.
+   */
+  useLayoutEffect(() => {
+    syncNotch();
+
+    const onResize = () => syncNotch();
+    window.addEventListener('resize', onResize, { passive: true });
+
+    /* El `ResizeObserver` cubre lo que el `resize` de window no ve: el marco
+       cambia de alto por su propio `clamp(300px,46vw,600px)` y la placa por el
+       reflow del titular. */
+    const ro = new ResizeObserver(syncNotch);
+    if (frameRef.current) ro.observe(frameRef.current);
+    if (plateRef.current) ro.observe(plateRef.current);
+
+    /* ⚠️ El tercero, el que se olvida. Ver el bloque de arriba. */
+    let cancelled = false;
+    document.fonts?.ready.then(() => {
+      if (!cancelled) syncNotch();
+    });
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('resize', onResize);
+      ro.disconnect();
+    };
+  }, [syncNotch]);
+
+  /* ── El pill de estado ───────────────────────────────────────────────── */
+
+  useEffect(() => {
+    setStatus(venueStatus('bar'));
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => setStatusIdx((i) => i + 1), STATUS_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  /*
+   * ⚠️ Los mensajes salen del ESTADO REAL, no de una lista fija.
+   *
+   * En el prototipo las cuatro frases estaban escritas a mano («Open until
+   * 8 PM», «Happy hour until 6»…) y un prop `venueState` decidía si mostrar
+   * el set de abierto o el de cerrado. Acá el horario ya se conoce —`HOURS` en
+   * `brand.ts`, y `lib/hours.ts` sabe leerlo— así que la hora de cierre se
+   * calcula y no se transcribe. Es la diferencia entre un pill que dice la
+   * verdad un martes a las 11 de la noche y uno que no.
+   *
+   * ⚠️ Mientras `status` es `null` —el primer pintado, antes de montar— el
+   * pill muestra el mensaje que NO depende de la hora. Nunca queda vacío ni
+   * salta de alto.
+   */
+  const messages = status
+    ? status.isOpen
+      ? [
+          status.closesAt ? `Open until ${status.closesAt}` : 'Open now',
+          'Happy hour Wed – Fri, 3–6 PM',
+          'Live music five nights',
+        ]
+      : [
+          status.reopensOn && status.reopensOn !== 'today'
+            ? `Closed — back ${status.reopensOn}`
+            : 'Closed right now',
+          'Happy hour Wed – Fri, 3–6 PM',
+          'Live music five nights',
+        ]
+    : ['Live music five nights'];
+
+  const message = messages[statusIdx % messages.length];
+
   return (
-    /*
-      ⚠️ NO es `100svh` como las versiones anteriores, y es a propósito. Con la
-      pila centrada arriba y el abanico al pie, el alto lo define el contenido:
-      forzar el alto de pantalla en un laptop de 720px dejaría el abanico
-      pegado al titular, y en un monitor de 1400px dejaría un colchón vacío
-      entre los dos. `min-h` pone el piso y el resto lo decide lo que hay.
+    /* ⚠️ El `bg-bone` va en la SECCIÓN y el ancho en el `div` de adentro. Si
+       se juntan en un solo elemento, el fondo se recorta a los 1400px de la
+       caja y en una pantalla de 1920 quedan dos franjas blancas a los lados.
+       Vale para las nueve secciones de la home.
 
-      ⚠️ `overflow-hidden` es lo que hace que el abanico sangre: las cards de
-      las puntas y el borde inferior se cortan contra esta caja, y un elemento
-      que se corta en el borde se lee como que sigue.
+       ⚠️ Y va acá y no en el `<body>`: la superficie base de la HOME es el
+       hueso, pero la de las 22 internas sigue siendo el blanco puro. El
+       recorte del marco depende de que este color sea exactamente el mismo
+       que el del bloque de arriba — ver el bloque del encabezado. */
+    <section className="bg-bone pt-9 lg:pt-18">
+      <div className="caja-ancha">
+      {/* ── Titular, primera mitad + pill ─────────────────────────────── */}
+      <div className="relative flex flex-wrap items-end justify-between gap-6">
+        <h1 className="m-0 font-display text-titan font-extrabold uppercase text-ink">
+          {/*
+            ══════════════════════════════════════════════════════════════
+            ⚠️ EL H1 DICE LA FRASE COMPLETA, «Bonita comes together», aunque
+            en pantalla sólo se vea la primera mitad acá arriba.
 
-      ⚠️ El `pt` lleva sumada la altura del header —77px, 67 en mobile— porque
-      el header es `fixed` y flota encima; sin eso taparía el isotipo.
-    */
-    <section
-      aria-labelledby="hero-title"
-      className="relative flex min-h-160 flex-col overflow-hidden bg-bone pt-26 desk:min-h-190 desk:pt-33"
-    >
-      <div className={`${GUTTER} flex w-full flex-col`}>
-        {/* ⚠️ Con la caja centrada, el titular necesita un TOPE DE MEDIDA: sin
-            él, un titular centrado a 144px se estira hasta el ancho de la
-            pantalla y deja de tener forma.
+            La segunda mitad es la placa que está más abajo, sacada del flujo
+            con `absolute` para poder montarse sobre el marco de la foto. Un
+            `<h1>` no puede contenerla sin perder ese posicionamiento, así
+            que la placa va aparte y en `aria-hidden`, y el texto que le
+            falta al encabezado se repone acá con `sr-only`.
 
-            ⚠️ `ScrollExit` es UNA de las dos salidas del sitio, y va sobre el
-            bloque de TEXTO y no sobre la sección: envolver el hero entero lo
-            movería con `y` y abriría un hueco contra What's on. Así el abanico
-            se queda quieto y lo que se despide es el titular, que es lo que
-            tiene algo que despedir. Ver `ScrollExit.tsx`. */}
-        <ScrollExit className="mx-auto flex w-full max-w-[900px] flex-col items-center text-center">
-          <HeroFadeUp>
-            {/* ⚠️ `<img>` plano y no `next/image`: es un VECTOR, y el
-                optimizador no puede hacer nada por un SVG salvo romperlo —
-                devuelve una imagen que el navegador reporta como 0×0. La nota
-                larga con la medición está en `HorizonBorder.tsx`.
+            ⚠️ NO ES COSMÉTICA DE ACCESIBILIDAD. `npm run check:seo` compara
+            el `textContent` del único h1 contra `PAGE_SEO['/'].h1` y falló
+            con «esperado: Bonita comes together / real: Bonita Comes»: sin
+            esto la home publica un h1 truncado, que es el elemento que más
+            pesa en la página para un buscador.
 
-                `fetchPriority="high"` reemplaza al `priority` de next/image:
-                el isotipo está en la primera pantalla. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/brand/isotype-truck.svg"
-              alt=""
-              width={552}
-              height={390}
-              fetchPriority="high"
-              className="h-auto w-13.5 lg:w-15.5"
-            />
-          </HeroFadeUp>
+            ⚠️ La minúscula del fuente es correcta y no hay que «arreglarla».
+            La caja alta la pone el CSS (`uppercase`), así que en pantalla se
+            lee BONITA COMES igual; lo que compara el guard es el texto del
+            DOM, y ahí tiene que decir exactamente lo que dice `seo-pages.ts`.
+            ══════════════════════════════════════════════════════════════
+          */}
+          Bonita comes
+          <span className="sr-only"> together</span>
+        </h1>
 
-          <Heading level={1} role="hero" id="hero-title" className="mt-3.5 text-ink">
-            {/* ⚠️ `accentOn="light"` — es la superficie la que decide el color
-                del acento, no el gusto. Ver la nota del encabezado sobre por
-                qué acá no va el naranja del mockup. */}
-            <MaskedLines
-              lines={['Bonita comes', 'together']}
-              delay={0.08}
-              accentLast
-              accentOn="light"
-            />
-          </Heading>
-
-          <HeroFadeUp delay={0.26} className="mt-4">
-            <p className="max-w-[42ch] text-lead bajada">Rooftop bar. Four kitchens. Walk in.</p>
-          </HeroFadeUp>
-
-          {/* ⚠️ DOS CTAs, como en el mockup, y el orden importa: el primario
-              lleva a lo que alguien quiere saber ahora —qué hay hoy— y el
-              secundario al lugar. El primario va en `sunset` con texto NEGRO
-              (8.26:1); el naranja como RELLENO sí está permitido, es como
-              TEXTO que no. */}
-          <HeroFadeUp delay={0.34} className="mt-6.5">
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <ButtonLink href="/whats-on" variant="primary" size="lg">
-                What&rsquo;s on tonight
-              </ButtonLink>
-              <ButtonLink href="/the-yard" variant="secondary" size="lg">
-                See the yard
-              </ButtonLink>
-            </div>
-          </HeroFadeUp>
-        </ScrollExit>
+        {/*
+          El pill de estado. `aria-live="polite"` porque el texto cambia solo:
+          sin eso, alguien con lector de pantalla nunca se entera del cambio;
+          con `assertive` lo interrumpiría cada 3,4 segundos, que es peor.
+        */}
+        <p
+          aria-live="polite"
+          className="mb-1.5 flex min-h-20 flex-1 basis-85 items-center gap-3.5 rounded-pill bg-mint py-2 pr-2 pl-6.5 lg:mb-4.5"
+        >
+          <span className="min-w-0 flex-1 font-body text-dato text-ink">
+            {/* La `key` es lo que reinicia la animación: sin ella React
+                reusa el nodo, el texto cambia y no hay transición. */}
+            <span key={message} className="rt-roll inline-block">
+              {message}
+            </span>
+          </span>
+          <span className="grid size-20 shrink-0 place-items-center rounded-pill bg-sunset">
+            <SunHorizon className="size-5.5 text-ink" />
+          </span>
+        </p>
       </div>
 
-      {/* ── El abanico ───────────────────────────────────────────────────
-          ⚠️ Va FUERA de la caja con gutter y a lo ancho completo: el arco tiene
-          que sangrar por los dos costados de la PANTALLA, no de la caja de
-          1280. Y el `mb` negativo lo corta contra el borde inferior del hero.
+      {/* ── Titular, segunda mitad + marco de foto ────────────────────── */}
+      <div className="relative mt-3.5 lg:mt-6.5">
+        {/*
+          ⚠️ Es un `<p>` y no un `<h2>`. Visualmente es la segunda mitad del
+          titular, pero un `h2` acá metería un nivel de encabezado falso entre
+          el h1 y el primer h2 real de la página, y el índice de encabezados
+          que arma un lector de pantalla diría «Together» como si fuera una
+          sección. `aria-hidden` porque el texto ya lo anuncia el h1.
+        */}
+        <p
+          ref={plateRef}
+          aria-hidden="true"
+          /*
+            ══════════════════════════════════════════════════════════════
+            ⚠️ NO LLEVA `translateY(-56%)`, Y EL FUENTE DEL DISEÑO SÍ LO
+            DECLARA. Es deliberado y está verificado, no es una omisión.
 
-          `mt-auto` lo empuja al pie cuando el hero es más alto que su
-          contenido, que es lo que pasa en un monitor grande. */}
-      <CardArc className="mt-auto -mb-[6vw] pt-11 desk:-mb-[4vw]" />
+            El prototipo escribe `transform: translateY(-56%)` en el style de
+            esta placa, pero la placa además tiene `data-reveal`, y el script
+            de reveal del propio prototipo hace esto al montar:
+
+                nodes.forEach(n => { n.style.transform = 'translateY(28px)' })
+                const show = n => { n.style.transform = 'none' }
+
+            O sea que PISA el transform de la placa: primero con los 28px de
+            la entrada y después con `none`. El −56 % declarado no se renderiza
+            en ningún estado, ni antes ni después de la animación.
+
+            Medido sobre el HTML compilado del bundle abierto a 1440px:
+
+                original    placa.top = 327   marco.top = 327   → offset 0
+                con −56 %   placa.top = 258   marco.top = 331   → −73px
+
+            Con el −56 % la placa se sube 73px y se monta sobre «BONITA
+            COMES»: el fondo `bone` de la placa tapa el tercio inferior de
+            «COMES». No se lee como un cruce intencional, se lee como un
+            bloque encimado.
+
+            Así que se implementa lo que el diseño MUESTRA —que es lo que se
+            revisó y aprobó en Claude Design— y no lo que su fuente declara y
+            su propio runtime descarta. El recorte se mide igual, porque se
+            calcula desde la posición real de la placa.
+            ══════════════════════════════════════════════════════════════
+          */
+          className="pointer-events-none absolute top-0 -left-3.5 z-30 m-0 rounded-door bg-bone px-3.5 pt-[0.06em] pb-[0.1em] font-display text-titan font-extrabold uppercase text-terra lg:px-7"
+        >
+          Together
+        </p>
+
+        <div
+          ref={frameRef}
+          className="relative h-75 w-full overflow-hidden rounded-frame bg-fog lg:h-[46vw] lg:max-h-150"
+        >
+          <Image
+            src="/images/venue/venue-aerial.jpg"
+            alt="The rooftop at sunset, with the food truck yard below"
+            fill
+            priority
+            sizes="(min-width: 1400px) 1288px, 100vw"
+            className="object-cover"
+          />
+
+          {/*
+            El recorte. `bg-bone` tiene que ser EL MISMO color que el fondo de
+            la sección o se ve el rectángulo.
+          */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-0 left-0 z-20 rounded-br-frame bg-bone"
+            style={{
+              width: notch ? `${notch.w}px` : '38%',
+              height: notch ? `${notch.h}px` : '76px',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* ── Bajada + CTAs ─────────────────────────────────────────────── */}
+      <div className="flex flex-wrap items-end justify-between gap-8 pt-6.5 pb-12 lg:pt-11 lg:pb-24">
+        <p className="m-0 max-w-[16ch] font-body text-intro font-light leading-[1.35] text-ink">
+          Rooftop bar. Four kitchens. Walk in.
+        </p>
+        <div className="flex flex-wrap items-center gap-3.5">
+          {/*
+            ⚠️ Los dos CTA del hero NO usan `<ButtonLink>`, y es la única
+            excepción del sitio. El componente compone en caja alta con
+            tracking de señalética —que es el registro correcto para un botón
+            de 15px suelto en una barra— y acá los dos botones miden 17px y
+            viven debajo de un titular de 144. En caja alta a ese cuerpo
+            compiten con el titular; en caja baja se leen como lo que son, el
+            pie del hero. El resto —relleno `sunset`, texto NEGRO, píldora,
+            44px de alto mínimo— es idéntico y sigue las mismas reglas.
+          */}
+          <Link
+            href="/whats-on"
+            className="flex min-h-11 items-center gap-2.5 rounded-pill bg-sunset px-7.5 py-4 font-body text-dato font-medium text-ink transition-colors duration-200 hover:bg-sunset-hover"
+          >
+            What&rsquo;s on tonight
+            <ArrowUpRight className="size-4" />
+          </Link>
+          <Link
+            href="/the-yard"
+            className="flex min-h-11 items-center rounded-pill px-7.5 py-4 font-body text-dato font-medium text-ink ring-1 ring-ink transition-colors duration-200 hover:bg-ink hover:text-bone"
+          >
+            See the yard
+          </Link>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

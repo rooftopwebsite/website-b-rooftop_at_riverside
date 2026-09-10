@@ -7,19 +7,72 @@ import { useEffect, useRef, useState } from 'react';
 import { BRAND } from '@/lib/brand';
 import { NAV_CTA, NAV_MAIN, NAV_MORE } from '@/lib/nav';
 import { ButtonLink } from './Button';
+import { CaretDown } from './Icon';
 import { GUTTER } from './Section';
 
 /**
  * Header.
  *
- * Nav reducida de 5 + mega-menú «More» con una línea por link y doble CTA con
- * jerarquía distinta.
+ * Nav reducida de 5 + mega-menú «More» con una línea por link, un link de
+ * contacto y un CTA. Debajo de la barra de servicio (`UtilityBar`).
  *
- * Alto 64px, 76px desde `desk` (1344). Fijo, claro, con filete al scrollear.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ DEJÓ DE SER `fixed` Y VOLVIÓ AL FLUJO — rediseño `food-truck-club`.
  *
- * ⚠️ El corte del nav es `desk:` (1344) y NO `lg:` (922). Entre 768 y 1344 la
- * caja mide 880px y el logo + 5 items + 2 CTAs no entran. Regla de la casa: si
- * el logo tuviera que achicarse para entrar, ya va el header mobile.
+ * Fue `fixed`, pasó a `sticky` cuando se sumó el `PromoBar`, volvió a `fixed`
+ * cuando el banner salió, y ahora es estático. No es ir y venir: cada vez el
+ * motivo fue el mismo —qué necesita el elemento que está arriba de todo— y
+ * esta vez arriba hay dos cosas nuevas.
+ *
+ * La razón concreta es el HERO. El diseño apoya el hero en un mecanismo que
+ * con un header flotante no funciona: el titular «TOGETHER» es una placa
+ * naranja sobre fondo `bone` que se monta sobre el marco de la foto, y el
+ * marco tiene un recorte (el «notch») que se calcula midiendo dónde termina
+ * esa placa. Las tres piezas —placa, notch y marco— tienen que estar en el
+ * mismo sistema de coordenadas del documento. Con el header encima flotando
+ * y translúcido, la placa pasa por debajo de la barra al scrollear y el
+ * naranja se mezcla con el blur: el recorte queda dibujado contra un color
+ * que ya no es el del fondo.
+ *
+ * Y el beneficio que se pierde ya no existía. El header era translúcido con
+ * `backdrop-blur` para verse SOBRE el hero verde a pantalla completa; con el
+ * hero claro y en flujo, no hay nada que difuminar — el blur estaba activo
+ * en cada frame sin dibujar nada.
+ *
+ * ⚠️ CONSECUENCIA, y hay que tenerla presente: los heroes ya NO compensan la
+ * altura del header. `Hero.tsx` (home) y `PageHero.tsx` (las 22 internas)
+ * tenían un `pt` con los 77px sumados a mano; ese padding se sacó. Si algún
+ * día el header vuelve a flotar, vuelve también ahí.
+ * ══════════════════════════════════════════════════════════════════════════
+ *
+ * ⚠️ EL HEADER ES `bone` Y NO `paper`. Es la misma superficie que arranca el
+ * hero, así que entre la barra y el contenido no hay corte de color: el único
+ * corte es el filete de 1px en `fog`. Con `paper` había un escalón de 1.08:1
+ * justo debajo de la nav, y a lo ancho de la pantalla ese escalón se lee como
+ * una segunda línea.
+ *
+ * ⚠️ El corte del nav es `desk:` (1344) y NO `lg:` (922). Entre 768 y 1344 no
+ * entran logo + 5 items + More + contacto + CTA. Regla de la casa: si el logo
+ * tuviera que achicarse para entrar, ya va el header mobile.
+ *
+ * ⚠️ EL DRAWER DE MOBILE NO SALE DEL DISEÑO Y SE CONSERVA TAL CUAL ESTABA. El
+ * prototipo tiene el botón de menú en `display:none` y no dibuja panel: en
+ * Claude Design se compuso sólo el desktop. Lo que había acá funciona y está
+ * auditado —foco atrapado, `inert`, scroll bloqueado, Escape—, así que se
+ * mantiene y sólo se le actualizó la tipografía de los items para que sea la
+ * misma condensada que la nav de desktop. No se inventó un mobile nuevo.
+ *
+ * ⚠️ EL HOVER DE LA NAV ES `terra` Y NO EL NARANJA DEL PROTOTIPO. `#E0741A`
+ * sobre `#FAF6EA` da 2.90:1 y el mínimo para texto grande en negrita es 3:1 —
+ * `npm run a11y` lo marcó en las 8 páginas del mega-menú, donde el botón
+ * «More» queda en estado activo. Falla por una décima, pero falla, y un
+ * estado de hover que no se lee es un estado que no comunica. `terra` da
+ * 7.43:1 y es el mismo naranja quemado de la familia. Ver el encabezado de
+ * `ThreeDoors.tsx`.
+ *
+ * ⚠️ El subrayado de la página actual SÍ se queda en `sunset`: es una línea
+ * decorativa de 2px, no texto, y el ítem activo ya se distingue por el `ink`
+ * contra el resto. Un borde no tiene que pasar el umbral de tinta.
  *
  * ⚠️ Comportamiento del «More», copiado de The Orient porque ya está resuelto:
  * abre por hover Y por click · `aria-expanded` + `aria-haspopup` · cierra con
@@ -27,22 +80,14 @@ import { GUTTER } from './Section';
  * `invisible`, que además lo saca del recorrido del tabulador.
  */
 
-const SCROLL_THRESHOLD = 40;
-
-function useScrolled() {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-  return scrolled;
-}
+/** La clase de un item de la nav. Se comparte con el botón «More». */
+const NAV_ITEM = [
+  'font-display text-nav font-bold uppercase tracking-[0.02em]',
+  'whitespace-nowrap transition-colors duration-200',
+].join(' ');
 
 export default function Header() {
   const pathname = usePathname();
-  const scrolled = useScrolled();
   const [moreOpen, setMoreOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement | null>(null);
@@ -81,236 +126,168 @@ export default function Header() {
 
   return (
     <>
-      {/*
-        ⚠️ Es una BARRA a todo el ancho, no una píldora flotante. Es lo que
-        hacen Showdown Social, The Orient y Baires Grill sin excepción, y eso no
-        cambia con el rediseño: lo que cambió es el color, no la forma. El
-        detalle está en el bloque grande de más abajo.
-      */}
-      {/*
-        ⚠️ VOLVIÓ A SER `fixed`, después de haber sido `sticky`.
-
-        Fue `fixed`, pasó a `sticky` cuando se sumó el `PromoBar` —un banner que
-        se va con el scroll, debajo de un header fijo, queda tapado de entrada—
-        y ahora que el banner no está vuelve a `fixed`. No es ir y venir: es lo
-        que pide el efecto que Camila pidió. Para que el header se vea
-        translúcido y con blur SOBRE el hero, tiene que haber contenido pasando
-        por detrás, y en `sticky` el header ocupa su lugar en el flujo: no hay
-        nada atrás que difuminar.
-
-        Consecuencia: los heroes vuelven a compensar la altura a mano. Ver
-        `Hero.tsx` y `PageHero.tsx`.
-      */}
-      {/*
-        ══════════════════════════════════════════════════════════════════════
-        ⚠️ EL HEADER PASÓ A CLARO — `redesign/light-tropical`.
-
-        Era `deeper` (el verde más oscuro de la paleta), sólido al scrollear y
-        al 90 % con blur arriba. Eso tenía sentido cuando el hero era 100svh de
-        verde: la barra era la continuación del hero y el corte no se veía.
-
-        Con la home en 74 % claro y el hero en `bone`, una barra verde oscura
-        clavada arriba es una franja horizontal que pelea con todo lo que hay
-        debajo — y es el elemento que más pesa de la página, porque está fijo y
-        se ve siempre. Lo dejé marcado como «a revisar» desde la auditoría y el
-        mockup que mandó Camila lo confirma: header claro, texto oscuro, el CTA
-        naranja.
-
-        Los dos estados se conservan, invertidos:
-
-          arriba      `paper/85` + `backdrop-blur`
-          scrolleado  `paper` sólido + filete de 1px en `fog`
-
-        ⚠️ EN LUGAR DE SOMBRA, FILETE. La sombra anterior era
-        `rgba(0,0,0,0.5)` a 30px — una nube gris que sobre fondo claro se ve
-        sucia, y es exactamente el «mismo sombra gris debajo de cada cosa» que
-        el brief nombra como anti-patrón. Un filete de 1px separa la barra del
-        contenido sin ensuciar.
-
-        ⚠️ EL 85 % ES EL PISO DE CONTRASTE, no una elección estética, y hay que
-        recalcularlo porque cambió el sentido. Antes el peor caso era blanco
-        puro detrás de un header oscuro. Ahora es al revés: el peor caso es la
-        banda `deep` de Events pasando por debajo de un header claro. Al 85 %,
-        el compuesto de `paper` sobre `deep` da 0.85·1.0 + 0.15·L(deep) en
-        luminancia, y sobre eso `ink` sigue dando 12.7:1 y `muted` 4.6:1.
-        Verificado además con `npm run a11y`, que mide el píxel compuesto y no
-        la tabla.
-
-        ⚠️ `backdrop-blur` necesita que el fondo NO sea del todo opaco para
-        notarse, así que se saca al scrollear: un filtro de fondo activo sobre
-        toda la barra cuesta composición en cada frame y ahí no dibuja nada.
-        ══════════════════════════════════════════════════════════════════════
-      */}
+      {/* `relative` + `z-40` para que el panel del «More», que es absoluto y
+          se despliega a todo el ancho, quede por encima del hero. */}
       <div
-        className={[
-          'fixed inset-x-0 top-0 z-[99]',
-          GUTTER,
-          'transition-[background-color,border-color] duration-300',
-          'border-b',
-          scrolled ? 'border-fog bg-paper' : 'border-transparent bg-paper/85 backdrop-blur-[14px]',
-        ].join(' ')}
+        ref={moreRef}
+        className="relative z-40 border-b border-fog bg-bone"
+        onMouseLeave={() => setMoreOpen(false)}
       >
-        <header
-          className="caja flex h-16 items-center desk:h-19"
-        >
-          <div className="flex w-full items-center justify-between gap-4">
-            {/* Logo. Se achica al scrollear; la transición va sobre `height`
-                para que el resto de la barra no se mueva con él. */}
-            <Link
-              href="/"
-              aria-label={`${BRAND.name} — home`}
-              className="flex shrink-0 items-center"
-            >
-              {/* ⚠️ EL LOCKUP FULL COLOR, no el reversado. `logo-reversed.svg`
-                  es la versión blanca: sobre la barra clara desaparecía.
-                  `logo-lockup.png` es el badge de marca completo —aro naranja,
-                  «ROOFTOP» en negro, la ola teal— y es el que corresponde sobre
-                  claro. Es el mismo archivo que ya usaba el panel de mobile,
-                  que siempre fue claro.
+        <header className="caja-ancha flex min-h-19.5 items-center justify-between gap-6">
+          {/*
+            ⚠️ EL LOCKUP EN SVG, y esto cierra una deuda anotada en este mismo
+            archivo. Decía: «Es un PNG y no un SVG, y no es una elección: del
+            lockup no hay versión vectorial en `public/brand`. Queda anotado en
+            `docs/media.md` como pedido — un logo raster en un header es lo
+            único del sitio que no escala».
 
-                  ⚠️ Es un PNG y no un SVG, y no es una elección: del lockup no
-                  hay versión vectorial en `public/brand`. Sólo el reversado es
-                  SVG. Queda anotado en `docs/media.md` como pedido — un logo
-                  raster en un header es lo único del sitio que no escala. */}
-              <Image
-                src="/brand/logo-lockup.png"
-                alt=""
-                width={1200}
-                height={1271}
-                priority
-                sizes="120px"
+            El bundle de Claude Design lo trajo. `logo-primary.svg` es el mismo
+            lockup full color, vectorial y 4× más liviano que el PNG (37 KB
+            contra 152). El PNG sigue en `public/brand` porque lo usa el
+            preloader, que lo pinta a un tamaño fijo.
+
+            ⚠️ Va con `<Image>` y no con `<img>` aunque sea SVG: Next no
+            optimiza SVG —lo sirve tal cual— pero sí emite el `width`/`height`
+            que evita el CLS mientras baja.
+          */}
+          <Link
+            href="/"
+            aria-label={`${BRAND.name} — home`}
+            className="flex shrink-0 items-center"
+          >
+            <Image
+              src="/brand/logo-primary.svg"
+              alt=""
+              width={240}
+              height={254}
+              priority
+              className="h-11 w-auto desk:h-14.5"
+            />
+            <span className="sr-only">{BRAND.name}</span>
+          </Link>
+
+          {/* ── Nav desktop ────────────────────────────────────────────── */}
+          <nav
+            aria-label="Main"
+            className="hidden min-w-0 flex-1 items-center gap-x-4.5 gap-y-1.5 desk:flex"
+          >
+            {NAV_MAIN.map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                aria-current={isCurrent(href) ? 'page' : undefined}
                 className={[
-                  'w-auto transition-[height] duration-300 ease-brand',
-                  scrolled ? 'h-9.5 desk:h-10.5' : 'h-11.5 desk:h-14.5',
+                  NAV_ITEM,
+                  isCurrent(href)
+                    ? 'text-ink underline decoration-sunset decoration-2 underline-offset-[10px]'
+                    : 'text-ink hover:text-terra',
                 ].join(' ')}
+              >
+                {label}
+              </Link>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => setMoreOpen((v) => !v)}
+              onMouseEnter={() => setMoreOpen(true)}
+              aria-expanded={moreOpen}
+              aria-haspopup="true"
+              className={[
+                NAV_ITEM,
+                'flex items-center gap-1.25',
+                moreActive ? 'text-terra' : 'text-ink hover:text-terra',
+              ].join(' ')}
+            >
+              More
+              <CaretDown
+                className={`size-3 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
               />
-              <span className="sr-only">{BRAND.name}</span>
+            </button>
+          </nav>
+
+          {/* ── Contacto + CTA ─────────────────────────────────────────── */}
+          <div className="flex shrink-0 items-center gap-3 desk:gap-6">
+            {/*
+              ⚠️ «Contact» va como TEXTO PLANO y no como botón, y es lo que
+              deja respirar la barra. Con dos botones —era «What's On» en
+              `outline` + «Plan an Event» en relleno— el extremo derecho tenía
+              dos cajas compitiendo y el CTA real perdía. Un link de texto al
+              lado de una píldora naranja tiene una jerarquía que se lee de
+              una: uno es la salida de servicio, el otro es la acción.
+            */}
+            <Link
+              href="/contact"
+              className="hidden font-body text-dato text-ink transition-colors duration-200 hover:text-terra desk:block"
+            >
+              Contact
             </Link>
+            <ButtonLink
+              href={NAV_CTA.primary.href}
+              variant="primary"
+              className="hidden normal-case tracking-normal sm:inline-flex"
+            >
+              {NAV_CTA.primary.label}
+            </ButtonLink>
 
-            {/* ── Nav desktop ──────────────────────────────────────────── */}
-            <nav aria-label="Main" className="hidden items-center desk:flex">
-              {NAV_MAIN.map(({ label, href }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  aria-current={isCurrent(href) ? 'page' : undefined}
-                  className={[
-                    'px-3.25 py-2 font-body text-caption font-medium uppercase tracking-eyebrow',
-                    'whitespace-nowrap transition-colors duration-200',
-                    // La página actual se marca con un relleno suave, no con un
-                    // filete: dentro de una píldora, una línea recta desentona.
-                    isCurrent(href)
-                      ? 'text-ink underline decoration-sunset decoration-2 underline-offset-[10px]'
-                      : 'text-muted hover:text-ink',
-                  ].join(' ')}
-                >
-                  {label}
-                </Link>
-              ))}
-
-              <div
-                ref={moreRef}
-                className="relative"
-                onMouseEnter={() => setMoreOpen(true)}
-                onMouseLeave={() => setMoreOpen(false)}
-              >
-                <button
-                  type="button"
-                  onClick={() => setMoreOpen((v) => !v)}
-                  aria-expanded={moreOpen}
-                  aria-haspopup="true"
-                  className={[
-                    'flex items-center gap-1.75 px-3.25 py-2',
-                    'font-body text-caption font-medium uppercase tracking-eyebrow whitespace-nowrap',
-                    'transition-colors duration-200',
-                    moreActive ? 'text-ink' : 'text-muted hover:text-ink',
-                  ].join(' ')}
-                >
-                  More
-                  <svg
-                    width="10"
-                    height="7"
-                    viewBox="0 0 12 8"
-                    fill="none"
-                    aria-hidden="true"
-                    className={`transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
-                  >
-                    <path
-                      d="M1 1L6 6L11 1"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-
-                <div
-                  className={[
-                    'absolute top-full right-0 pt-2.5 transition-all duration-200',
-                    moreOpen
-                      ? 'visible translate-y-0 opacity-100'
-                      : 'invisible pointer-events-none -translate-y-1 opacity-0',
-                  ].join(' ')}
-                >
-                  <ul className="grid w-140 grid-cols-2 gap-0.5 rounded-panel bg-paper p-3 shadow-card ring-1 ring-fog">
-                    {NAV_MORE.map(({ label, href, hint }) => (
-                      <li key={href}>
-                        <Link
-                          href={href}
-                          onClick={() => setMoreOpen(false)}
-                          aria-current={isCurrent(href) ? 'page' : undefined}
-                          className="block rounded-input px-3 py-2.5 transition-colors duration-200 hover:bg-ink/[0.04]"
-                        >
-                          <span className="block font-body text-base font-medium text-ink">
-                            {label}
-                          </span>
-                          {hint ? (
-                            <span className="mt-0.5 block text-micro leading-[1.4] text-body/75">
-                              {hint}
-                            </span>
-                          ) : null}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </nav>
-
-            {/* ── Doble CTA ────────────────────────────────────────────── */}
-            <div className="flex shrink-0 items-center gap-2.5">
-              <ButtonLink
-                href={NAV_CTA.secondary.href}
-                variant="outline"
-                className="hidden desk:inline-flex"
-              >
-                {NAV_CTA.secondary.label}
-              </ButtonLink>
-              <ButtonLink
-                href={NAV_CTA.primary.href}
-                variant="primary"
-                className="hidden sm:inline-flex"
-              >
-                {NAV_CTA.primary.label}
-              </ButtonLink>
-
-              <button
-                type="button"
-                onClick={() => setDrawerOpen(true)}
-                aria-expanded={drawerOpen}
-                aria-controls="mobile-nav"
-                className="grid h-11 w-11 place-items-center desk:hidden"
-              >
-                <span className="sr-only">Open menu</span>
-                <svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true">
-                  <path d="M0 1h22M0 7h22M0 13h22" stroke="currentColor" strokeWidth="2" />
-                </svg>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              aria-expanded={drawerOpen}
+              aria-controls="mobile-nav"
+              className="grid h-11 w-11 place-items-center desk:hidden"
+            >
+              <span className="sr-only">Open menu</span>
+              <svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true">
+                <path d="M0 1h22M0 7h22M0 13h22" stroke="currentColor" strokeWidth="2" />
+              </svg>
+            </button>
           </div>
         </header>
 
+        {/*
+          ── El panel del «More» ──────────────────────────────────────────
+          ⚠️ ES UNA BANDA A TODO EL ANCHO, no la tarjeta flotante de 560px que
+          había antes. Con ocho destinos, la tarjeta los apretaba en dos
+          columnas de 260px y la línea de descripción caía en tres renglones.
+          A todo el ancho entran cuatro columnas y cada descripción es una
+          línea, que es para lo que existe.
+
+          ⚠️ Cada item lleva un FILETE ARRIBA y no una caja con hover de
+          fondo. Ocho cajas grises al abrir el menú son ocho rectángulos; ocho
+          filetes son una grilla. El hover vive en el color del título.
+        */}
+        <div
+          className={[
+            'absolute inset-x-0 top-full border-b border-fog bg-paper',
+            'transition-all duration-200',
+            moreOpen
+              ? 'visible translate-y-0 opacity-100'
+              : 'invisible pointer-events-none -translate-y-1 opacity-0',
+          ].join(' ')}
+        >
+          <ul className="caja-ancha grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-10 gap-y-7 pt-9 pb-11">
+            {NAV_MORE.map(({ label, href, hint }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  onClick={() => setMoreOpen(false)}
+                  aria-current={isCurrent(href) ? 'page' : undefined}
+                  className="group block border-t border-fog pt-3.5"
+                >
+                  <span className="block font-display text-d5 font-bold uppercase leading-none text-ink transition-colors duration-200 group-hover:text-terra">
+                    {label}
+                  </span>
+                  {hint ? (
+                    <span className="mt-1.5 block font-body text-dato font-light leading-[1.5] text-muted">
+                      {hint}
+                    </span>
+                  ) : null}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       {/* ── Menú full-screen de mobile ─────────────────────────────────── */}
@@ -327,14 +304,14 @@ export default function Header() {
           aria-modal="true"
           aria-label="Site menu"
           className={[
-            'absolute inset-0 flex flex-col bg-paper',
+            'absolute inset-0 flex flex-col bg-bone',
             'transition-[opacity,transform] duration-300 ease-brand',
             drawerOpen ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0',
           ].join(' ')}
         >
           <div className={`flex h-header-sm shrink-0 items-center justify-between ${GUTTER}`}>
             <Image
-              src="/brand/logo-lockup.png"
+              src="/brand/logo-primary.svg"
               alt=""
               width={110}
               height={116}
@@ -366,7 +343,7 @@ export default function Header() {
                   >
                     <span
                       className={[
-                        'font-display text-d5 uppercase',
+                        'font-display text-d5 font-bold uppercase',
                         isCurrent(href) ? 'text-ink' : 'text-ink/85',
                       ].join(' ')}
                     >
@@ -397,7 +374,7 @@ export default function Header() {
           </nav>
 
           <div
-            className={`shrink-0 border-t border-ink/12 bg-paper pt-4 pb-[calc(16px+env(safe-area-inset-bottom))] ${GUTTER}`}
+            className={`shrink-0 border-t border-ink/12 bg-bone pt-4 pb-[calc(16px+env(safe-area-inset-bottom))] ${GUTTER}`}
           >
             <div className="flex flex-col gap-2.5">
               <ButtonLink
@@ -409,12 +386,12 @@ export default function Header() {
                 {NAV_CTA.primary.label}
               </ButtonLink>
               <ButtonLink
-                href={NAV_CTA.secondary.href}
+                href="/contact"
                 variant="secondary"
                 size="lg"
                 onClick={() => setDrawerOpen(false)}
               >
-                {NAV_CTA.secondary.label}
+                Contact
               </ButtonLink>
             </div>
           </div>

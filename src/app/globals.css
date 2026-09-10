@@ -295,7 +295,20 @@
   --container-mobile: 780px;
   --container-tablet: 880px;
   --container-site: 1280px;
-  --container-wide: 1420px;
+  /*
+   * `wide` — la caja del rediseño `food-truck-club`.
+   *
+   * ⚠️ ERA 1420px Y NO LA USABA NADIE: quedó declarada de una iteración
+   * anterior y el grep no la encontraba en un solo call site. Ahora vale
+   * 1400px, que es la medida del diseño, y la usan el header, la barra de
+   * servicio y las nueve secciones de la home.
+   *
+   * No reemplaza a `site`. Las 22 páginas internas siguen en 1280, que es el
+   * ancho unánime de las seis fuentes auditadas; la home es más ancha porque
+   * su unidad de composición es la BANDA a sangre —el carrusel de eventos se
+   * va del borde a propósito— y a 1280 esa fuga no tiene de dónde salir.
+   */
+  --container-wide: 1400px;
   /*
    * `head` — el ancho del bloque de encabezado de sección (eyebrow + h2 +
    * bajada). Lo usa `max-w-head` en `SectionHead`.
@@ -333,6 +346,20 @@
    * faltara el sistema — estaba y no se usaba.                                */
   --spacing-gutter: 16px;
   --spacing-gutter-lg: 32px;
+  /*
+   * `borde` — el gutter FLUIDO del rediseño, para la home y el header.
+   *
+   * ⚠️ Es un `clamp` y no un par de breakpoints, y esa es toda la diferencia.
+   * El par 16/32 salta: a 767px el contenido tiene 16px de aire y a 768px
+   * tiene 32, y en una banda de color ese salto se ve como un escalón en el
+   * borde. Con la caja en 1400 y bandas que llegan al filo de la pantalla, el
+   * margen tiene que CRECER con el viewport o el titular de 9vw termina
+   * pegado al vidrio.
+   *
+   * 4vw es la pendiente del diseño; 16px el piso de un teléfono y 56px el
+   * techo, que es donde la caja de 1400 ya no crece más.
+   */
+  --spacing-borde: clamp(16px, 4vw, 56px);
 
   /* ── Bandas de sección ──────────────────────────────────────────────────
      Se aplican siempre como PAR mobile/desktop y siempre simétricas
@@ -445,6 +472,46 @@
   --text-h2--line-height: 0.92;
   --text-h3: 40px;
   --text-h3--line-height: 1;
+  /*
+   * ── LOS DOS DISPLAY DEL REDISEÑO `food-truck-club` ──────────────────────
+   *
+   * `titan` y `banda` NO reemplazan a `hero` y `h2`: conviven, y cada par
+   * tiene su territorio. `hero`/`h2` siguen sirviendo a las 22 páginas
+   * internas vía `PageHero` y `SectionHead`; estos dos son de la home.
+   *
+   * ⚠️ La diferencia real no es el tamaño, es la INTERLÍNEA. `hero` va en
+   * 0.88 porque su titular puede caer en dos renglones dentro de una caja de
+   * texto normal. En la home nueva los titulares son placas: «BONITA COMES /
+   * TOGETHER» se compone como dos bloques apilados que casi se tocan, y a
+   * 0.88 queda un canal blanco entre los dos que rompe el efecto. 0.85 es lo
+   * que trae el diseño y es lo que cierra el bloque.
+   *
+   * ⚠️ `banda` es MÁS GRANDE que `h2` —7vw contra 6vw, tope 112 contra 88— y
+   * eso es deliberado: en las internas el h2 comparte pantalla con un h1 de
+   * 104px y tiene que quedar por debajo. En la home no hay h1 compitiendo
+   * dentro de la banda, así que el titular de sección ES el titular.
+   *
+   * Los valores acá son los del TOPE. Los clamp están en `:root`, por el
+   * límite de compilación de v4 que ya está explicado más arriba.
+   */
+  /*
+   * `nav` — los items de la nav principal.
+   *
+   * ⚠️ La nav pasó de la geométrica en 12px a la CONDENSADA en 19px, y es el
+   * cambio del rediseño que más se nota sin que nadie sepa señalarlo. Antes
+   * los cinco destinos eran un eyebrow: texto de servicio, del tamaño de una
+   * etiqueta. Ahora son señalética — el mismo registro que los titulares.
+   *
+   * Se puede porque la familia es condensada: «What's On» en Big Shoulders
+   * 700 a 19px ocupa lo mismo que en Jost 500 a 13px. Sube el cuerpo sin
+   * gastar ancho, que es justamente lo que no sobra con cinco items, un
+   * «More», un link de contacto y un CTA en la misma barra.
+   */
+  --text-nav: 19px;
+  --text-titan: 144px;
+  --text-titan--line-height: 0.85;
+  --text-banda: 112px;
+  --text-banda--line-height: 0.88;
 
   /* ── Escala de texto ────────────────────────────────────────────────────*/
   --text-intro: 25px;
@@ -606,6 +673,30 @@
   --radius-panel: 10px;
   --radius-input: 10px;
   --radius-image: 10px;
+  /* ⚠️ LA FAMILIA GRANDE — entra con el rediseño `food-truck-club`, y NO
+     contradice los 10px de arriba: son dos escalas para dos escalas de pieza.
+
+     Los 10px son el radio de los CONTROLES —botón, input, panel del mega-menú,
+     celda del calendario—: piezas de 40 a 60px de alto, donde 88px de radio
+     las volvería cápsulas.
+
+     Estos cinco son el radio de las SUPERFICIES —bandas de sección completas,
+     el marco del hero, tarjetas de 300 a 600px—. Ahí 10px no se ve: sobre una
+     banda de 900px de ancho un radio de 10 es una esquina recta con el filo
+     limado, y el diseño apoya su carácter justamente en que la banda oscura
+     emerge con un arco visible.
+
+     Los valores salen MEDIDOS del diseño y no redondeados a ojo:
+       band    88px  el arco con el que cada banda emerge sobre la anterior
+       frame   44px  el marco de foto del hero — es la mitad de `band`
+       shell   32px  tarjetas de evento y bloques de contacto
+       door    24px  las tres puertas
+       ticket  18px  las tarjetas troqueladas del yard                      */
+  --radius-band: 88px;
+  --radius-frame: 44px;
+  --radius-shell: 32px;
+  --radius-door: 24px;
+  --radius-ticket: 18px;
 
   /* ⚠️ `--color-fog` y `--color-linen` VIVÍAN ACÁ y eran grises fríos
      (#e8e8e8 / #fafafa), calibrados contra un fondo blanco puro. Sobre el
@@ -687,6 +778,28 @@
   --text-h2: clamp(2.5rem, 6vw, 5.5rem);
   --text-h3: clamp(1.75rem, 2.6vw, 2.5rem);
   --text-lead: clamp(1.0625rem, 1.6vw, 1.375rem);
+  /*
+   * Los dos del rediseño. Mismo mecanismo, mismos topes comprobados:
+   *
+   *     titan  9vw  → 390px: 56px (piso) · 1600px: 144px (tope)
+   *     banda  7vw  → 390px: 45px (piso) · 1600px: 112px (tope)
+   *
+   * ⚠️ El piso de `banda` es 2.8rem y no 2.5rem como el de `h2`. A 390px la
+   * home tiene titulares de hasta cuatro palabras centrados en 16ch —«This
+   * week / in the yard»— y a 40px caían en tres renglones. A 45px caen en dos,
+   * que es como está compuesto el diseño.
+   */
+  --text-titan: clamp(3.5rem, 9vw, 9rem);
+  --text-banda: clamp(2.8rem, 7vw, 7rem);
+  /*
+   * La nav también es fluida, y acá el clamp no es cosmético: entre 1344 —el
+   * `desk` donde la nav horizontal aparece— y 1400 hay 56px de margen y ocho
+   * elementos en la barra. A 19px fijos el último CTA se sale; a 1.35vw entra
+   * en 15px y crece hasta los 19 recién cuando la pantalla lo permite.
+   *
+   *     nav  1.35vw → 1344px: 18px · 1408px: 19px (tope)
+   */
+  --text-nav: clamp(15px, 1.35vw, 19px);
 
   /*
    * ⚠️ ALTO DE LA BANDA INTERCALADA EN UN TITULAR. Se usa con
@@ -842,6 +955,109 @@
   @media (width >= 1344px) {
     max-width: var(--container-site);
   }
+}
+
+/**
+ * La caja ANCHA — la del rediseño `food-truck-club`.
+ *
+ * 1400px con el gutter fluido ADENTRO, que es como está compuesto el diseño:
+ * `max-width:1400px; margin:0 auto; padding:0 clamp(16px,4vw,56px)`. O sea que
+ * el 1400 es el ancho total de la banda y el texto arranca 56px adentro, no
+ * que el texto mida 1400.
+ *
+ * ⚠️ Reemplaza al par `caja` + `GUTTER`, no se combina con él. Poner los dos
+ * suma los dos paddings y el contenido queda 88px adentro en desktop.
+ *
+ * ⚠️ Las secciones que SANGRAN —el carrusel de eventos, el marquee de fotos—
+ * no la usan en su contenedor exterior: usan `px-borde` sólo en el encabezado
+ * y dejan que la fila de tarjetas se vaya del borde. Si se envuelve todo en
+ * `caja-ancha`, la fuga se recorta y el carrusel deja de leerse como continuo.
+ */
+@utility caja-ancha {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-wide);
+  padding-inline: var(--spacing-borde);
+}
+
+/**
+ * TROQUEL — el borde dentado de las tarjetas del yard.
+ *
+ * Las tres tarjetas de «cómo funciona esto» son tickets: el borde de arriba y
+ * el de abajo están mordidos por una fila de semicírculos, como el talón de
+ * una entrada. Es el recurso que más carácter le da a la sección y el que
+ * explica sin texto que las tres van juntas y en orden.
+ *
+ * ⚠️ SE HACE CON `mask` Y NO CON PSEUDO-ELEMENTOS, y la diferencia importa.
+ * Con `::before`/`::after` habría que pintar los dientes DEL COLOR DEL FONDO,
+ * o sea que la tarjeta sólo funcionaría sobre `bone` y se rompería el día que
+ * la sección cambie de superficie. La máscara recorta de verdad: lo que hay
+ * detrás se ve, sea lo que sea.
+ *
+ * Las tres capas, de arriba abajo:
+ *   1. la fila de mordiscos del borde SUPERIOR
+ *   2. la fila del borde INFERIOR
+ *   3. el relleno del medio, con 26px menos de alto para dejarles lugar
+ *
+ * ⚠️ Los tres números están atados entre sí y no se tocan de a uno:
+ * el diente mide 13px de radio, el paso de la repetición 26px (dos radios) y
+ * el alto que se le descuenta al relleno son esos mismos 26px. Cambiar uno
+ * solo deja una costura de 1px entre el relleno y los dientes, que sobre
+ * blanco se ve como una línea gris.
+ *
+ * ⚠️ El `13.5px` del segundo tope de cada `radial-gradient` NO es un error de
+ * tipeo ni un valor «por las dudas»: es medio píxel de antialias. Con los dos
+ * topes en 13px el borde del diente queda duro y en pantallas sin DPR fraccional
+ * se ve aserrado.
+ *
+ * ⚠️ La sombra va en el CONTENEDOR con `filter: drop-shadow`, no acá con
+ * `box-shadow`. Una `box-shadow` dibuja la sombra del rectángulo original y
+ * la máscara no la recorta: quedarían dos esquinas de sombra flotando donde
+ * la tarjeta ya no tiene material. `drop-shadow` sigue la silueta enmascarada.
+ */
+@utility troquel {
+  --troquel-diente: 13px;
+  --troquel-paso: 26px;
+
+  mask:
+    radial-gradient(
+        circle var(--troquel-diente) at 50% 100%,
+        #0000 var(--troquel-diente),
+        #000 calc(var(--troquel-diente) + 0.5px)
+      )
+      50% 0 / var(--troquel-paso) var(--troquel-paso) repeat-x,
+    radial-gradient(
+        circle var(--troquel-diente) at 50% 0,
+        #0000 var(--troquel-diente),
+        #000 calc(var(--troquel-diente) + 0.5px)
+      )
+      50% 100% / var(--troquel-paso) var(--troquel-paso) repeat-x,
+    linear-gradient(#000 0 0) 50% 50% / 100% calc(100% - var(--troquel-paso)) no-repeat;
+  -webkit-mask:
+    radial-gradient(
+        circle var(--troquel-diente) at 50% 100%,
+        #0000 var(--troquel-diente),
+        #000 calc(var(--troquel-diente) + 0.5px)
+      )
+      50% 0 / var(--troquel-paso) var(--troquel-paso) repeat-x,
+    radial-gradient(
+        circle var(--troquel-diente) at 50% 0,
+        #0000 var(--troquel-diente),
+        #000 calc(var(--troquel-diente) + 0.5px)
+      )
+      50% 100% / var(--troquel-paso) var(--troquel-paso) repeat-x,
+    linear-gradient(#000 0 0) 50% 50% / 100% calc(100% - var(--troquel-paso)) no-repeat;
+}
+
+/**
+ * La lengüeta numerada que asoma arriba de cada ticket.
+ *
+ * El radio es elíptico y asimétrico —esquinas de arriba casi rectas, las de
+ * abajo muy redondeadas— porque es lo que la hace leer como una lengüeta
+ * pegada y no como una píldora suelta apoyada encima.
+ */
+@utility lengueta {
+  border-radius: 6px 6px 40% 40% / 6px 6px 26% 26%;
 }
 
 /**
@@ -1237,6 +1453,123 @@
   .rt-marquee {
     animation: none;
   }
+}
+
+/* ==========================================================================
+   Movimiento del rediseño `food-truck-club`
+
+   Son CUATRO animaciones en toda la home y ninguna es de scroll: las cuatro
+   son bucles lentos de ambiente o transiciones de estado de una sola pasada.
+   El movimiento ligado al scroll ya lo cubre `Motion.tsx`.
+
+   ⚠️ Las tres de bucle —`rev`, `sway`, `wave`— corren SIEMPRE, así que cada
+   una tiene que sobrevivir a la pregunta «¿esto qué explica?». La respuesta
+   está en cada bloque; la que no la tenga, se saca.
+
+   ⚠️ El corte de `prefers-reduced-motion` NO se repite acá: el bloque global
+   del final del archivo las apaga a todas. Es la red de seguridad y alcanza.
+   ========================================================================== */
+
+/**
+ * El texto del pill de estado del hero, cuando cambia de mensaje.
+ *
+ * Es de UNA PASADA y dura 420ms: no es ambiente, es la transición entre dos
+ * estados. Sube desde abajo con un fundido, que es lo que hace legible el
+ * cambio — sin esto el texto se reemplaza de golpe y se lee como un parpadeo
+ * o, peor, no se lee (alguien mirando el hero se pierde el cambio y ve otra
+ * frase que no sabe de dónde salió).
+ */
+@keyframes rt-roll {
+  from {
+    opacity: 0;
+    transform: translateY(0.7em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rt-roll {
+  animation: rt-roll 420ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+/**
+ * El marquee de fotos del divisor, al REVÉS que `rt-marquee`.
+ *
+ * ⚠️ Va en sentido contrario a propósito y no por variedad. Es la única banda
+ * de la home que el visitante cruza sin nada que leer, y va justo después de
+ * las tres tarjetas del yard, que se leen de izquierda a derecha. Un marquee
+ * en el mismo sentido que la lectura acompaña; en sentido contrario FRENA, y
+ * eso es lo que hace que la banda se lea como un respiro entre dos bloques de
+ * texto y no como más contenido pasando.
+ *
+ * 44s para dos vueltas del set de seis fotos. Es lento a propósito: a la
+ * velocidad del marquee de logos (35s) las fotos se leen como un carrusel y
+ * la gente espera poder pararlas.
+ */
+@keyframes rt-marquee-rev {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.rt-marquee-rev {
+  animation: rt-marquee-rev var(--marquee-duration, 44s) linear infinite;
+  will-change: transform;
+}
+
+/**
+ * El sello colgado en el borde del divisor: se hamaca.
+ *
+ * El origen es `50% 12%` —el clavo está arriba, no en el centro— así que el
+ * dibujo pivota como algo colgado y no como algo que gira. Es lo que hace que
+ * se lea como un objeto pegado al borde de la banda y no como un adorno
+ * animado. ±7° y 5.2s: por debajo de eso no se percibe, por encima se vuelve
+ * un péndulo y pide atención.
+ */
+@keyframes rt-sway {
+  0%,
+  100% {
+    transform: rotate(-7deg);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+}
+
+.rt-sway {
+  transform-origin: 50% 12%;
+  animation: rt-sway 5.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/**
+ * La cenefa de olas del divisor: se desplaza en horizontal.
+ *
+ * ⚠️ El SVG se dibuja al **114 % de ancho con `margin-left:-7%`**, y ese
+ * sobrante es lo único que hace posible la animación: la ola se mueve 3.5 %
+ * hacia la izquierda y tiene que seguir tapando los dos bordes. Sin el
+ * sobrante, en el pico del recorrido aparece una franja del fondo de abajo en
+ * el borde derecho. Si alguien cambia el 114 %, tiene que cambiar el 3.5 %.
+ *
+ * 11s, que es casi el doble de la hamaca del sello: dos bucles a la misma
+ * velocidad en la misma banda laten juntos y se notan como animación.
+ */
+@keyframes rt-wave {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-3.5%);
+  }
+}
+
+.rt-wave {
+  animation: rt-wave 11s ease-in-out infinite;
 }
 
 /**

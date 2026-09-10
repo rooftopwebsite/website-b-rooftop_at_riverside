@@ -5,6 +5,7 @@ import Header from '@/components/shared/Header';
 import PageTransition from '@/components/shared/PageTransition';
 import Preloader from '@/components/shared/Preloader';
 import SmoothScroll from '@/components/shared/SmoothScroll';
+import UtilityBar from '@/components/shared/UtilityBar';
 import { BRAND } from '@/lib/brand';
 import { SITE_URL, jsonLdScript, venueJsonLd } from '@/lib/seo';
 import './globals.css';
@@ -83,9 +84,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  /* Tiene que ser el MISMO valor que `--color-paper`. Es el color con el que el
-     navegador pinta su cromo, así que si divergen se ve una costura arriba. */
-  themeColor: '#FFFFFF',
+  /* ⚠️ Es el color con el que el navegador pinta su cromo, así que tiene que
+     ser el de lo que está PEGADO ARRIBA DE TODO o se ve una costura.
+
+     Era `--color-paper` cuando lo primero era el header blanco. Ahora lo
+     primero es la barra de servicio, que es `--color-deep`. */
+  themeColor: '#014545',
   colorScheme: 'light',
 };
 
@@ -125,21 +129,24 @@ export default function RootLayout({ children }: { readonly children: React.Reac
             sección y su página, y «Walk in, no reservations» está en la FAQ, en
             /visit y en el hero.
 
-            Su color —`deeper`, el verde más oscuro— pasó al header, que es lo
-            que ella pidió en el mismo mensaje. */}
+            ⚠️ Lo que hay ahora en su lugar NO es el PromoBar de vuelta.
+            `UtilityBar` no vende nada: son las tres redes, Gift Cards y FAQ.
+            El razonamiento está en el encabezado de ese archivo. */}
+        <UtilityBar />
         <Header />
 
         {/*
-          Sin padding acá, y es a propósito: el header volvió a ser `fixed`
-          —tiene que haber contenido pasando POR DETRÁS para que el blur se vea—
-          así que no ocupa lugar en el flujo y cada hero compensa su altura.
+          Sin padding acá, y ahora por el motivo CONTRARIO al de antes.
 
-          No se pone el padding en `<main>` justamente por el home: ahí el hero
-          ocupa la pantalla entera y el muro de videos tiene que correr por
-          debajo del header. Un padding acá lo empujaría y el blur no tendría
-          nada que difuminar.
+          Decía: «el header es `fixed`, no ocupa lugar en el flujo y cada hero
+          compensa su altura». Con el rediseño el header volvió al flujo
+          normal —ver la nota grande de `Header.tsx`—, así que ya ocupa su
+          lugar y no hay nada que compensar. El padding sigue sin ir acá
+          porque cada sección trae el suyo.
 
-          Ver `PageHero.tsx` (las 22 internas) y `Hero.tsx` (el home).
+          ⚠️ Y por eso mismo se sacó el `pt` con los 77px sumados a mano que
+          tenían `Hero.tsx` y `PageHero.tsx`. Si el header vuelve a flotar,
+          vuelve también ahí.
 
           Los anclajes internos siguen necesitando el `scroll-margin-top` de
           globals.css.

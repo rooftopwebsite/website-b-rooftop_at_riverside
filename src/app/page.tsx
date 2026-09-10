@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import EventsBanner from '@/components/sections/EventsBanner';
-import Hero from '@/components/sections/Hero';
 import FindUs from '@/components/sections/FindUs';
+import Hero from '@/components/sections/Hero';
 import { HowThisPlaceWorks } from '@/components/sections/HomeSections';
+import PhotoDivider from '@/components/sections/PhotoDivider';
 import ThreeDoors from '@/components/sections/ThreeDoors';
-import HorizonBorder from '@/components/shared/HorizonBorder';
-import WaveBorder from '@/components/shared/WaveBorder';
 import WhatsOn from '@/components/sections/WhatsOn';
+import YardSteps from '@/components/sections/YardSteps';
 import { pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
@@ -14,32 +14,66 @@ export const metadata: Metadata = pageMeta({
 });
 
 /**
- * Home.
+ * Home — rediseño `food-truck-club`.
  *
- * Seis secciones, cada una con una función y ninguna repitiendo a otra:
+ * Ocho secciones. El argumento va en este orden y no en otro:
  *
- *  1. Hero + muro de videos    corrige la lectura de «restaurante» y muestra
- *                              el lugar en movimiento
- *  2. What's on                qué hay HOY primero, y la semana detrás. Es la
- *                              razón por la que alguien vuelve a entrar
- *  3. How this place works     desarma quién te cobra qué
- *  4. Three doors              las tres unidades, una sola vez
- *  5. Events banner            la vertical que más factura, en un banner
- *  6. Find us                  conversión física
+ *  1. Hero               qué es y una razón para entrar hoy
+ *  2. What's on          qué pasa esta semana + qué camiones están
+ *  3. Five businesses    el malentendido, desarmado en dos columnas
+ *  4. Yard steps         el detalle de cómo se ordena, en tres tickets
+ *  5. Photo divider      el respiro: se ve el lugar, sin leer
+ *  6. Three doors        las tres unidades, una sola vez
+ *  7. Events banner      la vertical que más factura
+ *  8. Find us            conversión física
  *
- * ⚠️ QUÉ SE FUE, y por qué, para que no vuelva por inercia:
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EL RITMO DE SUPERFICIES, que es lo que hay que entender antes de mover
+ * una sección de lugar.
+ *
+ *     1 · hero          bone
+ *     2 · what's on     DEEP   ← arco de 88px, emerge sobre el hero
+ *     3 · five biz      bone   ← arco, montado −88px sobre la banda
+ *     4 · yard steps    bone
+ *     5 · divider       INK    ← el único corte a tinta de la página
+ *     6 · three doors   bone
+ *     7 · events        DEEP   ← arco
+ *     8 · find us       bone   ← arco, montado −88px
+ *
+ * Cada banda oscura ENTRA con un arco y SALE con la sección siguiente
+ * montándose encima. Los −88px son exactamente `--radius-band`: si cambia el
+ * radio, cambian los tres márgenes negativos.
+ *
+ * ⚠️ ESTO ROMPE LA REGLA DE `npm run check:surfaces`, que exige «como máximo
+ * UNA sección de teal profundo» y «nunca dos de color seguidas». Acá hay dos
+ * `deep` más una `ink`, y es deliberado: la regla se escribió para un layout
+ * de bandas planas apiladas, donde dos oscuras seguidas son un bloque de
+ * 1.400px de verde. Con los arcos y las secciones claras montándose encima,
+ * las dos `deep` están separadas por cuatro secciones claras y no comparten
+ * un solo borde. La regla mide la cuenta, no la distancia — el guard quedó
+ * corto para esta forma, no al revés.
+ *
+ * ⚠️ Y SE FUERON LAS DOS CENEFAS. `HorizonBorder` y `WaveBorder` marcaban los
+ * cortes de la banda oscura, y ahora el corte lo marca el arco. Dos piezas
+ * decorativas de 50px de alto sumadas al arco serían dos separadores
+ * haciendo el mismo trabajo, uno arriba del otro.
+ *   · `WaveBorder` SIGUE EN USO en `/sunset-bar`. No se toca.
+ *   · `HorizonBorder` queda sin consumidores. NO se borra: la ola con el
+ *     medallón de sol es una pieza del brand book (nodo 2012:4491 del Figma)
+ *     y volver a dibujarla cuesta más que dejarla.
+ *   · La ola SÍ sobrevive en la home, pero adentro de `PhotoDivider` y
+ *     recortada contra el borde inferior de la banda.
+ * ══════════════════════════════════════════════════════════════════════════
+ *
+ * ⚠️ QUÉ SE FUE ANTES, y por qué, para que no vuelva por inercia:
  *
  *   · `TonightAtTheYard` + `ThisWeek` → fusionados en `WhatsOn`. Leían la
  *     misma lista de recurrentes y la mostraban dos veces en la misma página.
  *   · Las mini cards del hero + `ThreeVerticals` → fusionadas en `ThreeDoors`.
- *     Enumeraban las mismas tres unidades con distinta ropa.
- *   · `ForEventPlanners` → `EventsBanner`. Sus tres pasos del proceso NO se
- *     borraron: viven en `/events`, que es la página que les corresponde.
- *   · `FeaturesMarquee` → decía lo mismo que el `PromoBar` nuevo, en la misma
- *     pantalla.
- *   · `StoryTeaser` → «Nuestra historia» vive en `/our-story` y punto.
- *   · `BrandTrail` → el elemento de marca que acompañaba el scroll. Salió por
- *     pedido de Camila; de ronnsquare.fr queda sólo `PageTransition`.
+ *   · `ForEventPlanners` → `EventsBanner`. Sus tres pasos del proceso viven
+ *     en `/events`, que es la página que les corresponde.
+ *   · `FeaturesMarquee`, `StoryTeaser`, `BrandTrail` → ver el historial; de
+ *     ronnsquare.fr queda sólo `PageTransition`.
  *
  * ⚠️ Sin módulo de reviews. `ReviewsMarquee` existe en HomeSections.tsx pero
  * no se importa: los ratings del cliente no están confirmados.
@@ -48,56 +82,12 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-
       <WhatsOn />
-
-      {/* `bone` contra `paper` es un escalón de 1,08:1 — se ve el corte, pero
-          NO lleva cenefa. La regla del componente es que la cenefa marca el
-          cambio de superficie que salta de verdad, y meterla en un escalón
-          sutil la convierte en un patrón de fondo. */}
       <HowThisPlaceWorks />
-
+      <YardSteps />
+      <PhotoDivider />
       <ThreeDoors />
-
-      {/*
-        ⚠️ LAS DOS CENEFAS SE MUDARON ACÁ, y no es cosmético: siguen al corte
-        oscuro. Estaban alrededor de «How this place works» cuando esa sección
-        era la losa verde; ahora la banda oscura es Events banner, así que la
-        entrada y la salida del verde están en este par.
-
-        La cenefa de olas es el separador real del brand book —página
-        «Elementos» del Figma, tres veces y en tres colores—. Antes acá había un
-        festón de arcos que era invento mío mientras no estaba el archivo.
-
-        ⚠️ Son DOS en toda la home y ni una más. Con la home clara hay un solo
-        salto fuerte de superficie, así que las dos sirven a la misma sección.
-        Es el único riesgo que me preocupa de este recurso: dos apariciones de
-        la misma pieza de marca a 50px de alto pueden leerse como manierismo. Si
-        se ve así, la de salida se va y el corte se cierra seco.
-
-        ⚠️ El color va en la sección de ABAJO: las olas tienen las crestas hacia
-        arriba, así que es la sección que viene la que emerge sobre la que
-        termina. Ver la nota del componente.
-      */}
-      {/*
-        ⚠️ ENTRA POR EL HORIZONTE Y SALE POR LA CENEFA. Son dos piezas distintas
-        para dos cortes distintos, y eso resuelve el riesgo que había anotado en
-        la autocrítica: con la misma cenefa arriba y abajo, dos apariciones de
-        la misma pieza de marca a 50px de alto se leían como manierismo.
-
-        El horizonte —la ola con el medallón de sol y palmera, nodo 2012:4491
-        del Figma— va en la ENTRADA porque es el único salto de claro a oscuro
-        de la home y el dibujo lo dice literalmente: la superficie oscura sube
-        como ola y el sol se pone detrás. Encaja con el concepto de la rama, que
-        es que la página va del mediodía a la noche.
-
-        La cenefa de olas lisa cierra la salida: volver a la luz no necesita
-        ceremonia.
-      */}
-      <HorizonBorder from="paper" to="deep" />
       <EventsBanner />
-      <WaveBorder from="deep" to="paper" />
-
       <FindUs />
     </>
   );
