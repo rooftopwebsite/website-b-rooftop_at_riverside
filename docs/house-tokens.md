@@ -516,3 +516,50 @@ es la vertical prioritaria ($10k–$30k por ticket).
 | Motion | dos ease-out-expo casi iguales | `[0.16,1,0.3,1]` | Tre Vele, el más nuevo |
 | Preloader | Tre Vele usa `sessionStorage` | **reimplementar** | el brief prohíbe storage |
 | Sombras | tintadas en navy (Orient) | **retintar en `deep`** | otra marca |
+
+---
+
+## 12. Deriva contra la casa — auditada en `redesign/light-tropical`
+
+Las resoluciones de §11 se tomaron en Fase 1, antes de que existiera la rama de
+rediseño. Esto es la comparación entre lo que ese cuadro decidió y **lo que la
+rama efectivamente pinta**, leído de `globals.css` y de los componentes, no de
+memoria.
+
+| Token | §11 resolvió | La rama pinta | ¿Deriva? |
+|---|---|---|---|
+| Contenedor | 1280px | 1280px | — |
+| Gutter mobile / desktop | 16 / 32px | `--spacing-gutter: 16px` · `-lg: 32px` | — |
+| Bandas de sección | la escala de The Orient | la misma, tokenizada en `--spacing-band-*` | — |
+| Sombras | retintar en `deep` | `rgba(1, 69, 69, …)` en `--shadow-card` y `--shadow-photo` | — |
+| Motion ease | `[0.16, 1, 0.3, 1]` | `ease.out` en `lib/motion.ts`, ese valor | — |
+| Preloader | reimplementar sin `sessionStorage` | reimplementado, sin storage | — |
+| Radio de cards | ~10px | `--radius-card: 10px` | — |
+| **Tracking eyebrow** | **0.24em** | **0.12em** | ✅ **sí, y a propósito** |
+| **Radio de botones** | **0–4px** | **`rounded-pill`** | ✅ **sí, y a propósito** |
+
+### Las dos derivas, con su razón
+
+**Tracking eyebrow: 0.24em → 0.12em.** §11 lo resolvió en 0.24em porque The
+Orient, Tre Vele y Santa María convergen ahí. El brief de esta rama pide 0.12em
+de forma explícita, y `docs/prompt-claude-design.md` repite el mismo número. El
+brief de la marca gana sobre la convergencia de la casa: 0.24em es un tracking
+de versalita de sitio oscuro y editorial, y en un sitio claro con la condensada
+en 88px la versalita muy abierta se lee como un sello de otra época. Medido en
+el espécimen: a 12px, 0.24em son casi 3px de aire por letra y la etiqueta deja
+de leerse como una palabra.
+
+**Radio de botones: 0–4px → píldora.** §11 lo justificaba con que «el radio
+grande compite con el círculo del isotipo», y quedó marcado como «decisión de
+Fase 1, **a validar**». Se validó al revés: con el sitio en claro, un botón
+casi recto sobre papel blanco se lee como un campo de formulario, no como un
+control. La píldora es además lo que la marca ya usa en su propio material y lo
+que el brief de la rama especifica para los CTA. El isotipo circular no compite:
+está en el header, a 40px, y no comparte campo con ningún botón.
+
+`--radius-btn: 10px` **sigue declarado y sin borrar**, con su comentario: los
+nombres de radio dicen para qué es cada cosa aunque hoy compartan valor.
+
+> ⚠️ Las dos derivas están en el CSS, no en un componente suelto, así que se
+> revierten cambiando un token. Si alguna vez el sitio vuelve a la clave
+> oscura, las dos hay que volver a discutirlas.

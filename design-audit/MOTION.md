@@ -284,21 +284,50 @@ funciona.
 La salida quedó como desplazamiento solo. Sigue ligada al progreso del scroll,
 que es lo que el brief busca, y no toca la legibilidad de nada.
 
-### `ParallaxMedia` — **no existe**
+### `ParallaxMedia` — **no existe, y el mandato se da de baja**
 
 El brief lo nombra como componente reutilizable. En su lugar está `ScaleMedia`,
 que resuelve el caso real que apareció (media dentro de un contenedor con
 radio). No hay parallax en el sitio, y el propio `Motion.tsx` tiene la regla
 escrita desde antes: «nada de parallax sobre fotos de comida o de gente».
-Queda como decisión a confirmar, no como olvido.
 
-### La sección de servicios estilo **agencefoudre** — **sin destino**
+**Resuelto: el mandato se retira.** Y no por la regla, que se podría discutir,
+sino porque **no hay dónde ponerlo**. Fui a buscarle destino y los candidatos
+son tres, y los tres se caen:
+
+- **El arco de cards del hero.** Son nueve piezas de 16,5vw sobre un arco
+  calculado, cada una con su `rotate` y su `y` de subida. Un desplazamiento
+  ligado al scroll encima de eso pelea con la geometría del abanico.
+- **Las fotos de What's on.** Caras y platos. Es exactamente el caso que la
+  regla de `Motion.tsx` prohíbe, y la prohibición es buena: una cara que se
+  mueve dentro de su marco se lee como un error de render.
+- **La aérea desenfocada del Events banner.** Es el único candidato defendible
+  —ni comida ni gente a escala legible—, pero esa sección **ya tiene** un
+  mecanismo ligado al scroll: su `ScrollExit`. Dos mecanismos de scroll en el
+  mismo bloque es sobre-animar uno solo, que es justo lo que la doctrina de
+  esta rama evita.
+
+Un componente sin ningún call site no es un sistema, es código muerto. Si
+aparece un bloque que lo pida, se construye ahí y con su razón.
+
+### La sección de servicios estilo **agencefoudre** — **el mandato se da de baja en la home**
 
 El mandato del brief es «dos columnas pegadas, ítem activo que abre su bloque
 con `min-height`». La home **no tiene** sección de servicios: el contenido que
 más se le parecía —los tres pasos de «Five businesses»— pasó a ser tres cuadros
-de color por pedido explícito. Hay que decidir si se crea una sección para el
-mandato o si el mandato se da de baja.
+de color por pedido explícito.
+
+**Resuelto: no se crea una sección para alojar el mandato.** Inventar contenido
+para que un patrón de motion tenga dónde vivir es hacerlo al revés, y el brief
+lo prohíbe en la misma lista donde prohíbe tocar el copy: no hay servicios
+nuevos que anunciar, y los que hay —las tres puertas— ya aparecen una vez y con
+otra forma.
+
+Dónde SÍ encaja, para cuando se abra: **`/events/spaces`**. Ahí hay cuatro
+espacios con su tabla de capacidades, o sea literalmente una lista de ítems
+donde uno activo abriría su bloque, y hoy son cuatro fichas apiladas. Está
+fuera del alcance de esta rama, que es sólo la home. Anotado como destino, no
+como deuda.
 
 ### El color de la cortina — **revisado, y se queda en `deep`**
 

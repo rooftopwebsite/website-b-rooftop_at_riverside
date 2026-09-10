@@ -92,30 +92,68 @@ Para que no se lea como que el diseño está cerrado:
 - ~~**El oscuro quedó en 25,1 %**, un décimo sobre el techo.~~ **Cerrado: 24,5 %.**
   Lo cerró la banda de foto de «Three doors», que agregó 307px de página clara
   y con foto. No hubo que cambiarle el color a ningún cuadro.
-- **`docs/prompt-claude-design.md` no está ejecutado, y es un documento tuyo
-  que barrí a un commit sin leer.** Es un prompt maestro completo que toma
-  defoodtruckclub.nl como referencia ESTRUCTURAL literal: otro orden de
-  bloques, bordes punteados, sellos circulares, cortinas de esquinas
-  redondeadas, marquesinas, carruseles con flechas, contadores, `bone` como
-  superficie base y «What's on» en losa oscura. De sus cinco gestos hoy hay uno
-  construido —el titular partido con la foto encastrada, en «Three doors»— y
-  su hero contradice el que aprobaste después (el arco de cards). Es una
-  bifurcación, no una deuda: hay que decidirla, no completarla en silencio.
+- **`docs/prompt-claude-design.md` — CAMINO NO TOMADO, decidido.** Es un
+  documento tuyo que apareció a mitad de sesión y que barrí a un commit sin
+  leer: un prompt maestro completo que toma defoodtruckclub.nl como referencia
+  ESTRUCTURAL literal —otro orden de bloques, bordes punteados, sellos
+  circulares, cortinas de esquinas redondeadas, marquesinas, carruseles con
+  flechas, contadores, `bone` como superficie base y «What's on» en losa
+  oscura—. Lo mostré con las tres opciones y **elegiste dejarlo como referencia
+  y no tocarlo** (2026-09-10).
+
+  Lo que queda anotado, para que la decisión no se pierda:
+
+  - De sus cinco gestos hay **uno** construido: el titular partido con la foto
+    encastrada, en «Three doors».
+  - Su hero —titular partido con foto encastrada y píldora `mint` rotativa—
+    **contradice** el que aprobaste después, el arco de cards. El arco gana:
+    es posterior y es tuyo.
+  - Su plan de superficies pone «What's on» en losa oscura. El nuestro la deja
+    clara y usa el único corte oscuro en Events. Los dos cumplen el 70-75 %
+    claro; son dos maneras distintas de gastarlo.
+  - El documento sigue en `docs/`. No lo borré: si algún día se retoma, está
+    entero y auditado.
 - **`Wooftop Wednesdays` sigue sin foto** porque en las 36 entregadas no hay ni
   un perro. Es el único hueco marcado que queda en la home.
 - **El hero no tiene el cielo del mockup** porque no existe la foto.
 - **El logo del header es un PNG.** Del lockup full color no hay versión
   vectorial; es lo único del sitio que no escala.
+
+  Los tres, más los otros 24 ítems que faltan en todo el sitio, están ahora en
+  **`docs/pedido-al-cliente.md`**: un solo documento armado recorriendo los
+  marcadores reales del código, con dónde cae cada cosa, qué se ve hoy en su
+  lugar y por qué no hay reemplazo. Es el documento que se le manda al cliente.
 - **Cinco `text-d6` en páginas internas** dejan la condensada a 22px, por debajo
   del piso de 24. Están fuera del alcance que acordamos, pero es una regla del
   sistema de tipo y no de la home.
 - **Diez usos del estilo eyebrow en la home** contra los 3 que permite el brief.
   Saqué todos los que anunciaban sección; los que quedan son rótulos de dato.
   Esa distinción la interpreté yo.
-- **`ParallaxMedia` no existe** y la **sección de servicios estilo agencefoudre
-  no tiene destino** en la home. Las dos están documentadas en `MOTION.md` §3
-  como decisiones a confirmar, no como olvidos.
+- ~~**`ParallaxMedia` no existe** y la **sección de servicios estilo
+  agencefoudre no tiene destino**.~~ **Resueltos, los dos se dan de baja**, con
+  el razonamiento completo en `MOTION.md` §3. En resumen: al parallax le busqué
+  destino en los tres candidatos de la home y los tres se caen —el abanico del
+  hero pelea con su propia geometría, las fotos de What's on son caras y platos,
+  y el Events banner ya tiene un mecanismo ligado al scroll—; y a la sección de
+  servicios no se le inventa contenido para que un patrón de motion tenga dónde
+  vivir. La de servicios sí tiene destino natural en `/events/spaces`, que está
+  fuera del alcance de esta rama.
 - **No abrí los repos hermanos de la casa** (Zakia, The Orient, Santa María,
   Tre Vele, YAVA) ni showdown-social, que el brief pone como referencia
   prioridad #1 y #2. Trabajé con el moodboard, las referencias externas de §2.1
   y lo que `docs/house-tokens.md` ya tenía medido de ellos.
+
+  Lo que sí hice, y cierra la mitad del hueco: **auditar la deriva**. Las
+  resoluciones de `house-tokens.md` §11 se tomaron en Fase 1, antes de que
+  existiera esta rama, y nadie había comprobado si la rama las respeta.
+  `house-tokens.md` §12 es esa comparación, leída del CSS y de los componentes:
+  **siete tokens coinciden y dos derivan a propósito** —el tracking de eyebrow
+  (0.24em → 0.12em, lo pide el brief de la rama) y el radio de botones (0–4px →
+  píldora, que en §11 estaba marcado «a validar» y se validó al revés)—. Las
+  dos derivas viven en un token, así que se revierten cambiando un número.
+
+  Lo que sigue faltando es la lectura de PRIMERA mano de los seis repos. La
+  diferencia importa: `house-tokens.md` es una medición de tokens, y lo que un
+  repo hermano puede enseñar que un cuadro de tokens no dice es **composición**
+  —cómo resuelven un hero, cuántas formas distintas tiene una sección, dónde
+  ponen una foto—.
