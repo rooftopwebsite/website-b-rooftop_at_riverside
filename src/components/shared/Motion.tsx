@@ -5,42 +5,57 @@ import type { CSSProperties, ElementType, ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 /**
- * El vocabulario de movimiento. Nueve slots, y nada fuera de ellos.
+ * El vocabulario de movimiento. Un mecanismo por TIPO de contenido, y nada
+ * fuera de ellos.
  *
- * Parámetros de docs/house-tokens.md §8, medidos sobre Tre Vele.
+ * ⚠️ LOS TOKENS YA NO VIVEN ACÁ. Están en `src/lib/motion.ts`, que es donde
+ * corresponde: los consumen también `PageTransition` y `Preloader`. Este
+ * archivo los re-exporta con los nombres viejos —`EASE_BRAND`, `DURATION`,
+ * `REVEAL_OFFSET`, `STAGGER`, `REVEAL_AMOUNT`— para no romper call sites.
  *
- * ⚠️ REGLA DURA: ninguna animación pasa de **600ms**. `DURATION` está topeado
- * ahí a propósito; si algo necesita más, está mal pensado.
+ * ⚠️ UN MECANISMO POR TIPO DE CONTENIDO, y esto es la regla de diseño del
+ * archivo, no un detalle. El mismo fade + slide-up en las ocho secciones es la
+ * firma de una web autogenerada. El reparto es:
  *
- * ⚠️ Todos los componentes cortocircuitan con `useReducedMotion()` devolviendo
- * el tag PLANO, no una animación de duración 0: una animación de 0ms igual
- * dispara trabajo de composición. Y con el movimiento apagado el layout queda
- * IDÉNTICO — ningún componente usa la animación para posicionar nada.
+ *   titulares grandes     `MaskedLines`   reveal por líneas con máscara
+ *   imágenes a sangre     `RevealMedia`   `clip-path` que se abre
+ *   grillas y filas       `StaggerGroup`  desfasaje entre hijos
+ *   media en contenedor   `ScaleMedia`    escala sutil
+ *   bloques de texto      `Reveal`        fade + desplazamiento corto
+ *   secciones designadas  `ScrollExit`    salida ligada al progreso
+ *
+ * ⚠️ Todos cortocircuitan con `useReducedMotion()` devolviendo el tag PLANO,
+ * no una animación de duración 0: una animación de 0ms igual dispara trabajo
+ * de composición. Y con el movimiento apagado el layout queda IDÉNTICO —
+ * ningún componente usa la animación para posicionar nada. Lo verifica
+ * `npm run check:motion`.
  *
  * ⚠️ Nada de parallax sobre fotos de comida o de gente, y nada de scroll
  * hijacking. El scroll suave de Lenis es una interpolación de la rueda, no un
  * secuestro: no cambia a dónde llegás ni cuánto scrolleás.
  */
 
-export const EASE_BRAND = [0.16, 1, 0.3, 1] as const;
+import { clip, dist, dur, ease, stagger, viewport } from '@/lib/motion';
 
-/** Topes reales. `slow` es el máximo del sitio. */
-export const DURATION = { fast: 0.18, base: 0.45, slow: 0.6 } as const;
+export { clip, dist, dur, ease, stagger, viewport };
 
-export const REVEAL_OFFSET = 24;
-export const STAGGER = 0.06;
-
-/** Threshold de disparo de los reveals: ~20%. */
+/* ── Alias de compatibilidad ────────────────────────────────────────────────
+   Los nombres viejos, para que los call sites existentes sigan compilando.
+   ⚠️ En código nuevo usá los tokens de `@/lib/motion` directamente. */
+export const EASE_BRAND = ease.out;
+export const DURATION = { fast: dur.micro, base: dur.ui, slow: dur.reveal } as const;
+export const REVEAL_OFFSET = dist.text;
+export const STAGGER = stagger;
 export const REVEAL_AMOUNT = 0.2;
 
 const revealVariants = {
-  hidden: { opacity: 0, y: REVEAL_OFFSET },
-  visible: { opacity: 1, y: 0, transition: { duration: DURATION.base, ease: EASE_BRAND } },
+  hidden: { opacity: 0, y: dist.text },
+  visible: { opacity: 1, y: 0, transition: { duration: dur.reveal, ease: ease.out } },
 };
 
 const staggerContainer = {
   hidden: {},
-  visible: { transition: { staggerChildren: STAGGER, delayChildren: 0.04 } },
+  visible: { transition: { staggerChildren: stagger, delayChildren: 0.04 } },
 };
 
 interface RevealProps {
@@ -59,6 +74,20 @@ interface RevealProps {
    * pasar por acá sólo lo que depende de un valor que el componente recibe.
    */
   readonly style?: CSSProperties;
+  /**
+   * ⚠️ Existen para hacer ALCANZABLE una región que se scrollea.
+   *
+   * Una región con `overflow-x-auto` y sin nada enfocable adentro es contenido
+   * que existe y no se puede llegar con teclado — lo marca
+   * `npm run a11y` como `scrollable-region-focusable`, y pasó con el track de
+   * los tres cuadros de «How this place works», donde las cards son texto y no
+   * links.
+   *
+   * El remedio es `tabIndex={0}` más un `aria-label` que diga qué es la
+   * región. Es el mismo que ya usan las columnas de `VideoWall`.
+   */
+  readonly tabIndex?: number;
+  readonly 'aria-label'?: string;
 }
 
 /* ==========================================================================
@@ -85,7 +114,13 @@ export function Reveal({ children, as = 'div', className, id, amount = REVEAL_AM
       style={style}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount }}
+      /* ⚠️ El default usa el token `viewport` de `lib/motion`, que dispara con
+         `margin: -20%` en vez de `amount: 0.2`. La diferencia: `amount`
+         esperaba que el 20 % del elemento estuviera visible, lo que en una
+         sección alta significa scrollear media pantalla más. El margen
+         negativo dispara cuando le falta un 20 % del viewport para entrar.
+         Un `amount` explícito sigue funcionando para los casos que lo pidan. */
+      viewport={amount === REVEAL_AMOUNT ? viewport : { once: true, amount }}
       variants={revealVariants}
     >
       {children}
@@ -100,6 +135,8 @@ export function StaggerGroup({
   id,
   amount = REVEAL_AMOUNT,
   style,
+  tabIndex,
+  'aria-label': ariaLabel,
 }: RevealProps) {
   const reduced = useReducedMotion();
   const MotionTag = useMemo(() => motion.create(as), [as]);
@@ -107,7 +144,7 @@ export function StaggerGroup({
   if (reduced) {
     const Tag = as;
     return (
-      <Tag id={id} className={className}>
+      <Tag id={id} className={className} tabIndex={tabIndex} aria-label={ariaLabel}>
         {children}
       </Tag>
     );
@@ -118,9 +155,11 @@ export function StaggerGroup({
       id={id}
       className={className}
       style={style}
+      tabIndex={tabIndex}
+      aria-label={ariaLabel}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount }}
+      viewport={amount === REVEAL_AMOUNT ? viewport : { once: true, amount }}
       variants={staggerContainer}
     >
       {children}
@@ -154,6 +193,135 @@ export function RevealItem({
     <MotionTag className={className} style={style} variants={revealVariants}>
       {children}
     </MotionTag>
+  );
+}
+
+/* ==========================================================================
+   Imágenes a sangre — el `clip-path` que se abre
+   ========================================================================== */
+
+/**
+ * La imagen se revela abriendo un `inset()` de abajo hacia arriba, sin
+ * desplazarse. Es el mecanismo de las imágenes grandes, y es DISTINTO del fade
+ * + slide de `Reveal` a propósito: una foto a sangre que se desliza arrastra
+ * todo el bloque con ella y se lee pesado; una que se descubre se lee como que
+ * estaba ahí.
+ *
+ * ⚠️ Anima `clipPath`, no `height` ni `scale`. `clip-path` no reflowea: la
+ * imagen ocupa su caja final desde el primer frame, así que no hay CLS y el
+ * texto de al lado no se mueve.
+ *
+ * ⚠️ Las dos puntas del `inset` salen del token `clip`. Si divergen entre
+ * componentes, la imagen salta al terminar la animación.
+ *
+ * ⚠️ Con reduced-motion se renderiza sin recorte y sin transición. No hay
+ * versión «sólo opacidad» acá porque un fade sobre una foto a sangre es
+ * exactamente el efecto que marea a quien pide menos movimiento.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SE DECLARA CON `variants`, NO CON OBJETOS EN `initial`/`whileInView`, y
+ * ése es el detalle que lo hace funcionar anidado.
+ *
+ * `motion` PROPAGA variantes a los descendientes motion por CONTEXTO, no por
+ * DOM — un `<div>` o un `<li>` plano en medio no corta la propagación. Un
+ * `StaggerGroup` declara `initial="hidden"` / `whileInView="visible"` como
+ * ETIQUETAS, así que todo descendiente motion pasa a ser controlado por ese
+ * árbol y su `whileInView` propio deja de dispararse.
+ *
+ * La primera versión de este componente usaba objetos literales. Metido dentro
+ * de un `StaggerGroup` en `WhatsOn`, el `clip-path` **se quedó en su estado
+ * inicial para siempre** y la imagen no apareció nunca. Sin error y sin
+ * warning: el elemento existía en el DOM con su tamaño correcto. Sólo se vio
+ * midiendo el estilo computado, que devolvía `inset(0% 0% 100%)`.
+ *
+ * Declarándolo con `variants` usando las MISMAS etiquetas que propaga el grupo,
+ * funciona en los dos escenarios: suelto lo dispara su propio `whileInView`, y
+ * anidado la etiqueta que llega del padre resuelve contra estas variantes.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export function RevealMedia({
+  children,
+  as = 'div',
+  className,
+  delay = 0,
+  from = 'bottom',
+}: {
+  readonly children: ReactNode;
+  readonly as?: ElementType;
+  readonly className?: string;
+  readonly delay?: number;
+  /** Desde qué borde se abre. `left` es el de la escalera, `bottom` el default. */
+  readonly from?: 'bottom' | 'right' | 'left';
+}) {
+  const reduced = useReducedMotion();
+  const MotionTag = useMemo(() => motion.create(as), [as]);
+
+  if (reduced) {
+    const Tag = as;
+    return <Tag className={className}>{children}</Tag>;
+  }
+
+  const cerrado =
+    from === 'right'
+      ? 'inset(0% 0% 0% 100%)'
+      : from === 'left'
+        ? 'inset(0% 100% 0% 0%)'
+        : clip.hidden;
+
+  return (
+    <MotionTag
+      className={className}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewport}
+      variants={{
+        hidden: { clipPath: cerrado },
+        visible: {
+          clipPath: clip.visible,
+          transition: { duration: dur.reveal, ease: ease.out, delay },
+        },
+      }}
+    >
+      {children}
+    </MotionTag>
+  );
+}
+
+/**
+ * Media DENTRO de un contenedor con `overflow: hidden`: entra con una escala
+ * mínima que se asienta, en lugar de recortarse.
+ *
+ * ⚠️ Es el mecanismo de la media contenida, no de la media a sangre. La
+ * diferencia importa: un `clip-path` dentro de una caja que ya tiene borde
+ * redondeado pelea con el recorte del contenedor y se ven los cantos.
+ *
+ * ⚠️ 1.04 y no más. Por encima de eso la imagen entra recortada de verdad y se
+ * pierde parte del encuadre, que en una foto de un lugar es justamente lo que
+ * hay que mostrar.
+ */
+export function ScaleMedia({
+  children,
+  className,
+  delay = 0,
+}: {
+  readonly children: ReactNode;
+  readonly className?: string;
+  readonly delay?: number;
+}) {
+  const reduced = useReducedMotion();
+
+  if (reduced) return <div className={className}>{children}</div>;
+
+  return (
+    <motion.div
+      className={className}
+      initial={{ scale: 1.04, opacity: 0 }}
+      whileInView={{ scale: 1, opacity: 1 }}
+      viewport={viewport}
+      transition={{ duration: dur.reveal, ease: ease.out, delay }}
+    >
+      {children}
+    </motion.div>
   );
 }
 
@@ -239,9 +407,16 @@ export function MaskedLines({
             className={['block', tone(i)].filter(Boolean).join(' ')}
             initial={{ y: '105%' }}
             animate={{ y: '0%' }}
+            /* ⚠️ `dur.hero` (1,1s) y no `dur.reveal`. Es la excepción declarada
+               al tope de 600ms: corre una vez al cargar, no se repite, y es el
+               momento memorable de la página. Ver la nota de `lib/motion.ts`.
+
+               El stagger entre líneas es 0.07 y NO el `stagger` de 0.08 del
+               token: dos líneas de un mismo titular tienen que leerse como UN
+               gesto, no como dos elementos de una lista. */
             transition={{
-              duration: DURATION.slow,
-              ease: EASE_BRAND,
+              duration: dur.hero,
+              ease: ease.out,
               delay: delay + i * 0.07,
             }}
           >
