@@ -98,6 +98,51 @@ function parseWeekday(days: string | null): Weekday | null {
   }
 }
 
+/**
+ * La foto de cada evento, por slug.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ VIVE ACÁ Y NO EN `events.json`, y es importante. Ese JSON lo sobreescribe
+ * `npm run sync:events` desde la fuente del cliente, así que cualquier campo
+ * agregado a mano ahí se pierde en la siguiente sincronización. Este mapa es
+ * nuestro y sobrevive.
+ *
+ * ⚠️ QUÉ FOTO SE LE PUEDE PONER A UN EVENTO, que es una decisión de honestidad
+ * y no de diseño. La entrega del cliente no trae fotos DE estos eventos: trae
+ * fotos del lugar. Así que la regla que se aplicó es que la imagen muestre el
+ * **tipo de noche y el espacio** donde el evento pasa, y que el `alt` describa
+ * lo que se ve —no lo que dice el título—. Un `alt` que diga «Bingo Night»
+ * sobre una foto donde no hay bingo es una mentira para quien usa lector de
+ * pantalla.
+ *
+ * ⚠️ `wooftop-wednesdays` QUEDA SIN FOTO A PROPÓSITO. Es la noche de perros y
+ * en las 36 fotos entregadas **no hay ni un perro**. Cualquier foto del patio
+ * puesta ahí diría «traé al perro» sobre una imagen sin perros, que es
+ * justamente lo que el placeholder marcado evita. Sigue mostrando el hueco con
+ * el brief de la toma que hay que pedir. Ver `docs/media.md`.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const IMAGENES: Readonly<Record<string, { readonly src: string; readonly alt: string }>> = {
+  /* Ross Brown toca los jueves en el Sunset Bar. La foto ES un músico tocando
+     en el venue, así que acá la relación es directa. */
+  'ross-brown': {
+    src: '/images/venue/event-live-music.jpg',
+    alt: 'A guitarist playing under the tent at the Rooftop, with a drum kit beside him',
+  },
+  /* Bingo es los miércoles en The Yard. La foto es el patio de noche con gente
+     en las mesas y los trucks encendidos detrás: el espacio y la hora, dichos
+     con precisión en el alt. */
+  'bingo-night': {
+    src: '/images/venue/event-yard-night.jpg',
+    alt: 'Guests around a table in the yard at night, with the food trucks lit behind them',
+  },
+  /* La Noche es la fecha de DJ. La foto es la pista de noche. */
+  'la-noche-dj-david-cast': {
+    src: '/images/venue/event-dj-night.jpg',
+    alt: 'People dancing at night under coloured lights at the Rooftop',
+  },
+};
+
 function adapt(r: RawEvent): VenueEvent {
   const weekday = r.isRecurring ? parseWeekday(r.recurrenceDays) : null;
   const start = hhmm(r.startTime);
@@ -123,8 +168,10 @@ function adapt(r: RawEvent): VenueEvent {
     // así que ningún evento es de entrada paga por ahora.
     ticketUrl: null,
     price: price !== null && Number.isFinite(price) && price > 0 ? price : null,
-    image: null,
-    imageAlt: null,
+    // Ver `IMAGENES` arriba: `null` cuando no hay una foto honesta para ese
+    // evento, y ahí el componente muestra el hueco marcado con su brief.
+    image: IMAGENES[slugify(r.title)]?.src ?? null,
+    imageAlt: IMAGENES[slugify(r.title)]?.alt ?? null,
     tags: r.tags,
   };
 }
