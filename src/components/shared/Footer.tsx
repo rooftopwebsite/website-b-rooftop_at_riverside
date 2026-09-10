@@ -81,27 +81,27 @@ const COLUMNAS = [
  * necesitan para no apretarse.
  */
 const LINK_BASE =
-  'block py-[7px] font-body text-[15px] leading-[1.4] tracking-[0.08em] uppercase text-paper/70 transition-colors duration-200 hover:text-paper';
+  'block py-1.75 font-body text-dato leading-[1.4] tracking-label uppercase text-paper/70 transition-colors duration-200 hover:text-paper';
 
 export default function Footer() {
   return (
     <footer className="bg-deep text-paper">
       <div className={GUTTER}>
-        <div className="caja grid gap-[48px] py-[64px] desk:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] desk:gap-[64px] desk:py-[80px]">
+        <div className="caja grid gap-12 py-16 desk:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] desk:gap-16 desk:py-20">
           {/* ── Identidad ────────────────────────────────────────────── */}
-          <div className="flex flex-col items-center gap-[20px] text-center desk:items-start desk:text-left">
+          <div className="flex flex-col items-center gap-5 text-center desk:items-start desk:text-left">
             <Link href="/" aria-label={`${BRAND.name} — home`}>
               <Image
                 src="/brand/logo-reversed.svg"
                 alt=""
                 width={303}
                 height={322}
-                className="h-[76px] w-auto"
+                className="h-19 w-auto"
               />
               <span className="sr-only">{BRAND.name}</span>
             </Link>
 
-            <p className="max-w-[34ch] text-[16px] leading-[1.6] text-paper/80">
+            <p className="max-w-[34ch] text-base text-paper/80">
               A rooftop bar over a curated food truck park, in downtown Bonita Springs.
             </p>
 
@@ -115,7 +115,7 @@ export default function Footer() {
           {/* ── Las tres columnas de links ───────────────────────────── */}
           <nav
             aria-label="Footer"
-            className="grid gap-[36px] sm:grid-cols-3 sm:gap-[24px]"
+            className="grid gap-9 sm:grid-cols-3 sm:gap-6"
           >
             {COLUMNAS.map(({ titulo, links }) => (
               <div
@@ -127,8 +127,8 @@ export default function Footer() {
                 </Heading>
                 {/* El filete corto bajo el rótulo: es el remate de la casa, y en
                     naranja porque es decorativo y no le debe contraste a nadie. */}
-                <span aria-hidden="true" className="mt-[10px] block h-[2px] w-[28px] bg-sunset" />
-                <ul className="mt-[12px] flex flex-col">
+                <span aria-hidden="true" className="mt-2.5 block h-0.5 w-7 bg-sunset" />
+                <ul className="mt-3 flex flex-col">
                   {links.map(({ label, href }) => (
                     <li key={href}>
                       <Link href={href} className={LINK_BASE}>
@@ -146,7 +146,7 @@ export default function Footer() {
       {/* ── Franja inferior ──────────────────────────────────────────── */}
       <div className="border-t border-paper/15">
         <div className={GUTTER}>
-          <div className="caja flex flex-col items-center justify-between gap-[10px] py-[20px] text-[13px] text-paper/60 sm:flex-row">
+          <div className="caja flex flex-col items-center justify-between gap-2.5 py-5 text-micro text-paper/60 sm:flex-row">
             <p>
               © {new Date().getFullYear()} {BRAND.name}. {BRAND.group}.
             </p>

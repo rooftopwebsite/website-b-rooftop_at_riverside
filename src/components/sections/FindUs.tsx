@@ -23,9 +23,26 @@ import { BRAND, HOURS, addressLine, mapsUrl } from '@/lib/brand';
  * al pie de los horarios.
  *
  * ⚠️ Lo que NO se toma: el borde de encaje. Es la identidad de ESE restaurante
- * —un italiano— y acá sería un disfraz. Las dos losas se separan del fondo con
- * el radio y la sombra de la casa, que es lo que hacen el resto de las tarjetas
- * del sitio.
+ * —un italiano— y acá sería un disfraz.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LAS TRES COLUMNAS YA NO SON TARJETAS — `redesign/light-tropical`.
+ *
+ * Eran dos losas `bg-deep` con radio y sombra flanqueando el mapa, y ese par
+ * hacía que la sección leyera oscura sin ser una sección oscura: medido sobre
+ * el píxel, era uno de los cinco focos que sumaban el 55,4 % de verde de la
+ * home.
+ *
+ * ⚠️ Y el primer arreglo fue peor: pasarlas a `bg-paper` con `ring-1 ring-fog`
+ * dejó TRES cajas con el mismo radio y el mismo filete. Cambiar el color de un
+ * anti-patrón no lo arregla — seguía siendo el kit de tarjetas idénticas, sólo
+ * que en claro.
+ *
+ * Ahora las columnas de datos son LISTAS: filete de 1px arriba y el contenido
+ * apoyado en la superficie, igual que `ThreeDoors`. El mapa se queda como la
+ * única pieza con borde, y ahí está justificado: es un `<iframe>` de Google con
+ * su propio fondo, un objeto ajeno de verdad que necesita un límite.
+ * ══════════════════════════════════════════════════════════════════════════
  *
  * ⚠️ Tampoco se toma el CTA «Reserve a table». No tomamos reservas: el sitio
  * entero dice «walk-ins only, no reservations», y un botón de reserva sería el
@@ -196,16 +213,17 @@ export default function FindUs() {
     >
       <div className={GUTTER}>
         <div className="caja">
+          {/* ⚠️ Sin eyebrow: «Find us» sólo repetía en versalitas el título de
+              abajo. Los rótulos de DATO —Contact, Location, Parking, Follow—
+              sí se quedan: clasifican contenido real. */}
           <SectionHead
-            eyebrow="Find us"
-            eyebrowTone="deep"
             id="find-title"
             title="Downtown, across from Riverside Park"
           />
         </div>
       </div>
 
-      <div className={`${GUTTER} mt-[40px]`}>
+      <div className={`${GUTTER} mt-10`}>
         {/*
           ⚠️ Las columnas laterales son MÁS ANGOSTAS que el mapa. En la
           referencia las tres se ven parejas porque el panel del medio es una
@@ -217,35 +235,58 @@ export default function FindUs() {
           Hasta `lg` se apila en el orden en que hay que leerlo: quién sos,
           dónde estás, cuándo abrís.
         */}
-        <div className="caja grid gap-[24px] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.1fr)_minmax(0,0.95fr)] lg:items-stretch lg:gap-[28px]">
-          {/* ══ 1. La losa de contacto ═══════════════════════════════════ */}
-          <div className="flex flex-col rounded-card bg-deep p-[28px] shadow-card lg:p-[32px]">
-            <Heading level={3} className="text-paper">
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ LAS DOS COLUMNAS DE DATOS NO SON TARJETAS — y esto fue un error que
+          cometí y corregí en el mismo día, así que queda escrito.
+
+          Eran dos losas `bg-deep` con sombra, o sea dos bloques oscuros de
+          ~620px dentro de una sección clara: en la captura la sección leía
+          oscura sin serlo, y era uno de los focos que sumaban el 55,4 % de
+          verde de la home.
+
+          El primer arreglo fue pasarlas a `bg-paper` con `ring-1 ring-fog`… y
+          eso dejó TRES cajas con el mismo radio y el mismo filete —contacto,
+          mapa y horarios— o sea el kit de tarjetas idénticas que el brief
+          prohíbe, sólo que en claro. Cambiar el color de un anti-patrón no lo
+          arregla.
+
+          La forma correcta: las columnas de datos son LISTAS, no objetos.
+          Filete de 1px arriba y el contenido apoyado en la superficie, igual
+          que `ThreeDoors`. **El mapa se queda como la única pieza con borde**,
+          y ahí sí está justificado: es un `<iframe>` de Google con su propio
+          fondo, un objeto ajeno de verdad que necesita un límite.
+          ══════════════════════════════════════════════════════════════════
+        */}
+        <div className="caja grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.1fr)_minmax(0,0.95fr)] lg:items-start lg:gap-9">
+          {/* ══ 1. Contacto ══════════════════════════════════════════════ */}
+          <div className="flex flex-col border-t border-fog pt-6.5">
+            <Heading level={3}>
               {BRAND.name}
             </Heading>
 
-            <div className="mt-[26px]">
-              <Eyebrow tone="cream">Contact</Eyebrow>
-              <p className="mt-[10px] text-[17px] leading-[1.5]">
-                <a href={BRAND.contact.phoneHref} className="link-texto text-paper">
+            <div className="mt-6.5">
+              <Eyebrow tone="deep">Contact</Eyebrow>
+              <p className="mt-2.5 text-base leading-[1.5]">
+                <a href={BRAND.contact.phoneHref} className="link-texto text-ink">
                   {BRAND.contact.phone}
                 </a>
               </p>
-              <p className="mt-[4px] text-[17px] leading-[1.5]">
-                <a href={`mailto:${BRAND.contact.email}`} className="link-texto text-paper">
+              <p className="mt-1 text-base leading-[1.5]">
+                <a href={`mailto:${BRAND.contact.email}`} className="link-texto text-ink">
                   {BRAND.contact.email}
                 </a>
               </p>
             </div>
 
-            <div className="mt-[24px]">
-              <Eyebrow tone="cream">Location</Eyebrow>
-              <address className="mt-[10px] text-[17px] leading-[1.5] not-italic">
+            <div className="mt-6">
+              <Eyebrow tone="deep">Location</Eyebrow>
+              <address className="mt-2.5 text-base leading-[1.5] not-italic">
                 <a
                   href={mapsUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link-texto text-paper"
+                  className="link-texto text-ink"
                 >
                   {addressLine()}
                   <span className="sr-only">, open in Google Maps (opens in a new tab)</span>
@@ -256,25 +297,28 @@ export default function FindUs() {
             {/* Parking. Camila lo anotó en el boceto y no estaba en la
                 referencia; entra acá porque es lo segundo que pregunta
                 cualquiera que viene en auto a un centro sin playa propia. */}
-            <div className="mt-[24px]">
-              <Eyebrow tone="cream">Parking</Eyebrow>
-              <p className="mt-[10px] text-[16px] leading-[1.6] text-paper/80">
+            <div className="mt-6">
+              <Eyebrow tone="deep">Parking</Eyebrow>
+              <p className="mt-2.5 text-base text-ink">
                 Street parking on Old 41 and public lots around Riverside Park.{' '}
-                <a href="/visit#parking" className="link-texto text-paper">
+                <a href="/visit#parking" className="link-texto text-ink">
                   Details
                 </a>
               </p>
             </div>
 
-            <div className="mt-[24px]">
-              <Eyebrow tone="cream">Follow</Eyebrow>
-              <SocialLinks className="mt-[12px]" />
+            <div className="mt-6">
+              <Eyebrow tone="deep">Follow</Eyebrow>
+              <SocialLinks surface="light" className="mt-3" />
             </div>
 
-            {/* `mt-auto` empuja el botón al pie: las tres columnas estiran a la
-                misma altura y sin esto el CTA queda flotando a media losa. */}
-            <div className="mt-auto pt-[30px]">
-              <ButtonLink href={mapsUrl()} variant="onDark" external>
+            {/* ⚠️ Margen fijo y NO `mt-auto`. El `mt-auto` empujaba el botón al
+                pie de una columna que estiraba a la altura del mapa; al dejar
+                de ser tarjetas las columnas alinean arriba (`items-start`) y
+                ya no hay altura sobrante que rellenar. Con `mt-auto` el botón
+                quedaba pegado al texto de arriba. */}
+            <div className="mt-7.5">
+              <ButtonLink href={mapsUrl()} variant="secondary" external>
                 Get directions
               </ButtonLink>
             </div>
@@ -284,19 +328,19 @@ export default function FindUs() {
               `loading="lazy"` porque está bien abajo de la página y un iframe
               de Google pesa; `title` porque un iframe sin título es un fallo
               de WCAG 4.1.2. */}
-          <div className="overflow-hidden rounded-card shadow-photo">
+          <div className="overflow-hidden rounded-card ring-1 ring-fog">
             <iframe
               title={`Map showing ${BRAND.name} at ${addressLine()}`}
               src={`https://www.google.com/maps?q=${BRAND.address.mapsQuery}&output=embed`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="h-[340px] w-full border-0 lg:h-full lg:min-h-[620px]"
+              className="h-85 w-full border-0 lg:h-full lg:min-h-155"
             />
           </div>
 
           {/* ══ 3. La losa de horarios ═══════════════════════════════════ */}
-          <div className="flex flex-col rounded-card bg-deep p-[28px] shadow-card lg:p-[32px]">
-            <Heading level={3} className="text-paper">
+          <div className="flex flex-col border-t border-fog pt-6.5">
+            <Heading level={3}>
               Hours
             </Heading>
 
@@ -304,15 +348,15 @@ export default function FindUs() {
                 eyebrows de esta sección — más que cualquier otra del sitio. Una
                 versalita es una ETIQUETA de bloque; siete días seguidos son
                 DATOS, y en versalita a 13px se leían como un panel de control. */}
-            <div ref={lista} className="mt-[22px]">
+            <div ref={lista} className="mt-5.5">
               {HOURS.map((fila) => (
                 <details
                   key={fila.day}
                   name="hours"
-                  className="group border-b border-paper/15 data-[hoy]:border-cream/45"
+                  className="group border-b border-fog data-[hoy]:border-ink"
                 >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-[12px] py-[12px] transition-colors duration-200 [&::-webkit-details-marker]:hidden">
-                    <span className="whitespace-nowrap font-body text-[15px] font-medium text-paper/85 group-data-[hoy]:font-bold group-data-[hoy]:text-cream">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-3 transition-colors duration-200 [&::-webkit-details-marker]:hidden">
+                    <span className="whitespace-nowrap font-body text-dato font-medium text-ink group-data-[hoy]:font-bold group-data-[hoy]:text-deep">
                       {fila.day}
                       {/* El «hoy» se marca con TEXTO y no sólo con color y
                           peso: WCAG 1.4.1 no permite que el color sea el único
@@ -320,14 +364,14 @@ export default function FindUs() {
                       <span className="hidden group-data-[hoy]:inline"> · today</span>
                     </span>
 
-                    <span className="flex items-center gap-[10px]">
+                    <span className="flex items-center gap-2.5">
                       {/* El resumen de una línea, para no obligar a abrir los
                           siete días sólo para saber si hoy abren.
 
                           ⚠️ `paper/75` y no menos. Es texto de 15px sobre
                           `deep`: al 55% da 4.34:1 contra el 4.5:1 que pide AA.
                           Al 75% da 8.05:1. */}
-                      <span className="whitespace-nowrap text-[14px] tabular-nums text-paper/75 group-data-[hoy]:text-cream">
+                      <span className="whitespace-nowrap text-dato tabular-nums text-muted group-data-[hoy]:text-deep">
                         {fila.bar}
                       </span>
                       <svg
@@ -336,7 +380,7 @@ export default function FindUs() {
                         viewBox="0 0 11 7"
                         fill="none"
                         aria-hidden="true"
-                        className="shrink-0 text-paper/55 transition-transform duration-200 group-open:rotate-180"
+                        className="shrink-0 text-muted transition-transform duration-200 group-open:rotate-180"
                       >
                         <path
                           d="M1 1l4.5 4.5L10 1"
@@ -351,11 +395,11 @@ export default function FindUs() {
 
                   {/* Los dos horarios del día. Van como `<dl>` porque son
                       exactamente eso: pares de término y definición. */}
-                  <dl className="grid grid-cols-[auto_1fr] gap-x-[14px] gap-y-[5px] pb-[14px]">
-                    <dt className="font-body text-[14px] font-medium text-paper/70">Bar</dt>
-                    <dd className="text-[15px] tabular-nums text-paper/90">{fila.bar}</dd>
-                    <dt className="font-body text-[14px] font-medium text-paper/70">Trucks</dt>
-                    <dd className="text-[15px] tabular-nums text-paper/90">{fila.trucks}</dd>
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-3.5 gap-y-1.25 pb-3.5">
+                    <dt className="font-body text-dato font-medium text-muted">Bar</dt>
+                    <dd className="text-dato tabular-nums text-ink">{fila.bar}</dd>
+                    <dt className="font-body text-dato font-medium text-muted">Trucks</dt>
+                    <dd className="text-dato tabular-nums text-ink">{fila.trucks}</dd>
                   </dl>
                 </details>
               ))}
@@ -372,16 +416,16 @@ export default function FindUs() {
 
               ⚠️ El punto lleva `aria-hidden`: el estado ya está en el texto.
             */}
-            <div className="mt-auto pt-[26px]">
+            <div className="mt-auto pt-6.5">
               {estado ? (
-                <p className="inline-flex items-center gap-[9px] rounded-pill bg-paper/10 px-[16px] py-[9px] ring-1 ring-paper/25">
+                <p className="inline-flex items-center gap-2.25 rounded-pill bg-bone px-4 py-2.25 ring-1 ring-fog">
                   <span
                     aria-hidden="true"
-                    className={`h-[7px] w-[7px] shrink-0 rounded-pill ${
-                      estado.abierto ? 'bg-sunset' : 'bg-paper/45'
+                    className={`h-1.75 w-1.75 shrink-0 rounded-pill ${
+                      estado.abierto ? 'bg-sunset' : 'bg-muted'
                     }`}
                   />
-                  <span className="eyebrow text-cream">{estado.texto}</span>
+                  <span className="eyebrow text-deep">{estado.texto}</span>
                 </p>
               ) : null}
             </div>
@@ -389,7 +433,7 @@ export default function FindUs() {
         </div>
       </div>
 
-      <TilePattern className="mt-[56px]" />
+      <TilePattern className="mt-14" />
     </Section>
   );
 }

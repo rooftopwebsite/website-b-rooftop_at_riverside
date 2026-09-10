@@ -38,7 +38,7 @@ const TRAZO = {
 /** Camioncito de dos cajas: es el gesto del isotipo, reducido a línea. */
 function IconoTruck() {
   return (
-    <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5.5 w-5.5" aria-hidden="true">
       <path d="M1 6h12v9H1z" {...TRAZO} />
       <path d="M13 9h4.5l3.5 3.5V15h-8z" {...TRAZO} />
       <circle cx="6" cy="18" r="2" {...TRAZO} />
@@ -50,7 +50,7 @@ function IconoTruck() {
 /** Copa sobre una línea de horizonte: la barra de arriba. */
 function IconoCopa() {
   return (
-    <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5.5 w-5.5" aria-hidden="true">
       <path d="M5 3h14l-7 8z" {...TRAZO} />
       <path d="M12 11v8" {...TRAZO} />
       <path d="M8 19h8" {...TRAZO} />
@@ -61,7 +61,7 @@ function IconoCopa() {
 /** Recinto con las puertas cerradas: el buyout. */
 function IconoRecinto() {
   return (
-    <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5.5 w-5.5" aria-hidden="true">
       <path d="M3 20V9l9-5 9 5v11" {...TRAZO} />
       <path d="M3 20h18" {...TRAZO} />
       <path d="M9 20v-6h6v6" {...TRAZO} />
@@ -105,16 +105,25 @@ const DOORS = [
 export default function ThreeDoors() {
   return (
     <Section tone="paper" band="md" labelledBy="doors-title">
+      {/*
+        ⚠️ TRES COSAS SE FUERON DE ACÁ, y las tres por presupuesto.
+
+        · **El eyebrow «Three places, one gate».** Anunciaba la sección en
+          versalitas y el h2 ya lo dice. Los tres de las columnas —Eat, Drink,
+          Rent— se quedan: son las tres unidades del negocio, o sea una
+          clasificación real.
+        · **El acento del titular.** «Three of them» iba en `terra`, y el brief
+          permite MÁXIMO DOS titulares acentuados en la home. Ya los usan el h1
+          del hero («together») y el h2 de Events banner («for you»), que son
+          los dos donde la palabra carga significado. Éste era el tercero: un
+          acento en cada título es ruido, no jerarquía.
+        · **El centrado.** Pasa a alineado a la izquierda como el resto de la
+          home. Era el único encabezado centrado del recorrido y rompía el eje
+          de la grilla editorial.
+      */}
       <SectionHead
-        eyebrow="Three places, one gate"
-        eyebrowTone="terra"
         id="doors-title"
-        align="center"
-        title={
-          <>
-            Not a restaurant. <Accent on="light">Three of them</Accent>
-          </>
-        }
+        title="Not a restaurant. Three of them"
         lead="A rooftop bar, a yard of independent kitchens, and a venue you can rent. Same address, three different nights."
       />
 
@@ -123,27 +132,35 @@ export default function ThreeDoors() {
         borde lateral no separa nada y uno inferior deja el último huérfano. El
         de arriba funciona en las dos orientaciones sin condicionales.
       */}
-      <StaggerGroup as="ul" className="mt-[56px] grid gap-[36px] md:grid-cols-3 md:gap-[32px]">
+      <StaggerGroup as="ul" className="mt-14 grid gap-9 md:grid-cols-3 md:gap-8">
         {DOORS.map(({ href, kicker, icono: Icono, title, body, cta }) => (
-          <RevealItem as="li" key={href} className="border-t border-ink/15 pt-[22px]">
+          <RevealItem as="li" key={href} className="border-t border-fog pt-5.5">
             <Link href={href} className="group flex h-full flex-col">
-              <span className="grid h-[40px] w-[40px] place-items-center rounded-btn bg-bone text-deep transition-colors duration-200 group-hover:bg-deep group-hover:text-paper">
+              {/* ⚠️ SIN CAJA DETRÁS DEL ÍCONO. Era un cuadrado de 40px con
+                  relleno `bone` y radio, o sea una tarjetita chica encima de un
+                  bloque que justamente evita las tarjetas. El ícono suelto
+                  sobre la superficie es el gesto de WeWork: ícono chico +
+                  micro-etiqueta + título + cuerpo, separados por filetes.
+
+                  El hover ya no cambia un relleno: cambia el color del trazo,
+                  que es lo único que hay. */}
+              <span className="text-deep transition-colors duration-200 group-hover:text-sunset">
                 <Icono />
               </span>
 
-              <Eyebrow tone="terra" as="span" className="mt-[16px] block">
+              <Eyebrow tone="terra" as="span" className="mt-4 block">
                 {kicker}
               </Eyebrow>
 
-              <Heading level={3} className="mt-[8px]">
+              <Heading level={3} className="mt-2">
                 {title}
               </Heading>
 
-              <p className="mt-[10px] flex-1 text-[16px] leading-[1.6] text-body/75">{body}</p>
+              <p className="mt-2.5 flex-1 text-base text-body/75">{body}</p>
 
               {/* No es un `ArrowLink`: la fila entera ya es el link, y anidar
                   uno adentro sería un `<a>` dentro de otro `<a>`. */}
-              <span className="mt-[18px] inline-flex items-center gap-[10px] eyebrow text-deep">
+              <span className="mt-4.5 inline-flex items-center gap-2.5 eyebrow text-deep">
                 {cta}
                 <svg
                   width="16"
@@ -151,7 +168,7 @@ export default function ThreeDoors() {
                   viewBox="0 0 16 10"
                   fill="none"
                   aria-hidden="true"
-                  className="shrink-0 transition-transform duration-200 group-hover:translate-x-[4px]"
+                  className="shrink-0 transition-transform duration-200 group-hover:translate-x-1"
                 >
                   <path
                     d="M0 5h14M10 1l4 4-4 4"

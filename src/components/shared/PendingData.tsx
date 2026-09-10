@@ -25,7 +25,7 @@ export function PendingData({
 }) {
   return (
     <span
-      className="inline-flex items-center gap-[6px] rounded-btn border border-dashed border-terra/60 bg-terra/5 px-[8px] py-[2px] align-middle font-body text-[12px] font-bold uppercase tracking-[0.12em] text-terra"
+      className="inline-flex items-center gap-1.5 rounded-btn border border-dashed border-terra/60 bg-terra/5 px-2 py-0.5 align-middle font-body text-caption font-bold uppercase tracking-eyebrow text-terra"
       {...(detail ? { title: detail } : {})}
     >
       {label}
@@ -46,9 +46,9 @@ export function PendingBlock({
   readonly children: ReactNode;
 }) {
   return (
-    <div className="rounded-card border border-dashed border-terra/50 bg-terra/[0.04] p-[24px]">
+    <div className="rounded-card border border-dashed border-terra/50 bg-terra/[0.04] p-6">
       <p className="eyebrow text-terra">Pending · {title}</p>
-      <div className="mt-[10px] max-w-[60ch] text-[16px] leading-[1.6] text-body/75">
+      <div className="mt-2.5 max-w-[60ch] text-base text-body/75">
         {children}
       </div>
     </div>
@@ -84,8 +84,8 @@ export function PhotoPending({
       aria-label={`Image placeholder — ${brief}`}
       className={[
         ratio,
-        'relative flex flex-col items-center justify-center gap-[12px] overflow-hidden',
-        'rounded-card border border-dashed border-ink/25 bg-ink/[0.06] p-[24px] text-center',
+        'relative flex flex-col items-center justify-center gap-3 overflow-hidden',
+        'rounded-card border border-dashed border-ink/25 bg-ink/[0.06] p-6 text-center',
         className,
       ]
         .filter(Boolean)
@@ -113,14 +113,15 @@ export function PhotoPending({
 
       {/* El brief de la toma. Es lo único que hace útil a este placeholder. */}
       {/* ⚠️ `ink/70` y no `/60`. Al unificar el color de texto del sitio en
-          `#0a1f1e` —un verde casi negro en vez del `#101418` anterior— la
-          luminancia bajó lo justo para que este brief dejara de pasar: axe lo
+          `ink` —el verde de marca llevado a casi negro, en vez del gris de
+          sistema anterior— la luminancia bajó lo justo para que este brief
+          dejara de pasar: axe lo
           midió en 4.33:1 sobre el gris del placeholder, contra el 4.5:1 que
           pide un texto de 13px. Al 70% da 5.98:1.
 
           Es el tipo de regresión que un cambio de token produce lejos de donde
           se hizo, y que sólo aparece midiendo el píxel compuesto. */}
-      <p className="max-w-[34ch] font-body text-[13px] leading-[1.5] text-ink/70">{brief}</p>
+      <p className="max-w-[34ch] font-body text-micro leading-[1.5] text-ink/70">{brief}</p>
     </div>
   );
 }

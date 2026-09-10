@@ -29,9 +29,9 @@ const TONES = {
    *
    * Los proyectos de la casa alternan MUCHO —yava tiene 24 secciones crema, 24
    * navy, 21 naranja; the-orient 24 crema— pero acá la alternancia tiene que
-   * ser sutil, porque el crema saturado ya se descartó por ruidoso. `bone`
-   * (#f7f1e3) contra `paper` (#fdfcf7) es un escalón chico y suficiente: marca
-   * el corte sin meter un campo de color.
+   * ser sutil, porque el amarillo saturado de `cream` ya se descartó como
+   * fondo grande. `bone` contra `paper` es un escalón chico y suficiente:
+   * medido da **1.08:1**, o sea que el corte se ve sin meter un campo de color.
    */
   bone: 'bg-bone text-body',
   cream: 'bg-cream text-body',
@@ -41,25 +41,25 @@ const TONES = {
 } as const;
 
 const PY = {
-  sm: 'py-[48px] lg:py-band-sm',
+  sm: 'py-12 lg:py-band-sm',
   md: 'py-band-sm lg:py-band',
-  lg: 'py-[80px] lg:py-band-lg',
+  lg: 'py-20 lg:py-band-lg',
   xl: 'py-band lg:py-band-xl',
   none: '',
 } as const;
 
 const PT = {
-  sm: 'pt-[48px] lg:pt-band-sm',
+  sm: 'pt-12 lg:pt-band-sm',
   md: 'pt-band-sm lg:pt-band',
-  lg: 'pt-[80px] lg:pt-band-lg',
+  lg: 'pt-20 lg:pt-band-lg',
   xl: 'pt-band lg:pt-band-xl',
   none: 'pt-0',
 } as const;
 
 const PB = {
-  sm: 'pb-[48px] lg:pb-band-sm',
+  sm: 'pb-12 lg:pb-band-sm',
   md: 'pb-band-sm lg:pb-band',
-  lg: 'pb-[80px] lg:pb-band-lg',
+  lg: 'pb-20 lg:pb-band-lg',
   xl: 'pb-band lg:pb-band-xl',
   none: 'pb-0',
 } as const;

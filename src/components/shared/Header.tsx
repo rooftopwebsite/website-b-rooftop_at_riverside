@@ -15,7 +15,7 @@ import { GUTTER } from './Section';
  * Nav reducida de 5 + mega-menú «More» con una línea por link y doble CTA con
  * jerarquía distinta.
  *
- * Alto 64px, 76px desde `desk` (1344). Sticky, opaco, sombra al scrollear.
+ * Alto 64px, 76px desde `desk` (1344). Fijo, claro, con filete al scrollear.
  *
  * ⚠️ El corte del nav es `desk:` (1344) y NO `lg:` (922). Entre 768 y 1344 la
  * caja mide 880px y el logo + 5 items + 2 CTAs no entran. Regla de la casa: si
@@ -82,14 +82,10 @@ export default function Header() {
   return (
     <>
       {/*
-        ⚠️ Es una BARRA OSCURA a todo el ancho, no una píldora flotante. Es lo
-        que hacen Showdown Social, The Orient y Baires Grill sin excepción.
-
-        ⚠️ VA EN `deeper` (#013434) y no en `deep`. Es el verde del `PromoBar`,
-        que Camila mandó sacar pidiendo en el mismo mensaje que su color pasara
-        acá. Sirve además para otra cosa: sobre el hero, que es `deep`, el
-        header queda un peldaño más oscuro y se distingue del fondo sin una
-        línea divisoria.
+        ⚠️ Es una BARRA a todo el ancho, no una píldora flotante. Es lo que
+        hacen Showdown Social, The Orient y Baires Grill sin excepción, y eso no
+        cambia con el rediseño: lo que cambió es el color, no la forma. El
+        detalle está en el bloque grande de más abajo.
       */}
       {/*
         ⚠️ VOLVIÓ A SER `fixed`, después de haber sido `sticky`.
@@ -106,40 +102,58 @@ export default function Header() {
         `Hero.tsx` y `PageHero.tsx`.
       */}
       {/*
-        ⚠️ LOS DOS ESTADOS DEL FONDO, que es el pedido concreto: «blur sobre el
-        hero mientras está fijo, luego sólido al 100 con el scroll pero sino al
-        90 con blur».
+        ══════════════════════════════════════════════════════════════════════
+        ⚠️ EL HEADER PASÓ A CLARO — `redesign/light-tropical`.
 
-          arriba      `deeper/90` + `backdrop-blur`
-          scrolleado  `deeper` sólido, y la sombra
+        Era `deeper` (el verde más oscuro de la paleta), sólido al scrollear y
+        al 90 % con blur arriba. Eso tenía sentido cuando el hero era 100svh de
+        verde: la barra era la continuación del hero y el corte no se veía.
 
-        ⚠️ El 90% no es sólo estética, es el piso de contraste. El fondo detrás
-        del header cambia con el scroll —el muro de videos, una foto, blanco— y
-        el texto no puede depender de qué haya. Al 90% el peor caso concebible
-        es blanco puro detrás, y ahí `paper` sobre el compuesto todavía da
-        9.9:1 y el nav apagado `paper/70` da 5.78:1. Bajar a 80 lo dejaría atado
-        a lo que pase por debajo.
+        Con la home en 74 % claro y el hero en `bone`, una barra verde oscura
+        clavada arriba es una franja horizontal que pelea con todo lo que hay
+        debajo — y es el elemento que más pesa de la página, porque está fijo y
+        se ve siempre. Lo dejé marcado como «a revisar» desde la auditoría y el
+        mockup que mandó Camila lo confirma: header claro, texto oscuro, el CTA
+        naranja.
+
+        Los dos estados se conservan, invertidos:
+
+          arriba      `paper/85` + `backdrop-blur`
+          scrolleado  `paper` sólido + filete de 1px en `fog`
+
+        ⚠️ EN LUGAR DE SOMBRA, FILETE. La sombra anterior era
+        `rgba(0,0,0,0.5)` a 30px — una nube gris que sobre fondo claro se ve
+        sucia, y es exactamente el «mismo sombra gris debajo de cada cosa» que
+        el brief nombra como anti-patrón. Un filete de 1px separa la barra del
+        contenido sin ensuciar.
+
+        ⚠️ EL 85 % ES EL PISO DE CONTRASTE, no una elección estética, y hay que
+        recalcularlo porque cambió el sentido. Antes el peor caso era blanco
+        puro detrás de un header oscuro. Ahora es al revés: el peor caso es la
+        banda `deep` de Events pasando por debajo de un header claro. Al 85 %,
+        el compuesto de `paper` sobre `deep` da 0.85·1.0 + 0.15·L(deep) en
+        luminancia, y sobre eso `ink` sigue dando 12.7:1 y `muted` 4.6:1.
+        Verificado además con `npm run a11y`, que mide el píxel compuesto y no
+        la tabla.
 
         ⚠️ `backdrop-blur` necesita que el fondo NO sea del todo opaco para
-        notarse. Con `deeper` sólido se apaga solo, así que no hace falta
-        sacarlo al scrollear — pero se saca igual, porque un filtro de fondo
-        activo sobre toda la barra cuesta composición en cada frame del scroll y
-        no dibuja nada.
+        notarse, así que se saca al scrollear: un filtro de fondo activo sobre
+        toda la barra cuesta composición en cada frame y ahí no dibuja nada.
+        ══════════════════════════════════════════════════════════════════════
       */}
       <div
         className={[
           'fixed inset-x-0 top-0 z-[99]',
           GUTTER,
-          'transition-[background-color,box-shadow] duration-300',
-          scrolled
-            ? 'bg-deeper shadow-[0_10px_30px_-12px_rgba(0,0,0,0.5)]'
-            : 'bg-deeper/90 backdrop-blur-[14px]',
+          'transition-[background-color,border-color] duration-300',
+          'border-b',
+          scrolled ? 'border-fog bg-paper' : 'border-transparent bg-paper/85 backdrop-blur-[14px]',
         ].join(' ')}
       >
         <header
-          className="caja flex h-[64px] items-center desk:h-[76px]"
+          className="caja flex h-16 items-center desk:h-19"
         >
-          <div className="flex w-full items-center justify-between gap-[16px]">
+          <div className="flex w-full items-center justify-between gap-4">
             {/* Logo. Se achica al scrollear; la transición va sobre `height`
                 para que el resto de la barra no se mueva con él. */}
             <Link
@@ -147,15 +161,27 @@ export default function Header() {
               aria-label={`${BRAND.name} — home`}
               className="flex shrink-0 items-center"
             >
+              {/* ⚠️ EL LOCKUP FULL COLOR, no el reversado. `logo-reversed.svg`
+                  es la versión blanca: sobre la barra clara desaparecía.
+                  `logo-lockup.png` es el badge de marca completo —aro naranja,
+                  «ROOFTOP» en negro, la ola teal— y es el que corresponde sobre
+                  claro. Es el mismo archivo que ya usaba el panel de mobile,
+                  que siempre fue claro.
+
+                  ⚠️ Es un PNG y no un SVG, y no es una elección: del lockup no
+                  hay versión vectorial en `public/brand`. Sólo el reversado es
+                  SVG. Queda anotado en `docs/media.md` como pedido — un logo
+                  raster en un header es lo único del sitio que no escala. */}
               <Image
-                src="/brand/logo-reversed.svg"
+                src="/brand/logo-lockup.png"
                 alt=""
-                width={303}
-                height={322}
+                width={1200}
+                height={1271}
                 priority
+                sizes="120px"
                 className={[
                   'w-auto transition-[height] duration-300 ease-brand',
-                  scrolled ? 'h-[38px] desk:h-[42px]' : 'h-[46px] desk:h-[58px]',
+                  scrolled ? 'h-9.5 desk:h-10.5' : 'h-11.5 desk:h-14.5',
                 ].join(' ')}
               />
               <span className="sr-only">{BRAND.name}</span>
@@ -169,13 +195,13 @@ export default function Header() {
                   href={href}
                   aria-current={isCurrent(href) ? 'page' : undefined}
                   className={[
-                    'px-[13px] py-[8px] font-body text-[12px] font-medium uppercase tracking-[0.1em]',
+                    'px-3.25 py-2 font-body text-caption font-medium uppercase tracking-eyebrow',
                     'whitespace-nowrap transition-colors duration-200',
                     // La página actual se marca con un relleno suave, no con un
                     // filete: dentro de una píldora, una línea recta desentona.
                     isCurrent(href)
-                      ? 'text-paper underline decoration-sunset decoration-2 underline-offset-[10px]'
-                      : 'text-paper/70 hover:text-paper',
+                      ? 'text-ink underline decoration-sunset decoration-2 underline-offset-[10px]'
+                      : 'text-muted hover:text-ink',
                   ].join(' ')}
                 >
                   {label}
@@ -194,10 +220,10 @@ export default function Header() {
                   aria-expanded={moreOpen}
                   aria-haspopup="true"
                   className={[
-                    'flex items-center gap-[7px] px-[13px] py-[8px]',
-                    'font-body text-[12px] font-medium uppercase tracking-[0.1em] whitespace-nowrap',
+                    'flex items-center gap-1.75 px-3.25 py-2',
+                    'font-body text-caption font-medium uppercase tracking-eyebrow whitespace-nowrap',
                     'transition-colors duration-200',
-                    moreActive ? 'text-paper' : 'text-paper/70 hover:text-paper',
+                    moreActive ? 'text-ink' : 'text-muted hover:text-ink',
                   ].join(' ')}
                 >
                   More
@@ -221,26 +247,26 @@ export default function Header() {
 
                 <div
                   className={[
-                    'absolute top-full right-0 pt-[10px] transition-all duration-200',
+                    'absolute top-full right-0 pt-2.5 transition-all duration-200',
                     moreOpen
                       ? 'visible translate-y-0 opacity-100'
-                      : 'invisible pointer-events-none -translate-y-[4px] opacity-0',
+                      : 'invisible pointer-events-none -translate-y-1 opacity-0',
                   ].join(' ')}
                 >
-                  <ul className="grid w-[560px] grid-cols-2 gap-[2px] rounded-panel bg-paper p-[12px] shadow-card ring-1 ring-fog">
+                  <ul className="grid w-140 grid-cols-2 gap-0.5 rounded-panel bg-paper p-3 shadow-card ring-1 ring-fog">
                     {NAV_MORE.map(({ label, href, hint }) => (
                       <li key={href}>
                         <Link
                           href={href}
                           onClick={() => setMoreOpen(false)}
                           aria-current={isCurrent(href) ? 'page' : undefined}
-                          className="block rounded-input px-[12px] py-[10px] transition-colors duration-200 hover:bg-ink/[0.04]"
+                          className="block rounded-input px-3 py-2.5 transition-colors duration-200 hover:bg-ink/[0.04]"
                         >
-                          <span className="block font-body text-[16px] font-medium text-ink">
+                          <span className="block font-body text-base font-medium text-ink">
                             {label}
                           </span>
                           {hint ? (
-                            <span className="mt-[2px] block text-[13px] leading-[1.4] text-body/75">
+                            <span className="mt-0.5 block text-micro leading-[1.4] text-body/75">
                               {hint}
                             </span>
                           ) : null}
@@ -253,10 +279,10 @@ export default function Header() {
             </nav>
 
             {/* ── Doble CTA ────────────────────────────────────────────── */}
-            <div className="flex shrink-0 items-center gap-[10px]">
+            <div className="flex shrink-0 items-center gap-2.5">
               <ButtonLink
                 href={NAV_CTA.secondary.href}
-                variant="ghostDark"
+                variant="outline"
                 className="hidden desk:inline-flex"
               >
                 {NAV_CTA.secondary.label}
@@ -274,7 +300,7 @@ export default function Header() {
                 onClick={() => setDrawerOpen(true)}
                 aria-expanded={drawerOpen}
                 aria-controls="mobile-nav"
-                className="grid h-[44px] w-[44px] place-items-center desk:hidden"
+                className="grid h-11 w-11 place-items-center desk:hidden"
               >
                 <span className="sr-only">Open menu</span>
                 <svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true">
@@ -303,7 +329,7 @@ export default function Header() {
           className={[
             'absolute inset-0 flex flex-col bg-paper',
             'transition-[opacity,transform] duration-300 ease-brand',
-            drawerOpen ? 'translate-y-0 opacity-100' : '-translate-y-[8px] opacity-0',
+            drawerOpen ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0',
           ].join(' ')}
         >
           <div className={`flex h-header-sm shrink-0 items-center justify-between ${GUTTER}`}>
@@ -312,13 +338,13 @@ export default function Header() {
               alt=""
               width={110}
               height={116}
-              className="h-[40px] w-auto"
+              className="h-10 w-auto"
             />
             <button
               ref={drawerCloseRef}
               type="button"
               onClick={() => setDrawerOpen(false)}
-              className="grid h-[44px] w-[44px] place-items-center"
+              className="grid h-11 w-11 place-items-center"
             >
               <span className="sr-only">Close menu</span>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -328,7 +354,7 @@ export default function Header() {
           </div>
 
           {/* La lista scrollea; los CTAs quedan fijos abajo. */}
-          <nav aria-label="Site" className={`flex-1 overflow-y-auto pb-[24px] ${GUTTER}`}>
+          <nav aria-label="Site" className={`flex-1 overflow-y-auto pb-6 ${GUTTER}`}>
             <ul className="flex flex-col border-t border-ink/12">
               {[...NAV_MAIN, ...NAV_MORE].map(({ label, href }) => (
                 <li key={href}>
@@ -336,7 +362,7 @@ export default function Header() {
                     href={href}
                     onClick={() => setDrawerOpen(false)}
                     aria-current={isCurrent(href) ? 'page' : undefined}
-                    className="flex items-center justify-between gap-[16px] border-b border-ink/12 py-[15px]"
+                    className="flex items-center justify-between gap-4 border-b border-ink/12 py-3.75"
                   >
                     <span
                       className={[
@@ -371,9 +397,9 @@ export default function Header() {
           </nav>
 
           <div
-            className={`shrink-0 border-t border-ink/12 bg-paper pt-[16px] pb-[calc(16px+env(safe-area-inset-bottom))] ${GUTTER}`}
+            className={`shrink-0 border-t border-ink/12 bg-paper pt-4 pb-[calc(16px+env(safe-area-inset-bottom))] ${GUTTER}`}
           >
-            <div className="flex flex-col gap-[10px]">
+            <div className="flex flex-col gap-2.5">
               <ButtonLink
                 href={NAV_CTA.primary.href}
                 variant="primary"

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { RevealItem, StaggerGroup } from './Motion';
 import { Heading } from './Type';
 
@@ -52,9 +53,26 @@ export interface Step {
 
 export default function StepStair({
   items,
+  media,
   className = '',
 }: {
   readonly items: readonly Step[];
+  /**
+   * Lo que va en el TRIÁNGULO VACÍO de abajo a la izquierda.
+   *
+   * ⚠️ Existe porque la diagonal deja dos tercios de la grilla sin nada, y en
+   * la versión oscura esos dos tercios eran 1.430px de verde muerto — el
+   * agujero más grande de la home. La escalera se conserva (es la tercera forma
+   * y sale de for-living.it), pero el hueco se llena.
+   *
+   * Se ocupa la celda `(columna 1, filas 2..n)`: es el bloque libre más grande
+   * y el único cuya proporción no depende de cuántos pasos haya.
+   *
+   * ⚠️ Sólo desde `desk`. En mobile no hay escalera —es una columna— así que no
+   * hay triángulo, y el media se oculta en lugar de apilarse: apilado sería una
+   * foto suelta en el medio de una secuencia numerada.
+   */
+  readonly media?: ReactNode;
   readonly className?: string;
 }) {
   return (
@@ -73,6 +91,19 @@ export default function StepStair({
         .join(' ')}
       style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
     >
+      {/* ⚠️ Va PRIMERO en el DOM pero se posiciona en la fila 2 con
+          `gridRow`/`gridColumn`. En el orden de lectura queda antes de los
+          pasos 2 y 3, y no molesta porque es decorativo: `aria-hidden` lo pone
+          quien pasa el media. */}
+      {media ? (
+        <li
+          className="hidden desk:block desk:pr-8 desk:pt-9"
+          style={{ gridColumn: 1, gridRow: `2 / span ${Math.max(items.length - 1, 1)}` }}
+        >
+          {media}
+        </li>
+      ) : null}
+
       {items.map((item, i) => {
         const ultimo = i === items.length - 1;
         return (
@@ -80,49 +111,62 @@ export default function StepStair({
             key={item.n}
             as="li"
             className={[
-              'border-l border-paper/20 pl-[18px]',
+              /* ⚠️ `fog` y no `paper/20`. La escalera pasó a superficie clara,
+                 así que el filete tiene que ser un token calibrado sobre claro
+                 y no una opacidad de blanco —que sobre `bone` desaparecería—. */
+              'border-l border-fog pl-4.5',
               /* El filete inferior cierra la L hacia el peldaño siguiente.
                  En mobile no va nunca: la columna es una sola y el filete
                  izquierdo ya enhebra los tres. */
-              ultimo ? 'pb-0' : 'pb-[30px] desk:border-b desk:pb-[56px]',
-              'desk:pl-[22px]',
+              ultimo ? 'pb-0' : 'pb-7.5 desk:border-b desk:border-fog desk:pb-14',
+              'desk:pl-5.5',
             ].join(' ')}
             style={{ gridColumn: i + 1, gridRow: i + 1 }}
           >
-            <div className="grid grid-cols-[26px_minmax(0,1fr)] gap-x-[10px]">
-              {/* ⚠️ El número al 70% y no menos. Es texto de 15px sobre `deep`:
-                  al 55% da 4.34:1 contra el 4.5:1 que pide AA, y axe ya marcó
-                  ese mismo error en la versión anterior de este módulo. Al 70%
-                  da 8.05:1. */}
+            <div className="grid grid-cols-[30px_minmax(0,1fr)] gap-x-2.5">
+              {/*
+                El número del peldaño. La secuencia SÍ es una secuencia —primero
+                pedís, después subís, después te quedás— así que numerarla dice
+                algo real y no es decoración.
+
+                ⚠️ NO va en `font-display`. La condensada a 15px viola el piso
+                de 24px del brief: a ese cuerpo pierde el contraste de trazo que
+                la hace funcionar y se lee como una etiqueta borrosa. Pasa a la
+                geométrica en 500 con cifras tabulares.
+
+                ⚠️ Y el color es `muted` OPACO, no una opacidad. Antes era
+                `paper/70` sobre `deep`, y ese mismo elemento ya había hecho
+                fallar a axe una vez al 55 %. Ahora es un token medido: 5.36:1
+                sobre `paper`, 4.96:1 sobre `bone`.
+              */}
               <span
                 aria-hidden="true"
-                className="pt-[5px] font-display text-[15px] tabular-nums tracking-[0.08em] text-paper/70"
+                className="pt-1.75 font-body text-dato font-medium tabular-nums tracking-label text-muted"
               >
                 {item.n}
               </span>
 
               <div>
-                <Heading level={3} className="text-paper">
-                  {item.title}
-                </Heading>
+                <Heading level={3}>{item.title}</Heading>
 
-                <p className="mt-[12px] max-w-[38ch] text-[16px] leading-[1.6] text-paper/70">
+                <p className="mt-3 max-w-[38ch] text-base text-ink">
                   {item.body}
                 </p>
 
                 {/* Las etiquetas van como texto separado por viñetas y no como
                     chips rellenos: cuatro por paso, doce en la sección, harían
                     que el bloque pareciera un panel de filtros. */}
-                <ul className="mt-[14px] flex flex-wrap items-center gap-x-[9px] gap-y-[5px]">
+                <ul className="mt-3.5 flex flex-wrap items-center gap-x-2.25 gap-y-1.25">
                   {item.tags.map((tag, t) => (
-                    <li key={tag} className="flex items-center gap-[9px]">
+                    <li key={tag} className="flex items-center gap-2.25">
                       {t > 0 ? (
-                        <span
-                          aria-hidden="true"
-                          className="h-[3px] w-[3px] rounded-pill bg-sunset/70"
-                        />
+                        /* Punto separador de 3px. Es decorativo —no transmite
+                           información— así que el naranja no necesita pasar
+                           contraste de texto acá. Es además uno de los dos o
+                           tres detalles donde el `sunset` aparece fuera del CTA. */
+                        <span aria-hidden="true" className="h-0.75 w-0.75 rounded-pill bg-sunset" />
                       ) : null}
-                      <span className="font-body text-[13px] font-medium tracking-[0.02em] text-paper/70">
+                      <span className="font-body text-micro font-medium text-muted">
                         {tag}
                       </span>
                     </li>

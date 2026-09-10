@@ -1,3 +1,7 @@
+import Image from 'next/image';
+import WallVideo from './WallVideo';
+import { WALL as SLOTS, type Slot } from './wall-slots';
+
 /**
  * El muro del hero: columnas de piezas cortas del lugar, corriendo en VERTICAL.
  *
@@ -9,19 +13,19 @@
  * horizontal cruza la composición y compite con la lectura del titular. Las
  * columnas acompañan el alto y se leen como un panel al costado.
  *
- * ⚠️ TODAVÍA NO HAY VIDEOS. En `public/` no hay ni un `.mp4`. Cada slot es un
- * recuadro gris rotulado «video» —pedido de Camila— y ya está cableado para el
- * `<video>`: cuando lleguen los clips se cambia `SLOTS` y no se toca nada más.
- *
- * Especificación para pedírselos al cliente: 3:4 vertical, 4–8 s, sin audio,
- * ~1–2 MB cada uno, .mp4 H.264.
+ * ⚠️ YA HAY MATERIAL REAL. Los doce recuadros rotulados «video» se fueron
+ * cuando Camila entregó `public/multimedia/`. Ahora son 2 clips y 10 fotos
+ * verticales — ver la nota de `SLOTS` para por qué esa proporción.
  *
  * ⚠️ Server component. El loop es CSS puro y el fallback de reduced-motion
  * también. Ver la nota de `.rt-wall` en globals.css.
+ *
+ * ⚠️ CON `prefers-reduced-motion` la columna deja de correr Y los dos clips se
+ * cambian por su póster. Lo segundo NO se puede hacer con CSS: el
+ * `@media (prefers-reduced-motion)` de `.rt-wall` detiene la animación del
+ * track, pero un `<video autoPlay>` sigue reproduciéndose abajo. Lo resuelve
+ * `WallVideo`, que es el único pedazo cliente de este muro.
  */
-
-/** Los slots. `null` = todavía no llegó el clip. */
-const SLOTS: readonly (string | null)[] = Array.from({ length: 12 }, () => null);
 
 /**
  * Cuántas columnas y con qué velocidad.
@@ -57,31 +61,33 @@ const COLUMNAS = [
  */
 const POR_COLUMNA = 6;
 
-function Tile({ src }: { readonly src: string | null }) {
+function Tile({ slot }: { readonly slot: Slot }) {
   return (
-    <div className="mb-[14px] aspect-[3/4] w-full shrink-0 overflow-hidden rounded-card bg-paper/12">
-      {src === null ? (
-        <div className="grid h-full place-items-center">
-          {/*
-            El rótulo del hueco. Se VE a propósito: el brief pide que lo que
-            falta esté marcado, porque un hueco silencioso se publica sin que
-            nadie lo note.
-
-            ⚠️ Al 75%. Es un color COMPUESTO —`paper` translúcido sobre
-            `paper/12` sobre `deep`— y eso no lo puede prever la tabla de pares
-            de contraste: sólo se ve midiendo el píxel renderizado. axe lo midió
-            al 55% en 3.51:1 contra el 4.5:1 que pide un texto de 13px.
-          */}
-          <span className="eyebrow text-paper/75">video</span>
-        </div>
+    /*
+      ⚠️ Se fueron el `bg-bone` y el `ring-fog` que dibujaban el hueco vacío.
+      Con material real el tile no necesita que se le marque el borde: la
+      imagen ES el borde. El `bg-bone` se queda sólo como color de espera
+      mientras carga.
+    */
+    <div className="mb-3.5 aspect-[3/4] w-full shrink-0 overflow-hidden rounded-card bg-bone">
+      {slot.tipo === 'video' ? (
+        /* ⚠️ Componente CLIENTE, en su propio archivo. Un `<video autoPlay>` no
+           se apaga con CSS, así que `prefers-reduced-motion` necesita
+           JavaScript para cambiarlo por el póster. Es lo único de este muro
+           que viaja al bundle. Ver `WallVideo.tsx`. */
+        <WallVideo src={slot.src} poster={slot.poster} />
       ) : (
-        <video
-          src={src}
-          muted
-          loop
-          playsInline
-          preload="metadata"
+        /* ⚠️ `alt=""` y `aria-hidden`: el muro es ATMÓSFERA. Son doce piezas
+           decorativas del lugar, y describirlas una por una obligaría a un
+           lector de pantalla a escuchar doce descripciones antes de llegar al
+           titular. El contenido informativo del hero es el texto. */
+        <Image
+          src={slot.src}
+          alt=""
           aria-hidden="true"
+          width={540}
+          height={720}
+          sizes="(max-width: 1343px) 33vw, 240px"
           className="h-full w-full object-cover"
         />
       )}
@@ -96,13 +102,13 @@ function Columna({
   visible,
   etiqueta,
 }: {
-  readonly slots: readonly (string | null)[];
+  readonly slots: readonly Slot[];
   readonly duracion: string;
   readonly reverse: boolean;
   readonly visible: string;
   readonly etiqueta: string;
 }) {
-  const copia = slots.map((src, i) => <Tile key={i} src={src} />);
+  const copia = slots.map((slot, i) => <Tile key={i} slot={slot} />);
   return (
     <div
       className={[
@@ -135,7 +141,7 @@ function Columna({
 
 export default function VideoWall() {
   return (
-    <div className="flex h-full min-h-0 gap-[14px]">
+    <div className="flex h-full min-h-0 gap-3.5">
       {COLUMNAS.map((col, i) => (
         <Columna
           key={i}

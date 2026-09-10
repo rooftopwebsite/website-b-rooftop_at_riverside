@@ -12,7 +12,7 @@ import { cn } from '@/lib/cn';
  * chicos. Ahora el botón es `rounded-btn`, que son 8px.
  *
  * ⚠️ LO QUE NO CAMBIA, y es lo más importante del archivo: **sobre naranja el
- * texto va en NEGRO.** Sunset Orange #F58521 es un tono medio; blanco encima
+ * texto va en NEGRO.** `sunset` es un tono medio; blanco encima
  * da 2.54:1 y no pasa AA en ningún tamaño. Negro da 8.26:1. Showdown puede
  * poner texto blanco sobre su azul porque su azul es oscuro; el nuestro no.
  * Es el error que más veces estuvo a punto de colarse.
@@ -32,8 +32,8 @@ import { cn } from '@/lib/cn';
  */
 
 const VARIANTS = {
-  primary: 'bg-sunset text-ink hover:bg-[#e0741a]',
-  secondary: 'bg-chalk text-ink ring-1 ring-fog hover:ring-ink/35',
+  primary: 'bg-sunset text-ink hover:bg-sunset-hover',
+  secondary: 'bg-paper text-ink ring-1 ring-fog hover:ring-ink/35',
   outline: 'bg-transparent text-ink ring-1 ring-ink/25 hover:ring-ink/55',
   dark: 'bg-ink text-paper hover:bg-ink/85',
   onDark: 'bg-cream text-deep hover:bg-paper',
@@ -41,16 +41,16 @@ const VARIANTS = {
 } as const;
 
 const SIZES = {
-  sm: 'h-[38px] px-[16px] text-[12px]',
-  md: 'h-[46px] px-[22px] text-[13px]',
-  lg: 'h-[54px] px-[28px] text-[15px]',
+  sm: 'h-9.5 px-4 text-caption',
+  md: 'h-11.5 px-5.5 text-micro',
+  lg: 'h-13.5 px-7 text-dato',
 } as const;
 
 export type ButtonVariant = keyof typeof VARIANTS;
 
 const BASE = [
-  'inline-flex items-center justify-center gap-[9px]',
-  'font-body font-medium uppercase tracking-[0.06em]',
+  'inline-flex items-center justify-center gap-2.25',
+  'font-body font-medium uppercase tracking-cta',
   /*
     ⚠️ PÍLDORA, y sólo acá. Camila lo pidió en el boceto: «CTAs redondos».
 
@@ -162,19 +162,19 @@ export function AnnouncementChip({
   return (
     <Link
       href={href}
-      className="group inline-flex items-center gap-[10px] rounded-pill bg-paper py-[7px] pr-[14px] pl-[8px] shadow-btn ring-1 ring-fog transition-shadow duration-200 hover:ring-ink/20"
+      className="group inline-flex items-center gap-2.5 rounded-pill bg-paper py-1.75 pr-3.5 pl-2 shadow-btn ring-1 ring-fog transition-shadow duration-200 hover:ring-ink/20"
     >
-      <span className="rounded-pill bg-cream px-[9px] py-[3px] font-body text-[11px] font-bold uppercase tracking-[0.1em] text-terra">
+      <span className="rounded-pill bg-cream px-2.25 py-0.75 font-body text-caption font-bold uppercase tracking-eyebrow text-terra">
         {tag}
       </span>
-      <span className="font-body text-[15px] font-medium text-body">{children}</span>
+      <span className="font-body text-dato font-medium text-body">{children}</span>
       <svg
         width="13"
         height="9"
         viewBox="0 0 16 10"
         fill="none"
         aria-hidden="true"
-        className="shrink-0 text-body/75 transition-transform duration-200 group-hover:translate-x-[3px]"
+        className="shrink-0 text-body/75 transition-transform duration-200 group-hover:translate-x-0.75"
       >
         <path
           d="M0 5h14M10 1l4 4-4 4"
@@ -236,7 +236,7 @@ export function ArrowLink({
         viewBox="0 0 16 10"
         fill="none"
         aria-hidden="true"
-        className="shrink-0 transition-transform duration-200 group-hover:translate-x-[4px]"
+        className="shrink-0 transition-transform duration-200 group-hover:translate-x-1"
       >
         <path
           d="M0 5h14M10 1l4 4-4 4"
@@ -250,7 +250,7 @@ export function ArrowLink({
     </>
   );
 
-  const cls = ['group inline-flex items-center gap-[9px] font-body text-[16px] font-medium', className]
+  const cls = ['group inline-flex items-center gap-2.25 font-body text-base font-medium', className]
     .filter(Boolean)
     .join(' ');
 

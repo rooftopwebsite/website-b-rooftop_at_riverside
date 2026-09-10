@@ -1,173 +1,144 @@
-import Image from 'next/image';
 import { ButtonLink } from '@/components/shared/Button';
+import CardArc from '@/components/shared/CardArc';
 import { HeroFadeUp, MaskedLines } from '@/components/shared/Motion';
+import ScrollExit from '@/components/shared/ScrollExit';
 import { GUTTER } from '@/components/shared/Section';
 import { Heading } from '@/components/shared/Type';
-import VideoWall from '@/components/shared/VideoWall';
 
 /**
- * Hero del home — texto a la izquierda, muro de videos a la derecha.
+ * Hero del home — pila centrada con un abanico de cards al pie.
  *
- * ⚠️ QUINTA versión, y ésta sale de un boceto a mano de Camila: el titular, la
- * frase y el CTA en una columna a la izquierda, y la grilla de clips verticales
- * ocupando la columna derecha.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SÉPTIMA versión, y sale de un mockup de Camila. Las seis anteriores, para
+ * que no vuelvan por inercia:
  *
- * Las cuatro anteriores, para que no vuelvan por inercia:
  *   1. dos paneles con la tipografía a la izquierda — rechazado
  *   2. pila centrada sobre blanco con la foto en una tarjeta — «no se asemeja
  *      en nada a nuestros proyectos»
  *   3. foto a sangre con velo y el titular encima — era Showdown, no Superside
  *   4. centrado con el muro a lo ancho debajo — la forma de Superside, pero el
  *      muro quedaba asomando al pie en vez de ser parte del hero
+ *   5. dos columnas: titular a la izquierda, muro vertical a la derecha
+ *   6. la 5 invertida a clave clara, con el muro en huecos rotulados
  *
- * Lo que gana la versión de dos columnas: el muro deja de ser una cinta al pie
- * y pasa a ser la mitad del hero, que es lo que Camila dibujó. Y el titular
- * alineado a la izquierda le da un eje al bloque de texto que el centrado no
- * tenía.
+ * ⚠️ La 2 también era una pila centrada y se rechazó. Qué es distinto acá: lo
+ * que había debajo del titular era UNA foto en una tarjeta. Ahora es un
+ * abanico de nueve piezas apoyado en un arco, sangrando por los dos costados
+ * — o sea una composición, no una imagen suelta.
  *
- * ⚠️ En MOBILE vuelve a apilarse: texto arriba, muro abajo a sangre. Dos
- * columnas en 390px darían una de 170px, donde no entra ni el titular ni un
- * tile legible.
+ * ⚠️ `VideoWall` NO SE BORRA. Sigue en el árbol con sus tres columnas y su loop
+ * CSS, y comparte el material con el abanico vía `wall-slots.ts`. Volver a la
+ * forma 5 o 6 es cambiar un import.
+ * ══════════════════════════════════════════════════════════════════════════
  *
- * ⚠️ Sin foto de fondo. Con los clips al lado, una foto detrás compite por la
- * misma atención. Queda `deep` sólido, continuo con el header — y de paso el
- * texto no depende de un velo para tener contraste: `paper` sobre `deep` da
- * 15.4:1.
+ * ── Dos cosas del mockup que se resolvieron distinto ──────────────────────
+ *
+ * ⚠️ **EL ACENTO DEL TITULAR NO VA EN NARANJA.** En el mockup «TOGETHER» está
+ * en `sunset`, y sobre superficie clara eso da **2.54:1**: no pasa el 4.5:1 de
+ * cuerpo ni el 3:1 de texto grande, en ningún tamaño. Va en `terra`, el
+ * rojo-naranja de la paleta, que da **7.43:1** sobre `paper` y 6.87:1 sobre
+ * `bone` — es lo más cerca del naranja que se puede llegar sin romper el
+ * contraste. Es la misma regla que ya aplica `Accent`, y está medida en
+ * `design-audit/CONTRASTE.md`.
+ *
+ * ⚠️ **NO HAY CIELO DE ATARDECER.** El mockup tiene un fondo de nubes doradas.
+ * En las 36 fotos entregadas no hay ni una de cielo, y menos de golden hour, y
+ * el brief prohíbe explícitamente recrear en CSS lo que tendría que ser un
+ * asset real. Así que el fondo es `bone` —la superficie clara cálida— y el
+ * cielo queda pedido. Ver `docs/media.md`.
  */
 export default function Hero() {
-  /*
-    ⚠️ ALTO COMPLETO DE PANTALLA. Camila: «hero full alto de pantalla».
-
-    ⚠️ Y ahora es `100svh` ENTERO, sin descontar nada. Antes descontaba el
-    bloque pegado de arriba (promo + header) porque estaba en el flujo y lo
-    empujaba. Hoy el header es `fixed` y flota encima, así que el hero arranca
-    en el píxel 0 y el muro de videos corre por DETRÁS del header — que es
-    justamente lo que hace que se le vea el blur.
-
-    Lo que sí compensa su altura es la columna de TEXTO, más abajo: el titular
-    no puede quedar debajo de la barra.
-
-    `svh` y no `vh`: en un teléfono, `100vh` cuenta el alto SIN la barra del
-    navegador, así que el hero se corta justo cuando la barra está visible, que
-    es exactamente al cargar la página.
-  */
   return (
+    /*
+      ⚠️ NO es `100svh` como las versiones anteriores, y es a propósito. Con la
+      pila centrada arriba y el abanico al pie, el alto lo define el contenido:
+      forzar el alto de pantalla en un laptop de 720px dejaría el abanico
+      pegado al titular, y en un monitor de 1400px dejaría un colchón vacío
+      entre los dos. `min-h` pone el piso y el resto lo decide lo que hay.
+
+      ⚠️ `overflow-hidden` es lo que hace que el abanico sangre: las cards de
+      las puntas y el borde inferior se cortan contra esta caja, y un elemento
+      que se corta en el borde se lee como que sigue.
+
+      ⚠️ El `pt` lleva sumada la altura del header —77px, 67 en mobile— porque
+      el header es `fixed` y flota encima; sin eso taparía el isotipo.
+    */
     <section
       aria-labelledby="hero-title"
-      /* `relative` es lo que ancla el muro: desde `desk` va posicionado contra
-         ESTA caja, que es el hero entero de borde a borde de pantalla. */
-      className="relative flex h-[100svh] min-h-[620px] overflow-hidden bg-deep desk:min-h-[700px]"
+      className="relative flex min-h-160 flex-col overflow-hidden bg-bone pt-26 desk:min-h-190 desk:pt-33"
     >
-      {/*
-        ⚠️ NINGÚN PADDING VERTICAL ACÁ. Lo tenía —40px arriba y abajo— y era lo
-        que hacía que el muro se viera «recortado», que es como lo describió
-        Camila: los tiles terminaban contra un colchón de verde en vez de
-        contra el borde del hero, y eso lee como una galería metida en una
-        caja. El padding se mudó a la columna de TEXTO, que es la única que lo
-        necesita. Así el muro toma el alto completo de la sección.
-      */}
-      <div className={`${GUTTER} flex w-full`}>
-        {/*
-          ⚠️ La caja NO envuelve al muro. El texto va dentro de la caja de 1280
-          y el muro sale de ella para llegar al borde derecho de la pantalla:
-          una cinta que se corta en el borde se lee como que sigue, y contenida
-          se leería como una galería que termina.
-        */}
-        <div className="caja flex w-full flex-col">
-          {/*
-            ⚠️ MOBILE Y DESKTOP SON DISTINTOS, y Camila lo marcó. En mobile es
-            una pila: texto arriba, muro abajo tomando el alto que sobra. Desde
-            `desk` son dos columnas de alto completo. Por eso `flex-col` con un
-            `desk:grid` encima, y no una sola grilla responsive.
-          */}
-          <div className="flex min-h-0 flex-1 flex-col">
-            {/* ── La columna de texto ──────────────────────────────────────
-                Acá SÍ va el padding vertical: el muro de al lado va a sangre
-                de arriba abajo y el texto no puede tocar los bordes.
+      <div className={`${GUTTER} flex w-full flex-col`}>
+        {/* ⚠️ Con la caja centrada, el titular necesita un TOPE DE MEDIDA: sin
+            él, un titular centrado a 144px se estira hasta el ancho de la
+            pantalla y deja de tener forma.
 
-                `desk:max-w-[48%]` es lo que le deja el aire al muro. El muro
-                desde `desk` sale del flujo, así que ya no hay una grilla que
-                reserve la columna: el ancho del texto es lo único que impide
-                que se le meta debajo. Medido en 1344 —el mínimo de `desk`—
-                quedan ~105px entre el final del texto y el primer tile. */}
-            {/* ⚠️ El `pt` lleva sumada la altura del header —64px, 76 desde
-                `desk`— porque el header flota encima y taparía el isotipo. En
-                `desk` el bloque está centrado verticalmente, así que el padding
-                de arriba tiene que ser mayor que el de abajo para que el centro
-                ÓPTICO caiga en el medio del área libre y no del hero entero. */}
-            <div className="flex shrink-0 flex-col items-center pt-[104px] pb-[26px] text-center desk:h-full desk:max-w-[48%] desk:items-start desk:justify-center desk:pt-[128px] desk:pb-[52px] desk:text-left">
-              <HeroFadeUp>
-                <Image
-                  src="/brand/isotype-truck.svg"
-                  alt=""
-                  width={552}
-                  height={390}
-                  priority
-                  className="w-[58px] lg:w-[68px]"
-                />
-              </HeroFadeUp>
+            ⚠️ `ScrollExit` es UNA de las dos salidas del sitio, y va sobre el
+            bloque de TEXTO y no sobre la sección: envolver el hero entero lo
+            movería con `y` y abriría un hueco contra What's on. Así el abanico
+            se queda quieto y lo que se despide es el titular, que es lo que
+            tiene algo que despedir. Ver `ScrollExit.tsx`. */}
+        <ScrollExit className="mx-auto flex w-full max-w-[900px] flex-col items-center text-center">
+          <HeroFadeUp>
+            {/* ⚠️ `<img>` plano y no `next/image`: es un VECTOR, y el
+                optimizador no puede hacer nada por un SVG salvo romperlo —
+                devuelve una imagen que el navegador reporta como 0×0. La nota
+                larga con la medición está en `HorizonBorder.tsx`.
 
-              <Heading level={1} role="hero" id="hero-title" className="mt-[18px] text-paper">
-                {/* `accentOn="dark"` va escrito aunque sea el default: es la
-                    superficie la que decide el color del acento, y dejarlo
-                    implícito invita a copiar esto a una sección clara, donde
-                    `sunset` da 2.48:1 y no pasa. */}
-                <MaskedLines
-                  lines={['Bonita comes', 'together']}
-                  delay={0.08}
-                  accentLast
-                  accentOn="dark"
-                />
-              </Heading>
+                `fetchPriority="high"` reemplaza al `priority` de next/image:
+                el isotipo está en la primera pantalla. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/isotype-truck.svg"
+              alt=""
+              width={552}
+              height={390}
+              fetchPriority="high"
+              className="h-auto w-13.5 lg:w-15.5"
+            />
+          </HeroFadeUp>
 
-              <HeroFadeUp delay={0.26} className="mt-[18px]">
-                <p className="max-w-[30ch] text-[19px] leading-[1.4] text-paper/85 lg:text-[22px]">
-                  Rooftop bar. Four kitchens. Walk in.
-                </p>
-              </HeroFadeUp>
+          <Heading level={1} role="hero" id="hero-title" className="mt-3.5 text-ink">
+            {/* ⚠️ `accentOn="light"` — es la superficie la que decide el color
+                del acento, no el gusto. Ver la nota del encabezado sobre por
+                qué acá no va el naranja del mockup. */}
+            <MaskedLines
+              lines={['Bonita comes', 'together']}
+              delay={0.08}
+              accentLast
+              accentOn="light"
+            />
+          </Heading>
 
-              <HeroFadeUp delay={0.34} className="mt-[28px]">
-                <ButtonLink href="/whats-on" variant="primary" size="lg">
-                  What&rsquo;s on tonight
-                </ButtonLink>
-              </HeroFadeUp>
+          <HeroFadeUp delay={0.26} className="mt-4">
+            <p className="max-w-[42ch] text-lead bajada">Rooftop bar. Four kitchens. Walk in.</p>
+          </HeroFadeUp>
+
+          {/* ⚠️ DOS CTAs, como en el mockup, y el orden importa: el primario
+              lleva a lo que alguien quiere saber ahora —qué hay hoy— y el
+              secundario al lugar. El primario va en `sunset` con texto NEGRO
+              (8.26:1); el naranja como RELLENO sí está permitido, es como
+              TEXTO que no. */}
+          <HeroFadeUp delay={0.34} className="mt-6.5">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <ButtonLink href="/whats-on" variant="primary" size="lg">
+                What&rsquo;s on tonight
+              </ButtonLink>
+              <ButtonLink href="/the-yard" variant="secondary" size="lg">
+                See the yard
+              </ButtonLink>
             </div>
-
-            {/* ── El muro ──────────────────────────────────────────────────
-                ⚠️ DESDE `desk` SALE DEL FLUJO: `absolute inset-y-0 right-0`
-                contra la sección. Es lo que pidió Camila —«que lleguen al
-                borde de arriba y de abajo del hero» y «no respetar el margen
-                derecho, como en superside»— y las dos cosas salen de la misma
-                línea: `inset-y-0` lo pega a los dos bordes horizontales del
-                hero, `right-0` al borde derecho de la PANTALLA.
-
-                ⚠️ Antes esto era una columna de grid con `-mr-gutter-lg`, y no
-                alcanzaba: ese margen sólo se comía los 32px del gutter, así que
-                en cualquier pantalla más ancha que 1344 el muro terminaba en el
-                borde de la caja de 1280 y quedaba una franja de verde muerta a
-                la derecha.
-
-                ⚠️ Y NO se resuelve con un margen negativo en porcentaje
-                (`mr-[calc(50%-50vw)]`): dentro de una grilla, el porcentaje de
-                un margen se resuelve contra la PISTA del ítem, no contra la
-                caja, así que la cuenta da cualquier cosa. Posicionarlo contra
-                la sección no tiene esa ambigüedad.
-
-                ⚠️ `min-w-0` y `min-h-0` NO son opcionales mientras está en
-                flujo. Un ítem de flex trae `min-width`/`min-height: auto`, que
-                le permite crecer más allá de su caja cuando el contenido es más
-                grande — y el track del muro mide miles de píxeles. Sin esto el
-                `overflow:hidden` no recorta nada: medido antes de ponerlo, la
-                columna se estiraba a 7.560px.
-
-                En mobile sigue en flujo: `flex-1` le da el alto que sobra
-                después del texto y va a sangre por los dos lados. */}
-            <div className="-mx-gutter min-h-0 min-w-0 flex-1 md:-mx-gutter-lg desk:absolute desk:inset-y-0 desk:right-0 desk:mx-0 desk:w-[46%]">
-              <VideoWall />
-            </div>
-          </div>
-        </div>
+          </HeroFadeUp>
+        </ScrollExit>
       </div>
+
+      {/* ── El abanico ───────────────────────────────────────────────────
+          ⚠️ Va FUERA de la caja con gutter y a lo ancho completo: el arco tiene
+          que sangrar por los dos costados de la PANTALLA, no de la caja de
+          1280. Y el `mb` negativo lo corta contra el borde inferior del hero.
+
+          `mt-auto` lo empuja al pie cuando el hero es más alto que su
+          contenido, que es lo que pasa en un monitor grande. */}
+      <CardArc className="mt-auto -mb-[6vw] pt-11 desk:-mb-[4vw]" />
     </section>
   );
 }

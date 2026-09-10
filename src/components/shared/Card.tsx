@@ -10,7 +10,7 @@ import { Eyebrow, Heading } from './Type';
  * ⚠️ El hover está definido en UN solo lugar y es deliberadamente MÍNIMO:
  *   · elevación de 2px (`-translate-y`) y el filo se oscurece
  *   · la imagen escala 1.03 — apenas, y sólo la imagen
- *   · el título pasa a `#014545`
+ *   · el título pasa a `deep`
  *
  * ⚠️ La superficie la define un FILO de 1px, no una sombra. Es la regla de la
  * referencia y es lo que mantiene la estética plana: la sombra sólo aparece en
@@ -67,7 +67,7 @@ export default function Card({
         'group flex h-full flex-col overflow-hidden rounded-card bg-paper',
         'ring-1 ring-fog',
         'transition-[transform,box-shadow] duration-200 ease-brand',
-        'hover:-translate-y-[2px] hover:shadow-card',
+        'hover:-translate-y-0.5 hover:shadow-card',
         className,
       ]
         .filter(Boolean)
@@ -83,7 +83,7 @@ export default function Card({
             className="object-cover transition-transform duration-500 ease-brand group-hover:scale-[1.03]"
           />
           {badge ? (
-            <span className="absolute top-[12px] left-[12px] rounded-btn bg-sunset px-[10px] py-[5px] text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
+            <span className="absolute top-3 left-3 rounded-btn bg-sunset px-2.5 py-1.25 text-caption font-bold uppercase tracking-eyebrow text-ink">
               {badge}
             </span>
           ) : null}
@@ -92,7 +92,7 @@ export default function Card({
         <PhotoPending brief={photoBrief ?? 'Photo needed.'} ratio={ratio} className="rounded-none border-0" />
       )}
 
-      <div className="flex flex-1 flex-col p-[20px]">
+      <div className="flex flex-1 flex-col p-5">
       {eyebrow ? (
         <Eyebrow tone="deep">
           {eyebrow}
@@ -102,20 +102,20 @@ export default function Card({
       <Heading
         level={3}
         role="card"
-        className="mt-[6px] transition-colors duration-200 group-hover:text-deep"
+        className="mt-1.5 transition-colors duration-200 group-hover:text-deep"
       >
         {title}
       </Heading>
 
       {body ? (
-        <p className="mt-[8px] flex-1 text-[16px] leading-[1.6] text-body/75">{body}</p>
+        <p className="mt-2 flex-1 text-base text-body/75">{body}</p>
       ) : null}
 
       {children}
 
       <span
         aria-hidden="true"
-        className="mt-[14px] inline-flex items-center gap-[8px] text-caption font-bold uppercase tracking-[0.14em]"
+        className="mt-3.5 inline-flex items-center gap-2 text-caption font-bold uppercase tracking-eyebrow"
       >
         <span className="underline decoration-ink/45 decoration-1 underline-offset-4 transition-[text-decoration-color] group-hover:decoration-sunset group-hover:decoration-2">
           {cta}
@@ -127,7 +127,7 @@ export default function Card({
             strokeWidth="1.6"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="transition-transform duration-200 group-hover:translate-x-[3px]"
+            className="transition-transform duration-200 group-hover:translate-x-0.75"
           />
         </svg>
       </span>

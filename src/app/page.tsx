@@ -4,6 +4,7 @@ import Hero from '@/components/sections/Hero';
 import FindUs from '@/components/sections/FindUs';
 import { HowThisPlaceWorks } from '@/components/sections/HomeSections';
 import ThreeDoors from '@/components/sections/ThreeDoors';
+import HorizonBorder from '@/components/shared/HorizonBorder';
 import WaveBorder from '@/components/shared/WaveBorder';
 import WhatsOn from '@/components/sections/WhatsOn';
 import { pageMeta } from '@/lib/seo';
@@ -50,28 +51,53 @@ export default function HomePage() {
 
       <WhatsOn />
 
-      {/*
-        ⚠️ LA CENEFA DE OLAS, que es el separador real del brand book. Camila
-        la dibujó en el boceto como un zigzag entre secciones; el archivo de
-        Figma la tiene en la página «Elementos», tres veces y en tres colores.
-        Antes acá había un festón de arcos que era invento mío mientras no
-        estaba el archivo.
+      {/* `bone` contra `paper` es un escalón de 1,08:1 — se ve el corte, pero
+          NO lleva cenefa. La regla del componente es que la cenefa marca el
+          cambio de superficie que salta de verdad, y meterla en un escalón
+          sutil la convierte en un patrón de fondo. */}
+      <HowThisPlaceWorks />
 
-        ⚠️ Va acá y no en cualquier corte: la regla del componente es que sólo
-        donde el fondo CAMBIA de verdad. `WhatsOn` es blanco y «How this place
-        works» es la losa verde — son los dos únicos cortes de la home donde el
-        fondo salta de claro a oscuro, así que son las dos únicas cenefas.
+      <ThreeDoors />
+
+      {/*
+        ⚠️ LAS DOS CENEFAS SE MUDARON ACÁ, y no es cosmético: siguen al corte
+        oscuro. Estaban alrededor de «How this place works» cuando esa sección
+        era la losa verde; ahora la banda oscura es Events banner, así que la
+        entrada y la salida del verde están en este par.
+
+        La cenefa de olas es el separador real del brand book —página
+        «Elementos» del Figma, tres veces y en tres colores—. Antes acá había un
+        festón de arcos que era invento mío mientras no estaba el archivo.
+
+        ⚠️ Son DOS en toda la home y ni una más. Con la home clara hay un solo
+        salto fuerte de superficie, así que las dos sirven a la misma sección.
+        Es el único riesgo que me preocupa de este recurso: dos apariciones de
+        la misma pieza de marca a 50px de alto pueden leerse como manierismo. Si
+        se ve así, la de salida se va y el corte se cierra seco.
 
         ⚠️ El color va en la sección de ABAJO: las olas tienen las crestas hacia
         arriba, así que es la sección que viene la que emerge sobre la que
         termina. Ver la nota del componente.
       */}
-      <WaveBorder from="paper" to="deep" />
-      <HowThisPlaceWorks />
+      {/*
+        ⚠️ ENTRA POR EL HORIZONTE Y SALE POR LA CENEFA. Son dos piezas distintas
+        para dos cortes distintos, y eso resuelve el riesgo que había anotado en
+        la autocrítica: con la misma cenefa arriba y abajo, dos apariciones de
+        la misma pieza de marca a 50px de alto se leían como manierismo.
+
+        El horizonte —la ola con el medallón de sol y palmera, nodo 2012:4491
+        del Figma— va en la ENTRADA porque es el único salto de claro a oscuro
+        de la home y el dibujo lo dice literalmente: la superficie oscura sube
+        como ola y el sol se pone detrás. Encaja con el concepto de la rama, que
+        es que la página va del mediodía a la noche.
+
+        La cenefa de olas lisa cierra la salida: volver a la luz no necesita
+        ceremonia.
+      */}
+      <HorizonBorder from="paper" to="deep" />
+      <EventsBanner />
       <WaveBorder from="deep" to="paper" />
 
-      <ThreeDoors />
-      <EventsBanner />
       <FindUs />
     </>
   );
