@@ -1,0 +1,82 @@
+[
+  {
+    "i": 0,
+    "tag": "section",
+    "id": "hero-title",
+    "heading": "Bonita comes together",
+    "bg": "rgb(250, 246, 234)",
+    "color": "rgb(10, 31, 30)",
+    "height": 851,
+    "classes": "relative flex min-h-160 flex-col overflow-hidden bg-bone pt-26 desk:min-h-190 desk:pt-33"
+  },
+  {
+    "i": 1,
+    "tag": "section",
+    "id": "whats-on-title",
+    "heading": "This week in the yard",
+    "bg": "rgb(255, 255, 255)",
+    "color": "rgb(10, 31, 30)",
+    "height": 1362,
+    "classes": "relative bg-paper text-body py-20 lg:py-band-lg px-gutter md:px-gutter-lg"
+  },
+  {
+    "i": 2,
+    "tag": "section",
+    "id": "how-title",
+    "heading": "Five businesses, one set of stairs.",
+    "bg": "rgb(250, 246, 234)",
+    "color": "rgb(10, 31, 30)",
+    "height": 784,
+    "classes": "relative bg-bone text-body pt-20 lg:pt-band-lg pb-20 lg:pb-band-lg px-gutter md:px-gutter-lg"
+  },
+  {
+    "i": 3,
+    "tag": "section",
+    "id": "doors-title",
+    "heading": "Not a restaurant. Three of them",
+    "bg": "rgb(255, 255, 255)",
+    "color": "rgb(10, 31, 30)",
+    "height": 662,
+    "classes": "relative bg-paper text-body py-band-sm lg:py-band px-gutter md:px-gutter-lg"
+  },
+  {
+    "i": 4,
+    "tag": "div",
+    "id": "s4",
+    "heading": null,
+    "bg": "rgb(255, 255, 255)",
+    "color": "rgb(10, 31, 30)",
+    "height": 132,
+    "classes": "relative isolate w-full overflow-hidden "
+  },
+  {
+    "i": 5,
+    "tag": "section",
+    "id": "events-banner-title",
+    "heading": "We close the whole place for you",
+    "bg": "rgb(1, 69, 69)",
+    "color": "rgb(255, 255, 255)",
+    "height": 619,
+    "classes": "relative bg-deep text-paper on-dark py-20 lg:py-band-lg px-gutter md:px-gutter-lg"
+  },
+  {
+    "i": 6,
+    "tag": "div",
+    "id": "s6",
+    "heading": null,
+    "bg": "rgb(1, 69, 69)",
+    "color": "rgb(10, 31, 30)",
+    "height": 50,
+    "classes": "w-full overflow-hidden leading-[0]"
+  },
+  {
+    "i": 7,
+    "tag": "section",
+    "id": "find-title",
+    "heading": "Downtown, across from Riverside Park",
+    "bg": "rgb(255, 255, 255)",
+    "color": "rgb(10, 31, 30)",
+    "height": 1111,
+    "classes": "relative bg-paper text-body pt-12 lg:pt-band-sm pb-20 lg:pb-band-lg px-gutter md:px-gutter-lg px-0"
+  }
+]
