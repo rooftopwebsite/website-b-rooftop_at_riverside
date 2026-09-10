@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowUpRight, SunHorizon } from '@/components/shared/Icon';
+import { ArrowUpRight, Martini, Moon, MusicNote, SunHorizon } from '@/components/shared/Icon';
 import { venueStatus } from '@/lib/hours';
 
 /**
@@ -148,21 +148,43 @@ export default function Hero() {
    * pill muestra el mensaje que NO depende de la hora. Nunca queda vacío ni
    * salta de alto.
    */
+  /*
+   * ⚠️ CADA MENSAJE VIAJA CON SU ICONO, y el icono cambia con el texto. Antes
+   * el círculo naranja tenía el sol clavado y rotaba sólo la frase: el sol
+   * decía «atardecer» mientras el texto decía «música en vivo» o «cerrado,
+   * volvemos el miércoles». Un icono fijo al lado de un texto que cambia no
+   * es neutro — desmiente al texto tres de cada cuatro veces.
+   *
+   *     abierto      sol sobre el horizonte  (y es el Sunset Bar)
+   *     cerrado      luna
+   *     happy hour   copa
+   *     música       corcheas
+   */
+  const HAPPY = { text: 'Happy hour Wed – Fri, 3–6 PM', Icon: Martini };
+  const MUSIC = { text: 'Live music five nights', Icon: MusicNote };
+
   const messages = status
     ? status.isOpen
       ? [
-          status.closesAt ? `Open until ${status.closesAt}` : 'Open now',
-          'Happy hour Wed – Fri, 3–6 PM',
-          'Live music five nights',
+          {
+            text: status.closesAt ? `Open until ${status.closesAt}` : 'Open now',
+            Icon: SunHorizon,
+          },
+          HAPPY,
+          MUSIC,
         ]
       : [
-          status.reopensOn && status.reopensOn !== 'today'
-            ? `Closed — back ${status.reopensOn}`
-            : 'Closed right now',
-          'Happy hour Wed – Fri, 3–6 PM',
-          'Live music five nights',
+          {
+            text:
+              status.reopensOn && status.reopensOn !== 'today'
+                ? `Closed — back ${status.reopensOn}`
+                : 'Closed right now',
+            Icon: Moon,
+          },
+          HAPPY,
+          MUSIC,
         ]
-    : ['Live music five nights'];
+    : [MUSIC];
 
   const message = messages[statusIdx % messages.length];
 
@@ -217,15 +239,29 @@ export default function Hero() {
           aria-live="polite"
           className="mb-1.5 flex min-h-20 flex-1 basis-85 items-center gap-3.5 rounded-pill bg-mint py-2 pr-2 pl-6.5 lg:mb-4.5"
         >
-          <span className="min-w-0 flex-1 font-body text-dato text-ink">
+          <span className="min-w-0 flex-1 font-body text-pastilla font-medium text-ink">
             {/* La `key` es lo que reinicia la animación: sin ella React
                 reusa el nodo, el texto cambia y no hay transición. */}
-            <span key={message} className="rt-roll inline-block">
-              {message}
+            <span key={message.text} className="rt-roll inline-block">
+              {message.text}
             </span>
           </span>
-          <span className="grid size-20 shrink-0 place-items-center rounded-pill bg-sunset">
-            <SunHorizon className="size-5.5 text-ink" />
+
+          {/*
+            ⚠️ El círculo lleva la MISMA `key` que el texto, así los dos
+            entran juntos. Con la key sólo en el texto, la frase sube con su
+            fundido y el icono cambia de golpe en el mismo instante: se ve
+            como un parpadeo al lado de una transición, que es peor que no
+            animar ninguno de los dos.
+          */}
+          <span
+            key={`icono-${message.text}`}
+            className="rt-roll grid size-20 shrink-0 place-items-center rounded-pill bg-sunset"
+          >
+            {/* `strokeWidth` uniforme para los cuatro: `Martini` se dibuja en
+                1.4 porque en «Three doors» va a 104px, y a 26px ese trazo se
+                ve más liviano que el resto del juego. */}
+            <message.Icon className="size-6.5 text-ink" strokeWidth="1.8" />
           </span>
         </p>
       </div>

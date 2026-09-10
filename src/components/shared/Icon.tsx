@@ -190,6 +190,40 @@ export function SunHorizon({ className = 'size-5', ...rest }: IconProps) {
   );
 }
 
+/**
+ * La luna. Es el icono de «cerrado» en el pill del hero.
+ *
+ * ⚠️ Es un CRECIENTE dibujado como una sola silueta —un arco grande al que
+ * le muerde otro arco— y no un círculo con una sombra encima. Con dos formas
+ * superpuestas habría que pintar la mordida del color del fondo, y el pill
+ * cambia de fondo según el estado. Así el contorno funciona sobre cualquier
+ * superficie.
+ */
+export function Moon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M20.6 14.4A8.7 8.7 0 0 1 9.6 3.4a8.7 8.7 0 1 0 11 11Z" />
+    </Svg>
+  );
+}
+
+/**
+ * Dos corcheas unidas por la barra. El icono de «música en vivo».
+ *
+ * ⚠️ Las cabezas son círculos y no elipses inclinadas. A 26px —el tamaño al
+ * que se usa, dentro del círculo naranja del hero— una elipse rotada se lee
+ * como una mancha sucia; el círculo se lee como una nota.
+ */
+export function MusicNote(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M9 17.4V5.5l11-2v11.9" />
+      <circle cx="6.4" cy="17.4" r="2.6" />
+      <circle cx="17.4" cy="15.4" r="2.6" />
+    </Svg>
+  );
+}
+
 /** El punto del estado en vivo. Relleno, 8px, al lado de «Open · closes 8 PM». */
 export function Dot({ className = 'size-2', ...rest }: IconProps) {
   return (

@@ -507,6 +507,26 @@
    * gastar ancho, que es justamente lo que no sobra con cinco items, un
    * «More», un link de contacto y un CTA en la misma barra.
    */
+  /*
+   * `pastilla` — el texto del pill de estado del hero.
+   *
+   * ⚠️ SUBE DE 17px A 26px RESPECTO DEL DISEÑO, por pedido de Camila, y el
+   * motivo es de proporción: la pastilla mide 80px de alto porque adentro
+   * lleva un círculo de 80. Con el texto en 17 —el tope del `clamp(14px,
+   * 1.2vw,17px)` del prototipo— el mensaje quedaba flotando en el medio de
+   * una barra tres veces más alta que él, y lo que se veía era el círculo
+   * naranja, no lo que dice.
+   *
+   * 26px es la medida a la que el texto ocupa el renglón: por encima empieza
+   * a pelear con el titular de 144 que tiene al lado, y por debajo vuelve a
+   * ser una etiqueta dentro de una barra grande.
+   *
+   * ⚠️ El pill es la ÚNICA pieza de la home donde el texto tiene que crecer
+   * con la caja y no con la jerarquía, así que no reusa ninguno de los
+   * escalones de texto: `intro` (25px) queda cerca pero es el token de las
+   * bajadas de sección y atarlos haría que cambiar una bajada mueva el hero.
+   */
+  --text-pastilla: 26px;
   --text-nav: 19px;
   --text-titan: 144px;
   --text-titan--line-height: 0.85;
@@ -800,6 +820,15 @@
    *     nav  1.35vw → 1344px: 18px · 1408px: 19px (tope)
    */
   --text-nav: clamp(15px, 1.35vw, 19px);
+  /*
+   * ⚠️ El pill TIENE que ser fluido o se rompe en mobile. A 390px la
+   * pastilla mide todo el ancho menos el círculo de 80 y el padding, o sea
+   * ~230px de texto; «Happy hour Wed – Fri, 3–6 PM» a 26px necesita 340 y se
+   * cortaría con puntos suspensivos. A 17px entra.
+   *
+   *     pastilla  1.9vw → 390px: 17px (piso) · 1368px: 26px (tope)
+   */
+  --text-pastilla: clamp(17px, 1.9vw, 26px);
 
   /*
    * ⚠️ ALTO DE LA BANDA INTERCALADA EN UN TITULAR. Se usa con

@@ -66,6 +66,7 @@ const TAMANOS_DE_TEXTO = [
   'titan',
   'banda',
   'nav',
+  'pastilla',
   'd1',
   'd2',
   'd3',
