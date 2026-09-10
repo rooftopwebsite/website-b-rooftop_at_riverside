@@ -225,6 +225,7 @@ export function SectionHead({
   level = 2,
   id,
   align = 'left',
+  measure = 'head',
   className = '',
   children,
 }: {
@@ -235,10 +236,26 @@ export function SectionHead({
   readonly level?: HeadingLevel;
   readonly id?: string;
   readonly align?: 'left' | 'center';
+  /**
+   * `head` —el default— corta el bloque en `max-w-head` (1040px), que es el
+   * ancho al que un h2 de dos renglones se lee sin cansar.
+   *
+   * ⚠️ `full` lo suelta al ancho del CONTENEDOR, y existe para un solo caso:
+   * cuando el título lleva una IMAGEN intercalada entre sus renglones. Ahí el
+   * corte en 1040px deja la banda 240px más angosta que la grilla que viene
+   * abajo, y dos medidas distintas apiladas se leen como un error de
+   * maquetación, no como una decisión. Con `full`, la banda y las columnas
+   * comparten la misma medida y la grilla editorial se mantiene.
+   *
+   * La bajada NO se afloja con esto: ya trae su propio `max-w-[60ch]`, que es
+   * lo que gobierna la línea de lectura.
+   */
+  readonly measure?: 'head' | 'full';
   readonly className?: string;
   readonly children?: ReactNode;
 }) {
   const centered = align === 'center';
+  const ancho = measure === 'full' ? 'max-w-none' : 'max-w-head';
   return (
     <div
       /*
@@ -248,7 +265,7 @@ export function SectionHead({
        * un número escrito acá.
        */
       className={[
-        centered ? 'mx-auto max-w-head text-center' : 'max-w-head',
+        centered ? `mx-auto ${ancho} text-center` : ancho,
         className,
       ]
         .filter(Boolean)

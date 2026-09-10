@@ -31,22 +31,39 @@ por qué, para que no vuelva por inercia. El keyframe está borrado.
 
 ---
 
-## 2 · La greca al 15 % sobre el cuadro amarillo
+## 2 · La greca al 15 % sobre el cuadro amarillo — **ESTABA MAL DIAGNOSTICADA**
 
-Los tres cuadros de «Five businesses» llevan la trama de grecas: `deep/15`
-sobre crema, `ink/15` sobre naranja, `cream/20` sobre verde.
+Lo que decía acá: que el verde al 15 % sobre `cream` grita más que los otros
+dos cuadros, que la culpa era de la opacidad, y que la prueba era que el par
+`deep`/`cream` mide 9.44:1.
 
-Sobre el naranja y el verde funciona: es una textura y se lee como textura.
-**Sobre el amarillo no.** El verde al 15 % sobre `cream` tiene demasiado
-contraste para ser un fondo —el par `deep`/`cream` mide 9.44:1— así que la
-espiral se lee como un DIBUJO, compite con el texto que va apoyado encima y
-hace que el primero de los tres cuadros grite más que los otros dos.
+**El razonamiento estaba mal.** 9.44:1 es una medida de si un TEXTO se lee, no
+de cuánto pesa una textura, y usé una para hablar de la otra. Escribí
+`design-audit/trama.mjs` para medirlo en serio: compone cada trama sobre su
+propio campo a su opacidad, pasa las dos a CIELAB y devuelve el ΔE. Con
+15/15/20 % daba
 
-No la saqué porque la textura en las cards fue un pedido explícito y sacarla de
-uno de los tres rompería la serie. Pero la corrección correcta no es bajar la
-opacidad —a menos del 10 % desaparece en los otros dos—: es que **cada cuadro
-tenga su propia opacidad**, calibrada contra su propio campo. Es un cambio de
-tres números y lo hago cuando digas.
+    01 · deep sobre cream     ΔL* 9,9   ΔE 11,7
+    02 · ink  sobre sunset    ΔL* 8,0   ΔE 13,4
+    03 · cream sobre deep     ΔL* 14,0  ΔE 15,7
+
+o sea que el cuadro crema era el **más suave de los tres** por las dos medidas.
+Bajarle la opacidad, que es lo que yo proponía, lo habría hecho desaparecer.
+
+Lo que sí estaba mal era el **tamaño de la celda**, que no había mirado: a 34px
+la greca es una figura que el ojo cuenta una por una, y por eso compite con el
+texto. Comparado en pantalla a 34 / 26 / 20 / 15px, **20px** es el punto donde
+pasa a ser campo sin dejar de ser reconocible —a 15px ya no es una greca, es un
+tejido cualquiera y el arte de marca se pierde—.
+
+Quedó: celda a 20px en todo el sitio (What's on tenía su propio override de
+26px, o sea que la home mostraba dos escalas de la misma trama a diez
+centímetros de distancia; se fue) y las tres opacidades igualadas a ΔE ~14,5 →
+19 % / 16 % / 18 %. **El cuadro crema SUBIÓ.**
+
+La lección, que es la que importa: la corrección la encontró el script, no el
+ojo. Y el error original también fue de método —tomé un ratio de contraste como
+si midiera peso visual— y no de gusto.
 
 ---
 
@@ -72,8 +89,18 @@ deuda.**
 
 Para que no se lea como que el diseño está cerrado:
 
-- **El oscuro quedó en 25,1 %**, un décimo sobre el techo. Lo empuja el cuadro
-  `deep` de «Night». Se corrige cambiándole el color a ese cuadro.
+- ~~**El oscuro quedó en 25,1 %**, un décimo sobre el techo.~~ **Cerrado: 24,5 %.**
+  Lo cerró la banda de foto de «Three doors», que agregó 307px de página clara
+  y con foto. No hubo que cambiarle el color a ningún cuadro.
+- **`docs/prompt-claude-design.md` no está ejecutado, y es un documento tuyo
+  que barrí a un commit sin leer.** Es un prompt maestro completo que toma
+  defoodtruckclub.nl como referencia ESTRUCTURAL literal: otro orden de
+  bloques, bordes punteados, sellos circulares, cortinas de esquinas
+  redondeadas, marquesinas, carruseles con flechas, contadores, `bone` como
+  superficie base y «What's on» en losa oscura. De sus cinco gestos hoy hay uno
+  construido —el titular partido con la foto encastrada, en «Three doors»— y
+  su hero contradice el que aprobaste después (el arco de cards). Es una
+  bifurcación, no una deuda: hay que decidirla, no completarla en silencio.
 - **`Wooftop Wednesdays` sigue sin foto** porque en las 36 entregadas no hay ni
   un perro. Es el único hueco marcado que queda en la home.
 - **El hero no tiene el cielo del mockup** porque no existe la foto.

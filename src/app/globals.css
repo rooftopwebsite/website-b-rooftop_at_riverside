@@ -688,6 +688,30 @@
   --text-h3: clamp(1.75rem, 2.6vw, 2.5rem);
   --text-lead: clamp(1.0625rem, 1.6vw, 1.375rem);
 
+  /*
+   * ⚠️ ALTO DE LA BANDA INTERCALADA EN UN TITULAR. Se usa con
+   * `h-(--banda-titular)` y hoy la consume un solo bloque: el h2 de «Three
+   * doors», partido en dos renglones con una foto en el medio.
+   *
+   * Va acá y no en `@theme` por el MISMO límite que los `--text-*`: un `clamp`
+   * con `vw` compila mudo en su valor máximo. Y va en el sistema y no como
+   * `h-[clamp(...)]` en el componente porque no es una medida de esa foto: es
+   * cuánto mide un renglón de imagen en esta escala tipográfica, y la próxima
+   * banda tiene que medir lo mismo.
+   *
+   * El número sale del h2, no del ojo. El h2 es `6vw` con `line-height` 0.92,
+   * o sea un renglón de 5.5vw. La banda es `13vw` ≈ **2,4 renglones**: más
+   * alta que el texto —si midiera un renglón se leería como una palabra
+   * tachada— y más baja que un tercio de pantalla, que ya sería una foto de
+   * sección y no parte del titular.
+   *
+   *     390px  → 88px  (piso)   · 1440px → 187px · 1538px → 200px (tope)
+   *
+   * El piso son 88px y no menos porque abajo de eso, con el contenedor a
+   * 350px, el recorte pasa de 4:1 y de la barra no queda nada legible.
+   */
+  --banda-titular: clamp(5.5rem, 13vw, 12.5rem);
+
   /* El ritmo del encabezado, un escalón más apretado en mobile. */
   --spacing-gap-kicker: 8px;
   --spacing-gap-bajada: 16px;
@@ -939,7 +963,25 @@
  * El tamaño de celda se ajusta con `--greca-celda`.
  */
 @utility greca {
-  --greca-celda: 34px;
+  /*
+   * ⚠️ 20px Y NO 34px, y el cambio es de ESCALA, no de opacidad.
+   *
+   * `AUTOCRITICA.md` §2 decía que la trama del cuadro crema «se lee como un
+   * DIBUJO y compite con el texto», y atribuía eso a la opacidad. Al medirlo
+   * con `design-audit/trama.mjs` resultó que el cuadro crema era el MÁS SUAVE
+   * de los tres (ΔE 11,7 contra 13,4 y 15,7), o sea que el diagnóstico estaba
+   * mal: bajarle la opacidad lo habría hecho desaparecer.
+   *
+   * Lo que hacía que la espiral se leyera como dibujo era el TAMAÑO. A 34px la
+   * greca es una figura reconocible una por una; a 20px el ojo la integra como
+   * campo. Comparado en pantalla a 34 / 26 / 20 / 15px: 15px ya deshace el
+   * dibujo —deja de ser una greca y pasa a ser un tejido cualquiera, o sea que
+   * el arte de marca se pierde—, y 20px es el punto donde todavía se reconoce
+   * de cerca pero a distancia de lectura es textura.
+   *
+   * La celda se sigue pudiendo pisar por instancia con `--greca-celda`.
+   */
+  --greca-celda: 20px;
   -webkit-mask-image: url('/brand/greca.png');
   mask-image: url('/brand/greca.png');
   -webkit-mask-repeat: repeat;

@@ -1,7 +1,8 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import Section from '@/components/shared/Section';
 import { Accent, Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
-import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
+import { RevealItem, RevealMedia, StaggerGroup } from '@/components/shared/Motion';
 
 /**
  * Las tres unidades del lugar, en la forma «Our difference» de Superside.
@@ -121,9 +122,74 @@ export default function ThreeDoors() {
           home. Era el único encabezado centrado del recorrido y rompía el eje
           de la grilla editorial.
       */}
+      {/*
+        ⚠️ EL TITULAR ESTÁ PARTIDO EN DOS RENGLONES CON UNA FOTO EN EL MEDIO, y
+        es el único bloque de la home que hace eso.
+
+        · **De dónde sale.** `design-audit/referencia-dftc/` —
+          defoodtruckclub.nl, un negocio de food trucks— abre con «LET'S
+          CHANGE», la foto, y «CATERING!». El mismo gesto estaba anotado en
+          `MOODBOARD.md` para `IMG_2905` («SERVICES» con la imagen metida entre
+          los renglones) desde la fase 1 y nunca se había construido.
+
+        · **Por qué EN ESTA sección y no en otra.** El copy ya venía partido:
+          «Not a restaurant.» es una frase cerrada con punto y «Three of them»
+          es la corrección. La foto cae exactamente en la pausa que el punto ya
+          marcaba — no hay que inventar un corte. Y era la única sección de la
+          home sin nada de material: entre un track de fotos (What's on) y tres
+          cuadros de color (How this place works), llegaba a puro texto.
+
+        · **NO SE TOCÓ EL COPY.** Son las mismas nueve palabras, en el mismo
+          orden, dentro del MISMO `<h2>`. Los dos `<span>` son de presentación
+          y el nombre accesible del encabezado sigue siendo la frase completa.
+
+        · **Por qué un `<img>` y no un `<div>` con fondo.** Un `<h2>` sólo
+          admite contenido de frase, y `<img>` y `<span>` lo son; un `<div>` o
+          un `<figure>` adentro sería markup inválido. De ahí también el
+          `as="span"` del `RevealMedia`, que por defecto es un `div`.
+
+        · **`measure="full"`.** El encabezado se suelta al ancho del contenedor
+          en lugar de cortarse en `max-w-head`. Es lo primero que se vio en la
+          captura: con la banda a 1040px y las tres columnas a 1280px, había
+          240px de diferencia entre dos bordes apilados y eso se lee como un
+          error de maquetación. Ahora la banda y la grilla comparten medida. La
+          bajada no se afloja: tiene su propio `max-w-[60ch]`.
+
+        · **`alt=""`.** La banda no aporta información que el titular no dé:
+          es tipografía con una foto adentro. Un alt descriptivo acá se leería
+          en medio de la frase y la partiría en el lector de pantalla, que es
+          justo lo que el markup evita.
+      */}
       <SectionHead
         id="doors-title"
-        title="Not a restaurant. Three of them"
+        measure="full"
+        title={
+          <>
+            <span className="block">Not a restaurant.</span>
+            {/* ⚠️ ESTE ESPACIO NO ES DECORATIVO. Sin él, los dos `<span>` en
+                bloque quedan pegados como nodos de texto y el nombre accesible
+                del h2 sale «Not a restaurant.Three of them». */}{' '}
+            {/* `from="left"` y no `bottom`: la banda se abre en el sentido en
+                que se lee el renglón que interrumpe. Abrirse hacia arriba la
+                delataría como una foto que llegó de otra parte. */}
+            <RevealMedia
+              as="span"
+              from="left"
+              delay={0.12}
+              className="my-3.5 block overflow-hidden rounded-image lg:my-5"
+            >
+              <Image
+                src="/images/venue/doors-band.jpg"
+                alt=""
+                width={2080}
+                height={420}
+                sizes="(min-width: 1408px) 1280px, 92vw"
+                className="h-(--banda-titular) w-full object-cover"
+              />
+            </RevealMedia>
+            <span className="block">Three of them</span>
+          </>
+        }
         lead="A rooftop bar, a yard of independent kitchens, and a venue you can rent. Same address, three different nights."
       />
 

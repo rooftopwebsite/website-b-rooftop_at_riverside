@@ -174,12 +174,18 @@ function EventoCard({
 
       {/* El bloque de color. Lleva la greca del brand book al 8 %: es la trama
           que Camila pidió para las cards, y a esa opacidad no toca el contraste
-          del texto que va encima. */}
+          del texto que va encima.
+
+          ⚠️ SIN OVERRIDE DE CELDA. Acá había un `--greca-celda: 26px` para
+          bajar la greca del default de 34px, que se leía como dibujo. El
+          default pasó a 20px por el mismo motivo y medido en pantalla —ver la
+          nota de la utilidad `greca` en globals.css—, así que el override
+          quedó redundante y además dejaba la home con DOS escalas de la misma
+          trama a diez centímetros de distancia. Una sola. */}
       <div className="relative flex flex-1 flex-col p-4.5 lg:p-5.5">
         <div
           aria-hidden="true"
           className="greca pointer-events-none absolute inset-0 text-deep/[0.08]"
-          style={{ '--greca-celda': '26px' } as React.CSSProperties}
         />
 
         <div className="relative">

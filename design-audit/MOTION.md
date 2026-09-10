@@ -50,6 +50,7 @@ fade + slide-up en las ocho secciones es la firma de una web autogenerada.
 |---|---|---|
 | titulares grandes | `MaskedLines` | reveal por líneas con máscara: el titular se **descubre**, no se desliza |
 | imágenes a sangre | `RevealMedia` | `clip-path` que se abre. Una foto grande que se desliza arrastra el bloque; una que se descubre se lee como que estaba ahí |
+| **banda dentro de un titular** | `RevealMedia from="left"` | el mismo mecanismo, pero abriéndose en el sentido de lectura del renglón que interrumpe. Es la única foto del sitio que es tipografía: si se abriera desde abajo, se delataría como una imagen que llegó de otra parte. Con `delay` de 0,12s, o sea después del primer renglón |
 | grillas y filas | `StaggerGroup` + `RevealItem` | desfasaje: son elementos equivalentes de una lista |
 | media en contenedor | `ScaleMedia` | escala mínima. Un `clip-path` dentro de una caja con radio pelea con el recorte del contenedor |
 | bloques de texto | `Reveal` | fade + desplazamiento corto |

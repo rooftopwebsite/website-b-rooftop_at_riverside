@@ -84,25 +84,54 @@ const STEPS: readonly Step[] = [
  * prohibido—; sobre `deep` va `paper`, 10.83:1.
  * ══════════════════════════════════════════════════════════════════════════
  */
+/*
+ * ⚠️ LAS TRES OPACIDADES DE LA TRAMA ESTÁN MEDIDAS, UNA POR CUADRO.
+ *
+ * Con la misma opacidad en los tres, la trama NO pesa lo mismo: la fuerza que
+ * se percibe no es la opacidad, es cuánto se separa del campo que tiene
+ * debajo. `design-audit/trama.mjs` compone la trama sobre su propio campo,
+ * pasa las dos a CIELAB y devuelve el ΔE. Con 15/15/20 % daba:
+ *
+ *     01 · deep sobre cream     ΔE 11,7
+ *     02 · ink  sobre sunset    ΔE 13,4
+ *     03 · cream sobre deep     ΔE 15,7
+ *
+ * O sea casi cuatro puntos de diferencia entre el primero y el último, que es
+ * lo que hacía que la serie no se leyera como una serie. El objetivo —14,5— es
+ * el promedio de los cuadros 02 y 03, los dos que ya funcionaban; no es un
+ * número elegido a gusto. Las opacidades de abajo son las que dejan a los tres
+ * en ΔE 14,4-14,7.
+ *
+ * ⚠️ Y esto CORRIGE lo que decía `AUTOCRITICA.md` §2. Ahí escribí que el cuadro
+ * crema gritaba más que los otros dos y que había que BAJARLE la opacidad, y lo
+ * apoyé en que el par `deep`/`cream` mide 9.44:1. Ese razonamiento estaba mal:
+ * 9.44:1 mide si un TEXTO se lee, no cuánto pesa una textura. Medido, el cuadro
+ * crema era el más suave de los tres y hay que SUBIRLO. Lo que sí gritaba era
+ * el tamaño de la celda, y eso se arregló en la utilidad `greca`.
+ */
 const CUADROS = [
   {
     campo: 'bg-cream',
     texto: 'text-ink',
-    /* La greca en el verde de marca sobre el amarillo: 9.44:1, así que la
-       trama se ve sin tapar el texto. La opacidad la pone la clase. */
-    trama: 'text-deep/15',
+    /* El verde de marca sobre el amarillo. Sube de 15 % a 19 %: es el par con
+       menos separación de los tres, porque `deep` y `cream` se diferencian
+       sobre todo en TONO —teal contra amarillo, casi enfrentados— y el tono
+       aporta menos peso visual que la claridad. */
+    trama: 'text-deep/[0.19]',
     hora: 'Afternoon',
   },
   {
     campo: 'bg-sunset',
     texto: 'text-ink',
-    trama: 'text-ink/15',
+    trama: 'text-ink/[0.16]',
     hora: 'Golden hour',
   },
   {
     campo: 'bg-deep',
     texto: 'text-paper',
-    trama: 'text-cream/20',
+    /* Baja de 20 % a 18 %: crema sobre verde es el par con más separación de
+       claridad de los tres y era el que se adelantaba. */
+    trama: 'text-cream/[0.18]',
     hora: 'Night',
   },
 ] as const;

@@ -28,6 +28,13 @@ ilustración, queda anotada como confirmación y no como fuente.
   superficie, sin contenedor de tarjeta.
 - **No se toma:** su tipografía (serif de editorial), el titular centrado, ni el
   módulo de blog.
+- **Estado:** la fila de tres sin tarjeta está en `ThreeDoors`. El titular
+  cruzado con la media se construyó, pero en la variante de
+  `referencia-dftc/` —la imagen INTERCALADA entre los dos renglones, no detrás
+  de ellos— y en `ThreeDoors` y no en `WhatsOn`: el h2 de «Three doors» ya
+  venía partido por un punto y no hubo que inventar el corte. La versión
+  «titular tapado por las fotos» de esta imagen sigue sin construir, y es otra
+  cosa: ahí el texto se pierde detrás de la media a propósito.
 
 ### `IMG_2906` — «Bitterroot Bunkhouse»
 - **Composición:** hero de foto oscura a sangre con el nombre centrado; abajo, una

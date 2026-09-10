@@ -92,6 +92,42 @@ const FOTOS = [
     h: 667,
     q: 70,
   },
+
+  /* ── La banda del titular de «Three doors» ───────────────────────────────
+     ⚠️ ES UN RECORTE EXTREMO A PROPÓSITO: 4,95:1. La foto va INTERCALADA
+     entre los dos renglones del h2, así que su trabajo es leerse como un
+     renglón más y no como una foto puesta al lado del texto. A esa altura
+     una foto vertical o de 3:2 no sirve: hay que recortarla.
+
+     `_RCZ8192` es la barra de arriba entera con gente a lo largo. Se eligió
+     midiendo el RECORTE y no la foto —hoja de contactos a 4,7:1 de las 24
+     candidatas sin usar—: la línea de la barra corre de borde a borde, que es
+     lo único que sobrevive a una franja de 200px de alto. Las otras dos
+     finalistas se cayeron por eso mismo: en `DSC04091` la franja central es
+     un cartel de «Table Reserved», y en `DSC02178` son cabezas cortadas.
+
+     Y dice lo que dice la sección: «no es un restaurante». Una barra llena de
+     gente NO es una foto de comida, que es justo la confusión que el bloque
+     corrige.
+
+     ⚠️ RECORTE A TODO EL ANCHO Y CON `foco` EN 0,564, no centrado. Arriba de
+     la franja centrada son los televisores del techo y abajo son respaldos de
+     silla, así que la ventana vertical está muy acotada; pero bajando el
+     centro seis puntos entran la barra y la cristalería y salen las dos
+     TELARAÑAS DE HALLOWEEN que hay colgadas en la pared del fondo. Una home
+     evergreen no puede tener fecha, y ésa la tenía.
+
+     Probé también recortar los ~18 % de la derecha para sacarlas: se pierde la
+     barra corriendo de borde a borde, que es lo único que justifica un
+     4,95:1. El ajuste vertical las saca sin perder el barrido. */
+  {
+    src: '_RCZ8192.jpg',
+    out: 'public/images/venue/doors-band.jpg',
+    w: 2080,
+    h: 420,
+    foco: 0.564,
+    q: 74,
+  },
 ];
 
 /**
@@ -146,8 +182,24 @@ for (const f of FOTOS) {
     continue;
   }
   asegurar(f.out);
-  await sharp(src)
-    .rotate()
+  let pipe = sharp(src).rotate();
+
+  /*
+   * ⚠️ `foco` es un recorte vertical FINO, y existe porque `position` de sharp
+   * sólo acepta las nueve gravedades —`top`, `centre`, `bottom`…— y en un
+   * recorte de 4,95:1 el salto de `centre` a `bottom` es de mil píxeles: uno
+   * te deja el techo y el otro los respaldos de las sillas.
+   *
+   * Es la fracción del alto donde va el CENTRO de la franja. 0.5 es `centre`.
+   */
+  if (f.foco !== undefined) {
+    const { width, height } = await pipe.metadata();
+    const alto = Math.min(height, Math.round((width * f.h) / f.w));
+    const top = Math.max(0, Math.min(height - alto, Math.round(height * f.foco - alto / 2)));
+    pipe = pipe.extract({ left: 0, top, width, height: alto });
+  }
+
+  await pipe
     .resize(f.w, f.h, { fit: 'cover', position: f.position ?? 'centre' })
     .jpeg({ quality: f.q, mozjpeg: true, progressive: true })
     .toFile(f.out);

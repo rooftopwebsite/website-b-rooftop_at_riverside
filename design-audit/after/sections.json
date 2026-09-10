@@ -36,7 +36,7 @@
     "heading": "Not a restaurant. Three of them",
     "bg": "rgb(255, 255, 255)",
     "color": "rgb(10, 31, 30)",
-    "height": 662,
+    "height": 968,
     "classes": "relative bg-paper text-body py-band-sm lg:py-band px-gutter md:px-gutter-lg"
   },
   {
