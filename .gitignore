@@ -19,3 +19,15 @@ a11y-report.json
 
 # Fuentes originales (.otf/.ttf) usadas solo por scripts/install-fonts.mjs
 public/fonts/_drop/
+
+# Originales de multimedia del cliente (681 MB). Entrada de `npm run media`;
+# lo que se versiona son los derivados de public/images/venue y public/videos.
+public/multimedia/
+
+# Capturas de trabajo del rediseño. Los ENTREGABLES —baseline/, after/,
+# COMPARAR-*.png, specimen-*.png— sí se versionan; estas son intermedias y se
+# regeneran con los scripts de design-audit/.
+design-audit/fase*/
+design-audit/HOJA-*.png
+design-audit/tmp/
+design-audit/specimen.html

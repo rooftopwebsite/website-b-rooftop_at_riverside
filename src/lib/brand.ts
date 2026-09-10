@@ -2,62 +2,111 @@
  * Tokens de marca y datos del negocio de Rooftop at Riverside.
  *
  * Fuente de los colores: **brand book de Rooftop at Riverside**, página 10
- * («Expanded Palette»). Los 12 valores verificados uno a uno contra el libro.
- * Fuente de los datos: auditoría de eatdrinkparadise.com del 2026-09-08,
- * cruzada contra el brief. Ver `docs/current-site-inventory.md`.
+ * («Expanded Palette»), más los tokens de superficie y texto que agregó el
+ * sistema de diseño. Fuente de los datos: auditoría de eatdrinkparadise.com
+ * del 2026-09-08, cruzada contra el brief. Ver `docs/current-site-inventory.md`.
  *
- * ⚠️ LA LEY DEL COLOR. El sitio es blanco, el texto es negro y el color es
- * puntuación, no superficie. Esta paleta lista colores AUTORIZADOS, no
- * obligatorios. Las restricciones duras están abajo, en COLOR_RULES, y los
- * ratios verificados en `docs/contrast-audit.md`.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ DÓNDE VIVE DE VERDAD LA PALETA, y por qué esto no es una copia suelta.
+ *
+ * Lo que RENDERIZA es el bloque `@theme` de `src/app/globals.css`. Tailwind v4
+ * es CSS-first —no existe `tailwind.config.ts`— y no se puede importar un `.ts`
+ * dentro de `@theme`, así que el archivo que pinta es ése y no éste.
+ *
+ * Este objeto existe para que la paleta sea legible desde TypeScript y para
+ * documentar las reglas de uso, que el CSS no puede expresar. Y para que no se
+ * vuelva a desincronizar, **`npm run check:tokens` falla si los dos archivos
+ * divergen**.
+ *
+ * Ese guard se agregó porque la divergencia ya había pasado, en silencio y con
+ * consecuencias: este objeto declaraba `paper: '#FFFFFF'` e `ink: '#000000'`
+ * mientras el sitio pintaba `#FDFCF7` y `#0A1F1E`, y `scripts/contrast.mjs`
+ * arrastraba la misma copia vieja — así que TODOS los ratios documentados
+ * estaban calculados contra colores que el sitio no usaba. Ver
+ * `design-audit/AUDIT.md` §3.
+ * ══════════════════════════════════════════════════════════════════════════
+ *
+ * ⚠️ LA LEY DEL COLOR, revisada en `redesign/light-tropical`: el sitio es
+ * MAYORMENTE CLARO, el texto es el verde de marca llevado a casi negro, y el
+ * oscuro es la excepción —dos zonas en toda la home, nunca dos seguidas—. Los
+ * ratios medidos están en `design-audit/CONTRASTE.md`, que los genera leyendo
+ * `globals.css`.
  */
 
 export const COLORS = {
-  /** «Sunset Orange». CTA primario (texto NEGRO encima), hover de links, un bloque de acento por página. */
+  /** «Sunset Orange». CTA primario, con texto NEGRO encima. Nunca como texto sobre claro. */
   sunset: '#F58521',
+  /** Un paso más oscuro, sólo para el hover del CTA primario. */
+  'sunset-hover': '#E0741A',
   /** «River Teal». Isotipo, iconografía, patrón gráfico. Nunca como texto. */
   river: '#0EB6B8',
-  /** La única superficie de color grande permitida. Una o dos secciones por página. */
+  /** El amarillo del brand book. Píldoras y botones sobre oscuro. NO fondos grandes. */
   cream: '#FDF0B4',
   mint: '#C4F2EC',
-  /** La única superficie oscura permitida: sección del Sunset Bar y footer. */
+  /** La superficie oscura: la banda de Events y el footer. Y nada más en la home. */
   deep: '#014545',
+  /** Un peldaño más oscuro, para capas dentro de una losa. El header. */
+  deeper: '#013434',
   teal600: '#028382',
   tomato: '#EB452C',
+  /** Acento de titular sobre superficie clara. 7.43:1 sobre `paper`. */
   terra: '#A62000',
   plum: '#402639',
   magenta: '#A24584',
-  /** «Nightlife Black». */
-  ink: '#000000',
-  /** «Cloud White». */
+  /** Titulares sobre claro. Es `deep` llevado a casi negro: el texto pertenece a la marca. */
+  ink: '#0A1F1E',
+  /** Cuerpo de texto. MISMO valor que `ink`; los dos tokens se mantienen separados. */
+  body: '#0A1F1E',
+  /** La base. Blanco puro. */
   paper: '#FFFFFF',
-  /** Cuerpo de texto. El brief autoriza #0A0A0A además del negro puro. */
-  body: '#0A0A0A',
+  /** Segunda superficie clara. Es `cream` desaturado: 1.08:1 contra `paper`. */
+  bone: '#FAF6EA',
+  /** Bajadas y texto secundario. El más claro que aún pasa AA en las tres superficies claras. */
+  muted: '#487270',
+  /**
+   * El mismo rol que `muted`, pero sobre la banda oscura: 5.95:1 contra `deep`.
+   * ⚠️ Un token opaco no se adapta a la superficie, así que la bajada necesita
+   * los dos valores. Se eligen solos vía `--lead-ink` / `.on-dark`.
+   */
+  'muted-dark': '#A8C6C4',
+  /** Filetes y bordes de 1px. Calibrado sobre blanco. */
+  fog: '#DED8C7',
 } as const;
 
 /**
- * Restricciones de accesibilidad, verificadas con cálculo de luminancia
- * relativa (WCAG 2.1). Los números están en `docs/contrast-audit.md`.
+ * Restricciones de accesibilidad. Todas MEDIDAS con luminancia relativa
+ * (WCAG 2.1) por `design-audit/contraste.mjs`, que lee la paleta de
+ * `globals.css`. La tabla completa está en `design-audit/CONTRASTE.md`.
  *
  * El problema de fondo: `sunset` y `river` son tonos medios con luminancia casi
- * idéntica — 2.54:1 y 2.50:1 sobre blanco. Ninguno llega a AA como texto sobre
- * fondo claro, en ningún tamaño.
+ * idéntica — 2.54:1 y 2.50:1 sobre `paper`. Ninguno llega a AA como texto sobre
+ * fondo claro, en ningún tamaño. Y sobre `bone` es todavía peor: 2.35:1.
  */
 export const COLOR_RULES = {
   /** Nunca como color de TEXTO sobre fondo claro. Sí como superficie. */
   neverAsTextOnLight: ['sunset', 'river'],
   /** Sobre naranja o sobre teal, el texto va en NEGRO (8.26:1 y 8.40:1). Nunca en blanco. */
-  textOnBrandFill: COLORS.ink,
-  /** Texto de color admitido sobre BLANCO. */
-  colorTextOnWhite: ['deep', 'plum', 'terra', 'teal600', 'magenta'],
+  textOnBrandFill: '#000000',
+  /** Texto de color admitido sobre `paper`. */
+  colorTextOnPaper: ['ink', 'body', 'muted', 'deep', 'plum', 'terra', 'magenta', 'teal600'],
   /**
-   * Texto de color admitido sobre CREMA.
-   * ⚠️ `teal600` SALE de esta lista: sobre crema da 4.00:1, no llega al 4.5:1
-   * de AA para cuerpo. El 4.59:1 que lo habilita es sobre blanco, no sobre crema.
+   * Texto de color admitido sobre `bone`, la segunda superficie clara.
+   * ⚠️ `teal600` SALE de esta lista: sobre `cream` da 4.00:1 y no llega al
+   * 4.5:1 de AA para cuerpo. El valor que lo habilita es sobre `paper`.
    */
-  colorTextOnCream: ['deep', 'plum', 'terra', 'magenta'],
-  /** Sobre `deep` el texto va en blanco o en crema. */
-  textOnDeep: [COLORS.paper, COLORS.cream],
+  colorTextOnBone: ['ink', 'body', 'muted', 'deep', 'plum', 'terra', 'magenta'],
+  /** Sobre `deep` el texto va en `paper` o en `cream` (10.83:1 y 9.44:1). */
+  textOnDeep: ['paper', 'cream'],
+  /**
+   * El acento del titular es a DOS colores según la superficie, y máximo en
+   * dos titulares de la home.
+   */
+  headlineAccent: { onLight: 'terra', onDark: 'sunset' },
+  /**
+   * ⚠️ `sunset` sobre `deep` da 4.26:1: pasa el 3:1 de texto grande, NO el
+   * 4.5:1 de cuerpo. Sirve para una palabra de un titular, no para una bajada.
+   */
+  displayOnly: ['sunset on deep'],
 } as const;
 
 export interface Hours {

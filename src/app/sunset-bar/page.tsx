@@ -199,8 +199,13 @@ function MenuRow({ item, detailed = false }: { readonly item: MenuItem; readonly
           {item.description}
         </p>
       ) : null}
+      {/* ⚠️ La cursiva se fue de la nota de abajo. El brand no la usa en
+          ninguna parte y ésta era la única ocurrencia del sitio. La nota se
+          distingue del cuerpo por tamaño (15px contra 16) y por color
+          (`muted` contra `ink`), que es el mismo mecanismo que usa el resto
+          del sistema. */}
       {detailed && item.note ? (
-        <p className="mt-[2px] max-w-[52ch] text-[15px] leading-[1.5] text-body/75 italic">
+        <p className="mt-[2px] max-w-[52ch] text-[15px] leading-[1.5] text-muted">
           {item.note}
         </p>
       ) : null}

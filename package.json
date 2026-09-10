@@ -12,7 +12,13 @@
     "check:surfaces": "node scripts/surface-rhythm.mjs",
     "check:motion": "node scripts/reduced-motion.mjs",
     "check:seo": "node --experimental-strip-types scripts/check-seo.mjs",
-    "check:css": "node scripts/check-css.mjs"
+    "check:css": "node scripts/check-css.mjs",
+    "check:tokens": "node scripts/check-tokens.mjs",
+    "check:contrast": "node scripts/contrast.mjs --check",
+    "specimen": "node design-audit/specimen.mjs",
+    "media": "node scripts/build-media.mjs",
+    "greca": "node scripts/build-greca.mjs",
+    "horizonte": "node scripts/build-horizonte.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

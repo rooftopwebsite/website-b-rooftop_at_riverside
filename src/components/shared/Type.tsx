@@ -10,34 +10,62 @@ import type { ReactNode } from 'react';
 export type HeadingLevel = 1 | 2 | 3 | 4;
 
 /**
- * El mapa responsive de la casa.
+ * ⚠️ LA ESCALA ES FLUIDA Y YA NO HAY MAPA DE BREAKPOINTS.
  *
- * ⚠️ `hero` es el único peldaño que no viene de la escala medida, y está
- * justificado en globals.css: Steelfish es una condensada extrema y al mismo
- * cuerpo se lee bastante más chica que la Lusitana sobre la que se midió la
- * escala. Se usa SÓLO en el h1 del hero del home.
+ * Antes cada nivel se armaba con tres clases —`text-d5 md:text-d4 lg:text-d3`—
+ * y eso daba tres saltos visibles al redimensionar. Ahora cada nivel es UN
+ * token con `clamp()`, definido en globals.css, y la progresión es continua.
+ *
+ * Los cuatro escalones y de dónde a dónde van:
+ *
+ *   hero   56 → 144px   el h1 del home, y sólo ése
+ *   h1     44 → 104px   el h1 de las 22 internas, vía `PageHero`
+ *   h2     40 →  88px   todo título de sección
+ *   h3     28 →  40px   subtítulo dentro de una sección
+ *
+ * ⚠️ El h2 pasó de 46px a 88px en desktop, y es EL cambio del rediseño. La
+ * relación h2/bajada estaba en 2,6× —por debajo del 3,5× donde la jerarquía se
+ * empieza a leer— y ahora está en 4,0×. Ver `design-audit/AUDIT.md` §4.
  */
 /**
- * ⚠️ Steelfish llega hasta h3 y NO MÁS. Camila: «usémosla sólo para títulos
- * grandes, o sea h1, h2 y h3». El h4 y los títulos de card pasan a Jost
- * Medium en caja MIXTA, y eso es lo que hace `FUERA_DE_DISPLAY`.
+ * ⚠️ La condensada llega hasta h3 y NO MÁS. Camila: «usémosla sólo para
+ * títulos grandes, o sea h1, h2 y h3». El h4 y los títulos de card pasan a la
+ * geométrica en peso Medium y caja MIXTA, y eso es lo que hace
+ * `FUERA_DE_DISPLAY`.
  *
- * El motivo no es sólo gusto: a 20–24px una condensada de caja alta se lee
- * como una ETIQUETA y no como un título, así que competía con los eyebrows
- * —que son literalmente eso— en vez de encabezar el bloque.
+ * El motivo no es sólo gusto, y ahora además es una regla dura del brief: **la
+ * condensada nunca por debajo de 24px**. A 20–24px una condensada de caja alta
+ * se lee como una ETIQUETA y no como un título, así que competía con los
+ * eyebrows —que son literalmente eso— en vez de encabezar el bloque.
  *
  * Va en caja MIXTA y a peso 500, que es lo que lo separa del eyebrow: los dos
- * comparten familia desde que Jost reemplazó a Bronx y a Futura, así que la
- * diferencia la hacen la caja y el tracking. Un título de card en caja alta
- * con 0.24em sería un eyebrow grande, no un título.
+ * comparten familia, así que la diferencia la hacen la caja y el tracking. Un
+ * título de card en caja alta con tracking abierto sería un eyebrow grande, no
+ * un título.
  */
 const FUERA_DE_DISPLAY =
-  'font-body font-medium text-[20px] leading-[1.3] tracking-[0.01em] normal-case lg:text-[24px]';
+  'font-body font-medium text-[20px] leading-[1.3] normal-case lg:text-[24px]';
+
+/**
+ * `label` — rótulo de columna del footer y encabezados de bloque chico.
+ *
+ * ⚠️ ERA `text-d7`, o sea la CONDENSADA A 18px, y eso violaba el piso de 24px
+ * del brief: a ese cuerpo una condensada de caja alta pierde el contraste de
+ * trazo que la hace funcionar y se vuelve ilegible. Lo usan seis call sites
+ * —el footer, /faq, /join-us, /our-story, /sunset-bar y /events/game-truck—
+ * así que era una violación repetida, no un caso aislado.
+ *
+ * Pasa a la geométrica en caja alta a 15/16px con tracking medio. Queda en un
+ * escalón propio entre el eyebrow (12px, 0.12em) y el título de card (20/24px,
+ * caja mixta): se lee como rótulo y no compite con ninguno de los dos.
+ */
+const LABEL =
+  'font-subhead font-medium text-[15px] leading-[1.3] tracking-label uppercase lg:text-[16px]';
 
 const SIZES: Record<HeadingLevel, string> = {
-  1: 'text-d4 md:text-d3 lg:text-d2',
-  2: 'text-d5 md:text-d4 lg:text-d3',
-  3: 'text-d6 lg:text-d5',
+  1: 'text-h1',
+  2: 'text-h2',
+  3: 'text-h3',
   4: FUERA_DE_DISPLAY,
 };
 
@@ -45,8 +73,7 @@ const ROLES = {
   section: null,
   hero: 'text-hero',
   card: FUERA_DE_DISPLAY,
-  /** Rótulo de columna de footer y encabezados de bloque chico. */
-  label: 'text-d7',
+  label: LABEL,
 } as const;
 
 export type HeadingRole = keyof typeof ROLES;
@@ -69,21 +96,34 @@ export function Heading({
     <Tag
       {...(id ? { id } : {})}
       className={[
-        // Steelfish va SIEMPRE en caja alta: es una condensada de display,
-        // en caja baja pierde el color de página que sostiene el diseño.
+        // La condensada va SIEMPRE en caja alta: es un display, y en caja baja
+        // pierde el color de página que sostiene el diseño.
         //
-        // ⚠️ Peso REGULAR, nunca alto. Camila: «en regular nunca en peso
-        // alto». Estaba en `font-bold` en TODOS los niveles —no había un solo
-        // título del sitio en Regular— y junto con el tracking negativo era la
-        // causa de que la Steelfish se viera apelmazada.
+        // ⚠️ PESO 600, decidido con Camila para esta rama. Es el punto medio
+        // entre el 600–800 que pedía el brief y el `font-normal` que estaba
+        // aprobado antes.
         //
-        // ⚠️ El tracking NO va acá. Lo pone cada escalón de la escala con su
-        // `--text-*--letter-spacing`, así cada tamaño se lleva el suyo en
-        // todos los breakpoints. Ver globals.css.
+        // Por qué se movió del 400: a 144px una condensada en Regular se lee
+        // liviana, casi de línea, y en esta dirección el titular del hero es lo
+        // ÚNICO grande de la primera pantalla —el muro se quedó en huecos
+        // rotulados—, así que tiene que sostenerla solo.
         //
-        // `font-display` y `uppercase` los apagan h4 y `role="card"` con
-        // `font-body` y `normal-case`, que ganan por venir después.
-        'font-display font-normal uppercase',
+        // Por qué no 700 ni 800: es el peso con el que se rechazó la
+        // condensada anterior. El 600 le da cuerpo de asta sin cerrar los
+        // contornos.
+        //
+        // ⚠️ Y el tracking va en CERO, no negativo. El brief pedía -0.01em y es
+        // exactamente el signo que ya se rechazó una vez sobre esta clase de
+        // tipografía («se ve muy pegada»). Los ocho tokens
+        // `--text-*--letter-spacing` que abrían cada escalón se fueron de
+        // globals.css: existían para compensar un tracking negativo global que
+        // ya no está, así que con el tracking en cero no hay nada que
+        // compensar. Los escalones quedan en `letter-spacing: normal`.
+        //
+        // `font-display` y `uppercase` los apagan h4, `role="card"` y
+        // `role="label"` con su propia familia y caja, que ganan por venir
+        // después.
+        'font-display font-semibold uppercase',
         ROLES[role] ?? SIZES[level],
         className,
       ]
@@ -104,14 +144,18 @@ export function Heading({
  * una cuarta familia por un acento, así que el contraste lo da el color.
  *
  * ⚠️ DOS colores según la superficie, y no uno. `sunset` sobre claro da
- * **2.48:1**: no alcanza ni el 3:1 que pide el texto grande (WCAG 1.4.3).
- * Sobre `deep` sí, 4.26:1. Sobre claro va `terra`, que da 7.43:1 sobre `paper`
- * y 6.47:1 sobre `cream` — y de paso es el color que ya usan los eyebrows, así
- * que no entra un color nuevo a la paleta.
+ * **2.54:1** sobre `paper` y **2.35:1** sobre `bone`: no alcanza ni el 3:1 que
+ * pide el texto grande (WCAG 1.4.3). Sobre `deep` sí, 4.26:1. Sobre claro va
+ * `terra`, que da 7.43:1 sobre `paper` y 6.87:1 sobre `bone` — y de paso es el
+ * color que ya usan los eyebrows, así que no entra un color nuevo a la paleta.
  *
- * Medidos y descartados para claro: `river` 2.43:1 (falla), `tomato` 3.77:1
- * (pasa raspando, sólo texto grande), `plum` 13.15:1 y `deep` 10.55:1 (pasan,
- * pero siendo oscuros como el titular el acento no se lee como acento).
+ * ⚠️ MÁXIMO EN DOS TITULARES DE LA HOME, y en los dos la palabra acentuada
+ * tiene que cargar significado: el h1 del hero y el h2 de Events banner. Un
+ * acento en cada título es ruido, no jerarquía.
+ *
+ * Ratios medidos en `design-audit/CONTRASTE.md`. Descartados para claro:
+ * `river` (falla), `tomato` (pasa raspando, sólo texto grande), `plum` y
+ * `deep` (pasan, pero siendo oscuros como el titular no se leen como acento).
  */
 export function Accent({
   on,
@@ -125,18 +169,28 @@ export function Accent({
 }
 
 /**
- * Eyebrow. Jost 500 en caja alta con 0.24em de tracking, siempre.
+ * Eyebrow. La geométrica en 500, caja alta, 12px y 0.12em de tracking.
  *
- * ⚠️ Los tonos son sólo los que PASAN AA. No hay `sunset` ni `river`: sobre
- * blanco dan 2.54:1 y 2.50:1. Ver docs/contrast-audit.md.
+ * ⚠️ El tracking bajó de 0.24em a 0.12em y el cuerpo de 13px a 12px. El 0.24em
+ * existía para igualar la mancha de la caja alta de la familia que se fue por
+ * licencia: era una corrección sin referente. Ver globals.css.
+ *
+ * ⚠️ NO VA UN EYEBROW ARRIBA DE CADA TÍTULO. En la home había **14** y el
+ * brief permite 3. Se quedan los que CLASIFICAN un dato real —el día de cada
+ * evento, las tres unidades del negocio, los rótulos de contacto— y se caen
+ * los que sólo repetían en versalitas el título que venía abajo. Un eyebrow
+ * por sección es cromo de plantilla.
+ *
+ * ⚠️ Los tonos son sólo los que PASAN AA. No hay `sunset` ni `river`: sobre la
+ * base dan 2.54:1 y 2.50:1. Ratios medidos en `design-audit/CONTRASTE.md`.
  */
 const EYEBROW_TONES = {
-  deep: 'text-deep', // 10.83:1 sobre blanco · 9.44:1 sobre crema
-  plum: 'text-plum', // 13.51:1 · 11.77:1
-  terra: 'text-terra', //  7.43:1 ·  6.47:1
-  magenta: 'text-magenta', // 5.64:1 ·  4.92:1
+  deep: 'text-deep', // 10.83:1 sobre paper · 10.03:1 sobre bone
+  plum: 'text-plum', // 13.51:1 · 12.50:1
+  terra: 'text-terra', //  7.43:1 ·  6.87:1
+  magenta: 'text-magenta', //  5.64:1 ·  5.22:1
   cream: 'text-cream', //  9.44:1 sobre deep
-  ink: 'text-ink',
+  ink: 'text-ink', // 17.11:1 · 15.83:1
 } as const;
 
 export function Eyebrow({
@@ -187,8 +241,14 @@ export function SectionHead({
   const centered = align === 'center';
   return (
     <div
+      /*
+       * ⚠️ El ancho del bloque subió con la escala. Con el h2 en 46px, 820px
+       * alcanzaban para dos renglones; a 88px un título de tres palabras ya
+       * pide más de mil. `max-w-head` sale de los tokens de contenedor, no de
+       * un número escrito acá.
+       */
       className={[
-        centered ? 'mx-auto max-w-[760px] text-center' : 'max-w-[820px]',
+        centered ? 'mx-auto max-w-head text-center' : 'max-w-head',
         className,
       ]
         .filter(Boolean)
@@ -203,7 +263,28 @@ export function SectionHead({
         {title}
       </Heading>
       {lead ? (
-        <p className="mt-gap-bajada max-w-[62ch] text-lead opacity-80">{lead}</p>
+        /*
+         * ⚠️ `bajada` y NO `opacity-80` ni `text-muted` directo.
+         *
+         * La opacidad se fue porque el color resultante cambiaba según la
+         * superficie de atrás: el mismo markup daba un contraste distinto
+         * sobre `paper`, sobre `bone` y sobre una foto, así que no se podía
+         * auditar.
+         *
+         * Pero `text-muted` a secas tampoco servía, y eso lo encontró
+         * `npm run a11y` y no una tabla: `muted` es un verde medio calibrado
+         * para fondos claros, y esta bajada también aparece dentro de la
+         * sección oscura, donde daba **2.02:1**. Un token opaco no se adapta a
+         * la superficie — eso era justo lo que la opacidad hacía bien.
+         *
+         * `bajada` resuelve las dos cosas: lee `--lead-ink`, que `.on-dark`
+         * pisa, y los dos valores posibles son opacos y están medidos
+         * (5.36:1 sobre `paper` · 4.96:1 sobre `bone` · 5.95:1 sobre `deep`).
+         *
+         * ⚠️ 60ch y no 62ch: es el valor del brief para la bajada. El cuerpo
+         * corrido usa 75ch, que es otro componente.
+         */
+        <p className="mt-gap-bajada max-w-[60ch] text-lead bajada">{lead}</p>
       ) : null}
       {children}
     </div>

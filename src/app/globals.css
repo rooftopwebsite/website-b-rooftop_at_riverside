@@ -24,52 +24,44 @@
 /* --------------------------------------------------------------------------
    TIPOGRAFÍAS
 
-   ESTADO: DOS familias, las dos libres (OFL de Google Fonts), las dos
-   variables. Ninguna de las tres del brand book original quedó en pie, y en
-   los tres casos el motivo fue LICENCIA y no diseño.
+   DOS familias, las dos libres (OFL de Google Fonts) y las dos variables:
 
-   Lo que hay:
+     Big Shoulders Display   condensada de caja alta, 100–900. Es el display:
+                 h1, h2, h3, precios y nombres de menú.
+     Jost        geométrica 100–900, revival libre de una neo-grotesca
+                 geométrica. Cubre el cuerpo (400) y los eyebrows/subheads
+                 (500, caja alta con tracking abierto).
 
-     Big Shoulders Display   condensada de caja alta, variable 100–900. Es el
-                 display: h1, h2, h3, precios y nombres de menú.
-     Jost        geométrica variable 100–900, revival libre de Futura. Cubre
-                 el cuerpo (400) y los eyebrows/subheads (500, caja alta con
-                 tracking abierto).
+   ⚠️ LAS TRES FAMILIAS DEL BRAND BOOK ORIGINAL SALIERON DEL PROYECTO, y en
+   los tres casos el motivo fue LICENCIA y no diseño: una venía marcada como
+   uso personal y sin un solo metadato, otra no era la familia que decía ser
+   sino una variante cirílica con EULA comercial, y la tercera es de una
+   fundición que la vende. El detalle de qué decía la tabla `name` interna de
+   cada archivo está en `public/fonts/_drop/LEEME.md`, junto a los originales.
 
-   ⚠️ POR QUÉ SE FUERON LAS TRES. Leído de la tabla `name` interna de cada
-   archivo, no del nombre del archivo:
+   Los reemplazos NO se eligieron de memoria, se midieron. Jost entra en el
+   mismo renglón que la geométrica que reemplaza —misma `a` de un piso, misma
+   `o` circular, cifras casi idénticas—. Y Big Shoulders quedó **+10 % de
+   ancho** en «BONITA COMES TOGETHER» a 62px contra la condensada anterior; las
+   otras seis condensadas libres de Google están 20 % o más arriba, así que es
+   la única que queda a un dígito.
 
-     · **Bronx** no traía NI UN metadato: ni copyright ni fundición. El fuente
-       era `Bronx_PersonalUse.otf`. Uso personal, y esto es un sitio comercial.
-     · **«Futura PT»** era en realidad Futura Cyrillic de ParaType, con su EULA
-       comercial declarado adentro. Y la cara servida como `heavy` (peso 600)
-       era la **Demi**: la escalera de pesos mentía.
-     · **Steelfish** es de Typodermic Fonts (© 2001-2024, Raymond Larabie) y no
-       trae campo de licencia. No es de uso libre: se compra.
+   ⚠️ El +10 % es real y hay que tenerlo presente al componer: un titular que
+   entraba justo antes puede partirse acá. Verificado a mano en las tres rutas
+   de más carga tipográfica —home, /events y /sunset-bar— y en las tres entra.
 
-   Los reemplazos NO se eligieron de memoria, se midieron:
+   ⚠️ NO HAY UNA SOLA REGLA @font-face EN ESTE ARCHIVO, y es a propósito. Las
+   dos caras se cargan con `next/font/local` desde `src/app/layout.tsx`, que es
+   lo que agrega el `<link rel="preload" as="font">` y las métricas de respaldo
+   ajustadas. Declaradas acá, el navegador recién descubría el archivo después
+   de bajar y parsear el CSS —tres saltos— y el texto saltaba al hacer el swap.
+   El motivo completo está en el encabezado de `layout.tsx`.
 
-     · Jost contra la Futura que había: misma `a` de un piso, misma `o`
-       circular, cifras casi idénticas y el mismo ancho de línea. De seis
-       candidatas de Google es la única que entra en un renglón igual que la
-       original. En caja alta a 500 iguala la mancha de Bronx.
-     · Big Shoulders contra Steelfish: **+10%** de ancho en «BONITA COMES
-       TOGETHER» a 62px. Las otras seis condensadas libres de Google están
-       20% o más arriba — Pathway +20, Saira +21, Bebas +22, Barlow +37,
-       Oswald +52. Es la única que queda a un dígito.
+   Los tokens de abajo apuntan a las CSS variables que emite `next/font`.
+   `--font-display` / `--font-subhead` / `--font-body` **no cambian de nombre**:
+   los usan 163 call sites.
 
-   ⚠️ El +10% es real y hay que tenerlo presente al componer: un titular que
-   entraba justo en Steelfish puede partirse acá. Verificado a mano en las tres
-   rutas de más carga tipográfica —home, /events y /sunset-bar— y en las tres
-   entra.
-
-   ⚠️ Se fue también `Steelfish Outline`, la decorativa hueca. Estaba declarada
-   y NO se usaba en ningún componente. No tiene equivalente libre y tampoco
-   hacía falta.
-
-   `font-display: swap` es requisito del brief (Fase 4).
-
-   ⚠️⚠️ NO PONGAS UN COMENTARIO CSS DENTRO DEL BLOQUE GENERADO DE ABAJO.
+   ⚠️⚠️ NO PONGAS UN COMENTARIO CSS DENTRO DEL BLOQUE `@theme` DE ABAJO.
    Los comentarios CSS **no se anidan**: el cierre del interno termina este
    bloque antes de tiempo, el cierre final queda suelto, y Tailwind deja de
    emitir TODAS las utilidades de tema — `bg-cream`, `text-ink`, `px-gutter`,
@@ -78,55 +70,82 @@
    Lo cubre `npm run check:css`.
    -------------------------------------------------------------------------- */
 
-/* ===== FUENTES DE MARCA — las dos vienen de Google Fonts, ya en woff2, así
-   que este bloque ya NO lo genera `npm run fonts`: se escribe a mano. ===== */
-@font-face {
-  font-family: 'Jost';
-  src: url('/fonts/jost-variable.woff2') format('woff2-variations');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Big Shoulders Display';
-  src: url('/fonts/big-shoulders-variable.woff2') format('woff2-variations');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-/* ===== FIN FUENTES DE MARCA ===== */
 
 @theme static {
   /* ── Color ──────────────────────────────────────────────────────────────
-     ⚠️ REVISADO tras medir Showdown Social, que Camila fijó como referencia
-     máxima de la casa junto con WeWork, Superside y Stripe.
+     ⚠️ REVISADO POR TERCERA VEZ — rediseño `redesign/light-tropical`.
 
-     Lo que cambió y por qué:
+     Lo que se revierte, y por qué. La revisión anterior había apoyado el
+     layout en LOSAS oscuras anchas y sacado el blanco puro. Medido sobre el
+     píxel del baseline, eso terminó en **55,4 % de la home en verde oscuro**
+     contra 40,3 % de claro (ver `design-audit/AUDIT.md` §0). El objetivo ahora
+     es el inverso: 70–75 % claro, 20–25 % oscuro.
 
-       · **No hay blanco puro.** Showdown usa `#FCFBF2` y `#F1EBDC`; ninguna
-         página de la casa se apoya en `#FFFFFF`. El blanco puro con texto
-         negro es lo que hacía que esto pareciera un panel de software y no
-         un lugar donde se come. `paper` pasa a ser hueso cálido.
-       · **El negro tampoco es puro.** Showdown titula en `rgb(21,21,28)`.
-         Un negro con una pizca de azul se lee más impreso y menos pantalla.
-       · **`deep` deja de ser sólo el footer.** La casa apoya el layout en
-         LOSAS oscuras anchas sobre fondo claro. Es el recurso que le da peso
-         a la página, y acá estaba desaprovechado.
+     El razonamiento no es de gusto. La barra se llama Sunset Bar, los camiones
+     abren a las 4 y cierran a las 8, el happy hour es de 3 a 6 de la TARDE y
+     el domingo se abre a las 11 de la mañana. Es un lugar de día y de
+     atardecer, y el sitio estaba vendiendo la medianoche de un lugar que a la
+     medianoche está cerrado cuatro días de la semana.
 
-     La «ley del color» del brief original —sitio blanco, color como
-     puntuación— queda levantada por indicación de Camila: «aunque no sea todo
-     blanco y negro». El color ahora estructura, no sólo puntúa.           */
+     Lo que cambia:
+
+       · **Vuelve el blanco puro.** `paper` pasa de `#FDFCF7` a `#FFFFFF`.
+         ⚠️ Medido, el cambio es **1,03:1** — imperceptible por sí solo. No es
+         lo que aclara el sitio; lo que lo aclara es sacar el `deep` del 55 %.
+         Se hace porque el brief lo pide y porque simplifica: `chalk` deja de
+         tener razón de ser.
+       · **`bone` se desatura y se vuelve la segunda superficie.** Pasa de
+         `#F7F1E3` a `#FAF6EA`, que es `cream` desaturado. Da **1,08:1** contra
+         `paper`: el corte se ve, y es el mismo escalón que tenía el par
+         anterior (1,10:1).
+       · **`deep` vuelve a ser puntuación.** Dos zonas en toda la home: la
+         banda de Events y el footer. Nunca dos seguidas.
+       · **Entra `muted`**, que no existía. El texto secundario se hacía con
+         `text-body/75`, o sea con opacidad, y eso da un color distinto sobre
+         cada superficie — imposible de auditar. Ahora es un token medido.
+
+     ⚠️ NINGÚN TOKEN SE RENOMBRA. El brief llama `cream` a la segunda
+     superficie clara y `cream-deep` al amarillo del brand book. En este repo
+     esos dos roles ya tenían nombre —`bone` y `cream`— y los usan 23 call
+     sites. Renombrarlos sería un reemplazo mecánico sin ganancia, así que se
+     mantiene la nomenclatura del repo y el mapa es:
+
+         brief `paper`       → `paper`   #FFFFFF
+         brief `cream`       → `bone`    #FAF6EA   ← segunda superficie clara
+         brief `cream-deep`  → `cream`   #FDF0B4   ← amarillo, sólo piezas chicas
+         brief `deep`        → `deep`    #014545
+         brief `sunset`      → `sunset`  #F58521
+
+     Todos los ratios de abajo están MEDIDOS con `design-audit/measure.mjs`
+     (WCAG 2.1) y tabulados en `design-audit/CONTRASTE.md`.               */
   --color-sunset: #f58521; /* CTA primario. ⚠️ El texto encima va NEGRO: blanco da 2.54:1 */
-  --color-river: #0eb6b8; /* isotipo, iconografía, patrón. NUNCA como texto sobre claro */
-  --color-cream: #fdf0b4; /* banda de color fuerte */
+  --color-river: #0eb6b8; /* isotipo, iconografía, patrón. NUNCA como texto: 2.50:1 sobre paper */
+  --color-cream: #fdf0b4; /* el amarillo del brand book. Píldoras y botones. NO fondos grandes */
   --color-mint: #c4f2ec;
-  --color-deep: #014545; /* losas oscuras + footer */
+  --color-deep: #014545; /* la banda de Events + el footer. Y NADA MÁS en la home */
   --color-deeper: #013434; /* un peldaño más para capas dentro de una losa */
   --color-teal600: #028382;
   --color-tomato: #eb452c;
-  --color-terra: #a62000;
+  --color-terra: #a62000; /* acento de titular sobre claro: 7.43:1 sobre paper */
   --color-plum: #402639;
   --color-magenta: #a24584;
+  /*
+   * `sunset-hover` — el naranja un paso más oscuro, para el hover del CTA.
+   *
+   * ⚠️ Existe como token porque estaba escrito a mano como `hover:bg-[#e0741a]`
+   * dentro de `Button.tsx`, y era el ÚNICO hex de nuestra paleta suelto en un
+   * componente. Los otros ocho que aparecen en el grep están en `AgencyBar` y
+   * NO son nuestros: son los grises de la barra de la agencia, que por pedido
+   * explícito tiene que verse igual en todos los sitios de la casa y por eso no
+   * sigue estos tokens. Ver el encabezado de ese archivo.
+   *
+   * No se resuelve con una opacidad: `bg-sunset/85` sobre `paper` aclararía el
+   * naranja en vez de oscurecerlo, y sobre `deep` daría otro color distinto.
+   * Un hover tiene que ser el mismo en las dos superficies.
+   *
+   * El texto encima sigue siendo NEGRO: 7.16:1 sobre este valor.
+   */
+  --color-sunset-hover: #e0741a;
 
   /* ── El color del texto ─────────────────────────────────────────────────
      ⚠️ UNO SOLO, y es el verde de la marca. `ink` y `body` apuntan al MISMO
@@ -150,46 +169,112 @@
      mecánico enorme con riesgo de romper algo por un reemplazo mal puesto. Los
      nombres además siguen diciendo la intención —titular contra cuerpo—, así
      que si mañana hay motivo para que diverjan, el token ya está.           */
-  --color-ink: #0a1f1e; /* titulares sobre claro */
-  --color-paper: #fdfcf7; /* fondo base: hueso cálido, NO blanco */
-  --color-bone: #f7f1e3; /* banda alterna, un tono más cálido que paper */
-  --color-chalk: #ffffff; /* blanco real: SÓLO tarjetas que deben separarse del hueso */
+  --color-ink: #0a1f1e; /* titulares sobre claro. 17.11:1 sobre paper, 15.83:1 sobre bone */
+  --color-paper: #ffffff; /* la base. Blanco puro */
+  --color-bone: #faf6ea; /* segunda superficie clara. 1.08:1 contra paper: el corte se ve */
+  /*
+   * `chalk` — QUEDA COMO ALIAS DE `paper`, no como un valor propio.
+   *
+   * Existía para lo que ahora no hace falta: cuando `paper` era hueso cálido,
+   * `chalk` era el blanco real de las tarjetas que tenían que separarse del
+   * fondo. Con `paper` en blanco puro, las dos superficies son la misma.
+   *
+   * ⚠️ No se borra el token: lo usan 4 call sites y borrarlo sería un cambio
+   * mecánico en archivos que esta rama no rediseña. Apuntarlo a `paper` deja UN
+   * valor y ningún riesgo de que divergan. Los call sites de la home sí se
+   * migran a `paper` a medida que se tocan esas secciones.
+   */
+  --color-chalk: var(--color-paper);
   --color-body: #0a1f1e; /* cuerpo de texto — MISMO valor que `ink`, ver arriba */
-  --color-fog: #e6e1d4; /* filetes y bordes, calibrado sobre hueso y no sobre blanco */
+  /*
+   * `muted` — el texto secundario, y es un token NUEVO.
+   *
+   * ⚠️ Reemplaza a `text-body/75`. Con opacidad, el color RESULTANTE cambia
+   * según la superficie de atrás, así que no se puede auditar: el mismo
+   * `body/75` da un valor sobre `paper`, otro sobre `bone` y otro sobre una
+   * foto. Un token opaco se mide una vez y vale en todas.
+   *
+   * ⚠️ #487270 NO es el #3F6664 que proponía el brief, y el cambio está
+   * medido. Barrí desde ahí hacia arriba buscando el MÁS CLARO que aún pase
+   * 4.5:1 en las tres superficies claras: #4B7674 falla sobre `cream`
+   * (4.42:1) y #487270 es el primero que pasa las tres. Es la bajada más
+   * liviana posible sin perder AA, que es lo que necesita el salto de
+   * jerarquía; el #3F6664 pasa con 6.37:1 pero queda demasiado cerca del
+   * titular para leerse como segundo nivel.
+   *
+   * Medido: 5.36:1 sobre `paper` · 4.96:1 sobre `bone` · 4.67:1 sobre `cream`.
+   */
+  --color-muted: #487270;
+  /*
+   * `muted-dark` — el mismo rol que `muted`, pero sobre la banda oscura.
+   *
+   * ⚠️ EXISTE PORQUE UN TOKEN OPACO NO SE ADAPTA A LA SUPERFICIE, y ése es el
+   * precio de haber sacado la opacidad. Lo encontró `npm run a11y` sobre la
+   * página servida, no esta tabla: al pasar la bajada de `text-body/75` a
+   * `text-muted`, la bajada de la sección oscura quedó en **2.02:1** —el token
+   * es un verde medio pensado para fondos claros—. La opacidad se adaptaba
+   * sola; el token hay que elegirlo por superficie.
+   *
+   * La solución no es volver a la opacidad: es la variable `--lead-ink`, que
+   * `.on-dark` pisa. Ver el bloque `base` más abajo.
+   *
+   * ⚠️ Y no es `cream`, que es el otro color autorizado sobre `deep`. Cream da
+   * 9.44:1 contra los 10.83:1 del titular en `paper`: al mismo peso visual que
+   * el título, la bajada deja de leerse como segundo nivel. #A8C6C4 da
+   * **5.95:1** — holgado sobre el mínimo y claramente más suave que el
+   * titular, que es exactamente el trabajo de una bajada.
+   */
+  --color-muted-dark: #a8c6c4;
+  /*
+   * `fog` — filetes y bordes. RECALIBRADO sobre blanco.
+   *
+   * ⚠️ #E6E1D4 estaba calibrado contra el hueso `#FDFCF7`; sobre blanco puro
+   * da 1.31:1 y el filete de 1px casi desaparece — y en esta dirección los
+   * filetes hacen el trabajo que antes hacían las tarjetas, así que tienen
+   * que verse. #DED8C7 da 1.42:1 sobre `paper` y 1.32:1 sobre `bone`.
+   *
+   * No le pido 3:1: un filete decorativo no es un componente de interfaz y
+   * WCAG 1.4.11 no aplica. Donde el borde SÍ identifica un control —el
+   * `secondary` de Button— el ring va en `ink/35`, que sí lo pasa.
+   */
+  --color-fog: #ded8c7;
 
   /* ── Tipografías ─────────────────────────────────────────────────────────
-     Cada familia lleva su cadena de respaldo. Los respaldos NO son sustitutos
-     de diseño: son lo que se ve durante el swap.
+     ⚠️ LAS CADENAS YA NO SE ESCRIBEN ACÁ. Cada token apunta a la CSS variable
+     que emite `next/font/local` en `layout.tsx`, y esa variable ya trae la
+     cadena completa: la cara real, la cara de respaldo con métricas ajustadas
+     que genera `adjustFontFallback`, y los respaldos del sistema que se
+     declaran en `fallback`.
 
-     display  Big Shoulders Display → condensada de caja alta. Respaldo: Arial
-                           Narrow, que mantiene la proporción angosta — es lo
-                           que sostiene el layout.
-     subhead  Jost        → eyebrows y subheads, SIEMPRE en caja alta, a peso
-                           500 y con tracking abierto.
-     body     Jost        → cuerpo, a 400. Respaldo geométrico: Century Gothic
-                           (Windows), Avenir Next (macOS), luego el sistema.
+     Escribir la cadena a mano acá sería PEOR que redundante: se saltearía la
+     cara de respaldo ajustada, que es justamente lo que evita que el texto
+     salte cuando llega la fuente. Los respaldos —Arial Narrow para el display,
+     Century Gothic / Avenir Next para el cuerpo— están declarados en
+     `layout.tsx`, que es donde viven ahora.
 
-     ⚠️ Sin 'Haettenschweiler' en la cadena de display. Estaba primero y es la
-     Impact de Windows: mientras faltaron los WOFF2, TODO el sitio se diseñó
-     mirando Impact, que es mucho más ancha de caja que una condensada de
-     verdad. Ese fue el motivo de que los titulares se pisaran y de que el
-     conjunto se viera ajeno. El respaldo tiene que parecerse a lo que
-     reemplaza: Arial Narrow, no Impact. */
-  /* ⚠️ `subhead` y `body` apuntan a la MISMA familia, y es deliberado: Jost
-     cubre los dos roles, lo que baja el sistema de tres familias a dos. Se
-     sostiene porque el eyebrow ya se distingue por peso (500), caja alta y
-     0.24em de tracking — diferencia de sobra sin pedirle otra familia.
+     display  condensada de caja alta → h1, h2, h3, precios, nombres de menú.
+     subhead  geométrica → eyebrows y subheads, SIEMPRE en caja alta, peso 500
+                           y tracking abierto.
+     body     geométrica → cuerpo, a 400.
 
-     Los dos tokens se mantienen SEPARADOS igual, para poder volver a divergir
-     sin tocar un solo componente.
+     ⚠️ `subhead` y `body` apuntan a la MISMA familia, y es deliberado: cubre
+     los dos roles, lo que baja el sistema de tres familias a dos. Se sostiene
+     porque el eyebrow ya se distingue por peso (500), caja alta y 0.24em de
+     tracking — diferencia de sobra sin pedirle otra familia. Los dos tokens se
+     mantienen SEPARADOS igual, para poder volver a divergir sin tocar un solo
+     componente.
 
-     El detalle de por qué se fueron las tres familias del brand book está en
-     el encabezado de TIPOGRAFÍAS, arriba de este archivo. */
-  --font-display: 'Big Shoulders Display', 'Arial Narrow', ui-sans-serif, sans-serif;
-  --font-subhead: 'Jost', 'Century Gothic', 'Avenir Next', ui-sans-serif, system-ui,
-    sans-serif;
-  --font-body: 'Jost', 'Century Gothic', 'Avenir Next', ui-sans-serif, system-ui,
-    sans-serif;
+     ⚠️ El respaldo del display NO incluye 'Haettenschweiler'. Es la Impact de
+     Windows y es mucho más ancha de caja que una condensada de verdad; cuando
+     estuvo primera en la cadena, todo el sitio se diseñó mirando Impact y los
+     titulares se pisaban. El respaldo tiene que parecerse a lo que reemplaza.
+
+     ⚠️ Si estas variables quedan sin definir —por ejemplo si alguien saca el
+     className del <html>— el texto cae al default del navegador sin aviso.
+     Lo cubre `npm run check:css`. */
+  --font-display: var(--font-display-src);
+  --font-subhead: var(--font-body-src);
+  --font-body: var(--font-body-src);
 
   /* ── Breakpoints ─────────────────────────────────────────────────────────
      `desk` (1344) es el de la casa: 1280 de caja + 32×2 de gutter. Es el ancho
@@ -211,9 +296,41 @@
   --container-tablet: 880px;
   --container-site: 1280px;
   --container-wide: 1420px;
+  /*
+   * `head` — el ancho del bloque de encabezado de sección (eyebrow + h2 +
+   * bajada). Lo usa `max-w-head` en `SectionHead`.
+   *
+   * ⚠️ Subió de 820px porque subió la escala. Con el h2 en 46px un título de
+   * dos renglones entraba en 820; a 88px «Five businesses, one set of stairs.»
+   * necesita 1.040 para no partirse en tres. Es el ancho de la caja de 1280
+   * menos un margen óptico, no un número arbitrario.
+   */
+  --container-head: 1040px;
 
   /* ── Gutter ─────────────────────────────────────────────────────────────
      16/32. Es el par tokenizado de The Orient y el que cierra con el 1344.  */
+  /* ── Espaciado ───────────────────────────────────────────────────────────
+   * CUÁL USAR, y esto no es preferencia: es la regla que hace que los 1.217
+   * valores con corchetes del inventario se puedan convertir de forma
+   * consistente. Ver `design-audit/AUDIT.md` §3.
+   *
+   *   1. **Token semántico**, si el espacio TIENE un nombre en el sistema:
+   *      `py-band`, `px-gutter`, `mt-gap-bajada`, `mt-gap-cta`. Son los de
+   *      abajo. Un espacio con nombre se cambia en un lugar para todo el sitio.
+   *
+   *   2. **Escala numérica de Tailwind**, para todo lo demás: `p-6`, `gap-5`,
+   *      `mt-8`. Base 4px (`--spacing: 0.25rem`), así que `p-6` = 24px.
+   *      Verificado que se emite: el CSS sale como
+   *      `padding: calc(var(--spacing) * 6)`.
+   *
+   *   3. **Corchete**, sólo cuando el número NO es un múltiplo de 4 y hay un
+   *      motivo geométrico escrito al lado. Ejemplo legítimo: compensar los
+   *      77px de alto del header. Ejemplo ilegítimo: `mt-[37px]` porque quedaba
+   *      bien.
+   *
+   * ⚠️ La escala numérica NO estaba en uso: el código tenía 1.217 corchetes y
+   * sólo 20 utilidades numéricas, casi todas en `AgencyBar`. No era que
+   * faltara el sistema — estaba y no se usaba.                                */
   --spacing-gutter: 16px;
   --spacing-gutter-lg: 32px;
 
@@ -253,105 +370,201 @@
   --text-d7: 18px;
   --text-d7--line-height: 1.3;
 
-  /* ── Tracking de display — escala ÓPTICA, no un valor único ──────────────
-     Steelfish es una condensada de caja alta: a menor cuerpo se cierra más y
-     necesita MÁS aire. Un solo número deja el d3 apretado o el d1 desarmado,
-     así que cada escalón lleva el suyo. Va acá y no en los componentes porque
-     es el mismo mecanismo que la interlínea: la utilidad de tamaño se lleva su
-     tracking a todos los breakpoints sola.
+  /* ── Tracking de display — SE FUE LA ESCALA ÓPTICA ───────────────────────
+     ⚠️ Acá vivían OCHO tokens `--text-*--letter-spacing`, de 0.02em a 0.05em,
+     uno por escalón. Se van todos, y el motivo es que su razón de ser
+     desapareció.
 
-     ⚠️ REEMPLAZA a `--tracking-display: -0.02em`, que era NEGATIVO y venía
-     heredado de The Orient — que usa Lusitana, una serif de ancho normal. Un
-     tracking negativo sobre una condensada de caja alta es exactamente lo que
-     la apelmaza, y era el motivo por el que Camila rechazó la Steelfish: «se
-     ve muy pegada». Ver docs/house-tokens.md.
+     Aquella escala era una CORRECCIÓN: existía para compensar un
+     `--tracking-display: -0.02em` global y negativo, heredado de otro repo de
+     la casa que usa una serif de ancho normal. Sobre una condensada de caja
+     alta ese tracking negativo la apelmazaba, y fue el motivo concreto por el
+     que Camila rechazó la condensada anterior: «se ve muy pegada». La escala
+     óptica lo arregló abriendo cada escalón.
 
-     ⚠️ Y encima aquel token sólo se aplicaba en DOS lugares —el h1 del hero y
-     las mini cards—, así que en el resto de los títulos el tracking era 0. El
-     arreglo no era cambiarle el signo: era hacer que llegue a todos.
+     La decisión de esta rama es tracking **0** para todo el display —ni
+     negativo como pedía el brief, ni abierto como estaba—. Con el tracking en
+     cero no hay nada que compensar, así que ocho tokens de corrección son ocho
+     lugares donde el valor puede desincronizarse sin ganancia.
 
-     ⚠️ Los SIETE escalones llevan tracking, d5/d6/d7 incluidos. El primer
-     intento los dejó afuera suponiendo que de ese cuerpo para abajo ya era
-     Futura, y es falso: los usan el h3, los precios con `tabular-nums`, los
-     nombres del menú y las etiquetas de cocina, y TODOS son `font-display`.
-     Medido en el navegador, el h3 quedaba en `letter-spacing: normal` — o sea
-     Steelfish a 28px sin aire, que es el cuerpo donde una condensada más lo
-     necesita.
+     ⚠️ NO poner `-0.01em` como pedía el brief. Es el signo que ya se rechazó
+     una vez sobre esta misma clase de tipografía, y a 144px se ve más que a
+     62px. Si algún día se prueba, se prueba mirando la pantalla y sólo en el
+     hero, no de memoria y no en los siete escalones.
 
-     Los títulos de card y el h4, que sí son Futura, no usan estos escalones:
-     llevan su tamaño y su tracking explícitos. Ver `FUERA_DE_DISPLAY` en
-     Type.tsx.                                                                */
-  --text-hero--letter-spacing: 0.02em;
-  --text-d1--letter-spacing: 0.02em;
-  --text-d2--letter-spacing: 0.03em;
-  --text-d3--letter-spacing: 0.035em;
-  --text-d4--letter-spacing: 0.04em;
-  --text-d5--letter-spacing: 0.045em;
-  --text-d6--letter-spacing: 0.05em;
-  --text-d7--letter-spacing: 0.05em;
+     Los escalones se quedan en `letter-spacing: normal`, que es lo que hay que
+     ver cuando la utilidad no declara tracking.                              */
 
-  /*
-   * `hero` — la ÚNICA extensión a la escala de la casa, y está justificada.
+  /* ── LOS TRES ESCALONES FLUIDOS DEL REDISEÑO ─────────────────────────────
    *
-   * La casa mide la escala sobre Lusitana (The Orient), una serif de ancho
-   * normal. Steelfish es una condensada extrema: al mismo cuerpo ocupa cerca
-   * de la mitad del ancho y se lee bastante más chica. Un h1 a 72px en
-   * Steelfish pesa en pantalla como uno de ~46px en Lusitana.
+   * `hero`, `h2` y `h3`. Son NUEVOS y conviven con la escala `d1..d7`, que se
+   * queda intacta: la usan los precios con `tabular-nums`, los nombres de menú
+   * y las etiquetas de cocina en 23 rutas, y no hay motivo para tocarlos.
    *
-   * Esto ya quedó anotado en docs/house-tokens.md §3 («mantener los escalones
-   * de The Orient y evaluar subir sólo el d1 del hero»). Es lo que se hace acá:
-   * un peldaño más, exclusivo del h1 del hero, y el resto de la escala intacto.
+   * Por qué fluidos y no un mapa de breakpoints. La escala vieja resolvía el
+   * h2 con `text-d5 md:text-d4 lg:text-d3` — tres clases y tres saltos
+   * visibles al redimensionar. Un `clamp` da la misma progresión continua con
+   * una clase, y es lo que permite llegar a 88px sin inventar un escalón `d0`.
+   *
+   * ⚠️ EL SALTO ES EL PUNTO DE TODO EL REDISEÑO. El h2 estaba en 46px sobre un
+   * lienzo de 1440: la relación h2/bajada daba **2,6×** cuando la jerarquía se
+   * lee recién a partir de 3,5×. Con 88/22 queda en **4,0×**. Por eso el
+   * arreglo es agrandar el título y no achicar la bajada.
    *
    * ⚠️ El clamp va en `:root`, no acá: Tailwind v4 evalúa el `@theme` en
-   * tiempo de compilación y un `clamp` con `100vw` no se puede resolver ahí
-   * (compila mudo en el valor máximo). Es el mismo tropiezo que `--text-lead`.
+   * tiempo de compilación y un `clamp` con `vw` no se puede resolver ahí
+   * (compila mudo en el valor máximo). Acá van los valores ESTÁTICOS —que son
+   * los del tope— y `:root` los pisa con el clamp. Es el mismo mecanismo que
+   * ya usaban `--text-hero` y `--text-lead`.
    */
-  --text-hero: 112px;
-
+  --text-hero: 144px;
   /*
-   * ⚠️ 0.95, NO 0.86. Con 0.86 las dos líneas del h1 del home se PISAN: en la
-   * captura, la barriga de «BONITA COMES» toca el asta de «TOGETHER».
+   * `h1` — el titular de las 22 páginas internas, vía `PageHero`.
    *
-   * El 0.86 venía de suponer que arriba iba Steelfish, que es condensada y de
-   * caja alta. Pero mientras no lleguen los WOFF2 el navegador cae en una
-   * Impact/Haettenschweiler, que tiene MÁS altura de mayúscula y casi nada de
-   * hombro — y a 112px, 16px de diferencia de interlínea son un choque.
-   *
-   * 0.95 respira con las dos: sigue siendo un titular apretado —que es lo que
-   * pide un display condensado— y deja de solaparse con la fallback. Cuando
-   * lleguen las fuentes reales hay que volver a mirarlo, pero para abajo, y
-   * con la fuente puesta, no de memoria.
+   * Existe para que el h1 de una interna quede claramente por ENCIMA del h2
+   * de sección (88px) y claramente por DEBAJO del hero del home (144px). Sin
+   * este escalón, `Heading level={1}` tendría que compartir tamaño con el h2 y
+   * la home dejaría de ser la única pantalla con un titular al tope.
    */
-  --text-hero--line-height: 0.95;
+  --text-h1: 104px;
+  --text-h1--line-height: 0.9;
+  /*
+   * ⚠️ 0.88, y AHORA SÍ se puede. El 0.95 anterior estaba puesto para no
+   * pisarse contra la fallback Impact/Haettenschweiler, que tiene mucha más
+   * altura de mayúscula y casi nada de hombro — con la fuente real ausente,
+   * 0.86 hacía que la barriga de «BONITA COMES» tocara el asta de «TOGETHER».
+   *
+   * Hoy la condensada real está cargada y la cara de respaldo ya no es Impact
+   * sino la Arial ajustada que genera `adjustFontFallback` (`size-adjust:
+   * 53.64%`), así que el alto de línea del respaldo se parece al de la fuente
+   * buena. Con eso, 0.88 cierra sin solaparse, que es la interlínea que pide
+   * un titular de display a 144px.
+   */
+  --text-hero--line-height: 0.88;
+  --text-h2: 88px;
+  --text-h2--line-height: 0.92;
+  --text-h3: 40px;
+  --text-h3--line-height: 1;
 
   /* ── Escala de texto ────────────────────────────────────────────────────*/
   --text-intro: 25px;
   --text-intro--line-height: 1.4;
-  --text-lead: 18px;
-  --text-lead--line-height: 1.6;
+  /*
+   * `lead` — la BAJADA. Sube de 18px a 22px y la interlínea baja de 1.6 a 1.55.
+   *
+   * ⚠️ No sube «para que se vea mejor»: sube para sostener la relación con el
+   * h2. A 88px de título, una bajada de 18px daría 4,9× — demasiado, el
+   * segundo nivel se cae del bloque. 22px lo deja en 4,0×, que es el salto que
+   * se lee jerárquico sin desconectar los dos renglones.
+   *
+   * El clamp va en `:root`. Su `max-width: 60ch` y su color (`muted`) los pone
+   * el componente, no el token.
+   */
+  --text-lead: 22px;
+  --text-lead--line-height: 1.55;
   --text-base: 16px;
-  --text-base--line-height: 1.65;
+  --text-base--line-height: 1.6;
+  /*
+   * ── LOS DOS ESCALONES DE TEXTO CHICO ────────────────────────────────────
+   *
+   * ⚠️ Nacen de una limpieza, no de una necesidad de diseño. En la home y los
+   * componentes globales había **nueve tamaños de texto escritos con
+   * corchetes**: 11, 12, 13, 14, 15, 16, 17, 20 y 24px. Nueve escalones para
+   * texto chico no es una escala, es la ausencia de una — cada uno se eligió
+   * mirando su propio bloque.
+   *
+   * Se colapsaron a dos tokens más los que ya existían:
+   *
+   *     17px, 16px  →  `base`     (16px)   cuerpo
+   *     15px, 14px  →  `dato`     (15px)   horas, direcciones, metadatos
+   *     13px        →  `micro`    (13px)   etiquetas dentro de un bloque
+   *     12px, 11px  →  `caption`  (12px)   el eyebrow
+   *
+   * ⚠️ Los redondeos son de 1px y TODOS van HACIA ARRIBA (14→15, 11→12) menos
+   * el de 17→16. Hacia arriba es seguro: un texto más grande necesita MENOS
+   * contraste, así que ningún par de la tabla se rompe. El 17→16 baja un
+   * píxel en los datos de contacto de `FindUs`, que están en `ink` sobre
+   * `paper` —17.11:1— y tienen contraste de sobra.
+   *
+   * ⚠️ Cada uno lleva su propia interlínea, y eso es lo que hace desaparecer
+   * los 20 `leading-[...]` sueltos: la utilidad de tamaño se la lleva puesta a
+   * todos los breakpoints, igual que hacen `lead` y `base`.
+   */
+  --text-dato: 15px;
+  --text-dato--line-height: 1.5;
+  --text-micro: 13px;
+  --text-micro--line-height: 1.45;
   --text-cta: 16px;
   --text-cta--line-height: 1.2;
-  --text-caption: 13px;
+  /*
+   * `caption` — el cuerpo del eyebrow. Baja de 13px a 12px (0.75rem), que es
+   * el valor del brief. A 0.12em de tracking (ver abajo) 13px quedaba pesado
+   * para una micro-etiqueta.
+   */
+  --text-caption: 12px;
   --text-caption--line-height: 1.45;
 
-  /* Bronx va siempre en caja alta y abierto. 0.24em es donde convergen
-     The Orient, Tre Vele y Santa María. */
-  --tracking-eyebrow: 0.24em;
+  /*
+   * `eyebrow` — 0.12em, NO 0.24em.
+   *
+   * ⚠️ El 0.24em anterior tenía un motivo concreto: igualar la mancha de la
+   * caja alta de la familia que Jost reemplazó, que era una regular pesada.
+   * Esa familia se fue por licencia, así que el número quedó sin referente —
+   * era una corrección para un problema que ya no existe.
+   *
+   * 0.12em es el valor del brief y es el que corresponde a Jost 500 en caja
+   * alta a 12px: la mitad de aire, la mitad de ruido. Con el doble, una
+   * micro-etiqueta de tres palabras ocupaba el ancho de un titular chico y
+   * competía con él.
+   */
+  --tracking-eyebrow: 0.12em;
+  /*
+   * ── LOS OTROS DOS ESCALONES DE TRACKING ─────────────────────────────────
+   *
+   * ⚠️ También nacen de una limpieza. En la home y los globales había SIETE
+   * valores de `letter-spacing` escritos con corchetes —0.01, 0.02, 0.06,
+   * 0.08, 0.1, 0.12 y 0.14em— para lo que son tres roles. Siete valores
+   * dentro de un rango de 0.13em no es una escala: es cada bloque eligiendo
+   * por su cuenta.
+   *
+   * Los tres roles, que se distinguen por CUERPO:
+   *
+   *     eyebrow  0.12em   versalitas chicas, 12-13px
+   *     label    0.08em   versalitas medianas, 15-16px
+   *     cta      0.06em   botones
+   *
+   * A menor cuerpo, más aire: es la misma lógica óptica que tenía la escala de
+   * display, sólo que acá con tres escalones en vez de ocho.
+   *
+   * ⚠️ Los mapeos: 0.14 y 0.1 → `eyebrow` (los dos son versalitas chicas, y
+   * las diferencias de 0.02em a 12px son de un tercio de píxel por letra).
+   * Y 0.01/0.02em SE BORRARON en lugar de tokenizarse: estaban sobre texto en
+   * caja MIXTA, donde el tracking abierto no aporta nada — ahí el valor
+   * honesto es `normal`.
+   */
+  --tracking-label: 0.08em;
+  --tracking-cta: 0.06em;
 
   /*
-   * ⚠️ Acá vivía `--tracking-display: -0.02em`, el tracking NEGATIVO del
-   * display, argumentado desde Showdown Social. Se eliminó: Camila lo rechazó
-   * al verlo con la Steelfish real puesta —«se ve muy pegada»— y tenía razón.
+   * ⚠️ HISTORIA DEL TRACKING DEL DISPLAY, en tres pasos, porque el brief de
+   * esta rama volvió a pedir el primero.
    *
-   * Lo que falló del razonamiento original: medía el apretado de la referencia
-   * pero no el efecto acumulado de las tres decisiones juntas —condensada
-   * extrema + caja alta + peso Bold en TODOS los niveles—. El negativo era la
-   * cuarta capa sobre una mancha que ya estaba cerrada.
+   *   1. `--tracking-display: -0.02em`, NEGATIVO, argumentado desde Showdown
+   *      Social. Camila lo rechazó al verlo con la condensada real puesta:
+   *      «se ve muy pegada», y tenía razón. Lo que falló del razonamiento no
+   *      fue medir mal la referencia: fue no medir el efecto ACUMULADO de las
+   *      tres decisiones juntas —condensada extrema + caja alta + peso Bold en
+   *      todos los niveles—. El negativo era la cuarta capa sobre una mancha
+   *      que ya estaba cerrada.
+   *   2. Una escala óptica de ocho `--text-*--letter-spacing`, de 0.02 a
+   *      0.05em, que ABRÍA cada escalón para compensar aquel negativo.
+   *   3. Esta rama: **tracking 0 y ningún token**. El peso bajó a 600 —no Bold
+   *      en todos los niveles— así que la mancha ya no está cerrada y no hay
+   *      nada que compensar en ninguna dirección. Ocho tokens de corrección
+   *      sin nada que corregir eran ocho lugares para desincronizarse.
    *
-   * Su reemplazo es la escala óptica de `--text-*--letter-spacing`, arriba en
-   * este mismo bloque, junto a los tamaños.
+   * El brief pedía volver a −0.01em. No se hizo: es el mismo signo del paso 1,
+   * sobre la misma clase de tipografía, y a 144px se ve más que a 62px.
    */
 
   /* ── Motion ─────────────────────────────────────────────────────────────*/
@@ -438,9 +651,42 @@
 }
 
 :root {
-  /* Fluidos. Van acá y no en `@theme` por el límite de compilación de v4. */
-  --text-hero: clamp(56px, 56px + (100vw - 390px) * 0.0533, 112px);
-  --text-lead: clamp(16px, 16px + (100vw - 390px) * 0.005128, 18px);
+  /* ── LOS FLUIDOS ─────────────────────────────────────────────────────────
+   * Van acá y no en `@theme` por el límite de compilación de v4: el `@theme`
+   * se evalúa en build y un `clamp` con `vw` compila mudo en el valor máximo.
+   * Los valores estáticos del `@theme` son los del tope; estos los pisan.
+   *
+   * ⚠️ Se escriben con `vw` y no con la fórmula de interpolación lineal que
+   * había antes (`56px + (100vw - 390px) * 0.0533`). Los dos funcionan, pero
+   * la del brief es directamente legible —`9vw` es «9 % del ancho»— y no hay
+   * que resolver una pendiente a mano para saber qué hace. Comprobado que los
+   * topes caen donde tienen que caer:
+   *
+   *     hero  9vw    → 390px: 56px (piso)  · 1600px: 144px (tope)
+   *     h2    6vw    → 390px: 40px (piso)  · 1467px: 88px  (tope)
+   *     h3    2.6vw  → 390px: 28px (piso)  · 1538px: 40px  (tope)
+   *     lead  1.6vw  → 390px: 17px (piso)  · 1375px: 22px  (tope)
+   *
+   * O sea: en 390px todos están en su piso y en 1440 el hero va a ~130px, el
+   * h2 a 86px y el h3 y la bajada ya en su tope. La progresión es continua en
+   * todo el rango donde hay contenido.
+   */
+  --text-hero: clamp(3.5rem, 9vw, 9rem);
+  /*
+   * ⚠️ El piso es 3rem (48px) y NO 2.75rem (44px), y el motivo se vio en el
+   * espécimen a 390px. Todos los clamp están en su piso ahí, así que la escala
+   * se comprime a hero 56 / h1 / h2 40 / h3 28: con 44px, el h1 quedaba a 4px
+   * del h2 y el escalón desaparecía. A 48px hay 8px de separación.
+   *
+   * Se movió ESTE y no el h2 porque el piso del h2 (2.5rem) es valor del brief
+   * y el `h1` es un escalón que agregué yo. Y porque hero y h1 nunca comparten
+   * página —hero es sólo el home, h1 sólo las internas—, así que los 8px que
+   * quedan entre ellos no se ven nunca juntos.
+   */
+  --text-h1: clamp(3rem, 7vw, 6.5rem);
+  --text-h2: clamp(2.5rem, 6vw, 5.5rem);
+  --text-h3: clamp(1.75rem, 2.6vw, 2.5rem);
+  --text-lead: clamp(1.0625rem, 1.6vw, 1.375rem);
 
   /* El ritmo del encabezado, un escalón más apretado en mobile. */
   --spacing-gap-kicker: 8px;
@@ -520,6 +766,31 @@
     outline-color: var(--color-cream);
   }
 
+  /*
+   * `--lead-ink` — el color de la bajada, RESUELTO POR SUPERFICIE.
+   *
+   * ⚠️ Es el mecanismo que reemplaza a la opacidad, y existe por un bug real
+   * que encontró `npm run a11y`: `text-muted` es un verde medio para fondos
+   * claros, y aplicado tal cual sobre la banda oscura daba 2.02:1. Con
+   * `text-body/75` eso no pasaba porque la opacidad se adapta al fondo — pero
+   * justamente por eso tampoco se podía medir.
+   *
+   * La variable da lo mejor de los dos: se adapta a la superficie Y cada valor
+   * es un color opaco que está en la tabla de contraste.
+   *
+   * ⚠️ Reutiliza `.on-dark`, la MISMA clase que ya invierte el anillo de foco y
+   * que `Section tone="deep"` aplica sola. Ni un call site cambia: un bloque
+   * `SectionHead` metido en una sección oscura se corrige por herencia.
+   *
+   * Medido: 5.36:1 sobre `paper`, 4.96:1 sobre `bone`, 5.95:1 sobre `deep`.
+   */
+  :root {
+    --lead-ink: var(--color-muted);
+  }
+  .on-dark {
+    --lead-ink: var(--color-muted-dark);
+  }
+
   /* Reserva de espacio para imágenes: sin esto hay CLS. */
   img,
   video {
@@ -550,9 +821,14 @@
 }
 
 /**
- * Eyebrow. Bronx en caja alta con tracking abierto, siempre.
- * El color lo pone quien lo usa: sobre blanco tiene que ser uno de los
- * autorizados (deep / plum / terra / magenta), nunca sunset ni river.
+ * Eyebrow. La geométrica en caja alta, 12px y 0.12em, siempre.
+ *
+ * El color lo pone quien lo usa: sobre superficie clara tiene que ser uno de
+ * los autorizados —`deep`, `plum`, `terra`, `magenta`—, nunca `sunset` ni
+ * `river`. Los ratios están en `design-audit/CONTRASTE.md`.
+ *
+ * ⚠️ Máximo TRES en la home, y sólo donde clasifican un dato real. Ver la nota
+ * de `Eyebrow` en `Type.tsx`.
  */
 @utility eyebrow {
   font-family: var(--font-subhead);
@@ -560,11 +836,11 @@
   line-height: var(--text-caption--line-height);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  /* ⚠️ 500 y no 400. Bronx era una regular PESADA: a 400, Jost queda visiblemente
-     más liviana que el eyebrow que había. Medido lado a lado en caja alta con
-     0.24em, el 500 de Jost es el que iguala la mancha de Bronx —el 600 ya se
-     pasa—. Es también lo que distingue el eyebrow del cuerpo, que va en 400,
-     ahora que las dos comparten familia. */
+  /* ⚠️ 500 y no 400. La familia que el eyebrow tenía antes era una regular
+     pesada, así que a 400 la geométrica quedaba visiblemente más liviana que
+     el eyebrow que había; medido lado a lado en caja alta, el 500 iguala esa
+     mancha y el 600 se pasa. Y es lo que distingue el eyebrow del cuerpo, que
+     va en 400, ahora que las dos comparten familia. */
   font-weight: 500;
 }
 
@@ -630,6 +906,63 @@
  * O sea: el naranja es el gesto del hover, no el que sostiene la accesibilidad.
  * Ninguna información se pierde si el usuario no distingue el naranja.
  */
+/**
+ * `greca` — la trama de grecas del brand book, como MÁSCARA.
+ *
+ * El dibujo sale del Figma («Rooftop at Riverside (Copy)», nodos 2012:4489 y
+ * 2012:4488): dos variantes hechas a mano del mismo motivo de espiral. Las
+ * convierte `npm run greca` en una tira de dos celdas, `public/brand/greca.png`.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ES `mask-image` Y NO `background-image`, y de eso depende todo.
+ *
+ * Una imagen de fondo trae su color adentro, así que habría que exportar una
+ * greca por cada color en que se use. Una máscara usa el canal ALFA del PNG y
+ * el color lo pone `background-color` — acá `currentColor`, o sea que el color
+ * lo decide el `text-*` de quien la usa. Un archivo, todos los colores, y
+ * ningún hex suelto.
+ *
+ * Es la misma razón por la que `WaveBorder` usa un `<pattern>` de SVG en vez de
+ * una imagen de fondo. La diferencia es que la cenefa es UNA pieza y esto es
+ * una trama que se repite cientos de veces, así que acá el raster gana: 6 KB
+ * contra los 148 KB que pesaban los dos SVG del Figma.
+ *
+ * ⚠️ LA TIRA TRAE LAS DOS GRECAS, y por eso `--greca-celda` se multiplica por
+ * dos en el `mask-size`. Repetir una sola celda se lee estampado; alternando
+ * las dos, el período es de dos y la tira se lee dibujada a mano.
+ *
+ * ⚠️ Va el prefijo `-webkit-` además del estándar. Safari sigue necesitándolo
+ * para `mask-image`, y sin él la trama no aparece — no degrada, desaparece.
+ * ══════════════════════════════════════════════════════════════════════════
+ *
+ * Uso: `<div class="greca text-deep/10" />` sobre cualquier superficie.
+ * El tamaño de celda se ajusta con `--greca-celda`.
+ */
+@utility greca {
+  --greca-celda: 34px;
+  -webkit-mask-image: url('/brand/greca.png');
+  mask-image: url('/brand/greca.png');
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-size: calc(var(--greca-celda) * 2) auto;
+  mask-size: calc(var(--greca-celda) * 2) auto;
+  background-color: currentColor;
+}
+
+/**
+ * `bajada` — el color del texto secundario, resuelto por superficie.
+ *
+ * Lee `--lead-ink`, que vale `muted` sobre claro y `muted-dark` dentro de
+ * `.on-dark`. Ver la nota de la variable en el bloque `base`.
+ *
+ * ⚠️ Se usa en lugar de `text-muted` en cualquier bajada que pueda caer sobre
+ * una superficie oscura — o sea, en `SectionHead` y en todo lo que herede de
+ * él. `text-muted` directo queda para el texto que SÓLO existe sobre claro.
+ */
+@utility bajada {
+  color: var(--lead-ink);
+}
+
 @utility link-texto {
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -813,6 +1146,32 @@
     animation: none;
   }
 }
+
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ * `rt-sol` — ACÁ VIVÍA EL GIRO DEL MEDALLÓN DEL HORIZONTE, Y SE SACÓ.
+ *
+ * Era `rotate(360deg)` en 90 segundos, `linear`, infinito. Es la pieza que
+ * saqué en la autocrítica final del rediseño —`design-audit/AUTOCRITICA.md`—
+ * y queda anotado para que no vuelva por inercia:
+ *
+ *   · **Contradecía la doctrina de motion de la rama.** Cada mecanismo del
+ *     sitio dispara una vez y se queda quieto; `MOTION.md` abre con eso.
+ *     Un giro infinito no es «poco, en los momentos justos»: es un estado.
+ *   · **Era el único elemento que nunca se asentaba.** Una página que termina
+ *     de moverse se lee terminada. Con el sol girando siempre quedaba algo en
+ *     marcha en la periferia — justo el movimiento que
+ *     `prefers-reduced-motion` existe para apagar. Enviar algo que hay que
+ *     defender con un media query es una señal.
+ *   · **No era el pedido.** Camila pidió animar el elemento; la animación es
+ *     que el sol SUBE al entrar la sección. El giro lo agregué yo encima y no
+ *     explicaba nada que la subida no explicara ya.
+ *
+ * ⚠️ La clase se conserva como gancho vacío a propósito: `HorizonBorder` la
+ * sigue aplicando, así que si algún día hay motivo para un movimiento ahí, se
+ * define acá y no hay que tocar el componente. El keyframe está borrado.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
 
 @keyframes rt-marquee {
   from {

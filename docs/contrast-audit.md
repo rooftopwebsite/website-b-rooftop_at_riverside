@@ -1,7 +1,27 @@
 # Auditoría de contraste — Rooftop at Riverside
 
+> ## ⚠️ SUPERSEDIDO — los ratios de este archivo NO son los del sitio
+>
+> **La tabla vigente es [`design-audit/CONTRASTE.md`](../design-audit/CONTRASTE.md)**,
+> que la genera `npm run contrast` leyendo la paleta de `src/app/globals.css`.
+>
+> Los números de más abajo están calculados contra una paleta que el sitio dejó
+> de pintar. `scripts/contrast.mjs` tenía los hexes **copiados a mano** y quedó
+> viejo cuando cambió el bloque `@theme`: seguía midiendo `paper` como `#FFFFFF`
+> e `ink` como `#000000` cuando el sitio pintaba `#FDFCF7` y `#0A1F1E`. El build
+> pasaba, así que nadie lo notó. Encontrado en la auditoría de
+> `redesign/light-tropical` — ver [`design-audit/AUDIT.md`](../design-audit/AUDIT.md) §3.
+>
+> Ya está arreglado en dos frentes: el script ahora **lee** la paleta en vez de
+> tenerla escrita, y `npm run check:tokens` falla si `globals.css` y
+> `src/lib/brand.ts` divergen.
+>
+> **Este archivo se conserva por el razonamiento, no por los números.** Los dos
+> casos resueltos del §«Los dos casos que hubo que resolver» y el conflicto del
+> hover naranja siguen siendo la explicación de decisiones que están vigentes;
+> sólo hay que leer los ratios en la tabla nueva.
+
 Calculado sobre luminancia relativa según **WCAG 2.1** (fórmula de 1.4.3 / 1.4.11).
-Regenerable: `node scripts/contrast.mjs`.
 
 **Mínimos aplicados:** 4.5:1 texto de cuerpo · 3:1 texto grande (≥24px, o ≥18.66px bold)
 y elementos de interfaz no textuales.
