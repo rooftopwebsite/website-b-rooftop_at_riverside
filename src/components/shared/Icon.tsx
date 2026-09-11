@@ -4,7 +4,8 @@
  * ══════════════════════════════════════════════════════════════════════════
  * ⚠️ POR QUÉ ESTÁN DIBUJADOS ACÁ Y NO SE INSTALA PHOSPHOR.
  *
- * El diseño de origen (`docs/desing/…/Rooftop at Riverside - Home.dc.html`)
+ * El diseño de origen (`_interno/design-source-bundle/…/Rooftop at Riverside -
+ * Home.dc.html`, fuera de git desde el 2026-09-11: es material del cliente)
  * pide Phosphor y lo trae por CDN con dos `<link rel="stylesheet">` a unpkg —
  * uno para el peso `regular` y otro para el `fill`. En un prototipo eso está
  * bien; acá no, y por tres motivos medidos, no por purismo:

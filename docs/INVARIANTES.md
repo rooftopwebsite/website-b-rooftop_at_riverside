@@ -170,6 +170,19 @@ diseño elimine esos elementos.
 
 ---
 
+## 5b. Material del cliente: nunca entra a git
+
+Regla de Camila, 2026-09-11. **Ningún PDF, brief, brand book, moodboard ni
+archivo con datos del cliente se versiona.** Todo eso vive en `_interno/`,
+que está en `.gitignore` y no se sube nunca.
+
+El motivo es concreto: esos archivos traen emails y teléfonos personales de los
+dueños, el fee de agencia y presupuestos. Una vez en el historial de git, sacarlos
+exige reescribirlo.
+
+Lo que sí se versiona es el **derivado**: la imagen optimizada, el dato
+transcrito, la cita en un documento de `docs/`. Nunca el original.
+
 ## 6. Medios
 
 - Fotos: lado largo 3000px, JPEG, sin filtros ni marcas de agua.

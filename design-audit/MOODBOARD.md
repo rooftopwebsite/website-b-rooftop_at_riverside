@@ -1,7 +1,7 @@
 # Lectura del moodboard
 
-Los diez archivos están en `assets-moodboard/` (no en `/assets/moodboard/` como
-dice el brief; es la carpeta que apareció sin trackear en el árbol). Son capturas
+Los diez archivos están en `_interno/moodboard/`, fuera de git desde el 2026-09-11:
+es material del cliente y no se versiona. Son capturas
 de Pinterest, así que lo que se lee es la maqueta de adentro, no el screenshot.
 
 **Regla que se aplicó:** el moodboard es fuente de **composición y ritmo de

@@ -31,3 +31,12 @@ design-audit/fase*/
 design-audit/HOJA-*.png
 design-audit/tmp/
 design-audit/specimen.html
+
+# ─────────────────────────────────────────────────────────────────────────
+# MATERIAL INTERNO DEL CLIENTE. NO SE SUBE NUNCA.
+# Acá van los PDF de brief, el brand book, el moodboard y cualquier archivo
+# con datos del cliente (emails, teléfonos, fees, presupuestos). Regla de
+# Camila, 2026-09-11: si es del cliente o es nuestro material de trabajo
+# interno, vive acá y no entra a git jamás.
+# ─────────────────────────────────────────────────────────────────────────
+/_interno/
