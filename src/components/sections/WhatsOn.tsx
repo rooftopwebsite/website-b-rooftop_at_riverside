@@ -10,6 +10,7 @@ import {
   type VenueEvent,
   type Weekday,
   recurringEvents,
+  timeRange,
   weekdayLabel,
   whenLabel,
 } from '@/content/events';
@@ -98,24 +99,33 @@ function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly is
     <article className="group flex w-65 shrink-0 snap-start flex-col overflow-hidden rounded-shell bg-deeper transition-transform duration-300 ease-brand hover:-translate-y-1.5 lg:w-[30vw] lg:max-w-100">
       {/*
         ══════════════════════════════════════════════════════════════════
-        ⚠️ LA CAJA DE IMAGEN ES 4:5 Y ANTES ERA APAISADA (`h-50` /
-        `20vw`), y el cambio lo manda el material, no el gusto.
+        ⚠️ LA CAJA ES 16:9 PORQUE ASÍ ES EL BANNER DEL DASHBOARD, y esto
+        pasó por tres formas en un día. Conviene dejar el recorrido escrito
+        para no repetirlo.
 
-        Lo que va acá no son fotos: son las PIEZAS que el local publica por
-        evento, y vienen en 1200×1500 con el nombre del artista, el día y el
-        horario impresos. Recortadas a una caja apaisada, lo primero que se
-        pierde es el texto — o sea justo lo que hace que la pieza sirva.
+          1. Apaisada con alto fijo (`h-50` / `20vw`) — la del diseño, para
+             fotos de ambiente.
+          2. `aspect-[4/5]` — cuando las imágenes pasaron a ser los FLYERS
+             del local, que vienen 1200×1500 con el texto impreso. En una
+             caja apaisada se les comía el nombre del artista.
+          3. `aspect-video` — acá. Porque las imágenes ya no salen del repo:
+             salen del campo `bannerUrl` del dashboard, y el recortador del
+             dashboard impone **16:9** (medido: el marco es 336×189).
 
-        `aspect-[4/5]` en vez de una altura fija porque el ancho de la
-        tarjeta es fluido (`clamp(260px,30vw,400px)`): así la caja sigue al
-        ancho y la proporción no se rompe en ningún viewport.
+        O sea que la proporción de esta caja NO es una decisión de diseño
+        nuestra: es la del sistema que guarda las imágenes. Pelearla
+        significaría recortar en el navegador lo que el dashboard ya
+        recortó, y ahí sí se pierde contenido.
 
-        ⚠️ La tarjeta queda ALTA —500px de imagen más el cuerpo— y está
-        bien: es un carrusel horizontal, el alto no le cuesta nada a la
-        página. En una grilla habría que revisarlo.
+        ⚠️ CÓMO SOBREVIVE EL FLYER A UN BANNER 16:9. No se recorta: se
+        COMPONE. El flyer 4:5 va a altura completa, centrado, sobre un campo
+        de `deep` que rellena los costados. Entra entero, no se pierde una
+        letra, y el banner se lee como una placa de marca. Si alguien sube
+        una pieza nueva, el mismo tratamiento — ver `scripts/` y el pedido
+        al cliente.
         ══════════════════════════════════════════════════════════════════
       */}
-      <div className="relative aspect-[4/5] bg-ink">
+      <div className="relative aspect-video bg-ink">
         {event.image === null ? (
           /* ⚠️ El brief va en INGLÉS. Es texto VISIBLE, no un comentario: el
              hueco se publica marcado a propósito para que no pase callado. El
@@ -144,15 +154,50 @@ function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly is
       </div>
 
       <div className="flex flex-1 flex-col gap-2.5 px-6 pt-5.5 pb-6.5">
-        <span className="font-body text-caption font-medium uppercase tracking-eyebrow text-muted-dark">
-          {event.weekday !== null ? weekdayLabel(event.weekday) : whenLabel(event)}
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ EL RÓTULO DICE DÍA + HORA, y antes decía sólo el día. Faltaba
+          justamente lo que alguien necesita para decidir si viene: a qué
+          hora empieza.
+
+          El dato estaba en la base desde siempre (`startTime`/`endTime`) y
+          la función que lo formatea —`timeRange`— ya existía en
+          `content/events.ts`. Sencillamente no se estaba mostrando.
+
+          ⚠️ El separador es un punto medio y no un guión: «Thursday · 6 – 8
+          PM». Un guión entre el día y la hora se lee como un rango de días.
+          ══════════════════════════════════════════════════════════════════
+        */}
+        <span className="flex flex-wrap items-center gap-x-2 font-body text-caption font-medium uppercase tracking-eyebrow text-muted-dark">
+          <span>{event.weekday !== null ? weekdayLabel(event.weekday) : whenLabel(event)}</span>
+          <span aria-hidden="true" className="opacity-50">
+            ·
+          </span>
+          <span className="text-cream normal-case tracking-normal">{timeRange(event)}</span>
         </span>
+
         <h3 className="m-0 font-display text-d4 font-bold uppercase leading-none text-paper">
           {event.title}
         </h3>
         <p className="m-0 font-body text-base font-light text-paper/92">{event.summary}</p>
-        <span className="mt-auto pt-3.5 font-body text-micro uppercase tracking-cta text-muted-dark">
-          {event.space}
+
+        <span className="mt-auto flex flex-wrap items-center gap-x-2.5 gap-y-1.5 pt-3.5 font-body text-micro uppercase tracking-cta text-muted-dark">
+          <span>{event.space}</span>
+          {/*
+            ⚠️ LA RECURRENCIA VA EN UNA PÍLDORA Y NO EN EL RÓTULO DE ARRIBA.
+            «Every week» es una propiedad del evento, no de esta fecha, así
+            que mezclarla con «Thursday · 6 – 8 PM» haría leer las tres cosas
+            como un solo dato. Separada, contesta la pregunta que se hace
+            quien no puede venir hoy: ¿vuelve a pasar?
+
+            Sólo aparece si el evento ES recurrente — un evento de una sola
+            fecha no muestra nada.
+          */}
+          {event.kind === 'recurring' ? (
+            <span className="rounded-pill px-2.5 py-1 text-cream ring-1 ring-muted-dark/50">
+              Every week
+            </span>
+          ) : null}
         </span>
       </div>
     </article>
@@ -340,7 +385,7 @@ export default function WhatsOn() {
     <section
       id="whats-on"
       aria-labelledby="whats-on-title"
-      className="relative z-[2] rounded-t-band bg-deep pt-14 pb-14 text-bone on-dark lg:pt-[110px] lg:pb-24"
+      className="relative z-[2] rounded-t-band bg-deep pt-14 pb-cierre-arco text-bone on-dark lg:pt-[110px]"
     >
       <div className="caja-ancha">
         <h2
@@ -382,7 +427,7 @@ export default function WhatsOn() {
           exactamente lo que hace falta acá — con cuatro tarjetas desborda en
           desktop y con una sola no.
           ══════════════════════════════════════════════════════════════════ */}
-      <div className="mt-8 lg:mt-15">
+      <div className="mt-bloque">
         {/*
           ⚠️ `tabIndex={0}` + `role="group"` + label, y los tres son
           obligatorios. axe lo marcó como `scrollable-region-focusable`: un
@@ -506,7 +551,7 @@ export default function WhatsOn() {
       {/* ── Los camiones que están hoy ───────────────────────────────── */}
       <div
         id="trucks"
-        className="caja-ancha mt-12 border-t border-muted-dark/35 pt-7 pb-14 lg:mt-22 lg:pt-11 lg:pb-28"
+        className="caja-ancha mt-12 border-t border-muted-dark/35 pt-7 lg:mt-22 lg:pt-11"
       >
         <div className="flex flex-wrap items-baseline justify-between gap-5">
           <span className="font-body text-caption font-medium uppercase tracking-eyebrow text-muted-dark">
@@ -534,7 +579,7 @@ export default function WhatsOn() {
         </p>
         <p className="mt-3.5 font-body text-base text-cream lg:text-dato">
           <strong className="font-semibold">Happy hour</strong> {HAPPY_HOUR.days},{' '}
-          {HAPPY_HOUR.time} — {HAPPY_HOUR.deals.join(' · ')}
+          {HAPPY_HOUR.time}: {HAPPY_HOUR.deals.join(' · ')}
         </p>
       </div>
     </section>

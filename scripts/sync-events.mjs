@@ -56,6 +56,23 @@ const clean = rows
     id: e.id,
     title: e.title,
     description: e.description ?? '',
+    /*
+     * ⚠️ `bannerUrl` ENTRA EN EL SYNC desde el 2026-09-11, y con él muere el
+     * mapa manual de imágenes que vivía en `content/events.ts`.
+     *
+     * El campo existía en la tabla desde siempre —estaba en `null` en los
+     * cuatro eventos— y este script simplemente no lo bajaba. O sea que el
+     * sitio no tenía forma de mostrar la imagen de un evento aunque el
+     * cliente la cargara, y por eso se había armado un mapa slug → archivo
+     * a mano. Eso ya no hace falta: quien sube la pieza al dashboard la ve
+     * publicada en el sitio con el próximo `npm run sync:events`.
+     *
+     * Apunta al storage de Supabase (`/restaurant-assets/restaurants/<id>/
+     * events/...webp`) y es público, así que `next/image` lo sirve sin
+     * credenciales. Requiere que el host esté en `remotePatterns` de
+     * `next.config.ts`.
+     */
+    bannerUrl: e.bannerUrl ?? null,
     startDate: e.startDate,
     endDate: e.endDate ?? null,
     startTime: e.startTime,

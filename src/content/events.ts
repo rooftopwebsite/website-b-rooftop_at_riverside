@@ -26,6 +26,8 @@ interface RawEvent {
   readonly id: string;
   readonly title: string;
   readonly description: string;
+  /** La pieza del evento, subida al dashboard. Storage público de Supabase. */
+  readonly bannerUrl: string | null;
   readonly startDate: string;
   readonly endDate: string | null;
   readonly startTime: string;
@@ -99,82 +101,35 @@ function parseWeekday(days: string | null): Weekday | null {
 }
 
 /**
- * La foto de cada evento, por slug.
+ * El texto alternativo de la pieza de cada evento, por slug.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ VIVE ACÁ Y NO EN `events.json`, y es importante. Ese JSON lo sobreescribe
- * `npm run sync:events` desde la fuente del cliente, así que cualquier campo
- * agregado a mano ahí se pierde en la siguiente sincronización. Este mapa es
- * nuestro y sobrevive.
+ * ⚠️ ES LO ÚNICO QUE SOBREVIVE DEL MAPA MANUAL DE IMÁGENES, que vivía acá y
+ * se fue el 2026-09-11. Aquel mapa asociaba slug → archivo del repo, y era un
+ * parche con dos costos: había que tocar código para publicar la foto de un
+ * evento, y el sitio no podía mostrar nada que el cliente subiera.
  *
- * ⚠️ QUÉ FOTO SE LE PUEDE PONER A UN EVENTO, que es una decisión de honestidad
- * y no de diseño. La entrega del cliente no trae fotos DE estos eventos: trae
- * fotos del lugar. Así que la regla que se aplicó es que la imagen muestre el
- * **tipo de noche y el espacio** donde el evento pasa, y que el `alt` describa
- * lo que se ve —no lo que dice el título—. Un `alt` que diga «Bingo Night»
- * sobre una foto donde no hay bingo es una mentira para quien usa lector de
- * pantalla.
+ * Resultó que la tabla `events` SÍ tiene campo de imagen (`bannerUrl`) y que
+ * el sync simplemente no lo bajaba. Ahora lo baja, así que la imagen sale del
+ * dashboard y este archivo ya no decide cuál es.
  *
- * ⚠️ `wooftop-wednesdays` QUEDA SIN FOTO A PROPÓSITO. Es la noche de perros y
- * en las 36 fotos entregadas **no hay ni un perro**. Cualquier foto del patio
- * puesta ahí diría «traé al perro» sobre una imagen sin perros, que es
- * justamente lo que el placeholder marcado evita. Sigue mostrando el hueco con
- * el brief de la toma que hay que pedir. Ver `docs/media.md`.
- * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ QUEDA EL `alt` PORQUE EL DASHBOARD NO LO GUARDA. Y acá importa más que
+ * en una foto cualquiera: estas piezas son GRÁFICAS con el texto incrustado
+ * —el nombre del artista, el día, el horario—, así que sin `alt` quien usa un
+ * lector de pantalla se pierde información que para el resto está a la vista.
+ * Por eso el `alt` TRANSCRIBE lo que la pieza dice.
+ *
+ * ⚠️ Un evento que no esté acá no se queda sin `alt`: cae en el genérico
+ * «<título> — event poster», que es pobre pero honesto.
+ *
+ * El día que el dashboard tenga campo de texto alternativo, esto se va igual
+ * que se fue el mapa de imágenes.
  */
-/**
- * La pieza gráfica de cada evento.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ SÓLO ENTRAN PIEZAS DEL EVENTO, NO FOTOS DE AMBIENTE. Es la regla que
- * cambió acá el 2026-09-11, por pedido de Camila, y conviene entenderla
- * antes de agregar una entrada.
- *
- * Antes esto mapeaba tres eventos a fotos genéricas del venue: un guitarrista
- * cualquiera para Ross Brown, el patio de noche para Bingo, la pista para La
- * Noche. Se leía bien pero decía algo falso — la foto del guitarrista no era
- * Ross Brown, y la del patio no era una noche de Bingo. En una tarjeta que
- * lleva el nombre del artista arriba, la imagen de abajo se lee como ESE
- * artista.
- *
- * Ahora hay dos entradas y las dos son la pieza real que el local publica
- * para ese evento, bajadas del calendario del sitio viejo. Los otros dos
- * eventos NO tienen entrada y muestran el hueco gris marcado, que es lo
- * honesto: decir «falta la pieza» en vez de poner una foto que no es.
- *
- * ⚠️ SON GRÁFICAS 4:5 CON TEXTO INCRUSTADO, no fotos. Quien agregue una acá
- * tiene que mandarla al pipeline con el mismo tratamiento (ver los dos
- * `calendar-*.jpg` en `scripts/build-media.mjs`): 4:5 y sin recorte, o el
- * `fit:'cover'` le come el nombre del artista.
- *
- * ⚠️ El `alt` describe la PIEZA y transcribe lo que dice, porque el texto
- * está dentro de la imagen: quien no la ve tiene que recibir la misma
- * información que quien la ve.
- * ══════════════════════════════════════════════════════════════════════════
- */
-const IMAGENES: Readonly<Record<string, { readonly src: string; readonly alt: string }>> = {
-  'ross-brown': {
-    src: '/images/venue/event-ross-brown.jpg',
-    alt: 'Event poster: “Live Entertainment — Ross Brown”, with Ross Brown singing into a microphone in a palm-print shirt',
-  },
-  'la-noche-dj-david-cast': {
-    src: '/images/venue/event-la-noche.jpg',
-    alt: 'Event poster: “La Noche — every Saturday 10 PM to 2 AM, Latin music from DJ David Cast, free dance classes”',
-  },
-  /*
-   * ⚠️ `bingo-night` y `wooftop-wednesdays` NO TIENEN ENTRADA, Y NO ES UN
-   * OLVIDO. Son los dos eventos que el calendario del cliente no publica
-   * (ver `docs/current-site-inventory.md` §9), así que no existe pieza
-   * gráfica de la que bajarlas.
-   *
-   * Bingo SÍ tenía una foto acá —el patio de noche— y se le sacó a
-   * propósito: era una foto del lugar, no de una noche de Bingo. Prefiere
-   * Camila el hueco gris marcado antes que una foto que no corresponde.
-   *
-   * `event-yard-night.jpg` y `event-dj-night.jpg` siguen en
-   * `public/images/venue/` y los sigue usando el divisor de fotos de la
-   * home. No se borran.
-   */
+const ALT: Readonly<Record<string, string>> = {
+  'ross-brown':
+    'Event poster reading “Live Entertainment: Ross Brown”, with Ross Brown singing into a microphone in a palm-print shirt',
+  'la-noche-dj-david-cast':
+    'Event poster reading “La Noche: every Saturday 10 PM to 2 AM, Latin music from DJ David Cast, free dance classes”',
 };
 
 function adapt(r: RawEvent): VenueEvent {
@@ -202,10 +157,20 @@ function adapt(r: RawEvent): VenueEvent {
     // así que ningún evento es de entrada paga por ahora.
     ticketUrl: null,
     price: price !== null && Number.isFinite(price) && price > 0 ? price : null,
-    // Ver `IMAGENES` arriba: `null` cuando no hay una foto honesta para ese
-    // evento, y ahí el componente muestra el hueco marcado con su brief.
-    image: IMAGENES[slugify(r.title)]?.src ?? null,
-    imageAlt: IMAGENES[slugify(r.title)]?.alt ?? null,
+    /*
+     * ⚠️ LA IMAGEN SALE DEL DASHBOARD, no de un mapa nuestro. Acá vivía
+     * `IMAGENES[slug]`, un diccionario a mano de slug → archivo del repo, y
+     * se fue el 2026-09-11 cuando se descubrió que la tabla `events` SÍ
+     * tiene campo de imagen (`bannerUrl`) y que el sync simplemente no lo
+     * bajaba.
+     *
+     * El mapa era un parche con dos costos: había que tocar código para
+     * publicar la foto de un evento, y el sitio no podía mostrar nada que el
+     * cliente subiera. Ahora el cliente sube la pieza en el dashboard,
+     * corre el sync y aparece.
+     */
+    image: r.bannerUrl,
+    imageAlt: r.bannerUrl ? (ALT[slugify(r.title)] ?? `${r.title} — event poster`) : null,
     tags: r.tags,
   };
 }
