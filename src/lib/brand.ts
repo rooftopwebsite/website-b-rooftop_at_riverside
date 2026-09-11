@@ -51,6 +51,8 @@ export const COLORS = {
   tomato: '#EB452C',
   /** Acento de titular sobre superficie clara. 7.43:1 sobre `paper`. */
   terra: '#A62000',
+  /** El rojo de error sobre superficie OSCURA. 6.14:1 sobre `deeper`, 4.88:1 sobre `deep`. */
+  'tomato-soft': '#FF8F7A',
   plum: '#402639',
   magenta: '#A24584',
   /** Titulares sobre claro. Es `deep` llevado a casi negro: el texto pertenece a la marca. */

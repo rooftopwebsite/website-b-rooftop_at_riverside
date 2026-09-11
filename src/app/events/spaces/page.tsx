@@ -104,7 +104,7 @@ export default function SpacesPage() {
       </Section>
 
       <Section band="md">
-        <div className="rounded-card bg-sunset px-[24px] py-[40px] text-ink lg:px-[56px]">
+        <div className="rounded-card bg-sunset sombra-card px-[24px] py-[40px] text-ink lg:px-[56px]">
           <div className="flex flex-col gap-[20px] lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-[560px]">
               <Eyebrow tone="ink">Check a date</Eyebrow>

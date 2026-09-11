@@ -8,8 +8,8 @@ que `public/fonts/_drop`— y lo que se versiona son los derivados que genera
 `npm run media`.
 
 ```
-originales usados   338,4 MB
-derivados             1,9 MB      −99,4 %
+originales usados   360,0 MB
+derivados             2,9 MB      −99,2 %
 ```
 
 La reducción no es sólo compresión: los originales van de 7008×4672 a 4000×6000
@@ -78,8 +78,47 @@ del clip.
 | `event-live-music.jpg` | `_RCZ5702` | What's on → **Ross Brown** | Ross Brown toca los jueves: la foto ES un músico tocando en el venue |
 | `event-yard-night.jpg` | `_RCZ5757` | What's on → **Bingo Night** | bingo es los miércoles en The Yard: la foto es el patio de noche con gente en las mesas |
 | `event-dj-night.jpg` | `_RCZ4382` | What's on → **La Noche · DJ David Cast** | la pista de noche |
+| `hero-truck-window.jpg` | `_RCZ5847` | **el hero de la home** | ver abajo, tiene sección propia |
 | `truck-window-night.jpg` | `_RCZ5847` | «Five businesses» *(ya no se usa, ver abajo)* | la ventanilla de noche con gente pidiendo |
-| `venue-aerial.jpg` | `WhatsApp Image…` | fondo del Events banner | la aérea del patio ENTERO, para un bloque que dice «cerramos el lugar completo» |
+| `venue-aerial.jpg` | `WhatsApp Image…` | fondo del Events banner, **y nada más** | la aérea del patio ENTERO, para un bloque que dice «cerramos el lugar completo» |
+
+### La foto del hero
+
+Es la más grande del sitio y el LCP de la home, así que va aparte.
+
+```
+_RCZ5847.JPG   3465×5198  →  hero-truck-window.jpg  2576×1200  (506 KB)
+foco 0,4586
+```
+
+**⚠️ Antes acá estaba `venue-aerial.jpg`, y era un error de destino.** Esa
+derivada se genera a 1000×667 con calidad 70 a propósito, porque su lugar es el
+fondo del Events banner, que la pinta con `blur-[22px]`. El hero la mostraba
+nítida y a todo el ancho: 1000px estirados hasta 2576 en una pantalla retina,
+**2,6 veces**, y un upscale no lo arregla ninguna calidad de compresión. Encima
+la aérea es de una clase de yoga y lleva las carpas y los banderines de JETSET,
+o sea la marca de otro, que es lo que este mismo documento lista como material
+que no sirve.
+
+**Por qué 2576×1200 y no 2080 como el resto.** El marco mide 1288 CSS de ancho
+tope, así que 2576 es exactamente 2×: el primer valor que no obliga a
+`next/image` a estirar en retina. Con 2080 el techo queda en 1,61×. Es la única
+foto que justifica el peso, porque es la única a todo el ancho y sin blur que
+perdone. Y la proporción es la del marco al píxel —2576/1200 = 1288/600—, así
+que el `object-cover` del componente no recorta nada.
+
+**Por qué ese foco.** La foto es vertical y la banda mide 1614 de alto: sobran
+3584px, o sea que el recorte decide qué foto es. Con el centro en 0,4586 entra
+la guirnalda, la ventanilla encendida con la cocinera adentro, las dos personas
+pidiendo y el cartel de Birria Tacos. Más arriba se cortan las dos personas al
+pecho; más abajo aparece una cabeza fuera de foco en el borde inferior izquierdo
+que lee como error de encuadre.
+
+**Las otras dos finalistas** eran `_RCZ4830` (los tragos a contraluz) y
+`_RCZ4336` (el patio de noche). La de los tragos se cayó por dos motivos: ya se
+usa en el `PhotoDivider`, y el naranja de la placa «Together» se despinta contra
+los ámbar del trago. Sobre el azul de esta, la placa es lo más saturado de la
+primera pantalla.
 
 ### Dos notas de criterio
 
@@ -96,6 +135,11 @@ tres cuadros de color con la trama de grecas, sin fotos. El derivado se conserva
 porque es la mejor foto de «order at whichever window you want» que hay en la
 entrega, y esa sección puede volver a querer una imagen.
 
+⚠️ **Pero ahora sale del mismo original que el hero.** Antes de colgarla en
+cualquier lado hay que mirar la home entera: puesta en una sección, la misma
+escena aparecería dos veces en la misma página, que es exactamente lo que se
+evitó al elegir esta foto para el hero y no la de los tragos.
+
 ---
 
 ## 3. ⚠️ Lo que FALTA
@@ -107,7 +151,7 @@ Ordenado por lo que más bloquea.
 | # | Qué | Para qué | Por qué no se puede reemplazar |
 |---|---|---|---|
 | 1 | **Un perro en el patio.** Alguien con su perro en una mesa, o un perro en la fila de un truck. | La card de **Wooftop Wednesdays** en What's on | Es la noche de perros y en las 36 fotos **no hay ni un perro**. Cualquier foto del patio ahí diría «traé al perro» sobre una imagen sin perros. Es el único hueco marcado que queda en la home. |
-| 2 | **Cielo de atardecer sobre el rooftop.** Horizontal, con las nubes doradas de las 6 de la tarde, desde la terraza. | El fondo del hero — está en el mockup | No hay ni una foto de cielo en la entrega, y menos de golden hour. Un degradado CSS que lo imite es exactamente lo que el brief prohíbe. |
+| 2 | **Cielo de atardecer sobre el rooftop.** Horizontal, con las nubes doradas de las 6 de la tarde, desde la terraza. | El fondo del hero — está en el mockup | No hay ni una foto de cielo en la entrega, y menos de golden hour. Un degradado CSS que lo imite es exactamente lo que el brief prohíbe. **Ya NO bloquea:** el hero tiene la ventanilla de noche, que funciona. Pasó a ser una mejora, no un hueco. |
 | 3 | **Clips AMBIENTE, verticales, sin texto ni locución.** 3:4 o 9:16, 6–10 s, sin gente hablando a cámara y sin rótulos quemados. Seis u ocho alcanzan. | El arco del hero y el muro vertical | Hay dos y funcionan, pero se repiten. Lo que sobra son piezas de redes, que en un tile muteado no sirven. Ejemplos de toma: la barra sirviendo, el humo de una parrilla, la fila en una ventanilla, el atardecer desde la terraza, la banda arrancando. |
 
 ### Lo que mejoraría lo que ya hay

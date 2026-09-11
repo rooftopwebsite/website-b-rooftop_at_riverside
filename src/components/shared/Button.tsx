@@ -17,10 +17,32 @@ import { cn } from '@/lib/cn';
  * poner texto blanco sobre su azul porque su azul es oscuro; el nuestro no.
  * Es el error que más veces estuvo a punto de colarse.
  *
- * ⚠️ La etiqueta va en CAJA ALTA con tracking, como en las cuatro referencias.
- * Con Jost en 500 y 0.06em de tracking el botón deja de parecer un
- * control de aplicación y pasa a leerse como señalética, que es el registro
- * del rubro.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LA ETIQUETA VA EN CAJA BAJA Y EN NEGRITA. Iba en CAJA ALTA con 0.06em de
+ * tracking y en peso 500, con el argumento de que así el botón «se lee como
+ * señalética y no como un control de aplicación».
+ *
+ * Se cae por dos motivos, y el segundo es el que manda:
+ *
+ *   1. No era cierto en todo el sitio. Cuatro CTA estaban escritos a mano sin
+ *      pasar por este archivo —el del hero, el de la banda de eventos, el del
+ *      calendario y el de FindUs— y tres de ellos ya iban en caja baja y en
+ *      peso 500 a 15px. O sea que la «señalética» convivía con su contrario en
+ *      la misma pantalla: el CTA del hero decía «Plan an event» y el de abajo
+ *      «PLAN AN EVENT». Eso no es jerarquía, es descuido.
+ *
+ *   2. Camila fijó UN criterio para todo lo que se navega o se toca: la letra
+ *      del cuerpo, en negrita, un escalón más grande. Vale para la nav, el
+ *      mega-menú, el drawer, el footer y los botones. Ver el bloque de
+ *      `NAV_ITEM` en `Header.tsx`, que es donde está escrita la regla.
+ *
+ * Los cuatro CTA a mano se borraron: ahora son `ButtonLink` como los otros 60.
+ * Si aparece uno nuevo, va por acá.
+ *
+ * ⚠️ Sin caja alta, el tracking se va con ella. Los 0.06em existían para que
+ * las mayúsculas no se apretaran; en caja baja separan lo que no hay que
+ * separar y hacen que la etiqueta se lea deshilachada.
+ * ══════════════════════════════════════════════════════════════════════════
  *
  * Variantes:
  *   primary    relleno naranja, texto NEGRO. El CTA de conversión.
@@ -40,17 +62,69 @@ const VARIANTS = {
   ghostDark: 'bg-transparent text-paper ring-1 ring-paper/35 hover:ring-paper/70',
 } as const;
 
+/*
+ * ⚠️ LOS TRES SUBIERON UN ESCALÓN LARGO: 12/13/15 pasaron a 15/16/18. El
+ * pedido fue literal —«la font de los CTA está muy muy chica»— y tenía razón
+ * medida: el CTA del header iba en `micro`, que son 13px, el mismo tamaño que
+ * la letra chica del pie de página. El botón más importante del sitio estaba
+ * compuesto como una nota al pie.
+ *
+ * Los altos NO cambian. `md` son 46px de alto con 16px de texto y `lg` 54 con
+ * 18: en los dos casos queda holgura de sobra, y tocarlos movería la altura de
+ * la barra del header y de todos los bloques de CTA del sitio.
+ *
+ * `d7` es el token de 18px. Es de la escala de títulos y acá se usa sólo por
+ * su tamaño; el interlineado no interviene porque el botón es de una línea y
+ * centra por flex.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LOS ALTOS BAJARON Y AHORA TOPEAN EN 42px. Pedido de Camila, con el número
+ * puesto: «máximo quiero que tengan 42px».
+ *
+ * Medidos antes del cambio: `sm` 38, `md` 46 y `lg` 54. Los dos que se usan
+ * pasaban el tope —`md` es el default y lo toman 125 call sites, `lg` está
+ * escrito en 32—, así que el cambio se ve en todo el sitio.
+ *
+ * Ahora son 36 / 40 / 42. Se mantiene la escala de tres escalones en vez de
+ * aplastar los tres a 42: un botón chico y uno grande tienen que seguir
+ * distinguiéndose, y lo que el pedido fija es el TECHO.
+ *
+ * ⚠️ LOS CUERPOS NO CAMBIAN: 15 / 16 / 18px. Es el pedido anterior de Camila
+ * —«la font de los CTA está muy muy chica»— y sigue valiendo. A 18px dentro de
+ * 42 quedan 12px de aire arriba y abajo, que alcanza de sobra: la Jost tiene
+ * una altura de mayúscula de 0,73em, o sea 13px de los 18.
+ *
+ * ⚠️ ESTO NO MUEVE LA ALTURA DEL HEADER, que es lo que la nota anterior temía.
+ * La barra tiene `min-h-19.5` (78px) propio y el CTA nunca fue lo que la
+ * definía; con 40px en vez de 46 el mínimo sigue mandando. Verificado en el
+ * navegador.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
 const SIZES = {
-  sm: 'h-9.5 px-4 text-caption',
-  md: 'h-11.5 px-5.5 text-micro',
-  lg: 'h-13.5 px-7 text-dato',
+  sm: 'h-9 px-4 text-dato',
+  md: 'h-10 px-5.5 text-base',
+  lg: 'h-10.5 px-7 text-d7',
 } as const;
 
 export type ButtonVariant = keyof typeof VARIANTS;
 
 const BASE = [
   'inline-flex items-center justify-center gap-2.25',
-  'font-body font-medium uppercase tracking-cta',
+  /*
+    ⚠️ PESO 600 Y NO 700, y es un cambio pedido: «los veo muy pesados».
+
+    La Jost es variable 100–900, así que 600 es un peso real de la fuente y no
+    un falso intermedio sintetizado por el navegador. A 15/16/18px —los tres
+    tamaños de `SIZES`— el salto de 700 a 600 se nota sobre todo en el naranja
+    del primario, donde el texto negro sobre un fondo claro engorda de por sí.
+
+    ⚠️ NO contradice la regla de `NAV_ITEM`. Esa regla dice «la letra del cuerpo,
+    en negrita, un escalón más grande» y sigue valiendo para lo que se NAVEGA:
+    nav, mega-menú, drawer y footer siguen en 700. Acá cambia lo que se APRIETA,
+    que es lo que ya venía con más peso visual por tener relleno y píldora.
+    Si algún día se quiere unificar, se cambia `NAV_ITEM` en el mismo commit.
+  */
+  'font-body font-semibold',
   /*
     ⚠️ PÍLDORA, y sólo acá. Camila lo pidió en el boceto: «CTAs redondos».
 

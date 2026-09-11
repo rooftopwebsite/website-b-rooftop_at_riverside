@@ -40,7 +40,10 @@ import { ArrowRight } from '@/components/shared/Icon';
  * se sentó a esperar que lo atiendan. Escrito acá, arriba, en la home, deja
  * de ser una sorpresa en el lugar.
  *
- * ⚠️ Se monta con `-mt-22` (−88px), que es EXACTAMENTE el radio de la banda.
+ * ⚠️ Se monta con un margen negativo que LEE `--radius-band`, así que es
+ * exactamente el radio de la banda a cualquier ancho. Era `-mt-22` —88px
+ * escritos a mano— y desde que el radio es fluido eso ya no servía: en mobile
+ * el arco mide 36 y el margen seguía subiendo la sección 88.
  * La sección de arriba (`WhatsOn`, oscura) termina recta y esta se le monta
  * encima con su arco: el resultado es que la superficie clara emerge sobre la
  * oscura en lugar de apoyarse contra ella. Los dos números están atados — si
@@ -60,7 +63,7 @@ export function HowThisPlaceWorks() {
         de allá y el par mediría 120px en vez de 48: el doble del mismo
         espacio en «Three of them», cinco secciones más abajo.
       */
-      className="relative z-[3] -mt-22 rounded-t-band bg-bone pt-16 lg:pt-32"
+      className="relative z-[3] [margin-top:calc(var(--radius-band)*-1)] rounded-t-band bg-bone pt-16 lg:pt-32"
     >
       {/*
         ══════════════════════════════════════════════════════════════════
@@ -105,11 +108,53 @@ export function HowThisPlaceWorks() {
         comentario sobre el texto y no el texto— y «it is the one tab we
         run», que lo dice el ticket 02 de `YardSteps`, 48px más abajo.
         ══════════════════════════════════════════════════════════════════ */}
-      <StaggerGroup className="caja-ancha grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-7 lg:gap-18">
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ DOS COLUMNAS EXPLÍCITAS, Y APILADO HASTA `lg`. Antes era
+        `grid-cols-[repeat(auto-fit,minmax(320px,1fr))]`, y el `auto-fit` era
+        el bug: el número de tracks lo decidía el ancho disponible, no el
+        diseño. Medido en el navegador, la columna del titular daba 435px a
+        1024, 553 a 1280 y 548 de 1440 para arriba —el `auto-fit` llegaba a
+        armar TRES tracks y dejar el tercero en 0—. Como `--text-h2` sigue
+        creciendo hasta su tope de 88px mientras la columna se achicaba,
+        arriba de 1440 «one set of stairs.» dejaba de entrar y el titular se
+        partía en TRES renglones: exactamente el remate que la nota de abajo
+        dice que hay que sostener.
+
+        Con `grid-cols-2` las dos columnas miden lo mismo y crecen con la
+        caja, que es lo que la composición asume.
+
+        ⚠️ Y APILA EN MOBILE Y TABLET, sin pasar por un estado intermedio.
+        Pedido de Camila: «que se adapte bien a mobile y tablet, en esos
+        casos se apilan y ya». A 768 el `auto-fit` metía dos columnas de
+        339px y el titular entraba a cinco renglones contra un párrafo de
+        cuatro: dos columnas angostas y ninguna legible. Apilado, el titular
+        usa el ancho entero y el párrafo debajo también.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <StaggerGroup className="caja-ancha grid grid-cols-1 gap-7 lg:grid-cols-2 lg:gap-18">
         <RevealItem>
+          {/*
+            ⚠️ EL CUERPO SE TOPEA EN 79,2px Y NO EN LOS 88 DE `text-h2`, y el
+            número no es arbitrario: es el que la nota de abajo declara como el
+            del diseño —«dos renglones de `text-h2` (79,2px cada uno = 158px)»—,
+            o sea `6vw` a 1320px, que es donde se compuso.
+
+            `--text-h2` es `clamp(2.5rem, 6vw, 5.5rem)`: abajo de 1320 esto da
+            exactamente lo mismo que el token, y arriba deja de crecer. Sin el
+            tope, de 1440 para arriba el titular llega a 88px mientras su
+            columna se queda en 548 —la `caja-ancha` topea en 1168 y el
+            `lg:gap-18` se lleva 72—, «one set of stairs.» pide 597 y el
+            titular se parte en TRES renglones. Medido en el navegador a 1440,
+            1568 y 1920.
+
+            ⚠️ Es un `clamp` propio y no un token nuevo porque el problema no es
+            de la escala sino de ESTA composición: `text-h2` a 88px está bien
+            en un titular que usa el ancho entero. Acá vive en media caja.
+          */}
           <h2
             id="how-title"
-            className="m-0 font-display text-h2 font-extrabold uppercase leading-[0.9] text-ink"
+            className="m-0 font-display text-[clamp(2.5rem,6vw,4.95rem)] font-extrabold uppercase leading-[0.9] text-ink"
           >
             Five businesses,
             <br />

@@ -127,6 +127,22 @@
   --color-teal600: #028382;
   --color-tomato: #eb452c;
   --color-terra: #a62000; /* acento de titular sobre claro: 7.43:1 sobre paper */
+  /*
+   * `tomato-soft` — el rojo de error PARA SUPERFICIE OSCURA. Es el par de
+   * `terra` del otro lado del sitio.
+   *
+   * Existe porque el formulario de newsletter se mudó adentro del footer, a una
+   * tarjeta `deeper`, y sus mensajes de error iban en `terra`: medido, 1.16:1
+   * sobre esa tarjeta, o sea texto invisible. `tomato`, el otro rojo de la
+   * paleta, tampoco alcanza: 3.51:1, por debajo del 4.5 que pide un texto de
+   * 13px.
+   *
+   * ⚠️ El BORDE rojo del campo sigue siendo `tomato`: ese borde cae sobre el
+   * campo, que es blanco, y no sobre la tarjeta.
+   *
+   * Medido: 6.14:1 sobre `deeper` · 4.88:1 sobre `deep`.
+   */
+  --color-tomato-soft: #ff8f7a;
   --color-plum: #402639;
   --color-magenta: #a24584;
   /*
@@ -367,10 +383,26 @@
    * margen tiene que CRECER con el viewport o el titular de 9vw termina
    * pegado al vidrio.
    *
-   * 4vw es la pendiente del diseño; 16px el piso de un teléfono y 56px el
-   * techo, que es donde la caja de 1400 ya no crece más.
+   * 4vw es la pendiente del diseño y 56px el techo, que es donde la caja de
+   * 1400 ya no crece más.
+   *
+   * ⚠️ EL PISO SUBIÓ DE 16px A 24px. Pedido de Camila, mirando `FindUs` en un
+   * teléfono: «esto en mobile debe estar marginado como en tablet».
+   *
+   * El 4vw no llega a los 16px hasta los 400px de ancho, así que en TODOS los
+   * teléfonos el gutter era el piso y nada más que el piso — 16px fijos
+   * mientras el titular crece a 9vw. Medido a 390: el gutter daba 16 y a 834
+   * daba 33, y esa diferencia es la que se ve como «sin margen».
+   *
+   * 24px es el piso y no 33: igualar el valor de la tablet dejaría 66px de los
+   * 390 en aire y el titular de `FindUs` —que ya entra justo— perdería dos
+   * caracteres por renglón. 24 es el escalón que se nota sin comerse la línea.
+   *
+   * ⚠️ ESTO MUEVE EL SITIO ENTERO, que es para lo que está el token: lo usan
+   * `caja`, `caja-ancha` y `px-borde`, o sea las 23 rutas. No es un arreglo
+   * de `FindUs`.
    */
-  --spacing-borde: clamp(16px, 4vw, 56px);
+  --spacing-borde: clamp(24px, 4vw, 56px);
 
   /* ── Bandas de sección ──────────────────────────────────────────────────
      Se aplican siempre como PAR mobile/desktop y siempre simétricas
@@ -580,7 +612,24 @@
    * bajadas de sección y atarlos haría que cambiar una bajada mueva el hero.
    */
   --text-pastilla: 26px;
-  --text-nav: 19px;
+  /*
+   * ⚠️ 17px Y NO 19, Y EL NÚMERO BAJÓ PORQUE LA LETRA CAMBIÓ. La nav estaba en
+   * la CONDENSADA en caja alta, que a 19px ocupa poquísimo ancho; ahora está en
+   * la del cuerpo, en caja baja y en negrita, que es bastante más ancha por
+   * carácter. Medido en el `desk` más chico (1344px), con los cuatro items más
+   * «More», el aire que queda entre el final de la nav y el logo:
+   *
+   *     16px → 113px      18px →  72px
+   *     17px →  93px      19px →  52px
+   *
+   * A 19 la barra volvía a quedar peor que antes del rediseño de la nav (62px),
+   * o sea que se desharía el trabajo de correr «What's On» a la derecha. 17 es
+   * el escalón más grande que deja la barra holgada, y en pantalla se lee MÁS
+   * GRANDE que los 19 de antes igual: la de cuerpo tiene mucha más altura de x
+   * que la condensada, y va en 700 contra el 700 de una condensada, que mancha
+   * menos.
+   */
+  --text-nav: 17px;
   --text-titan: 144px;
   --text-titan--line-height: 0.85;
   --text-banda: 112px;
@@ -589,6 +638,21 @@
   /* ── Escala de texto ────────────────────────────────────────────────────*/
   --text-intro: 25px;
   --text-intro--line-height: 1.4;
+  /*
+   * `hero-lead` — la bajada DEL HERO, «Rooftop bar. Four kitchens. Walk in.».
+   *
+   * ⚠️ EXISTE PORQUE TIENE QUE ENTRAR EN UN SOLO RENGLÓN EN MOBILE, y `intro`
+   * no puede: `intro` es el token de las bajadas de sección, lo consumen otras
+   * páginas, y bajarlo para arreglar el hero movería todas. Es la misma razón
+   * por la que `pastilla` no se ató a `intro` — ver la nota de ese token.
+   *
+   * En el tope valen exactamente lo mismo (25px), así que de `lg` para arriba
+   * el hero se ve idéntico a antes. Lo único que cambia es el piso.
+   *
+   * El valor fluido está abajo, en `:root`. El de acá es el tope.
+   */
+  --text-hero-lead: 25px;
+  --text-hero-lead--line-height: 1.35;
   /*
    * `lead` — la BAJADA. Sube de 18px a 22px y la interlínea baja de 1.6 a 1.55.
    *
@@ -765,7 +829,29 @@
        shell   32px  tarjetas de evento y bloques de contacto
        door    24px  las tres puertas
        ticket  18px  las tarjetas troqueladas del yard                      */
-  --radius-band: 88px;
+  /*
+   * ⚠️ ES UN `clamp` Y NO 88px FIJOS. Pedido de Camila: «las esquinas en
+   * mobile necesito que sean más chicas».
+   *
+   * 88px sobre una pantalla de 390 son el 22% del ancho: el arco se come un
+   * cuarto de la banda y lo que en desktop es un remate, en un teléfono se lee
+   * como que la sección está mordida. A 36px sigue siendo el mismo gesto y
+   * ocupa el 9%, que es la proporción que tiene el arco de 88 sobre una
+   * pantalla de 978.
+   *
+   * Por eso el `9vw` del medio: mantiene esa proporción en todo el rango y
+   * llega a los 88px justo a 978px de ancho, sin escalón.
+   *
+   * ⚠️ DOS COSAS SIGUEN A ESTE TOKEN SOLAS Y NO HAY QUE TOCARLAS:
+   *   · `--spacing-cierre-arco`, que es `cierre + radius-band` y se recalcula
+   *     porque el `calc` se resuelve al usarse.
+   *   · El margen negativo con el que `HowThisPlaceWorks` y `FindUs` se montan
+   *     sobre la banda de arriba. Era `-mt-22` —88px escritos a mano, con un
+   *     comentario en cada archivo avisando que estaban atados a este token— y
+   *     ahora lee la variable. Ese comentario era una promesa que sólo podía
+   *     cumplir alguien acordándose; ahora la cumple el CSS.
+   */
+  --radius-band: clamp(2.25rem, 9vw, 5.5rem);
   --radius-frame: 44px;
   --radius-shell: 32px;
   --radius-door: 24px;
@@ -812,6 +898,23 @@
   --shadow-card: 0 2px 10px rgba(1, 69, 69, 0.14), 0 18px 44px -12px rgba(1, 69, 69, 0.3);
   --shadow-photo: 0 3px 10px rgba(1, 69, 69, 0.1), 0 22px 48px -20px rgba(1, 69, 69, 0.26);
   --shadow-float: 0 4px 16px rgba(1, 69, 69, 0.16), 0 30px 70px -18px rgba(1, 69, 69, 0.38);
+
+  /*
+   * ⚠️ `shadow-card-dark` — LA MISMA SOMBRA, PARA LAS LOSAS OSCURAS, y sin
+   * esto la mitad de las tarjetas del sitio no puede tener sombra.
+   *
+   * Las cuatro de arriba están teñidas en `deep` (1,69,69), que es
+   * exactamente el fondo de las bandas oscuras: una tarjeta `deeper` sobre una
+   * banda `deep` con `shadow-card` proyecta el color del fondo sobre el fondo.
+   * No es que se vea poco, es que no se ve.
+   *
+   * Ésta mantiene la estructura de las otras —capa de contacto corta y capa de
+   * profundidad larga con spread negativo— pero teñida casi en negro
+   * (0,15,15) y con más opacidad, que es lo que hacen los proyectos de la casa
+   * que trabajan sobre oscuro: tre-vele va con rgba(0,0,0,.6) y santa-maría
+   * con rgba(0,0,0,.45).
+   */
+  --shadow-card-dark: 0 2px 10px rgba(0, 15, 15, 0.34), 0 18px 44px -12px rgba(0, 15, 15, 0.55);
 }
 
 :root {
@@ -863,25 +966,83 @@
    * que es como está compuesto el diseño.
    */
   --text-titan: clamp(3.5rem, 9vw, 9rem);
-  --text-banda: clamp(2.8rem, 7vw, 7rem);
+  /*
+   * ⚠️ LA PENDIENTE CAMBIÓ PARA QUE EL TITULAR CREZCA EN TABLET SIN MOVER EL
+   * DESKTOP. Era `clamp(2.8rem, 7vw, 7rem)`.
+   *
+   * El problema, medido a 834: el titular quedaba en 58px, o sea 43px de
+   * altura de mayúscula, contra un CTA de 42px de alto. La letra del titular y
+   * el botón medían LO MISMO, y por eso Camila lo vio «como más chico que los
+   * CTA». Un titular de sección no puede empatarle a un control.
+   *
+   * La recta nueva pasa por dos puntos elegidos: 72px a 834 —donde la
+   * mayúscula sube a 53 contra los 42 del botón— y 100,8px a 1440, que es
+   * exactamente lo que daba la fórmula vieja. O sea que el desktop no se
+   * entera: a 1440 el número es el mismo.
+   *
+   * ⚠️ EL TOPE SE QUEDA EN 7rem. Se alcanza a 1673px en vez de a 1600, así que
+   * entre esos dos anchos el titular es unos 3px más chico que antes. Es la
+   * única contrapartida y no se ve.
+   *
+   * ⚠️ LO USAN `WhatsOn` Y `ThreeDoors`, que son los dos titulares CENTRADOS y
+   * con `max-w` en `ch`. `EventsBanner` y `FindUs` NO lo usan: los dos tienen
+   * su propio `clamp` con la pendiente vieja porque sus titulares ocupan el
+   * ancho entero y ya entran justos — con esta pendiente se partirían en
+   * tablet. Está explicado en cada uno.
+   */
+  --text-banda: clamp(2.8rem, 2.03rem + 4.75vw, 7rem);
   /*
    * La nav también es fluida, y acá el clamp no es cosmético: entre 1344 —el
    * `desk` donde la nav horizontal aparece— y 1400 hay 56px de margen y ocho
-   * elementos en la barra. A 19px fijos el último CTA se sale; a 1.35vw entra
-   * en 15px y crece hasta los 19 recién cuando la pantalla lo permite.
+   * elementos en la barra. A tamaño fijo y grande el último CTA se sale; con
+   * `vw` entra chica y crece recién cuando la pantalla lo permite.
    *
-   *     nav  1.35vw → 1344px: 18px · 1408px: 19px (tope)
+   *     nav  1.35vw → 1259px: 17px (tope)
+   *
+   * ⚠️ CON EL TOPE EN 17 EL CLAMP YA NO MODULA NADA en las pantallas donde
+   * esto se ve: la nav horizontal arranca en 1344, y ahí 1.35vw ya son 18,1px,
+   * o sea que siempre está clavada en el tope. Se deja igual porque el piso es
+   * la red de seguridad del día que el `desk` baje o la barra sume un item: si
+   * eso pasa, la nav se achica sola en vez de romperse.
    */
-  --text-nav: clamp(15px, 1.35vw, 19px);
+  --text-nav: clamp(15px, 1.35vw, 17px);
   /*
-   * ⚠️ El pill TIENE que ser fluido o se rompe en mobile. A 390px la
-   * pastilla mide todo el ancho menos el círculo de 80 y el padding, o sea
-   * ~230px de texto; «Happy hour Wed – Fri, 3–6 PM» a 26px necesita 340 y se
-   * cortaría con puntos suspensivos. A 17px entra.
+   * ⚠️ El pill TIENE que ser fluido o se rompe en mobile. A 390px la pastilla
+   * mide todo el ancho menos el círculo de 80 y el padding, o sea 215px de
+   * texto: a 26px no entra ni la frase más corta, a 17px entran las cuatro.
    *
    *     pastilla  1.9vw → 390px: 17px (piso) · 1368px: 26px (tope)
+   *
+   * ⚠️ Y el clamp NO alcanza solo: arriba de 1400px la caja topea pero el h1
+   * sigue creciendo, así que el hueco de texto se ACHICA con la pantalla
+   * grande —288px a 1920— mientras el tipo ya está en su tope de 26. Es el
+   * peor caso de los cuatro mensajes y por eso ninguno pasa de ~22 caracteres.
+   * La tabla medida está arriba del array de frases, en `Hero.tsx`.
    */
   --text-pastilla: clamp(17px, 1.9vw, 26px);
+
+  /*
+   * ⚠️ LA BAJADA DEL HERO ENTRA EN UN RENGLÓN, Y EL NÚMERO SALE DE MEDIRLO.
+   *
+   * «Rooftop bar. Four kitchens. Walk in.» son 36 caracteres. Medido en el
+   * server de producción con Jost ya cargada, la frase en un renglón pide
+   * **367px a 25px**. El ancho disponible es el de la caja menos el borde, que
+   * es `clamp(16px, 4vw, 56px)` por lado:
+   *
+   *     390px   hay 358px   entra hasta 24,3px   ← se pasaba por 9px
+   *     430px   hay 396px   entra hasta 26,9px
+   *     768px   hay 707px   entra hasta 48,1px
+   *
+   * O sea que fallaba SÓLO en los teléfonos angostos, y por poquito. `6vw` da
+   * 23,4px a 390 y toca el tope de 25 a los 417px, con un 4 % de aire en toda
+   * la franja. El piso de 19px cubre hasta 320px, que es la pantalla más
+   * angosta que se sigue probando.
+   *
+   * ⚠️ NO SUBIR EL PISO SIN VOLVER A MEDIR. Si algún día cambia el copy de la
+   * bajada, el número de arriba deja de valer: son 36 caracteres exactos los
+   * que entran con este clamp.
+   */
+  --text-hero-lead: clamp(19px, 6vw, 25px);
 
   /*
    * ⚠️ ALTO DE LA BANDA INTERCALADA EN UN TITULAR. Se usa con
@@ -1024,6 +1185,26 @@
   }
   .on-dark {
     --lead-ink: var(--color-muted-dark);
+  }
+
+  /*
+   * `--sombra-card` — LA SOMBRA DE TARJETA, RESUELTA POR SUPERFICIE.
+   *
+   * Mismo mecanismo que `--lead-ink`, y por el mismo motivo: el valor correcto
+   * depende de sobre qué cae, y un call site no tiene por qué saberlo. Una
+   * tarjeta escribe `sombra-card` y listo; si vive dentro de un `.on-dark`
+   * —que es la clase que ya traen el footer, las bandas `deep` y
+   * `Section tone="deep"`— le toca sola la variante oscura.
+   *
+   * Es lo que hace posible el pedido de Camila —«que todas las cards tengan
+   * una sombra, las de toda la web»— sin tener que decidir en cada archivo
+   * sobre qué fondo está parado.
+   */
+  :root {
+    --sombra-card: var(--shadow-card);
+  }
+  .on-dark {
+    --sombra-card: var(--shadow-card-dark);
   }
 
   /* Reserva de espacio para imágenes: sin esto hay CLS. */
@@ -1317,6 +1498,23 @@
  */
 @utility bajada {
   color: var(--lead-ink);
+}
+
+/**
+ * `sombra-card` — la sombra de una tarjeta, sin tener que elegir cuál.
+ *
+ * Lee `--sombra-card`, que vale la versión clara por defecto y la oscura
+ * dentro de `.on-dark`. Ver la nota de la variable en el bloque `base`.
+ *
+ * ⚠️ NO se usa en las tarjetas enmascaradas. `YardSteps` lleva su sombra con
+ * `filter: drop-shadow` en el contenedor y tiene que seguir así: una
+ * `box-shadow` dibuja la sombra del rectángulo original y la máscara del
+ * troquel no la recorta, así que quedarían dos esquinas de sombra flotando
+ * donde la tarjeta ya no tiene material. Está explicado en el bloque del
+ * troquel, más abajo en este mismo archivo.
+ */
+@utility sombra-card {
+  box-shadow: var(--sombra-card);
 }
 
 @utility link-texto {

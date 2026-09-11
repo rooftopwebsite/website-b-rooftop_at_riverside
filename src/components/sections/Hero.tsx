@@ -1,8 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ButtonLink } from '@/components/shared/Button';
 import { ArrowUpRight, Martini, Moon, MusicNote, SunHorizon } from '@/components/shared/Icon';
 import { venueStatus } from '@/lib/hours';
 
@@ -181,7 +181,33 @@ export default function Hero() {
    *     happy hour   copa
    *     música       corcheas
    */
-  const HAPPY = { text: 'Happy hour Wed – Fri, 3–6 PM', Icon: Martini };
+  /*
+   * ⚠️ CADA FRASE TIENE QUE ENTRAR EN UN SOLO RENGLÓN, y el renglón más
+   * angosto NO es el del mobile: es el del monitor grande. Arriba de 1400px
+   * la caja deja de crecer pero el h1 sigue —`titan` topea recién en 9rem—,
+   * así que el pill se COMPRIME a medida que la pantalla se agranda. Medido
+   * con el dev server abierto, el hueco de texto queda en:
+   *
+   *     390px    215px de texto a 17px
+   *     1024px   309px de texto a 19.5px
+   *     1280px   428px de texto a 24.3px   ← el más holgado
+   *     1920px   288px de texto a 26px     ← el PEOR caso
+   *
+   * A 26px eso son ~22 caracteres. «Happy hour Wed – Fri, 3–6 PM» pedía 373px
+   * (130 %) y caía en dos renglones; «Closed, back Wednesday» pedía 290 (101 %)
+   * y también. Las frases de ahora miden, en ese mismo peor caso:
+   *
+   *     Happy hour Wed – Fri     262px   91 %
+   *     Closed till Wednesday    255px   89 %   ← el día más largo de los siete
+   *     Live music five nights   244px   85 %
+   *     Open until 11 PM         198px   69 %
+   *
+   * ⚠️ Del happy hour se cayó la hora y NO los días. Entre los dos datos sólo
+   * entra uno, y el que no se puede omitir es el de los días: «Happy hour
+   * 3–6 PM» leído un sábado es falso. Los rangos completos —días y horas—
+   * están en el pill de `/visit`, en `WhatsOn` y en `YardSteps`.
+   */
+  const HAPPY = { text: 'Happy hour Wed – Fri', Icon: Martini };
   const MUSIC = { text: 'Live music five nights', Icon: MusicNote };
 
   const messages = status
@@ -198,7 +224,7 @@ export default function Hero() {
           {
             text:
               status.reopensOn && status.reopensOn !== 'today'
-                ? `Closed, back ${status.reopensOn}`
+                ? `Closed till ${status.reopensOn}`
                 : 'Closed right now',
             Icon: Moon,
           },
@@ -222,7 +248,36 @@ export default function Hero() {
     <section className="bg-bone pt-9 lg:pt-18">
       <div className="caja-ancha">
       {/* ── Titular, primera mitad + pill ─────────────────────────────── */}
-      <div className="relative flex flex-wrap items-end justify-between gap-6">
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ `flex-wrap-reverse` Y NO `flex-wrap`, Y NO ES UN DETALLE.
+
+        Es lo que pone el PILL ARRIBA del titular cuando los dos no entran en
+        un renglón, que es lo que pidió Camila mirando el mobile.
+
+        `wrap-reverse` invierte el eje transversal: el orden DENTRO de cada
+        línea no cambia —el h1 sigue a la izquierda y el pill a la derecha
+        cuando van al lado—, pero las LÍNEAS se apilan al revés. O sea que al
+        envolverse, el pill (que es el segundo hijo) queda encima.
+
+        ⚠️ POR QUÉ ESTO Y NO `order-first` CON UN BREAKPOINT. Medido con el
+        server abierto, el titular y el pill dejan de apilarse entre los 760 y
+        los 800px, y ese umbral NO es un breakpoint de Tailwind: sale de sumar
+        el ancho del h1 más el `basis-85` del pill. Con `md:order-none` (768)
+        quedaba una franja de ~12px donde el pill volvía abajo estando todavía
+        apilado. Y clavar `min-[780px]` ataría el layout a un número que deja
+        de valer el día que cambie el titular o el basis.
+
+        `wrap-reverse` no se desincroniza nunca: la condición es exactamente
+        «se envolvió», que es la misma que dispara el apilado.
+
+        ⚠️ POR ESO `items-start` Y NO `items-end`. Con el eje transversal dado
+        vuelta, `start` y `end` se invierten: `items-start` es lo que apoya el
+        pill ABAJO, alineado con el titular, cuando van al lado. Leerlo como
+        «arriba» es el error fácil acá.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <div className="relative flex flex-wrap-reverse items-start justify-between gap-6">
         <h1 className="m-0 font-display text-titan font-extrabold uppercase text-ink">
           {/*
             ══════════════════════════════════════════════════════════════
@@ -256,9 +311,25 @@ export default function Hero() {
           sin eso, alguien con lector de pantalla nunca se entera del cambio;
           con `assertive` lo interrumpiría cada 3,4 segundos, que es peor.
         */}
+        {/*
+          ⚠️ EL ALTO DEL PILL LO PONE SU TEXTO HASTA `lg`, Y ARRIBA DE AHÍ LA
+          CAJA DE 80. Antes era 80 en todas las medidas y el resultado eran
+          96px de pastilla —80 del círculo más el padding— alrededor de un
+          texto de 17px: en mobile y tablet quedaba una cápsula tres veces más
+          alta que lo que dice.
+
+          El que mandaba el alto era el CÍRCULO, no el `min-h`. Por eso acá se
+          tocan los dos: sin achicar el círculo, bajar el `min-h` no cambia
+          nada.
+
+              hasta lg    círculo 36   pastilla 48px   texto 17px
+              lg y más    círculo 80   pastilla 96px   texto 19,5 a 26px
+
+          De `lg` para arriba queda exactamente como estaba.
+        */}
         <p
           aria-live="polite"
-          className="mb-1.5 flex min-h-20 flex-1 basis-85 items-center gap-3.5 rounded-pill bg-mint py-2 pr-2 pl-6.5 lg:mb-4.5"
+          className="mb-1.5 flex flex-1 basis-85 items-center gap-2.5 rounded-pill bg-mint py-1.5 pr-1.5 pl-5 lg:mb-4.5 lg:min-h-20 lg:gap-3.5 lg:py-2 lg:pr-2 lg:pl-6.5"
         >
           <span className="min-w-0 flex-1 font-body text-pastilla font-medium text-ink">
             {/* La `key` es lo que reinicia la animación: sin ella React
@@ -274,15 +345,30 @@ export default function Hero() {
             fundido y el icono cambia de golpe en el mismo instante: se ve
             como un parpadeo al lado de una transición, que es peor que no
             animar ninguno de los dos.
+
+            ⚠️ VA EN `paper` Y NO EN `sunset`, y el cambio es de sistema, no de
+            gusto. En esta home el naranja significa UNA sola cosa: algo en lo
+            que se hace clic o una palabra que se subraya en un titular. Los
+            otros doce `bg-sunset` del repo son botones, el CTA del hero, las
+            badges de las cards y el hover de los iconos de `FindUs`.
+
+            Este círculo no es ninguna de las dos: es el icono decorativo de un
+            pill que sólo informa. Pintado de naranja era la mancha de color más
+            fuerte de la primera pantalla —más que el propio CTA, que queda
+            abajo del marco— y mandaba a mirar algo que no lleva a ningún lado.
+
+            En blanco sigue siendo un círculo y sigue separando el icono del
+            texto, pero se lee como un hueco dentro del mint. El icono queda en
+            `ink`: 17.11:1 sobre `paper`.
           */}
           <span
             key={`icono-${message.text}`}
-            className="rt-roll grid size-20 shrink-0 place-items-center rounded-pill bg-sunset"
+            className="rt-roll grid size-9 shrink-0 place-items-center rounded-pill bg-paper lg:size-20"
           >
             {/* `strokeWidth` uniforme para los cuatro: `Martini` se dibuja en
                 1.4 porque en «Three doors» va a 104px, y a 26px ese trazo se
                 ve más liviano que el resto del juego. */}
-            <message.Icon className="size-6.5 text-ink" strokeWidth="1.8" />
+            <message.Icon className="size-4.5 text-ink lg:size-6.5" strokeWidth="1.8" />
           </span>
         </p>
       </div>
@@ -340,9 +426,23 @@ export default function Hero() {
           ref={frameRef}
           className="relative h-75 w-full overflow-hidden rounded-frame bg-fog lg:h-[46vw] lg:max-h-150"
         >
+          {/*
+            ⚠️ LA FOTO SE ELIGIÓ Y SE RECORTÓ EN `scripts/build-media.mjs`, y el
+            encabezado de esa entrada explica el porqué de la medida, de la
+            proporción y del foco. Acá sólo importan tres cosas:
+
+            · El archivo YA VIENE en 2576×1200, que es exactamente 2× el ancho
+              tope del marco y su misma proporción. `object-cover` no recorta
+              nada: la banda que se ve es la que se eligió.
+            · `priority` porque es el LCP de la home.
+            · El `alt` DESCRIBE LO QUE SE VE y no lo que vende la sección. El
+              anterior decía «The rooftop at sunset, with the food truck yard
+              below» sobre una aérea de una clase de yoga, o sea que era falso
+              para quien usa lector de pantalla. La regla está en `docs/media.md`.
+          */}
           <Image
-            src="/images/venue/venue-aerial.jpg"
-            alt="The rooftop at sunset, with the food truck yard below"
+            src="/images/venue/hero-truck-window.jpg"
+            alt="Two guests ordering at a lit food truck window at night"
             fill
             priority
             sizes="(min-width: 1400px) 1288px, 100vw"
@@ -366,33 +466,62 @@ export default function Hero() {
 
       {/* ── Bajada + CTAs ─────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-end justify-between gap-8 pt-6.5 pb-cierre lg:pt-11">
-        <p className="m-0 max-w-[16ch] font-body text-intro font-light leading-[1.35] text-ink">
+        {/*
+          ⚠️ EN UN SOLO RENGLÓN HASTA `lg`, Y EN DOS DE AHÍ PARA ARRIBA.
+
+          El `max-w-[16ch]` es lo que parte la frase en «Rooftop bar. Four /
+          kitchens. Walk in.», y en desktop ESO ES EL DISEÑO: un bloque de dos
+          renglones que hace de contrapeso a los dos CTA del otro lado. En
+          mobile el mismo corte dejaba una bajada de dos renglones cortitos
+          debajo de un titular de 56px, que es lo que Camila marcó.
+
+          Son dos cambios y hacen falta los dos:
+
+            · `max-w-none` saca el corte por debajo de `lg`;
+            · `text-hero-lead` baja el cuerpo lo justo para que entre.
+
+          Sacar sólo el ancho no alcanza: a 25px la frase pide 367px y a 390
+          hay 358. Se pasaba por 9px. El número y la medición están en la nota
+          del token, en `globals.css`.
+
+          La interlínea ahora la trae el token (`--text-hero-lead--line-height`),
+          así que se fue el `leading-[1.35]` de acá.
+        */}
+        <p className="m-0 max-w-none font-body text-hero-lead font-light text-ink lg:max-w-[16ch]">
           Rooftop bar. Four kitchens. Walk in.
         </p>
         <div className="flex flex-wrap items-center gap-3.5">
           {/*
-            ⚠️ Los dos CTA del hero NO usan `<ButtonLink>`, y es la única
-            excepción del sitio. El componente compone en caja alta con
-            tracking de señalética —que es el registro correcto para un botón
-            de 15px suelto en una barra— y acá los dos botones miden 17px y
-            viven debajo de un titular de 144. En caja alta a ese cuerpo
-            compiten con el titular; en caja baja se leen como lo que son, el
-            pie del hero. El resto —relleno `sunset`, texto NEGRO, píldora,
-            44px de alto mínimo— es idéntico y sigue las mismas reglas.
+            ⚠️ LOS DOS CTA DEL HERO YA SON `<ButtonLink>`. Estaban escritos a
+            mano y este comentario decía que era «la única excepción del
+            sitio», con el argumento de que `Button` componía en caja alta con
+            tracking de señalética y que a este cuerpo eso competía con el
+            titular de 144.
+
+            El argumento era bueno y por eso el componente se cambió a él:
+            ahora `Button` compone en caja baja para todo el sitio. La
+            excepción dejó de tener motivo, y además eran tres —esta y las de
+            `EventsBanner` y `WhatsOn`—, cada una con su propio tamaño y su
+            propio peso. Ver el encabezado de `Button.tsx`.
+
+            ⚠️ El secundario lleva `ring-ink` y el hover invertido, que no es lo
+            que trae `outline`. Ese `ring-ink/25` está calibrado para tarjetas
+            sobre blanco; acá el botón es lo último de la primera pantalla,
+            sobre `bone`, y a 25 % el filo se despinta. Lo que se comparte es
+            el sistema —tamaño, letra, alto, radio—, no el filo.
           */}
-          <Link
-            href="/whats-on"
-            className="flex min-h-11 items-center gap-2.5 rounded-pill bg-sunset px-7.5 py-4 font-body text-dato font-medium text-ink transition-colors duration-200 hover:bg-sunset-hover"
-          >
+          <ButtonLink href="/whats-on" variant="primary" size="lg">
             What&rsquo;s on tonight
             <ArrowUpRight className="size-4" />
-          </Link>
-          <Link
+          </ButtonLink>
+          <ButtonLink
             href="/the-yard"
-            className="flex min-h-11 items-center rounded-pill px-7.5 py-4 font-body text-dato font-medium text-ink ring-1 ring-ink transition-colors duration-200 hover:bg-ink hover:text-bone"
+            variant="outline"
+            size="lg"
+            className="ring-ink hover:bg-ink hover:text-bone hover:ring-ink"
           >
             See the yard
-          </Link>
+          </ButtonLink>
           </div>
         </div>
       </div>

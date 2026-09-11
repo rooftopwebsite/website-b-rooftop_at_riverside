@@ -83,15 +83,51 @@ export default function PhotoDivider() {
         texto. Por eso también las `alt` de abajo están vacías en la práctica
         —quedan escritas para el día que la banda deje de ser decorativa.
       */}
+      {/*
+        ⚠️ EL SELLO NO APARECE ABAJO DE `lg`. Pedido de Camila: «movelo o
+        borralo, está muy pegado a las flechas y en mobile molesta».
+
+        El choque es real y es nuevo: cuelga `-top-14.5` por encima de esta
+        sección, o sea que cae sobre el final de `YardSteps` — y `YardSteps`
+        acaba de estrenar una fila de controles de carrusel, centrada, que
+        abajo de `lg` sí existe. A 390px el sello mide 130 de ancho y se sienta
+        justo al lado de la flecha izquierda.
+
+        Se ESCONDE en vez de moverse porque no hay dónde ponerlo: la banda de
+        fotos ocupa el ancho completo y cualquier otra esquina lo deja encima
+        de una foto o del emblema de la ola. Y se puede esconder sin perder
+        nada — es decoración pura, `alt=""`, y no dice nada que el texto no
+        diga.
+
+        ⚠️ `hidden lg:block` y NO `lg:hidden` invertido: en desktop la fila de
+        controles no existe —las tres tarjetas entran— así que ahí el sello no
+        choca con nada y se queda donde el diseño lo puso.
+      */}
       <Image
         src="/brand/seal.svg"
         alt=""
         width={196}
         height={196}
-        className="rt-sway absolute -top-14.5 left-4 z-40 w-32.5 lg:left-30 lg:w-49"
+        className="rt-sway absolute -top-14.5 left-4 z-40 hidden w-32.5 lg:left-30 lg:block lg:w-49"
       />
 
-      <div className="relative h-140 w-full lg:h-[56vw] lg:max-h-205">
+      {/*
+        ⚠️ LA BANDA ES MÁS ALTA EN MOBILE Y TABLET. Pedido de Camila: más aire
+        arriba y abajo del tendal de fotos.
+
+        El tendal mide 360px fijos y va centrado, así que el aire de arriba y
+        el de abajo es `(alto − 360) / 2`: con los 560 de antes daban 100 y 100.
+        Pero ese aire NO es el que se ve — arriba se lo come la tapa de hueso y
+        abajo la cenefa de la ola. Medido a 390: de los 100 de arriba, 90 eran
+        tapa, así que de verde quedaban DIEZ píxeles. De ahí que las fotos se
+        vieran pegadas al borde.
+
+        Con 608 en mobile y 704 en tablet el aire pasa a 124 y 172, y descontando
+        tapa y ola quedan ~80 de verde arriba y ~91 abajo en un teléfono.
+
+        Desktop no cambia: sigue en `56vw` con su tope de 205.
+      */}
+      <div className="relative h-[38rem] w-full md:h-[44rem] lg:h-[56vw] lg:max-h-205">
         {/*
           ⚠️ ES UNA TEXTURA Y NO UNA ESCENA, y ése es el cambio respecto de la
           versión anterior. Antes iba `wall-yard-night-crowd.jpg` —el patio de
@@ -142,7 +178,7 @@ export default function PhotoDivider() {
               {[...PHOTOS, ...PHOTOS].map((photo, i) => (
                 <div
                   key={`${photo.src}-${i}`}
-                  className={`${photo.w} ${photo.h} relative shrink-0 overflow-hidden rounded-shell bg-fog`}
+                  className={`${photo.w} ${photo.h} relative shrink-0 overflow-hidden rounded-shell bg-fog sombra-card`}
                 >
                   <Image
                     src={photo.src}
@@ -191,7 +227,24 @@ export default function PhotoDivider() {
       </div>
 
       {/* El remate claro de arriba. Ver la nota del encabezado. */}
-      <div className="pointer-events-none absolute inset-x-0 top-[-1px] z-10 h-22.5 rounded-b-band bg-bone" />
+      {/*
+        La tapa de hueso: es lo que hace que la sección de arriba parezca
+        terminar con un arco hacia abajo.
+
+        ⚠️ SU ALTO SE ATÓ AL RADIO Y DEJÓ DE SER 90px FIJOS. Camila pidió sacar
+        espacio justo acá —es la franja clara de arriba de la banda— y 90px era
+        un número puesto cuando el arco medía 88 en todos lados. Desde que
+        `--radius-band` es fluido, en un teléfono el arco mide 36 y la tapa
+        seguía ocupando 90: 54px de hueso liso que no dibujaban nada.
+
+        `radio + 8px` es el mínimo que muestra la curva entera con un hilo de
+        margen. A 390 da 44 en vez de 90, y a 834 da 83 — menos donde más
+        sobraba, que es el orden correcto.
+
+        ⚠️ En `lg` se queda en los 90 de siempre: ahí el arco mide 88 y el
+        cálculo daría 96, o sea que el desktop se movería sin motivo.
+      */}
+      <div className="pointer-events-none absolute inset-x-0 top-[-1px] z-10 h-[calc(var(--radius-band)+8px)] rounded-b-band bg-bone lg:h-22.5" />
 
       {/*
         La cenefa de olas.
@@ -211,9 +264,22 @@ export default function PhotoDivider() {
         />
       </div>
 
-      {/* El emblema que corona la ola. El 10.83 % es su proporción respecto
-          del ancho de la cenefa: sale del diseño y crece con ella. */}
-      <div className="pointer-events-none absolute bottom-[-1px] left-1/2 z-30 w-[10.83%] -translate-x-1/2">
+      {/*
+        El emblema que corona la ola.
+
+        ⚠️ EL 10.83 % ES LA PROPORCIÓN DEL DISEÑO Y SÓLO VALE EN DESKTOP. Sale
+        de la maqueta, donde es su ancho respecto de la cenefa, y como
+        porcentaje crece con ella — que es correcto para una pieza pensada a
+        1440. El problema es que también DECRECE: a 390px de pantalla el
+        emblema queda en 42px de ancho, que a esa escala es una mancha. Camila:
+        «en mobile más grande desde el centro, está muy chico y no se ve».
+
+        Por eso el porcentaje sube en las pantallas chicas: 24 % a 390 son 94px
+        de ancho, que es cuando la figura se vuelve a leer. El centrado no
+        cambia —sigue siendo `left-1/2` con `-translate-x-1/2`— así que crece
+        desde el centro, que es lo que se pidió.
+      */}
+      <div className="pointer-events-none absolute bottom-[-1px] left-1/2 z-30 w-[24%] -translate-x-1/2 md:w-[16%] lg:w-[10.83%]">
         <Image src="/brand/emblem-crop.svg" alt="" width={160} height={120} className="block w-full" />
       </div>
     </section>

@@ -4,12 +4,12 @@ import { useActionState, useId } from 'react';
 import { useFormStatus } from 'react-dom';
 import { subscribeToNewsletter, type ActionState } from '@/app/actions';
 import { Button } from './Button';
-import { GUTTER } from './Section';
 import { Heading } from './Type';
 
 /**
- * El pre-footer de newsletter. Va en `layout.tsx`, arriba del `Footer`, así
- * que aparece en las 23 páginas.
+ * El newsletter, DENTRO del footer, como una tarjeta levantada sobre la losa
+ * oscura. Lo monta `Footer.tsx` —ya no `layout.tsx`— así que sigue apareciendo
+ * en las 23 páginas.
  *
  * ══════════════════════════════════════════════════════════════════════════
  * ⚠️ ESTE BLOQUE SE BORRÓ UNA VEZ Y VOLVIÓ, y conviene leer por qué antes de
@@ -42,16 +42,33 @@ import { Heading } from './Type';
  * con un comentario.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LA SUPERFICIE ES `bone` Y NO PUEDE SER OSCURA. El footer es `deep`: una
- * banda de color acá dejaría dos losas oscuras pegadas, que es la regla más
- * estricta del ritmo de superficies —«nunca dos de color seguidas», ver
- * `scripts/surface-rhythm.mjs`—. Claro → oscuro es además el cierre que el
- * sitio ya tiene.
+ * ⚠️ ERA UNA BANDA `bone` PROPIA Y AHORA ES UNA TARJETA `deeper` ADENTRO DEL
+ * FOOTER. Pedido de Camila: «que esto esté en una card más oscura dentro del
+ * footer, como pasa con Visit us en el footer de the-orient».
+ *
+ * Es el mismo patrón que the-orient resuelve en su `pre-footer.tsx`: la
+ * sección comparte el fondo del footer y adentro lleva una card de bajo
+ * contraste, que se lee como superficie levantada y no como bloque aparte.
+ * Acá el par es `deeper` (#013434) sobre `deep` (#014545) — 1.26:1— y es el
+ * mismo escalón que ya usan las tarjetas de `WhatsOn` y `EventsBanner`.
+ *
+ * ⚠️ ESTO NO ROMPE «NUNCA DOS SUPERFICIES DE COLOR SEGUIDAS». La versión
+ * anterior de esta nota decía que el bloque no podía ser oscuro porque dejaría
+ * dos losas pegadas, y la salida es la que usa the-orient: no hay dos losas,
+ * hay UNA. El newsletter dejó de ser una banda y pasó a ser contenido del
+ * footer.
+ *
+ * ⚠️ LO QUE SÍ CAMBIA, y conviene saberlo: en las dos rutas que terminan en una
+ * sección `deep` —`/our-story` y `/nfc-north-hq`— el footer ahora queda pegado
+ * a otra superficie oscura. Lo que marca el corte es el arco: el
+ * `rounded-t-band` de 88px se mudó de este archivo al `<footer>`, y sus
+ * esquinas dejan ver el blanco de la página. Ya pasaba igual con la banda
+ * `bone`, que también apoyaba su arco contra esas secciones.
  *
  * ⚠️ NO ENTRA EN EL MAPA DE `surface-rhythm.mjs`, y no es un olvido: ese guard
- * recorre los `page.tsx` y lee sus imports. Esto vive en el layout, igual que
- * el `Footer`, así que ninguna página lo declara. Si algún día se mueve a una
- * página, hay que agregarlo al mapa en el mismo commit.
+ * recorre los `page.tsx` y lee sus imports. Esto vive en el footer, así que
+ * ninguna página lo declara. Si algún día se mueve a una página, hay que
+ * agregarlo al mapa en el mismo commit.
  * ══════════════════════════════════════════════════════════════════════════
  *
  * ⚠️ Es un `<form action={...}>` de verdad, igual que el de eventos: funciona
@@ -91,26 +108,24 @@ export default function NewsletterSignup() {
   const errores = state.fieldErrors ?? {};
 
   return (
+    /*
+      ⚠️ YA NO TRAE `GUTTER` NI `caja`. Los pone el footer, que es quien lo
+      contiene: así el título de la tarjeta y el logo del footer arrancan del
+      mismo margen sin que este archivo tenga que saber cuánto vale.
+
+      Antes sí los traía, y la nota de acá explicaba por qué eran los del footer
+      y no los de la home. El problema se disolvió solo al meterse adentro.
+
+      ⚠️ `rounded-shell` (32px) y no `rounded-card` (10px). Es el radio que ya
+      usan las tarjetas oscuras del sitio —las de `WhatsOn` y las de
+      `EventsBanner`— y esta es de la misma familia: una superficie levantada
+      sobre la losa, no un recuadro de contenido.
+    */
     <section
       aria-labelledby={`${id}-title`}
-      className="rounded-t-band bg-bone pt-14 pb-16 lg:pt-20 lg:pb-20"
+      className="rounded-shell bg-deeper sombra-card px-6 py-10 sm:px-9 lg:px-12 lg:py-12"
     >
       {/*
-        ⚠️ `GUTTER` + `caja`, QUE ES EL SISTEMA DEL FOOTER — y NO `caja-ancha`,
-        que es el de las secciones de la home.
-
-        Los dos topes valen hoy 1280, pero las cajas no son la misma: `caja`
-        lleva el gutter POR FUERA y `caja-ancha` por dentro. Con `caja-ancha`
-        este bloque quedaba 56px más adentro que el footer que tiene pegado
-        abajo, y el escalón se veía en las 23 páginas —medido: el título
-        arrancaba en 128.5 y el logo del footer en 72.5—.
-
-        La regla es cuál es el vecino: esto se apoya sobre el footer, así que se
-        alinea con el footer.
-      */}
-      <div className={GUTTER}>
-        <div className="caja">
-          {/*
             ⚠️ DOS COLUMNAS DESIGUALES (`1fr` / `1.15fr`) y no mitades. El texto
             son tres renglones cortos y el formulario son dos campos más un
             botón: partido al medio, la columna del texto queda con un pozo de
@@ -119,10 +134,19 @@ export default function NewsletterSignup() {
           */}
           <div className="grid items-center gap-9 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
             <div>
-              <Heading level={2} id={`${id}-title`} className="m-0 text-d3 text-ink">
+              <Heading level={2} id={`${id}-title`} className="m-0 text-d3 text-paper">
                 Sign up
               </Heading>
-              <p className="mt-gap-bajada max-w-[38ch] font-body text-lead font-light text-body/80">
+              {/*
+                `bajada` Y NO un color literal: la utilidad lee `--lead-ink`, que
+                vale `muted` sobre claro y `muted-dark` dentro de `.on-dark` — la
+                clase que ahora trae el `<footer>`. Acá eso da 7.48:1 sobre la
+                tarjeta `deeper`.
+
+                Antes iba `text-body/80`, que es tinta sobre hueso: sobre esta
+                tarjeta habría quedado en 1.2:1, o sea invisible.
+              */}
+              <p className="bajada mt-gap-bajada max-w-[38ch] font-body text-lead font-light">
                 Stay up to date with all the latest from Rooftop at Riverside.
               </p>
             </div>
@@ -139,7 +163,7 @@ export default function NewsletterSignup() {
             {state.status === 'ok' ? (
               <p
                 role="status"
-                className="rounded-card border border-deep/20 bg-paper px-6 py-5 font-body text-lead text-ink"
+                className="rounded-card border border-paper/20 bg-deep px-6 py-5 font-body text-lead text-paper"
               >
                 {state.message}
               </p>
@@ -215,19 +239,23 @@ export default function NewsletterSignup() {
                 {state.status === 'error' ? (
                   <div className="flex flex-col gap-1">
                     {/* Los errores se dicen con TEXTO además del borde rojo: el
-                        color solo no es un medio de comunicación accesible. */}
+                        color solo no es un medio de comunicación accesible.
+
+                        ⚠️ `tomato-soft` y no `terra`. `terra` es el rojo para
+                        superficie CLARA y sobre esta tarjeta da 1.16:1. Ver la
+                        nota del token en globals.css. */}
                     {errores.firstName ? (
-                      <p id={fid('firstName-err')} className="font-body text-dato text-terra">
+                      <p id={fid('firstName-err')} className="font-body text-dato text-tomato-soft">
                         {errores.firstName}
                       </p>
                     ) : null}
                     {errores.email ? (
-                      <p id={fid('email-err')} className="font-body text-dato text-terra">
+                      <p id={fid('email-err')} className="font-body text-dato text-tomato-soft">
                         {errores.email}
                       </p>
                     ) : null}
                     {!errores.firstName && !errores.email ? (
-                      <p className="font-body text-dato text-terra">{state.message}</p>
+                      <p className="font-body text-dato text-tomato-soft">{state.message}</p>
                     ) : null}
                   </div>
                 ) : null}
@@ -236,18 +264,20 @@ export default function NewsletterSignup() {
                     página exista. Hoy no hay a dónde apuntar y un link a un 404
                     es peor que no tenerlo. Ver la nota del encabezado.
 
-                    ⚠️ `text-muted` Y NO `text-body/60`, que fue el primer
-                    intento y lo cacheó `npm run a11y`: a 13px sobre `bone` esa
-                    transparencia da 4.42:1 y el mínimo son 4.5. `muted` es el
-                    token que existe justamente para esto —4.96:1 sobre `bone`,
-                    medido en la tabla de contraste— y además es un color
-                    OPACO, así que su contraste no depende de sobre qué caiga.
+                    ⚠️ VA EN `bajada` Y NO EN UNA OPACIDAD. El primer intento fue
+                    `text-body/60` y lo cazó `npm run a11y`: a 13px esa
+                    transparencia daba 4.42:1 contra el mínimo de 4.5. Después
+                    fue `text-muted`, que es opaco y resolvía el caso mientras el
+                    bloque era claro; con la tarjeta en `deeper` ese verde medio
+                    cae a 2.5:1.
+
+                    `bajada` es el mecanismo que ya tiene el sitio para esto:
+                    lee `--lead-ink` y elige el token según la superficie. Acá
+                    resuelve en `muted-dark`, 7.48:1.
                 */}
-                <p className="font-body text-micro text-muted">No spam. Unsubscribe any time.</p>
+                <p className="bajada font-body text-micro">No spam. Unsubscribe any time.</p>
               </form>
             )}
-          </div>
-        </div>
       </div>
     </section>
   );

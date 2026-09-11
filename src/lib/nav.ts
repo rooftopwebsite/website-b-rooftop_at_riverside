@@ -21,6 +21,16 @@ export interface NavLink {
   readonly badge?: string;
   /** Abre en otra pestaña. Se anuncia por texto además del icono. */
   readonly external?: boolean;
+  /**
+   * Sólo en `NAV_PRIMARY`: en DESKTOP este destino no va en la nav de la
+   * izquierda, va suelto a la derecha, pegado al CTA. En mobile no cambia
+   * nada: el drawer los lista a todos en el mismo orden.
+   *
+   * ⚠️ ES UN DATO DE NAVEGACIÓN, no un estilo: dice de qué lado del medallón
+   * cae el link, que es una decisión de jerarquía y de espacio. Por eso vive
+   * acá y no en el Header. Ver el bloque de `NAV_PRIMARY`.
+   */
+  readonly side?: boolean;
 }
 
 /**
@@ -39,14 +49,63 @@ export interface NavGroup {
  * Los cinco visibles. El orden NO es casual: sigue las cuatro fuentes de
  * ingreso, de la que factura el venue hacia la que factura el vendor.
  *   Sunset Bar (nuestro) → Food Trucks → What's On → Events → The Yard
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SON CINCO DESTINOS PERO EN DESKTOP NO VAN LOS CINCO DEL MISMO LADO.
+ * «What's On» sale marcado con `side` y el Header lo dibuja a la derecha del
+ * medallón, en el lugar donde estaba «Contact».
+ *
+ * El motivo es de espacio y está medido en el `desk` más chico (1344px), que
+ * es donde la nav horizontal recién aparece:
+ *
+ *                              nav → logo    logo → derecha
+ *     los cinco a la izquierda     62px          334px
+ *     con «What's On» del otro    147px          315px
+ *
+ * O sea que la barra estaba cargada de un solo lado: cinco items más «More»
+ * terminaban a 62px de la caja del logo —a un ojo se lee como pegado— mientras
+ * el otro lado tenía 334px de aire con un link de texto y el CTA. Moviendo uno
+ * de los cinco, la izquierda más que duplica su aire y la derecha se llena.
+ *
+ * ⚠️ Las dos columnas se miden contra la CAJA del logo, que son 120px fijos
+ * (`desk:size-30`), y no contra el dibujo. Contra la tinta del lockup —75px de
+ * ancho— el aire de la izquierda es de 169px.
+ *
+ * ⚠️ Y EL QUE SE MUEVE ES «WHAT'S ON» Y NO OTRO. Los otros cuatro son los
+ * cuatro espacios físicos del lugar —el bar, los trucks, los eventos, el
+ * patio— y se leen como una lista. «What's On» no es un espacio: es la
+ * agenda, y funciona igual de bien al lado del CTA porque las dos cosas son
+ * «qué hago hoy acá». Es también el `NAV_CTA.secondary` de siempre.
+ *
+ * ⚠️ «CONTACT» NO SE PIERDE, cambia de lugar: queda en el bloque «Work With
+ * Us» del mega-menú, en el footer y en los dos CTA del drawer. Ninguna de las
+ * tres es nueva, ya estaba en las tres. Lo que se saca es la CUARTA copia, la
+ * de la barra, que era la que menos hacía falta: nadie entra al sitio de un
+ * restaurante buscando «Contact» en la nav, y el CTA naranja de al lado ya
+ * lleva al formulario que importa.
+ * ══════════════════════════════════════════════════════════════════════════
  */
-export const NAV_MAIN: readonly NavLink[] = [
+export const NAV_PRIMARY: readonly NavLink[] = [
   { label: 'Sunset Bar', href: '/sunset-bar' },
   { label: 'Food Trucks', href: '/food-trucks' },
-  { label: "What's On", href: '/whats-on' },
+  { label: "What's On", href: '/whats-on', side: true },
   { label: 'Events', href: '/events' },
   { label: 'The Yard', href: '/the-yard' },
 ];
+
+/**
+ * Los dos lados de la barra de desktop. SE DERIVAN de `NAV_PRIMARY`, que es
+ * la única lista escrita a mano: así el drawer de mobile —que los muestra a
+ * todos seguidos— no puede quedar desfasado del desktop, y mover un link de
+ * lado es cambiar una palabra en un solo lugar.
+ *
+ * ⚠️ `NAV_SIDE` es un ARRAY y no un objeto suelto, aunque hoy tenga un solo
+ * item. El Header lo mapea igual que a `NAV_MAIN`, así que sale gratis marcar
+ * un segundo link con `side` el día que haga falta, y no hace falta un `!`
+ * para convencer a TypeScript de que el `find` encontró algo.
+ */
+export const NAV_MAIN: readonly NavLink[] = NAV_PRIMARY.filter((l) => !l.side);
+export const NAV_SIDE: readonly NavLink[] = NAV_PRIMARY.filter((l) => l.side);
 
 /**
  * El mega-menú «More», en tres bloques rotulados.

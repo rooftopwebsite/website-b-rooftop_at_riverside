@@ -5,10 +5,19 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { BRAND } from '@/lib/brand';
-import { NAV_CTA, NAV_MAIN, NAV_MORE, NAV_MORE_FEATURED, NAV_MORE_GROUPS } from '@/lib/nav';
+import {
+  NAV_CTA,
+  NAV_MAIN,
+  NAV_MORE,
+  NAV_MORE_FEATURED,
+  NAV_MORE_GROUPS,
+  NAV_PRIMARY,
+  NAV_SIDE,
+} from '@/lib/nav';
 import { ButtonLink } from './Button';
 import { CaretDown } from './Icon';
 import { GUTTER } from './Section';
+import TilePattern, { TileMark } from './TilePattern';
 
 /**
  * Header.
@@ -81,9 +90,35 @@ import { GUTTER } from './Section';
  * `invisible`, que además lo saca del recorrido del tabulador.
  */
 
-/** La clase de un item de la nav. Se comparte con el botón «More». */
+/**
+ * La clase de un item de la nav. Se comparte con el botón «More» y con el link
+ * suelto de la derecha.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ES LA LETRA DEL CUERPO EN NEGRITA Y EN CAJA BAJA, no la condensada en
+ * caja alta que había. El criterio lo fijó Camila y vale para TODO lo que se
+ * navega o se toca: nav, mega-menú, drawer, footer y los botones. La regla, en
+ * una línea:
+ *
+ *     destino o acción  →  `font-body` + `font-bold`, caja baja, sin tracking
+ *     título            →  la condensada de siempre
+ *
+ * Antes convivían cuatro tratamientos para lo mismo: la nav en condensada alta
+ * con 0.02em, el link de contacto en cuerpo regular caja baja, los botones en
+ * cuerpo 500 en caja ALTA con 0.06em, y cuatro CTA escritos a mano que no
+ * pasaban por `Button` y usaban dos criterios más. Un botón que dice «PLAN AN
+ * EVENT» al lado de uno que dice «See the spaces» no se lee como dos niveles:
+ * se lee como dos sitios.
+ *
+ * ⚠️ La caja alta NO desaparece del sitio, cambia de trabajo: queda para los
+ * titulares y para los eyebrow, que son etiquetas. Lo que se saca es de los
+ * elementos que se clickean, que es donde la caja alta cuesta legibilidad —una
+ * palabra en mayúsculas se lee por forma de bloque, no por silueta— y donde
+ * además obligaba a un tracking extra para no apretarse.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
 const NAV_ITEM = [
-  'font-display text-nav font-bold uppercase tracking-[0.02em]',
+  'font-body text-nav font-bold',
   'whitespace-nowrap transition-colors duration-200',
 ].join(' ');
 
@@ -148,20 +183,29 @@ export default function Header() {
             corre del eje. Fuera del flujo, `left-1/2` es el eje real y no
             se mueve aunque mañana la nav tenga cuatro items o seis.
 
-            ⚠️ EL CÍRCULO ES EL «ESPACIO REDONDO» y cuelga por debajo de la
-            barra a propósito. Es `bone` opaco —el mismo color del header y
-            del hero— así que tapa el filete de `fog` justo donde pasa, y lo
-            que se ve es la línea entrando y saliendo de un medallón. Si
-            fuera transparente o del mismo tamaño que la barra, el filete lo
-            cruzaría por el medio y el efecto se pierde.
+            ⚠️ NO HAY MEDALLÓN: EL MEDALLÓN ES EL LOGO. Hubo un círculo
+            dibujado —fondo `bone` y `ring` en `fog`, de 120px— alrededor del
+            lockup, y se fue por pedido de Camila. Primero se le sacó el
+            casquete de arriba y quedó sólo el arco de abajo; viéndolo en
+            pantalla, ese arco tampoco sumaba: eran dos líneas curvas que
+            nacían de la nada al costado del logo y que no eran ni el logo ni
+            la barra.
 
-            ⚠️ El `ring` va en `fog`, el mismo token del filete que corta: es
-            lo que hace que el círculo se lea como una continuación de la
-            barra y no como una pieza pegada encima.
+            Sin el círculo el efecto que se buscaba sigue estando, y lo hace
+            solo: el lockup ES un badge redondo y opaco, así que TAPA el
+            filete de `fog` en los 75px que ocupa y lo que se ve es la línea
+            entrando y saliendo del logo. El círculo dibujado estaba repitiendo
+            por fuera la forma que el logo ya tiene.
+
+            ⚠️ Lo que sí quedó de esa caja es el `size-30` y el `top-1`: son
+            los que fijan el CENTRO del logo —a 64px del borde de arriba, o
+            sea 14px por encima del filete— y por eso el lockup cuelga un poco
+            de la barra en vez de estar contenido. Si se cambia el `size`, el
+            logo se corre en vertical.
 
             ⚠️ Los dos grupos de los costados llevan `pr`/`pl` en `desk` para
-            no meterse debajo del medallón. Sin eso, el último item de la nav
-            pasa por atrás del círculo en las pantallas donde la nav crece.
+            no meterse debajo del logo. Sin eso, el último item de la nav pasa
+            por atrás del lockup en las pantallas donde la nav crece.
             ══════════════════════════════════════════════════════════════
 
             ⚠️ EL LOCKUP EN SVG cierra una deuda anotada en este mismo
@@ -203,15 +247,33 @@ export default function Header() {
               falta ningún `order-*`.
               ══════════════════════════════════════════════════════════════
             */
-            className="group z-30 flex shrink-0 items-center transition-shadow duration-300 ease-brand desk:absolute desk:top-1 desk:left-1/2 desk:grid desk:size-30 desk:-translate-x-1/2 desk:place-items-center desk:rounded-pill desk:bg-bone desk:ring-1 desk:ring-fog desk:hover:shadow-btn"
+            className="group z-30 flex shrink-0 items-center desk:absolute desk:top-1 desk:left-1/2 desk:grid desk:size-30 desk:-translate-x-1/2 desk:place-items-center"
           >
+            {/*
+              ⚠️ 80px EN DESKTOP Y NO 64. Creció un 25 % cuando se fue el
+              círculo, y las dos cosas van juntas: adentro del medallón el
+              lockup tenía que dejar aire contra el `ring` o se veía apretado,
+              y sin `ring` ese aire no está reservando nada. El logo pasa a ser
+              la pieza del centro en vez de su contenido.
+
+              Los 80px son el techo de lo que entra. Medido: arriba deja 24px
+              libres contra la `UtilityBar` —a 88 quedaban 20 y el lockup se
+              leía encajado entre las dos barras— y abajo cuelga 26px del
+              filete, un tercio de la barra, que es lo que lo mantiene montado
+              sobre la página sin taparle nada al hero.
+
+              ⚠️ En mobile sigue en 52px (`h-13`) y no se toca. Ahí el logo
+              está EN EL FLUJO, a la izquierda y contra la hamburguesa, así que
+              tiene que entrar dentro de la barra: no cuelga de nada y lo que
+              creciera se lo comería al alto del header.
+            */}
             <Image
               src="/brand/logo-primary.svg"
               alt=""
               width={240}
               height={254}
               priority
-              className="h-13 w-auto transition-transform duration-300 ease-brand group-hover:scale-105 desk:h-16"
+              className="h-13 w-auto transition-transform duration-300 ease-brand group-hover:scale-105 desk:h-20"
             />
             <span className="sr-only">{BRAND.name}</span>
           </Link>
@@ -263,23 +325,53 @@ export default function Header() {
               centro óptico de la barra. */}
           <div className="flex min-w-0 flex-1 items-center justify-end gap-3 desk:gap-6 desk:pl-20">
             {/*
-              ⚠️ «Contact» va como TEXTO PLANO y no como botón, y es lo que
-              deja respirar la barra. Con dos botones —era «What's On» en
-              `outline` + «Plan an Event» en relleno— el extremo derecho tenía
-              dos cajas compitiendo y el CTA real perdía. Un link de texto al
-              lado de una píldora naranja tiene una jerarquía que se lee de
-              una: uno es la salida de servicio, el otro es la acción.
+              ⚠️ ACÁ VA UN LINK DE TEXTO Y NO UN SEGUNDO BOTÓN. Con dos
+              botones —«What's On» en `outline` + «Plan an Event» en relleno—
+              el extremo derecho tenía dos cajas compitiendo y el CTA real
+              perdía. Un link de texto al lado de una píldora naranja tiene una
+              jerarquía que se lee de una: uno es la salida de servicio, el
+              otro es la acción.
+
+              ⚠️ EL QUE OCUPA ESE LUGAR HOY ES «WHAT'S ON», que hasta recién
+              estaba a la izquierda con los otros cuatro, y el que se fue es
+              «Contact». El porqué —la barra estaba cargada de un solo lado y
+              los números de las dos mediciones— está en `nav.ts`, arriba de
+              `NAV_PRIMARY`. Acá sólo se dibuja lo que esa lista decide: el
+              componente NO sabe cuál es el link de la derecha.
+
+              ⚠️ USA `NAV_ITEM`, EL MISMO QUE LOS DE LA IZQUIERDA. Tuvo un
+              estilo propio —cuerpo regular en 15px— mientras la nav estaba en
+              condensada alta: ahí la diferencia servía para que no se leyera
+              como un botón sin fondo al lado de la píldora. Con las dos cosas
+              en la misma letra esa distinción desapareció sola, y mantenerla
+              sería dejar un item de la nav con otro tamaño que los demás por
+              estar del otro lado del logo.
             */}
-            <Link
-              href="/contact"
-              className="hidden font-body text-dato text-ink transition-colors duration-200 hover:text-terra desk:block"
-            >
-              Contact
-            </Link>
+            {NAV_SIDE.map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                aria-current={isCurrent(href) ? 'page' : undefined}
+                className={[
+                  NAV_ITEM,
+                  'hidden desk:block',
+                  isCurrent(href)
+                    ? 'text-ink underline decoration-sunset decoration-2 underline-offset-[10px]'
+                    : 'text-ink hover:text-terra',
+                ].join(' ')}
+              >
+                {label}
+              </Link>
+            ))}
             <ButtonLink
               href={NAV_CTA.primary.href}
               variant="primary"
-              className="hidden normal-case tracking-normal sm:inline-flex"
+              /* ⚠️ Ya no lleva `normal-case tracking-normal`: eran el parche
+                 para que ESTE botón se saliera de la caja alta que `Button`
+                 imponía a todos. Ahora la caja baja es la regla y el parche
+                 sobra. `hidden sm:inline-flex` sí se queda: es lo que lo saca
+                 de la barra en pantallas chicas. */
+              className="hidden sm:inline-flex"
             >
               {NAV_CTA.primary.label}
             </ButtonLink>
@@ -311,18 +403,52 @@ export default function Header() {
           agrupamiento —y de ese orden— está en `nav.ts`; lo que se resolvió
           acá es la forma.
 
-          ⚠️ SE FUERON LOS FILETES POR ITEM. Cada link tenía un `border-t` en
-          `fog`, y con ocho links del mismo peso ese filete era lo único que
-          armaba grilla. Ahora la estructura la dan los rótulos, y ocho
-          filetes más tres rótulos son dos sistemas de agrupación peleando por
-          decir lo mismo. El único filete que queda es el que cierra la banda
-          contra la página.
+          ⚠️ EL PANEL ES `bone`, EL MISMO COLOR QUE LA BARRA. Era `paper`, y
+          al desplegarse se veían dos superficies distintas pegadas: la barra
+          en hueso y abajo una lengua blanca. El escalón es de 1.08:1 —poco
+          para llamarlo contraste, suficiente para que se lea un corte— y ese
+          corte partía en dos algo que es UNA sola pieza: el menú sale de la
+          barra, no aparece debajo. Ahora el único límite del panel es el
+          filete de `fog` que lo cierra contra la página, igual que el del
+          header.
 
-          ⚠️ LA CUARTA COLUMNA ES LA ÚNICA CAJA DEL PANEL. Va en `bone` sobre
-          `paper` — el mismo escalón de 1.08:1 que en la barra se evitó a
-          propósito, pero acá se busca: es un rectángulo chico, con radio y
-          con `ring` en `fog`, así que se lee como tarjeta y no como un
-          cambio de fondo. Es lo que la separa de las tres columnas de texto.
+          ⚠️ VUELVEN LOS FILETES POR ITEM, y es un cambio respecto de lo que
+          decía este archivo. El argumento viejo era que ocho filetes más tres
+          rótulos eran «dos sistemas de agrupación peleando por decir lo
+          mismo», y con el rótulo de antes —tres palabras en gris, del mismo
+          peso que todo lo demás— era cierto.
+
+          Dejó de serlo cuando el rótulo pasó a ser un eyebrow de marca con la
+          ola en teal: ahora los dos sistemas dicen cosas DISTINTAS. El rótulo
+          abre un bloque, el filete separa dos destinos adentro del bloque. Es
+          la estructura de los menús que pasó Camila como referencia
+          (Superside): etiqueta de categoría arriba, y abajo una lista de
+          renglones separados por un hilo, cada uno con su título y su línea
+          de qué hay adentro. El filete va en `fog`, el mismo hilo del header,
+          y no lleva el del último item: el aire cierra la columna.
+
+          ⚠️ Y CADA RENGLÓN ES MÁS ALTO. Era un `gap` de 18px entre links;
+          ahora cada uno tiene 14px arriba y 14 abajo de su propio aire, así
+          que el hilo cae en el medio de 28px y el renglón se lee como una
+          franja y no como dos líneas de texto sueltas. Es lo que hace que se
+          pueda barrer la columna de un golpe de vista.
+
+          ⚠️ LA CUARTA COLUMNA ES LA ÚNICA CAJA DEL PANEL, y ahora es la única
+          superficie OSCURA. Era una tarjeta `bone` con `ring` sobre `paper`,
+          o sea el mismo escalón de 1.08:1 de arriba usado a propósito; con el
+          panel en `bone` ese truco ya no existe —la tarjeta desaparecía— y de
+          paso nunca terminó de leerse como «destacado»: un rectángulo del
+          mismo color con un borde fino es una caja, no una pieza.
+
+          En `deep` sí. Es el verde de la marca, es el color de las otras dos
+          piezas que en la home cierran una sección —la banda de Events y el
+          footer—, y en un panel claro ordena la lectura sola: tres columnas
+          de texto y un bloque. Arriba lleva el azulejo de la marca como
+          banda, que es uno de los dos usos que el brand book autoriza (banda
+          o detalle, nunca fondo) y que hasta hoy no estaba en ninguna
+          pantalla: `TilePattern` existía exportado y sin un solo call site.
+          Es lo que le da a la tarjeta una impronta que no es «caja con texto
+          adentro».
 
           ⚠️ SU ANCHO ES FIJO (21rem) y las otras tres se reparten el resto. Si
           entrara al reparto, en 1400px la tarjeta se comería el mismo cuarto
@@ -335,7 +461,7 @@ export default function Header() {
         */}
         <div
           className={[
-            'absolute inset-x-0 top-full border-b border-fog bg-paper',
+            'absolute inset-x-0 top-full border-b border-fog bg-bone',
             'transition-all duration-200',
             moreOpen
               ? 'visible translate-y-0 opacity-100'
@@ -343,32 +469,67 @@ export default function Header() {
           ].join(' ')}
         >
           {/*
-            ⚠️ EL `pt-16` NO ES AIRE DE DISEÑO: ES LA SOMBRA DEL MEDALLÓN. El
-            logo mide 120px (`desk:size-30`) y arranca en `top-1` sobre una
-            barra de 78px, así que cuelga 46px POR DEBAJO del filete — justo
-            encima de donde empieza el panel, y justo en el centro de la
-            página, que es donde cae la tercera columna. Con el `pt-9` que
-            tenía la grilla vieja, el rótulo de esa columna quedaba tapado por
-            el círculo, que es opaco y va en `z-30`.
+            ⚠️ EL `pt-11` NO ES AIRE DE DISEÑO: ES LA SOMBRA DEL LOGO. El
+            lockup cuelga por debajo del filete del header —cae justo encima
+            de donde empieza el panel, y justo en el centro de la página, que
+            es donde arranca la tercera columna—, y es opaco y va en `z-30`,
+            así que lo que quede abajo lo tapa. Con el `pt-9` de la grilla
+            vieja el rótulo de esa columna desaparecía debajo del logo.
 
-            Los 64px dejan 18px de aire entre el borde de abajo del medallón y
-            la primera línea de texto. Si el medallón cambia de tamaño, este
-            número cambia con él.
+            Los 44px dejan 18px de aire entre el borde de abajo del lockup y
+            la primera línea de texto.
+
+            ⚠️ BAJÓ DE 64px A 44 CUANDO SE FUE EL MEDALLÓN. El número no es
+            una preferencia: es cuánto cuelga el logo más los 18 de aire. Con
+            el círculo de 120px colgaban 46px; el lockup de 80px cuelga 26.
+            Si el logo vuelve a cambiar de tamaño, este número cambia con él.
           */}
-          <div className="caja-ancha grid gap-x-10 gap-y-9 pt-16 pb-11 desk:grid-cols-[repeat(3,minmax(0,1fr))_21rem]">
+          <div className="caja-ancha grid gap-x-10 gap-y-9 pt-11 pb-11 desk:grid-cols-[repeat(3,minmax(0,1fr))_21rem]">
             {NAV_MORE_GROUPS.map((group) => (
               <div key={group.label}>
-                {/* El rótulo NO es un link: es una etiqueta. Ver `nav.ts`. */}
-                <p className="eyebrow text-muted">{group.label}</p>
+                {/*
+                  El rótulo NO es un link: es una etiqueta. Ver `nav.ts`.
 
-                <ul className="mt-4.5 flex flex-col gap-4.5">
+                  ⚠️ ES EL MISMO EYEBROW QUE ABRE UNA SECCIÓN EN LAS 22 PÁGINAS
+                  INTERNAS: la ola de la marca en teal más el rótulo en `deep`.
+                  Era gris (`text-muted`) y del mismo peso que la bajada de
+                  cada link, así que la columna no tenía cabeza: se leían ocho
+                  cosas del mismo tono y la categoría era una más.
+
+                  El ejemplo que pasó Camila resuelve esto con una pastilla de
+                  color por columna. Acá el trabajo ya lo hace una pieza que el
+                  sitio tiene y usa en todas partes —`TileMark`, la ola del
+                  `PageHero`—, así que el menú se alinea con el resto del sitio
+                  en vez de estrenar un componente nuevo que diga lo mismo.
+
+                  ⚠️ `text-deep` en el rótulo: 10.03:1 sobre `bone`. Es el mismo
+                  tono que la tarjeta oscura de la cuarta columna, o sea que el
+                  verde aparece dos veces en el panel y las dos veces significa
+                  «acá empieza algo».
+                */}
+                {/*
+                  ⚠️ LA OLA VA DEBAJO DEL RÓTULO Y NO AL COSTADO, al revés que
+                  en el `PageHero`. Ahí el eyebrow es una línea suelta arriba de
+                  un titular enorme y la ola lo acompaña de lado; acá el rótulo
+                  encabeza una COLUMNA, y puesta al costado la ola empujaba el
+                  texto hacia adentro y desalineaba las tres cabezas respecto de
+                  los links que tienen abajo. Debajo, en cambio, arranca en el
+                  mismo borde izquierdo que todo lo demás y hace de subrayado:
+                  cierra el rótulo y abre la lista.
+                */}
+                <p className="eyebrow text-deep">
+                  {group.label}
+                  <TileMark className="mt-1.5 block" />
+                </p>
+
+                <ul className="mt-3.5 flex flex-col">
                   {group.links.map(({ label, href, hint, badge }) => (
-                    <li key={href}>
+                    <li key={href} className="border-b border-fog last:border-b-0">
                       <Link
                         href={href}
                         onClick={() => setMoreOpen(false)}
                         aria-current={isCurrent(href) ? 'page' : undefined}
-                        className="group block"
+                        className="group block py-3.5"
                       >
                         <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                           {/*
@@ -377,10 +538,18 @@ export default function Header() {
                             solo con marcar dónde empieza cada cosa; y a 28px,
                             tres bloques de links no entran en la altura de la
                             tarjeta sin que el panel mida media pantalla.
+
+                            ⚠️ Y va en la letra del cuerpo en negrita, no en la
+                            condensada alta: son ocho DESTINOS, o sea la misma
+                            cosa que los items de la barra, y siguen la regla
+                            única de `NAV_ITEM`. El único texto del panel que
+                            conserva la condensada es el título de la tarjeta
+                            destacada, que no es un item de lista sino el
+                            titular de una pieza.
                           */}
                           <span
                             className={[
-                              'font-display text-d7 font-bold uppercase leading-none',
+                              'font-body text-d7 font-bold leading-none',
                               'transition-colors duration-200',
                               isCurrent(href) ? 'text-terra' : 'text-ink group-hover:text-terra',
                             ].join(' ')}
@@ -423,38 +592,75 @@ export default function Header() {
               href={NAV_MORE_FEATURED.href}
               onClick={() => setMoreOpen(false)}
               aria-current={isCurrent(NAV_MORE_FEATURED.href) ? 'page' : undefined}
-              className="group flex flex-col rounded-card bg-bone p-5 ring-1 ring-fog transition-shadow duration-300 ease-brand hover:shadow-btn"
+              /*
+                ⚠️ `on-dark` NO ES DECORATIVO. Es la clase de la casa que da
+                vuelta dos cosas que sobre oscuro quedarían mal: el anillo de
+                foco pasa a `cream` —en `ink` desaparecería contra el `deep`— y
+                `--lead-ink`, el color de las bajadas, pasa a `muted-dark`. La
+                misma clase que aplica sola `Section tone="deep"`.
+
+                ⚠️ `overflow-hidden` es lo que recorta el azulejo contra el
+                radio de la tarjeta. Sin eso el patrón sale por las esquinas de
+                arriba y la tarjeta deja de tener forma.
+              */
+              className="on-dark group flex flex-col overflow-hidden rounded-card bg-deep sombra-card"
             >
-              <span className="eyebrow text-muted">{NAV_MORE_FEATURED.eyebrow}</span>
+              {/*
+                La banda del azulejo. Policroma y sin teñir: los cuatro colores
+                son parte del dibujo. Ver `TilePattern.tsx`.
 
-              <span className="mt-2.5 font-display text-d6 font-bold uppercase leading-[1.1] text-ink transition-colors duration-200 group-hover:text-terra">
-                {NAV_MORE_FEATURED.label}
-              </span>
+                ⚠️ 72px Y NO LOS 44 QUE TRAE POR DEFECTO. El default está
+                calibrado para una banda que cruza la página entera; acá la
+                banda mide 336px de ancho, y a 44 entraban siete celdas y media
+                que a ese tamaño se leían como un friso de ruido. A 72 entran
+                cinco y se reconoce el rombo con la estrella adentro, que es el
+                motivo. La celda se ata al alto (`backgroundSize: auto 100%`),
+                así que subir la banda es agrandar el dibujo, no repetirlo más.
 
-              <span className="mt-2 font-body text-dato font-light leading-[1.5] text-muted">
-                {NAV_MORE_FEATURED.hint}
-              </span>
+                De paso ocupa la parte de arriba de una tarjeta que se estira a
+                la altura de la columna: sin la banda, esos 72px eran verde
+                vacío.
+              */}
+              <TilePattern height="h-18" />
 
-              {/* `mt-auto`: el CTA se apoya en el piso de la tarjeta aunque la
-                  bajada mida dos renglones o tres. */}
-              <span className="mt-auto flex items-center gap-1.5 pt-4 font-body text-dato font-medium text-terra">
-                {NAV_MORE_FEATURED.cta}
-                <svg
-                  width="14"
-                  height="9"
-                  viewBox="0 0 14 9"
-                  fill="none"
-                  aria-hidden="true"
-                  className="transition-transform duration-200 ease-brand group-hover:translate-x-0.5"
-                >
-                  <path
-                    d="M0 4.5h12M8.5 1l3.5 3.5-3.5 3.5"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+              <span className="flex flex-1 flex-col p-5">
+                {/* `cream` sobre `deep`: 9.44:1. */}
+                <span className="eyebrow text-cream">{NAV_MORE_FEATURED.eyebrow}</span>
+
+                <span className="mt-2.5 font-display text-d6 font-bold uppercase leading-[1.1] text-paper transition-colors duration-200 group-hover:text-cream">
+                  {NAV_MORE_FEATURED.label}
+                </span>
+
+                {/*
+                  ⚠️ `muted-dark` y no `muted`: el verde medio de las bajadas
+                  está calibrado para fondos claros y sobre `deep` da 2.02:1.
+                  Este da 5.95:1 y es el token que existe justamente para eso.
+                */}
+                <span className="mt-2 font-body text-dato font-light leading-[1.5] text-muted-dark">
+                  {NAV_MORE_FEATURED.hint}
+                </span>
+
+                {/* `mt-auto`: el CTA se apoya en el piso de la tarjeta aunque la
+                    bajada mida dos renglones o tres. */}
+                <span className="mt-auto flex items-center gap-1.5 pt-4 font-body text-dato font-medium text-cream">
+                  {NAV_MORE_FEATURED.cta}
+                  <svg
+                    width="14"
+                    height="9"
+                    viewBox="0 0 14 9"
+                    fill="none"
+                    aria-hidden="true"
+                    className="transition-transform duration-200 ease-brand group-hover:translate-x-0.5"
+                  >
+                    <path
+                      d="M0 4.5h12M8.5 1l3.5 3.5-3.5 3.5"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
               </span>
             </Link>
           </div>
@@ -501,10 +707,16 @@ export default function Header() {
             </button>
           </div>
 
-          {/* La lista scrollea; los CTAs quedan fijos abajo. */}
+          {/* La lista scrollea; los CTAs quedan fijos abajo.
+
+              ⚠️ ACÁ VA `NAV_PRIMARY` Y NO `NAV_MAIN`: en mobile no hay lados
+              —el logo no está en el medio— así que los cinco destinos van
+              seguidos y en el orden del embudo. Con `NAV_MAIN`, que ya viene
+              filtrado, «What's On» desaparecía del drawer y quedaba sin
+              ninguna puerta en teléfono. */}
           <nav aria-label="Site" className={`flex-1 overflow-y-auto pb-6 ${GUTTER}`}>
             <ul className="flex flex-col border-t border-ink/12">
-              {[...NAV_MAIN, ...NAV_MORE, NAV_MORE_FEATURED].map(({ label, href }) => (
+              {[...NAV_PRIMARY, ...NAV_MORE, NAV_MORE_FEATURED].map(({ label, href }) => (
                 <li key={href}>
                   <Link
                     href={href}
@@ -512,9 +724,13 @@ export default function Header() {
                     aria-current={isCurrent(href) ? 'page' : undefined}
                     className="flex items-center justify-between gap-4 border-b border-ink/12 py-3.75"
                   >
+                    {/* Misma regla que el desktop: un destino va en la letra
+                        del cuerpo, en negrita y en caja baja. Acá el tamaño es
+                        `d5` (28px) y no `nav` porque el drawer es una lista a
+                        pantalla completa, no una barra. */}
                     <span
                       className={[
-                        'font-display text-d5 font-bold uppercase',
+                        'font-body text-d5 font-bold',
                         isCurrent(href) ? 'text-ink' : 'text-ink/85',
                       ].join(' ')}
                     >

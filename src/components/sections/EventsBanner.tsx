@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import { ButtonLink } from '@/components/shared/Button';
 import { ArrowRight } from '@/components/shared/Icon';
 import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 
@@ -122,7 +122,23 @@ export default function EventsBanner() {
     <section
       id="events"
       aria-labelledby="events-banner-title"
-      className="relative overflow-hidden rounded-t-band bg-deep pt-14 pb-cierre-arco text-bone on-dark lg:pt-28"
+      /*
+        ⚠️ SE FUE `overflow-hidden`, Y NO ES COSMÉTICO: era lo que impedía el
+        apilado de las tarjetas.
+
+        `position: sticky` se ancla al ancestro que scrollea más cercano, y un
+        `overflow: hidden` convierte a su elemento en uno de esos. Con el
+        recorte acá, las tarjetas se anclaban a ESTA sección —que no scrollea—
+        y el sticky no hacía absolutamente nada.
+
+        Sacarlo no rompe nada porque ya no recortaba nada: estaba para la foto
+        de 100vw que la banda tenía de fondo, y esa foto se fue cuando la banda
+        pasó a ser lisa. Está dicho en el bloque de arriba, textual: «la banda
+        deja de bajar una foto de 100vw que no se llegaba a ver, y
+        `overflow-hidden` en la sección deja de tener que recortarla». Era
+        código muerto esperando a estorbar.
+      */
+      className="relative rounded-t-band bg-deep pt-14 pb-cierre-arco text-bone on-dark lg:pt-28"
     >
       <div className="caja-ancha relative">
         {/* ⚠️ El titular, la bajada y el sello entran JUNTOS. La bajada está
@@ -130,9 +146,26 @@ export default function EventsBanner() {
             moverían una respecto de la otra durante la animación y el ancla
             se vería trabajando. */}
         <Reveal className="relative">
+          {/*
+            ⚠️ EL CUERPO SE TOPEA EN 105,6px Y NO EN LOS 112 DE `text-banda`,
+            y el culpable es el sello. `--text-banda` es
+            `clamp(2.8rem, 7vw, 7rem)`, así que abajo de 1508px esto da
+            exactamente lo mismo que el token; arriba deja de crecer.
+
+            La cuenta: «We close the whole place» mide 10,75em y el rombo se
+            lleva otros 0,96em —`0.814em` de caja más `0.15em` de separación—,
+            o sea 11,71em de renglón contra una `caja-ancha` que topea en
+            1280px. A 112px eso da 1311 y el renglón se parte: medido, a 1568
+            el titular pasaba a TRES renglones y «For you» quedaba colgado
+            lejos del resto de la frase. A 105,6px da 1236, con 44px de
+            holgura.
+
+            ⚠️ El tope tiene que moverse si cambia el TEXTO del titular o el
+            tamaño del sello. Las dos cosas están en este mismo archivo.
+          */}
           <h2
             id="events-banner-title"
-            className="m-0 font-display text-banda font-extrabold uppercase leading-[0.86]"
+            className="m-0 font-display text-[clamp(2.8rem,7vw,6.6rem)] font-extrabold uppercase leading-[0.86]"
           >
             {/*
               ⚠️ Las dos mitades son UN SOLO h2. Visualmente están separadas y
@@ -171,15 +204,21 @@ export default function EventsBanner() {
                 Las tres en `em`, así que el conjunto sigue al titular fluido
                 sin repetir el `clamp` de `--text-banda`.
 
-                ⚠️ `lg:inline-block` y no `lg:block`: en flujo, `block` lo
-                bajaría a un renglón propio y partiría el titular en tres.
+                ⚠️ `inline-block` y no `block`: en flujo, `block` lo bajaría a
+                un renglón propio y partiría el titular en tres.
+
+                ⚠️ APARECE RECIÉN EN `desk` (1344) Y NO EN `lg` (1024). Entre
+                esos dos anchos el titular ya ocupa casi todo el renglón, así
+                que el rombo caía justo encima de «For you» —verificado en
+                captura a 1024—. De 1344 para arriba sobra renglón y el sello
+                queda donde fue compuesto.
               */}
               <Image
                 src="/brand/badge-sun-teal.svg"
                 alt=""
                 width={113}
                 height={113}
-                className="ml-[0.15em] hidden size-[0.814em] align-baseline lg:inline-block"
+                className="ml-[0.15em] hidden size-[0.814em] align-baseline desk:inline-block"
               />
             </span>
             {/*
@@ -193,14 +232,31 @@ export default function EventsBanner() {
               línea vertical, y el desalineado de las dos mitades del titular
               pasa a medirse contra algo.
             */}
-            <span className="block text-right text-sunset">For you</span>
+            {/*
+              ⚠️ A LA IZQUIERDA HASTA `desk` Y A LA DERECHA DE AHÍ PARA ARRIBA.
+              El desalineado de las dos mitades es la composición, pero sólo se
+              lee como tal cuando el primer renglón llega lejos: apilado en
+              mobile, «We close the whole place» ocupa tres renglones cortos y
+              un «For you» pegado al margen derecho deja de ser un remate y
+              pasa a leerse como una palabra suelta que se cayó de la frase.
+            */}
+            <span className="block text-sunset desk:text-right">For you</span>
 
           </h2>
 
           {/*
-            La bajada. En flujo hasta `lg`; de ahí para arriba se ancla al pie
+            La bajada. En flujo hasta `desk`; de ahí para arriba se ancla al pie
             del titular y ocupa la mitad izquierda que «For you» deja libre.
             Ver el bloque del encabezado.
+
+            ⚠️ EL ANCLA ARRANCA EN `desk` (1344) Y NO EN `lg` (1024), y el
+            cambio arregla un choque real. Entre 1024 y 1343 el titular entra
+            en dos renglones apretados y el párrafo absoluto se metía en la
+            misma banda que «For you»: a 1024 el texto quedaba literalmente
+            debajo de la palabra naranja, con el rombo encima. Verificado en
+            captura. De 1344 para arriba el titular deja libre la mitad
+            izquierda del segundo renglón, que es el hueco que este párrafo
+            viene a ocupar.
 
             ⚠️ EL ANCHO ES `62ch` Y NADA MÁS, y hubo que llegar hasta acá
             midiendo. La primera versión lo topeaba además con un `46%` «por
@@ -215,24 +271,74 @@ export default function EventsBanner() {
             siempre dos renglones, mida lo que mida la pantalla. Un tope en
             porcentaje no escala con la tipografía y por eso pelea con él.
           */}
-          <p className="mt-7 max-w-[62ch] font-body text-lead font-light text-paper lg:absolute lg:bottom-0 lg:left-0 lg:mt-0">
+          <p className="mt-7 max-w-[62ch] font-body text-lead font-light text-paper desk:absolute desk:bottom-0 desk:left-0 desk:mt-0">
             Holiday parties, client nights, fundraisers and reunions. You get the rooftop, the yard
             and four kitchens, and one person coordinating all of it.
           </p>
 
         </Reveal>
 
-        <Link
-          href="/events/inquire"
-          className="mt-7 flex min-h-11 w-fit items-center gap-2.5 rounded-pill bg-sunset px-8 py-4 font-body text-dato font-medium text-ink transition-colors duration-200 hover:bg-sunset-hover lg:mt-11"
-        >
+        {/* ⚠️ Era un `<Link>` con las clases del botón copiadas a mano. Ahora
+            es el componente, como los otros 60 CTA del sitio: la letra, el
+            tamaño, el alto y el radio salen de un solo lugar. Ver el
+            encabezado de `Button.tsx`. */}
+        <ButtonLink href="/events/inquire" variant="primary" size="lg" className="mt-7 lg:mt-11">
           Plan your event
           <ArrowRight className="size-4" />
-        </Link>
+        </ButtonLink>
 
-        <StaggerGroup as="ul" className="mt-bloque grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-3">
-          {CARDS.map(({ title, src, alt }) => (
-            <RevealItem as="li" key={src} className="group flex flex-col overflow-hidden rounded-shell bg-deeper">
+        {/*
+          ⚠️ EL SALTO A TRES COLUMNAS ES EN `lg` Y NO EN `md`. Es la misma
+          regla que ya está escrita en `YardSteps`: 1 columna y después 3, sin
+          pasar por 2, y el salto tarde cuando la tarjeta viene cargada. Estos
+          titulares son largos —«The bar is ours: open bar, drink tickets or
+          consumption, however you want to run it»— y a 768px en tres columnas
+          de 227px caían en SEIS renglones cada uno. Apiladas a ancho completo
+          entran en tres.
+        */}
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ EN MOBILE Y TABLET LAS TARJETAS SE APILAN UNA SOBRE OTRA AL
+          SCROLLEAR. Pedido de Camila, con la referencia a mano: el bloque
+          «However you show up» de showdown-social.
+
+          El mecanismo es CSS puro y son dos líneas: la lista deja de ser
+          grilla y pasa a ser una columna, y cada tarjeta es `sticky` con un
+          `top` un escalón más abajo que la anterior. Al scrollear, cada una se
+          clava y la siguiente le pasa por encima —el orden de pintado lo da el
+          DOM, así que la de abajo tapa a la de arriba sin necesidad de
+          `z-index`— y de las que quedaron abajo se sigue viendo el borde.
+
+          ⚠️ NO LLEVA JAVASCRIPT. No hay que medir nada ni escuchar el scroll:
+          esto es `position: sticky` haciendo exactamente lo que hace.
+
+          ⚠️ LAS TARJETAS TIENEN QUE SER OPACAS o el apilado se ve como un
+          amontonamiento translúcido. Lo son: `bg-deeper`.
+
+          ⚠️ En `lg` vuelve a ser la grilla de tres columnas y el `sticky` se
+          apaga con `lg:static`. Con las tres a la vista no hay nada que
+          apilar, y el `top` de cada una deja de aplicar solo.
+          ══════════════════════════════════════════════════════════════════
+        */}
+        <StaggerGroup as="ul" className="mt-bloque flex list-none flex-col gap-6 p-0 lg:grid lg:grid-cols-3">
+          {CARDS.map(({ title, src, alt }, i) => (
+            <RevealItem
+              as="li"
+              key={src}
+              /*
+                ⚠️ El `top` va inline porque DEPENDE DEL ÍNDICE, que es
+                justamente el caso para el que `RevealItem` acepta `style` —
+                ver la nota de esa prop en `Motion.tsx`—. Una clase por
+                posición no existiría en el CSS emitido: Tailwind no ve las
+                plantillas armadas en runtime.
+
+                2rem de base para que la tarjeta clavada no quede al ras del
+                borde de la pantalla, y 0.875rem (14px) de escalón, que es lo
+                que queda a la vista de cada tarjeta tapada.
+              */
+              style={{ top: `calc(2rem + ${i} * 0.875rem)` }}
+              className="group sticky flex flex-col overflow-hidden rounded-shell bg-deeper sombra-card lg:static"
+            >
               <div className="relative h-45 bg-ink lg:h-60">
                 <Image
                   src={src}

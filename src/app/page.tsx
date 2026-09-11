@@ -41,8 +41,10 @@ export const metadata: Metadata = pageMeta({
  *     8 · find us       bone   ← arco, montado −88px
  *
  * Cada banda oscura ENTRA con un arco y SALE con la sección siguiente
- * montándose encima. Los −88px son exactamente `--radius-band`: si cambia el
- * radio, cambian los tres márgenes negativos.
+ * montándose encima. El margen negativo LEE `--radius-band`, así que los dos
+ * números son el mismo a cualquier ancho — y hace falta que lo sean, porque el
+ * radio dejó de ser fijo: es `clamp(2.25rem, 9vw, 5.5rem)`, 36px en un
+ * teléfono y 88 de 978px para arriba.
  *
  * ⚠️ ESTO ROMPE LA REGLA DE `npm run check:surfaces`, que exige «como máximo
  * UNA sección de teal profundo» y «nunca dos de color seguidas». Acá hay dos

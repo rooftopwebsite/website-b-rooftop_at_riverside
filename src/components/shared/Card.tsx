@@ -64,10 +64,15 @@ export default function Card({
     <Link
       href={href}
       className={[
-        'group flex h-full flex-col overflow-hidden rounded-card bg-paper',
+        'group flex h-full flex-col overflow-hidden rounded-card bg-paper sombra-card',
         'ring-1 ring-fog',
         'transition-[transform,box-shadow] duration-200 ease-brand',
-        'hover:-translate-y-0.5 hover:shadow-card',
+        /* ⚠️ El hover sube a `shadow-float` y ya no a `shadow-card`. La tarjeta
+           ahora LLEVA `sombra-card` en reposo —que sobre claro es exactamente
+           `shadow-card`—, así que el hover anterior dejó de cambiar nada: se
+           levantaba medio píxel y la sombra se quedaba igual. `float` es el
+           escalón siguiente de la escala, que es lo que el gesto necesita. */
+        'hover:-translate-y-0.5 hover:shadow-float',
         className,
       ]
         .filter(Boolean)

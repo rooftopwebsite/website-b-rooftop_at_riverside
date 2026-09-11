@@ -119,7 +119,7 @@ export default function TheExperiencePage() {
             </p>
           </div>
 
-          <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint lg:aspect-auto">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint sombra-card lg:aspect-auto">
             <Image
               src="/images/game-controller.jpg"
               alt="A game controller in hand inside the gaming truck"
@@ -141,7 +141,7 @@ export default function TheExperiencePage() {
         />
 
         <StaggerGroup as="ul" className="mt-bloque grid gap-[24px] md:grid-cols-2">
-          <RevealItem as="li" className="rounded-card border border-ink/15 bg-paper p-[28px]">
+          <RevealItem as="li" className="rounded-card border border-ink/15 bg-paper sombra-card p-[28px]">
             <Eyebrow tone="deep">Drop in</Eyebrow>
             <p className="mt-[10px] font-display text-d2 uppercase">
               $10<span className="text-d5"> / 30 min</span>
@@ -151,7 +151,7 @@ export default function TheExperiencePage() {
             </p>
           </RevealItem>
 
-          <RevealItem as="li" className="rounded-card border border-ink/15 bg-paper p-[28px]">
+          <RevealItem as="li" className="rounded-card border border-ink/15 bg-paper sombra-card p-[28px]">
             <Eyebrow tone="deep">Book the truck</Eyebrow>
             <p className="mt-[10px] font-display text-d2 uppercase">
               $400<span className="text-d5"> / 2 hrs</span>
@@ -170,7 +170,7 @@ export default function TheExperiencePage() {
       </Section>
 
       <Section band="md">
-        <div className="rounded-card bg-sunset px-[24px] py-[40px] text-ink lg:px-[56px]">
+        <div className="rounded-card bg-sunset sombra-card px-[24px] py-[40px] text-ink lg:px-[56px]">
           <div className="flex flex-col gap-[20px] lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-[560px]">
               <Eyebrow tone="ink">Add it to an event</Eyebrow>

@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { ButtonLink } from '@/components/shared/Button';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
 import { activeTrucks } from '@/content/trucks';
@@ -82,6 +83,35 @@ const MAX_CARDS = 8;
 /** El aire entre tarjetas, en px. Lo necesita el cálculo del scroll. */
 const CARD_GAP = 24;
 
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EL ANCHO DE TARJETA ES UNA FRACCIÓN DEL CONTENEDOR, y antes era `30vw`.
+ * Es el cambio que arregla el «se ve raro con pocas cards» — pedido de Camila,
+ * con la indicación de mirar cómo lo hacen los otros proyectos.
+ *
+ * Con `30vw` el ancho de la tarjeta no tenía NINGUNA relación con el ancho de
+ * la caja, así que la fila terminaba donde caía: en la captura, la quinta
+ * tarjeta —la naranja del calendario— quedaba cortada por la mitad contra el
+ * borde de la pantalla, y los cinco puntos de abajo prometían cinco posiciones
+ * cuando en realidad sólo había dos lugares a los que scrollear.
+ *
+ * El patrón de la casa es el de `happenings-slider` de santa-maría:
+ * `w-full lg:w-[calc((100%-40px)/3)]`, o sea que entran N tarjetas EXACTAS por
+ * vista y la última cierra contra el margen. Acá es lo mismo con nuestro
+ * `gap-6` (24px): una tarjeta en mobile, dos en `md`, tres en `lg`.
+ *
+ * ⚠️ LOS TRES NÚMEROS ESTÁN ATADOS A `VISIBLES`, abajo. Si acá entran tres y
+ * allá dice dos, los puntos cuentan mal.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const ANCHO = 'w-full md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)]';
+
+/** Cuántas tarjetas entran por vista en cada breakpoint. Espeja `ANCHO`. */
+const VISIBLES = [
+  { mq: '(min-width: 1024px)', n: 3 },
+  { mq: '(min-width: 768px)', n: 2 },
+] as const;
+
 function venueWeekday(): Weekday {
   const label = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/New_York',
@@ -95,46 +125,84 @@ function venueWeekday(): Weekday {
 const CLOSED_DAYS: readonly Weekday[] = [1, 2];
 
 function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly isToday: boolean }) {
-  return (
-    <article className="group flex w-65 shrink-0 snap-start flex-col overflow-hidden rounded-shell bg-deeper transition-transform duration-300 ease-brand hover:-translate-y-1.5 lg:w-[30vw] lg:max-w-100">
+  /*
+   * ⚠️ A DÓNDE VA LA TARJETA. La entrada si el evento la tiene, la página del
+   * evento si no. Hoy los cuatro recurrentes traen `ticketUrl` en `null` —el
+   * dashboard tiene el campo y está vacío—, así que en la práctica todas caen
+   * en `/whats-on/{slug}`. El día que carguen una entrada, la tarjeta cambia
+   * de destino y de etiqueta sola.
+   */
+  const entradas = event.ticketUrl;
+  const href = entradas ?? `/whats-on/${event.slug}`;
+  const cta = entradas ? 'Get tickets' : 'See this night';
+
+  const contenido = (
+    <>
       {/*
         ══════════════════════════════════════════════════════════════════
-        ⚠️ LA CAJA ES 16:9 PORQUE ASÍ ES EL BANNER DEL DASHBOARD, y esto
-        pasó por tres formas en un día. Conviene dejar el recorrido escrito
-        para no repetirlo.
+        ⚠️ LA IMAGEN VA A SANGRE Y RECORTADA EN 4:5, y esto pasó por cuatro
+        formas. Conviene dejar el recorrido escrito para no repetirlo.
 
           1. Apaisada con alto fijo (`h-50` / `20vw`) — la del diseño, para
              fotos de ambiente.
           2. `aspect-[4/5]` — cuando las imágenes pasaron a ser los FLYERS
-             del local, que vienen 1200×1500 con el texto impreso. En una
-             caja apaisada se les comía el nombre del artista.
-          3. `aspect-video` — acá. Porque las imágenes ya no salen del repo:
-             salen del campo `bannerUrl` del dashboard, y el recortador del
-             dashboard impone **16:9** (medido: el marco es 336×189).
+             del local, que vienen con el texto impreso.
+          3. `aspect-video` — porque las imágenes salen del `bannerUrl` del
+             dashboard y el recortador del dashboard impone 16:9.
+          4. Acá: 4:5 otra vez, pero AHORA RECORTANDO.
 
-        O sea que la proporción de esta caja NO es una decisión de diseño
-        nuestra: es la del sistema que guarda las imágenes. Pelearla
-        significaría recortar en el navegador lo que el dashboard ya
-        recortó, y ahí sí se pierde contenido.
+        ⚠️ POR QUÉ VUELVE. La forma 3 componía el flyer entero adentro del
+        16:9 y eso dejaba dos franjas verdes a los costados. Camila: «las
+        fotos tipo flyer prefiero que se recorten».
 
-        ⚠️ CÓMO SOBREVIVE EL FLYER A UN BANNER 16:9. No se recorta: se
-        COMPONE. El flyer 4:5 va a altura completa, centrado, sobre un campo
-        de `deep` que rellena los costados. Entra entero, no se pierde una
-        letra, y el banner se lee como una placa de marca. Si alguien sube
-        una pieza nueva, el mismo tratamiento — ver `scripts/` y el pedido
-        al cliente.
+        ⚠️ Y SE PUEDE RECORTAR SIN INVENTAR NADA, que es el dato que lo hace
+        seguro. Bajé el archivo que sirve el dashboard: mide **1920×1080** y
+        trae el afiche vertical ya compuesto en el medio, entre los píxeles
+        520 y 1400, con las bandas PEGADAS EN EL ARCHIVO. No son un hueco de
+        la caja: son parte de la imagen, y por eso ninguna caja apaisada las
+        podía evitar.
+
+        Una caja 4:5 con `object-cover` deja a la vista los píxeles 527 a
+        1391 del original. El afiche va de 520 a 1400. O sea que el recorte
+        cae casi exacto sobre el afiche y las bandas se van solas, sin
+        números mágicos y sin tocar el archivo. Y no es casualidad: el
+        dashboard mete un vertical en un horizontal, así que volver al
+        vertical lo devuelve.
+
+        ⚠️ Para un banner que SÍ sea una foto apaisada de verdad, esta misma
+        caja hace un recorte al centro, que es lo que se espera de una foto.
         ══════════════════════════════════════════════════════════════════
       */}
-      <div className="relative aspect-video bg-ink">
+      {/*
+        ⚠️ LA CAJA DE LA IMAGEN SE ANCLA ARRIBA Y TIENE SU PROPIO 4:5; NO
+        HEREDA EL ALTO DE LA TARJETA. Parece redundante —la tarjeta ya es
+        `aspect-[4/5]`— y no lo es: las tarjetas viven en una fila flex, y
+        una fila flex ESTIRA a sus hijos al alto del más alto. El más alto
+        es la tarjeta naranja del final, que tiene un titular de cuatro
+        renglones; en mobile eso lleva la tarjeta de 325px a 464, o sea a una
+        proporción de 0.56, y con `inset-0` el recorte se comía los costados
+        del afiche: «LIVE» quedaba en «VE».
+
+        Con la caja anclada arriba y su proporción propia, el recorte es el
+        mismo a cualquier alto. Lo que sobra por abajo cuando la fila estira
+        queda detrás del plate, que es del MISMO color que la tarjeta, así
+        que no se ve ni un borde.
+      */}
+      <div className="absolute inset-x-0 top-0 aspect-[4/5] overflow-hidden">
         {event.image === null ? (
           /* ⚠️ El brief va en INGLÉS. Es texto VISIBLE, no un comentario: el
              hueco se publica marcado a propósito para que no pase callado. El
-             borde punteado es lo que distingue «acá va algo» de «esto falló». */
+             borde punteado es lo que distingue «acá va algo» de «esto falló».
+
+             ⚠️ El `pb-[42%]` no es aire: es el alto del plate. El hueco ocupa
+             la caja entera y centra su texto, así que sin esto el brief
+             quedaba centrado en los 500px y la mitad de abajo caía detrás del
+             plate. Con el padding, se centra en la franja que SÍ se ve. */
           <PhotoPending
             brief={`${event.title} at ${event.space}, at night, with people`}
             ratio=""
             tone="dark"
-            className="h-full rounded-none border-0 border-dashed"
+            className="absolute inset-0 h-full rounded-none border-0 border-dashed pb-[42%]"
           />
         ) : (
           <Image
@@ -145,15 +213,42 @@ function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly is
             className="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
           />
         )}
-
-        {isToday ? (
-          <span className="absolute top-4 left-4 z-10 rounded-pill bg-sunset px-3.5 py-2 font-body text-caption font-medium uppercase tracking-eyebrow text-ink">
-            Tonight
-          </span>
-        ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2.5 px-6 pt-5.5 pb-6.5">
+      {isToday ? (
+        <span className="absolute top-4 left-4 z-20 rounded-pill bg-sunset px-3.5 py-2 font-body text-caption font-medium uppercase tracking-eyebrow text-ink">
+          Tonight
+        </span>
+      ) : null}
+
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ EL PLATE, Y CÓMO SE MUEVE. En reposo cubre el pie de la tarjeta
+        con todo el texto; al hacer hover BAJA 76px: la imagen se queda con
+        ese espacio y el bloque de abajo —la bajada más el rótulo del
+        espacio— se cambia por una sola línea de CTA.
+
+        Idea de Camila: «con el hover podría adaptarse y mostrarse entera,
+        achicándose la parte verde y convirtiéndose en el texto CTA». Está
+        prototipada aparte, en `_interno/prototipos/`.
+
+        ⚠️ EL PLATE NO CAMBIA DE ALTO: SE DESPLAZA. Animar el alto es animar
+        layout y en un carrusel de cuatro tarjetas eso se ve como un tirón.
+        Lo que se mueve es un `translate`, y la tarjeta —que tiene
+        `overflow-hidden`— le recorta lo que sobra por abajo.
+
+        ⚠️ LOS 52px NO SON UN NÚMERO DE GUSTO: son el alto del cajón (96)
+        menos el alto de la línea de CTA con su aire (44). Por eso el corte
+        cae siempre justo debajo del CTA, tenga el título uno o dos
+        renglones. Si se toca uno de los tres números hay que tocar los
+        otros dos.
+
+        ⚠️ El fondo pasa a `sunset` porque en hover la tarjeta ES un CTA. Y
+        el texto encima va NEGRO, que es la regla del repo para el naranja:
+        blanco da 2.54:1.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <div className="absolute inset-x-0 bottom-0 z-10 bg-deeper px-6 pt-5.5 pb-6.5 transition-[transform,background-color] duration-300 ease-brand group-hover:translate-y-13 group-hover:bg-sunset">
         {/*
           ══════════════════════════════════════════════════════════════════
           ⚠️ EL RÓTULO DICE DÍA + HORA, y antes decía sólo el día. Faltaba
@@ -168,39 +263,113 @@ function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly is
           PM». Un guión entre el día y la hora se lee como un rango de días.
           ══════════════════════════════════════════════════════════════════
         */}
-        <span className="flex flex-wrap items-center gap-x-2 font-body text-caption font-medium uppercase tracking-eyebrow text-muted-dark">
+        <span className="flex flex-wrap items-center gap-x-2 font-body text-caption font-medium uppercase tracking-eyebrow text-muted-dark transition-colors duration-300 ease-brand group-hover:text-ink">
           <span>{event.weekday !== null ? weekdayLabel(event.weekday) : whenLabel(event)}</span>
           <span aria-hidden="true" className="opacity-50">
             ·
           </span>
-          <span className="text-cream normal-case tracking-normal">{timeRange(event)}</span>
+          <span className="text-cream normal-case tracking-normal transition-colors duration-300 ease-brand group-hover:text-ink">
+            {timeRange(event)}
+          </span>
         </span>
 
-        <h3 className="m-0 font-display text-d4 font-bold uppercase leading-none text-paper">
+        <h3 className="m-0 mt-2.5 font-display text-d4 font-bold uppercase leading-none text-paper transition-colors duration-300 ease-brand group-hover:text-ink">
           {event.title}
         </h3>
-        <p className="m-0 font-body text-base font-light text-paper/92">{event.summary}</p>
 
-        <span className="mt-auto flex flex-wrap items-center gap-x-2.5 gap-y-1.5 pt-3.5 font-body text-micro uppercase tracking-cta text-muted-dark">
-          <span>{event.space}</span>
-          {/*
-            ⚠️ LA RECURRENCIA VA EN UNA PÍLDORA Y NO EN EL RÓTULO DE ARRIBA.
-            «Every week» es una propiedad del evento, no de esta fecha, así
-            que mezclarla con «Thursday · 6 – 8 PM» haría leer las tres cosas
-            como un solo dato. Separada, contesta la pregunta que se hace
-            quien no puede venir hoy: ¿vuelve a pasar?
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ EL CAJÓN QUE SE INTERCAMBIA. Alto FIJO de 96px, y de eso depende
+          todo el mecanismo: es lo que permite que el plate se DESPLACE en vez
+          de crecer. Adentro hay dos capas superpuestas en la misma esquina:
 
-            Sólo aparece si el evento ES recurrente — un evento de una sola
-            fecha no muestra nada.
-          */}
-          {event.kind === 'recurring' ? (
-            <span className="rounded-pill px-2.5 py-1 text-cream ring-1 ring-muted-dark/50">
-              Every week
+              arriba (44px)   la línea de CTA          ← la que queda
+              todo el alto    la bajada + el espacio   ← la que se va
+
+          Al bajar el plate 52px (96 − 44), lo único que sobrevive del cajón
+          es esa primera franja. Los 44px son la línea de texto más el aire
+          que hace de pie de la tarjeta: sin ellos el CTA quedaría pegado al
+          borde de abajo.
+
+          ⚠️ 96 Y NO 120, que fue el primer número. 120 daba lugar a tres
+          renglones de bajada, y las bajadas reales miden uno o dos: en las
+          tarjetas de «Bring the dog.» quedaban 56px de verde vacío abajo,
+          que se leía como un error de maquetación. Con 96 el sobrante de la
+          bajada más corta son 31px, que pasa por aire.
+
+          ⚠️ La bajada va con `line-clamp-2`. El cajón es de alto fijo, así
+          que una bajada larga se desbordaría sobre el CTA; el recorte es el
+          seguro. Hoy ninguna de las cuatro llega a los dos renglones a 400px
+          de ancho, o sea que no se pierde texto.
+          ══════════════════════════════════════════════════════════════════
+        */}
+        <div className="relative mt-2.5 h-24">
+          <div className="absolute inset-x-0 top-0 transition-opacity duration-300 ease-brand group-hover:opacity-0">
+            <p className="m-0 line-clamp-2 font-body text-base font-light text-paper/92">
+              {event.summary}
+            </p>
+
+            <span className="mt-3.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 font-body text-micro uppercase tracking-cta text-muted-dark">
+              <span>{event.space}</span>
+              {/*
+                ⚠️ LA RECURRENCIA VA EN UNA PÍLDORA Y NO EN EL RÓTULO DE
+                ARRIBA. «Every week» es una propiedad del evento, no de esta
+                fecha, así que mezclarla con «Thursday · 6 – 8 PM» haría leer
+                las tres cosas como un solo dato. Separada, contesta la
+                pregunta que se hace quien no puede venir hoy: ¿vuelve a
+                pasar?
+
+                Sólo aparece si el evento ES recurrente — un evento de una
+                sola fecha no muestra nada.
+              */}
+              {event.kind === 'recurring' ? (
+                <span className="rounded-pill px-2.5 py-1 text-cream ring-1 ring-muted-dark/50">
+                  Every week
+                </span>
+              ) : null}
             </span>
-          ) : null}
-        </span>
+          </div>
+
+          {/*
+            La línea de CTA. `aria-hidden` NO: es texto real y forma parte del
+            nombre accesible del link, que es lo que hace que en un lector de
+            pantalla la tarjeta se anuncie como «Ross Brown … See this night»
+            en vez de terminar en la bajada. Que en reposo esté en `opacity-0`
+            no la saca del árbol de accesibilidad, y eso acá es lo correcto:
+            en un teléfono no hay hover y el destino tiene que anunciarse
+            igual.
+          */}
+          <span className="absolute inset-x-0 top-0 flex h-11 items-start gap-2 font-body text-base font-semibold text-ink opacity-0 transition-opacity duration-300 ease-brand group-hover:opacity-100">
+            {cta}
+            <ArrowRight className="size-4 shrink-0 translate-y-1 transition-transform duration-300 ease-brand group-hover:translate-x-1" />
+            {entradas ? <span className="sr-only">(opens in a new tab)</span> : null}
+          </span>
+        </div>
       </div>
-    </article>
+    </>
+  );
+
+  /*
+   * ⚠️ LA TARJETA ENTERA ES EL LINK, y antes no era link en absoluto: el
+   * carrusel mostraba cuatro eventos y ninguno llevaba a ningún lado.
+   *
+   * Que el destino esté en la tarjeta y no sólo en el CTA es lo que hace que
+   * esto funcione EN UN TELÉFONO. El CTA aparece con el hover, y en touch no
+   * hay hover: si el link viviera únicamente ahí, en mobile la tarjeta no
+   * tendría dónde tocarse. Así, el hover es un adorno de escritorio y el
+   * toque navega igual.
+   */
+  const clases =
+    `group relative block aspect-[4/5] shrink-0 snap-start overflow-hidden rounded-shell bg-deeper sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1.5 ${ANCHO}`;
+
+  return entradas ? (
+    <a href={entradas} target="_blank" rel="noopener noreferrer" className={clases}>
+      {contenido}
+    </a>
+  ) : (
+    <Link href={href} className={clases}>
+      {contenido}
+    </Link>
   );
 }
 
@@ -226,7 +395,7 @@ function CalendarCard() {
   return (
     <Link
       href="/whats-on"
-      className="group flex w-65 shrink-0 snap-start flex-col justify-between gap-8 rounded-shell bg-sunset p-7 text-ink transition-colors duration-300 ease-brand hover:bg-sunset-hover lg:w-[30vw] lg:max-w-100 lg:p-9"
+      className={`group flex shrink-0 snap-start flex-col justify-between gap-8 rounded-shell bg-sunset p-7 sombra-card text-ink transition-colors duration-300 ease-brand hover:bg-sunset-hover lg:p-9 ${ANCHO}`}
     >
       {/*
         ⚠️ `text-ink` OPACO y no `text-ink/70`. La primera versión bajaba la
@@ -269,6 +438,23 @@ export default function WhatsOn() {
 
   useEffect(() => setToday(venueWeekday()), []);
 
+  /*
+   * ⚠️ ARRANCA EN 1 Y NO EN 3. El servidor no sabe el ancho de la pantalla, y
+   * de `visibles` dependen los puntos: con 3 en el primer pintado, un teléfono
+   * publicaría menos puntos de los que hacen falta hasta que monte. Con 1, el
+   * peor caso es que aparezcan un par de puntos de más por un instante, que no
+   * miente sobre a dónde se puede llegar.
+   */
+  const [visibles, setVisibles] = useState(1);
+
+  useEffect(() => {
+    const mqs = VISIBLES.map((v) => ({ ...v, m: window.matchMedia(v.mq) }));
+    const aplicar = () => setVisibles(mqs.find((v) => v.m.matches)?.n ?? 1);
+    aplicar();
+    mqs.forEach((v) => v.m.addEventListener('change', aplicar));
+    return () => mqs.forEach((v) => v.m.removeEventListener('change', aplicar));
+  }, []);
+
   const week = recurringEvents();
 
   /*
@@ -284,10 +470,28 @@ export default function WhatsOn() {
 
   const isClosedToday = today !== null && CLOSED_DAYS.includes(today);
 
-  /* Un punto por diapositiva, y la última es la tarjeta del calendario. El
-     texto va al `sr-only` del botón: «ir a la tarjeta 3» no dice nada, el
-     título del evento sí. */
-  const slides = [...events.map((e) => e.title), 'See the whole calendar'];
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ UN PUNTO POR POSICIÓN Y NO POR TARJETA, y antes era por tarjeta.
+   *
+   * Con cinco tarjetas y tres a la vista sólo hay TRES lugares a los que
+   * scrollear: 0, 1 y 2. Los cinco puntos de antes prometían cinco, así que
+   * los dos últimos no llevaban a ninguna parte nueva y la flecha se apagaba
+   * con dos puntos todavía sin marcar. Es la mitad del «se ve raro».
+   *
+   * La cuenta es la de `happenings-slider` de santa-maría: `max = total −
+   * visibles`, y los puntos son `max + 1`.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  const tarjetas = [...events.map((e) => e.title), 'See the whole calendar'];
+  const maxIndex = Math.max(0, tarjetas.length - visibles);
+
+  /*
+   * El texto de cada punto. Nombra la PRIMERA tarjeta de esa posición, que es
+   * lo único que se puede decir con sentido: «ir a la posición 2» no dice
+   * nada, el título del evento sí.
+   */
+  const slides = tarjetas.slice(0, maxIndex + 1);
 
   /*
    * ⚠️ EL PASO SE MIDE, no se guarda. El ancho de tarjeta es
@@ -306,11 +510,16 @@ export default function WhatsOn() {
     el.scrollBy({ left: dir * step(), behavior: 'smooth' });
   }, []);
 
-  const scrollToCard = useCallback((i: number) => {
-    const el = trackRef.current;
-    if (!el) return;
-    el.scrollTo({ left: i * step(), behavior: 'smooth' });
-  }, []);
+  /* ⚠️ Se clampea a `maxIndex`: el último punto es la última POSICIÓN, no la
+     última tarjeta, así que `i` nunca puede pedir más scroll del que hay. */
+  const scrollToCard = useCallback(
+    (i: number) => {
+      const el = trackRef.current;
+      if (!el) return;
+      el.scrollTo({ left: Math.max(0, Math.min(maxIndex, i)) * step(), behavior: 'smooth' });
+    },
+    [maxIndex],
+  );
 
   /*
    * ⚠️ `canPrev`/`canNext` salen de la POSICIÓN DEL SCROLL y no del índice.
@@ -324,10 +533,23 @@ export default function WhatsOn() {
    * (1.25 y 1.5 de Windows): sin él, `scrollLeft` llega a 811.5 contra un
    * máximo de 812 y la flecha nunca se apaga.
    */
+  /*
+   * ⚠️ `maxIndex` ENTRA POR UN REF Y NO POR LA LISTA DE DEPENDENCIAS.
+   * `onScroll` está suscripto al `resize` y al `onScroll` del track; si
+   * dependiera de `maxIndex`, cada cambio de breakpoint crearía un callback
+   * nuevo y habría que desuscribir y volver a suscribir los dos listeners. El
+   * ref deja el callback estable y siempre lee el valor de ahora.
+   */
+  const maxIndexRef = useRef(0);
+  maxIndexRef.current = maxIndex;
+
   const onScroll = useCallback(() => {
     const el = trackRef.current;
     if (!el) return;
-    setIndex(Math.round(el.scrollLeft / step()));
+    /* El índice se topea en `maxIndex` por la misma razón que `scrollToCard`:
+       al final del recorrido el scroll puede caer más allá del último punto de
+       anclaje y dejar los puntos sin ninguno marcado. */
+    setIndex(Math.min(maxIndexRef.current, Math.round(el.scrollLeft / step())));
     setCanPrev(el.scrollLeft > 1);
     setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 1);
   }, []);
@@ -397,13 +619,19 @@ export default function WhatsOn() {
         </h2>
 
         <div className="mt-6.5 flex justify-center lg:mt-10">
-          <Link
+          {/* ⚠️ Era un `<Link>` con las clases del botón copiadas a mano. Ahora
+              es el componente; lo único propio que queda es el `group` con el
+              `active:scale-95`, que es el gesto de este bloque y no del
+              sistema. Ver el encabezado de `Button.tsx`. */}
+          <ButtonLink
             href="/whats-on"
-            className="group flex min-h-11 items-center gap-2.5 rounded-pill bg-sunset px-8 py-4 font-body text-dato font-medium text-ink transition-all duration-300 ease-brand hover:bg-sunset-hover active:scale-95"
+            variant="primary"
+            size="lg"
+            className="group transition-all duration-300 ease-brand active:scale-95"
           >
             Full calendar
             <ArrowRight className="size-4 transition-transform duration-300 ease-brand group-hover:translate-x-1" />
-          </Link>
+          </ButtonLink>
         </div>
       </div>
 
@@ -427,7 +655,7 @@ export default function WhatsOn() {
           exactamente lo que hace falta acá — con cuatro tarjetas desborda en
           desktop y con una sola no.
           ══════════════════════════════════════════════════════════════════ */}
-      <div className="mt-bloque">
+      <div className="caja-ancha mt-bloque">
         {/*
           ⚠️ `tabIndex={0}` + `role="group"` + label, y los tres son
           obligatorios. axe lo marcó como `scrollable-region-focusable`: un
@@ -446,23 +674,25 @@ export default function WhatsOn() {
           role="group"
           aria-label="This week’s events"
           /*
-            ⚠️ `scroll-px-borde` ES OBLIGATORIO Y NO ES COSMÉTICO. Sin él, el
-            carrusel arrancaba mostrando la SEGUNDA tarjeta: medido, el track
-            se montaba con `scrollLeft: 480` en vez de 0.
+            ⚠️ SIN `px-borde`, SIN `scroll-px-borde` Y SIN `justify-center-safe`.
+            Los tres estaban para parchar el mismo problema, que ya no existe.
 
-            El motivo es la pelea entre el padding y el snap. Las tarjetas son
-            `snap-start`, y un punto de anclaje «start» alinea el borde de la
-            tarjeta con el borde del CONTENEDOR, no con su caja de contenido.
-            Con 56px de `padding-left`, la primera tarjeta empieza en 56 — o
-            sea que `scrollLeft: 0` NO era un punto de anclaje válido, y con
-            `snap-mandatory` el navegador está obligado a saltar al más
-            cercano que sí lo sea.
+            El track tenía padding propio y las tarjetas medían `30vw`, o sea
+            que ni el principio ni el final de la fila coincidían con la caja.
+            De ahí salían las dos notas largas que había acá: una explicaba que
+            sin `scroll-px-borde` el carrusel abría en la SEGUNDA tarjeta
+            —porque con 56px de padding el `scrollLeft: 0` no era un punto de
+            anclaje válido y `snap-mandatory` saltaba al más cercano— y la otra
+            que `justify-center-safe` hacía falta para que el centrado no
+            recortara el principio del contenido al desbordar.
 
-            `scroll-padding-left` le dice al snap dónde está el borde útil.
-            Con los dos en 56, el anclaje de la primera tarjeta pasa a ser
-            `scrollLeft: 0` y el carrusel abre donde tiene que abrir.
+            Ahora el track vive DENTRO de `caja-ancha` y las tarjetas son una
+            fracción exacta de ese ancho: el primer anclaje es `scrollLeft: 0`
+            porque no hay padding que correrlo, y no hay nada que centrar
+            porque la fila mide lo que mide la caja. Los parches se fueron con
+            la causa.
           */
-          className="flex snap-x snap-mandatory justify-center-safe gap-6 overflow-x-auto scroll-px-borde px-borde py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory gap-6 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {events.map((event) => (
             <EventCard key={event.slug} event={event} isToday={today !== null && event.weekday === today} />
@@ -472,7 +702,26 @@ export default function WhatsOn() {
           <CalendarCard />
         </div>
 
-        <div className="caja-ancha flex items-center justify-center gap-5 pt-6.5">
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ LOS CONTROLES NO SE RENDERIZAN SI ENTRAN TODAS LAS TARJETAS, y
+          es la otra mitad del «se ve raro con pocas cards».
+
+          Cuando `maxIndex` es 0 no hay ningún lugar a donde ir: las dos
+          flechas salían apagadas y quedaba UN punto solo, relleno, debajo de
+          una fila que no scrollea. Un control único y deshabilitado no
+          informa nada — sólo ocupa lugar y sugiere que algo no anda.
+
+          Es lo que hace `happenings-slider` de santa-maría, que envuelve toda
+          la botonera en `max > 0`.
+
+          ⚠️ No alcanza con `canPrev`/`canNext`, que miden el scroll: esos dos
+          también dicen la verdad, pero apagan las flechas dejando los puntos.
+          Lo que decide si la botonera EXISTE es cuántas posiciones hay.
+          ══════════════════════════════════════════════════════════════════
+        */}
+        {maxIndex > 0 ? (
+        <div className="flex items-center justify-center gap-5 pt-6.5">
           {/*
             ⚠️ Las flechas se DESHABILITAN en los extremos en vez de quedar
             activas sin hacer nada. Un control que responde al hover, se
@@ -546,6 +795,7 @@ export default function WhatsOn() {
             <ArrowRight />
           </button>
         </div>
+        ) : null}
       </div>
 
       {/* ── Los camiones que están hoy ───────────────────────────────── */}

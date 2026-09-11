@@ -234,7 +234,7 @@ export default function EventsPage() {
           {VERTICALS.map((v) => (
             <RevealItem as="li" key={v.href}>
               <Link href={v.href} className="group flex h-full flex-col">
-                <div className="relative aspect-[16/10] overflow-hidden rounded-card bg-mint">
+                <div className="relative aspect-[16/10] overflow-hidden rounded-card bg-mint sombra-card">
                   <Image
                     src={v.photo}
                     alt={v.alt}
@@ -292,7 +292,7 @@ export default function EventsPage() {
 
       {/* ── Cierre ─────────────────────────────────────────────────────── */}
       <Section band="md">
-        <div className="rounded-card bg-sunset px-[24px] py-[40px] text-ink lg:px-[56px]">
+        <div className="rounded-card bg-sunset sombra-card px-[24px] py-[40px] text-ink lg:px-[56px]">
           <div className="flex flex-col gap-[20px] lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-[560px]">
               <Eyebrow tone="ink">Next step</Eyebrow>

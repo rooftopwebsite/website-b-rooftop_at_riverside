@@ -67,11 +67,70 @@ const FOTOS = [
     q: 72,
   })),
 
+  /* ── LA FOTO DEL HERO ───────────────────────────────────────────────────
+     ⚠️ ES LA IMAGEN MÁS GRANDE DEL SITIO Y EL LCP DE LA HOME. Todo lo que
+     sigue está calibrado para ese único lugar.
+
+     ⚠️ ANTES ACÁ ESTABA `venue-aerial.jpg`, Y ERA UN ERROR DE DESTINO. Esa
+     derivada se genera a 1000×667 con calidad 70 A PROPÓSITO, porque su lugar
+     es el fondo del Events banner, que la pinta con `blur-[22px]`: ahí el
+     detalle no existe y una imagen grande sería peso puro. El hero la mostraba
+     NÍTIDA y a todo el ancho, o sea 1000px estirados hasta 2576 en una pantalla
+     retina —2,6 veces—, y ninguna calidad de compresión arregla un upscale.
+
+     Y tenía dos problemas de contenido además del técnico: la aérea es de una
+     clase de yoga, con las carpas y los banderines de JETSET, o sea la marca de
+     otro, que es justo lo que `docs/media.md` lista como material que no sirve.
+
+     ⚠️ LA MEDIDA ES 2576×1200 Y NO 2080 COMO EL RESTO. El marco del hero mide
+     1288 CSS de ancho tope, así que 2576 es exactamente 2×: el primer valor que
+     no obliga a `next/image` a estirar en una pantalla retina. Con 2080 el techo
+     de calidad queda en 1,61×. Es la única foto del sitio que justifica esto,
+     porque es la única que se muestra a todo el ancho y sin blur que perdone.
+
+     ⚠️ LA PROPORCIÓN ES 2576/1200, QUE ES EXACTAMENTE 1288/600, la del marco.
+     Si se cambia por un valor «redondo» tipo 2080×970, el `fit:'cover'` del
+     componente recorta unos píxeles y la banda deja de ser la que se eligió.
+
+     ⚠️ EL `foco` 0,4586 NO ES CENTRADO Y ESTÁ ELEGIDO SOBRE LA PÁGINA. La foto
+     es vertical de 3465×5198 y la banda mide 1614 de alto, así que sobran 3584
+     px: el recorte decide qué foto es. Con el centro en 0,4586 la banda entra
+     en la guirnalda de luces, agarra la ventanilla encendida con la cocinera
+     adentro, las dos personas pidiendo, y llega justo al cartel de Birria Tacos
+     de la derecha.
+
+     Los dos vecinos se probaron y se cayeron: más arriba (~0,36) entra el techo
+     del truck y las dos personas quedan cortadas al pecho; más abajo (~0,54)
+     aparece la cabeza suelta que hay en el borde inferior izquierdo, que es un
+     tercero de espaldas fuera de foco y lee como error de encuadre.
+
+     ⚠️ Y LA PLACA NARANJA DEPENDE DE ESTO. «Together» se apoya en el notch, o
+     sea al lado de la foto y no encima, así que el contraste de la placa no
+     cambia; pero el naranja SÍ compite con lo que tenga al lado. Las otras
+     finalistas eran fotos cálidas de atardecer, y ahí el filo de la placa se
+     despinta contra los ámbar. Sobre el azul de esta, la placa es lo más
+     saturado de la primera pantalla, que es donde tiene que estar. */
+  {
+    src: '_RCZ5847.JPG',
+    out: 'public/images/venue/hero-truck-window.jpg',
+    w: 2576,
+    h: 1200,
+    foco: 0.4586,
+    q: 76,
+  },
+
   /* ── La foto del hueco de la escalera: 4:5 ──────────────────────────────
      ⚠️ `_RCZ5847` es la ventanilla del truck de noche con gente pidiendo. Es
      literalmente lo que dice el paso 01 —«order at whichever window you
      want»—, así que reemplaza a `venue-truck-line.jpg`, que era una fila de
-     camiones vacía. */
+     camiones vacía.
+
+     ⚠️ SALE DEL MISMO ORIGINAL QUE EL HERO, y por eso hoy NO SE USA en ningún
+     lado. Se conserva porque el recorte es otro —4:5 vertical contra la banda
+     apaisada— y la sección para la que se hizo puede volver a querer una foto.
+     Pero antes de colgarla en algún lado hay que mirar la home: puesta en
+     cualquier sección, la misma escena aparecería dos veces en la misma
+     página, que es exactamente lo que se evitó al elegir esta para el hero. */
   { src: '_RCZ5847.JPG', out: 'public/images/venue/truck-window-night.jpg', w: 900, h: 1125, q: 78 },
 
   /* ── What's on ──────────────────────────────────────────────────────────

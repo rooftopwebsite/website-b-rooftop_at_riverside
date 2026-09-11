@@ -76,7 +76,7 @@ export default function InquiryForm() {
 
   if (state.status === 'ok') {
     return (
-      <div role="status" className="rounded-card border border-ink/15 bg-cream p-[32px] lg:p-[48px]">
+      <div role="status" className="rounded-card border border-ink/15 bg-cream sombra-card p-[32px] lg:p-[48px]">
         <Eyebrow tone="deep">Request received</Eyebrow>
         <Heading level={2} className="mt-gap-kicker text-d4">
           We&rsquo;ll come back within one business day

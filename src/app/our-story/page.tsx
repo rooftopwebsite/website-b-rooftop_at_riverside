@@ -115,7 +115,7 @@ export default function OurStoryPage() {
             </div>
           </div>
 
-          <Reveal className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint">
+          <Reveal className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint sombra-card">
             <Image
               src="/images/venue-rooftop.jpg"
               alt="The rooftop bar at Rooftop at Riverside, with seating overlooking the Imperial River"
@@ -162,7 +162,7 @@ export default function OurStoryPage() {
           Contenido real de /giveback, que el brief no contemplaba. */}
       <Section band="lg" bandTop="none" labelledBy="giveback-title">
         <div className="grid gap-[32px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:gap-[64px]">
-          <Reveal className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint">
+          <Reveal className="relative aspect-[4/3] overflow-hidden rounded-card bg-mint sombra-card">
             <Image
               src="/images/venue-park.jpg"
               alt="A busy evening in the yard at Rooftop at Riverside"

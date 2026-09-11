@@ -99,14 +99,35 @@ const TONOS_HUECO = {
        un texto de 13px—. Al 70 % da 5.98:1. */
     brief: 'text-ink/70',
   },
+  /*
+   * ⚠️ EL TONO OSCURO ES CÁLIDO Y NO GRIS, y es un cambio pedido: «ponele a
+   * las fotos que no están otro color así se ven sobre el verde».
+   *
+   * Era `paper/[0.07]`, o sea blanco al 7% sobre la tarjeta: un gris apenas
+   * más claro que el verde de abajo —1.06:1— que a simple vista no se
+   * distinguía de una foto oscura. El componente existe para que un hueco NO
+   * pase callado, así que casi-invisible es el peor resultado posible.
+   *
+   * ⚠️ EL COLOR ES `sunset` Y NO SE ELIGIÓ A DEDO. Los otros dos marcadores de
+   * pendiente del archivo —`PendingData` y `PendingBlock`— van en `terra`, y
+   * `terra` sobre oscuro es ilegible (#A62000 sobre `deeper` da 1.9:1). El
+   * repo ya tiene escrita cuál es su contraparte: `BRAND.headlineAccent` mapea
+   * `onLight: 'terra'` → `onDark: 'sunset'`. Así que los tres marcadores de
+   * pendiente hablan el mismo idioma en las dos superficies.
+   *
+   * ⚠️ EL RÓTULO PASA A `cream` Y NO QUEDA EN `sunset`. Con el relleno al 18%
+   * el campo sube a #2D4331 y ahí `sunset` da 4.22:1 — por debajo del 4.5 que
+   * pide un texto de 13px. `cream` da 9.34:1 y `muted-dark` 5.89:1. El naranja
+   * se queda en el ícono, que es `aria-hidden` y no le debe contraste a nadie.
+   *
+   * Medido sobre la tarjeta `deeper` (#013434), que es la única superficie
+   * donde hoy cae este tono: el relleno da 1.27:1 contra la tarjeta, o sea que
+   * se ve como un campo aparte y no como una foto que salió oscura.
+   */
   dark: {
-    caja: 'border-muted-dark/40 bg-paper/[0.07]',
-    icono: 'text-muted-dark/70',
-    rotulo: 'text-muted-dark',
-    /* Sobre la tarjeta `deeper`, `muted-dark` opaco da 5.4:1. No se usa
-       `paper/70` —una opacidad sobre un fondo oscuro da un color distinto en
-       cada superficie y no se puede auditar—, que es el mismo motivo por el
-       que existe el token `muted-dark`. */
+    caja: 'border-sunset/50 bg-sunset/[0.18]',
+    icono: 'text-sunset',
+    rotulo: 'text-cream',
     brief: 'text-muted-dark',
   },
 } as const;
