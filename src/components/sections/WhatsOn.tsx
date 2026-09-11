@@ -96,7 +96,26 @@ const CLOSED_DAYS: readonly Weekday[] = [1, 2];
 function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly isToday: boolean }) {
   return (
     <article className="group flex w-65 shrink-0 snap-start flex-col overflow-hidden rounded-shell bg-deeper transition-transform duration-300 ease-brand hover:-translate-y-1.5 lg:w-[30vw] lg:max-w-100">
-      <div className="relative h-50 bg-ink lg:h-[20vw] lg:max-h-70">
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ LA CAJA DE IMAGEN ES 4:5 Y ANTES ERA APAISADA (`h-50` /
+        `20vw`), y el cambio lo manda el material, no el gusto.
+
+        Lo que va acá no son fotos: son las PIEZAS que el local publica por
+        evento, y vienen en 1200×1500 con el nombre del artista, el día y el
+        horario impresos. Recortadas a una caja apaisada, lo primero que se
+        pierde es el texto — o sea justo lo que hace que la pieza sirva.
+
+        `aspect-[4/5]` en vez de una altura fija porque el ancho de la
+        tarjeta es fluido (`clamp(260px,30vw,400px)`): así la caja sigue al
+        ancho y la proporción no se rompe en ningún viewport.
+
+        ⚠️ La tarjeta queda ALTA —500px de imagen más el cuerpo— y está
+        bien: es un carrusel horizontal, el alto no le cuesta nada a la
+        página. En una grilla habría que revisarlo.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <div className="relative aspect-[4/5] bg-ink">
         {event.image === null ? (
           /* ⚠️ El brief va en INGLÉS. Es texto VISIBLE, no un comentario: el
              hueco se publica marcado a propósito para que no pase callado. El

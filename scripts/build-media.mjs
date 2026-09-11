@@ -80,6 +80,33 @@ const FOTOS = [
   { src: '_RCZ5757.JPG', out: 'public/images/venue/event-yard-night.jpg', w: 800, h: 500, q: 78 },
   { src: '_RCZ4382.JPG', out: 'public/images/venue/event-dj-night.jpg', w: 800, h: 500, q: 78 },
 
+  /* ── Los FLYERS de los dos recurrentes que el cliente sí publica ─────────
+     ⚠️ ESTOS DOS NO SALEN DE LA ENTREGA DE FOTOS: se bajaron del calendario
+     del sitio viejo el 2026-09-11. Son las piezas que el local publica para
+     cada evento, y por eso mandan sobre cualquier foto genérica de archivo:
+     muestran al artista de esa fecha, con su nombre.
+
+       La Noche   static.wixstatic.com/media/526079_a984abd4e6…~mv2.jpg
+       Ross Brown static.wixstatic.com/media/526079_871d24d45b…~mv2.jpg
+
+     ⚠️ NO SON FOTOS, SON GRÁFICAS: 1200×1500 con el texto incrustado —el
+     nombre del artista, el día, el horario y el logo—. Eso tiene dos
+     consecuencias que hay que respetar y que están resueltas aguas abajo:
+
+       · Se recortan SOLO en escala. 900×1125 es exactamente el mismo 4:5 del
+         original, así que el `fit:'cover'` no corta un píxel. Si alguien las
+         pasa a 16:10 como las de al lado, les come el nombre del artista.
+       · La tarjeta que las muestra usa `aspect-[4/5]`, no la caja apaisada
+         de las fotos. Ver `EventCard` en `sections/WhatsOn.tsx`.
+
+     ⚠️ Y una advertencia que NO se puede arreglar desde acá: el flyer de La
+     Noche lleva impreso «WWW.EATDRINKPARADISE.COM», o sea el dominio VIEJO.
+     Publicado en el sitio nuevo, el evento promociona la web que estamos
+     reemplazando. Hay que pedirle al cliente la pieza sin esa línea, o con
+     el dominio nuevo. Está anotado en `docs/pedido-al-cliente.md`. */
+  { src: 'calendar-la-noche.jpg', out: 'public/images/venue/event-la-noche.jpg', w: 900, h: 1125, q: 80 },
+  { src: 'calendar-ross-brown.jpg', out: 'public/images/venue/event-ross-brown.jpg', w: 900, h: 1125, q: 80 },
+
   /* ── El fondo del Events banner ─────────────────────────────────────────
      ⚠️ VA CHICO A PROPÓSITO: el componente lo pinta con `blur-[22px]`, así que
      el detalle es irrelevante y una imagen grande sería peso puro. 1000×667 es
@@ -128,6 +155,22 @@ const FOTOS = [
     foco: 0.564,
     q: 74,
   },
+
+  /* ── El fondo del divisor de fotos ───────────────────────────────────────
+     ⚠️ `girar: 90` Y NO ES UN ERROR DEL ORIGINAL. La foto viene vertical
+     (4024×6048) y las palmeras caen de arriba a abajo; la banda es apaisada y
+     de 2,3:1 para arriba. Recortada sin girar entran tres o cuatro hojas
+     enormes y se lee como UNA planta fotografiada de cerca. Girada, las
+     nervaduras corren horizontales y el mismo material se lee como TEXTURA,
+     que es lo que la banda necesita: una superficie, no un motivo.
+
+     ⚠️ VA MÁS ANCHA QUE EL RESTO (1800) porque acá no hay `blur` que perdone
+     —a diferencia de `venue-aerial`— y la hoja es detalle fino: a 1000 px
+     estirada a todo el ancho la nervadura se empasta.
+
+     Reemplaza a `wall-yard-night-crowd.jpg`, que era un tile del muro de
+     540×720 servido a pantalla completa. Ver la nota del componente. */
+  { src: 'fondo-hojas.jpg', out: 'public/images/venue/leaf-backdrop.jpg', girar: 90, w: 1800, h: 760, q: 68 },
 ];
 
 /**
@@ -183,6 +226,17 @@ for (const f of FOTOS) {
   }
   asegurar(f.out);
   let pipe = sharp(src).rotate();
+
+  /*
+   * ⚠️ `girar` es un cuarto de vuelta EXPLÍCITO, y va DESPUÉS del `.rotate()`
+   * de EXIF a propósito: primero se pone la foto como la tomaron, y recién
+   * después se la acuesta. Al revés, una foto con orientación EXIF terminaría
+   * girada 180° de más.
+   *
+   * Y va ANTES del `foco`/`resize`, porque los dos miden sobre el alto de la
+   * imagen ya orientada.
+   */
+  if (f.girar) pipe = pipe.rotate(f.girar);
 
   /*
    * ⚠️ `foco` es un recorte vertical FINO, y existe porque `position` de sharp

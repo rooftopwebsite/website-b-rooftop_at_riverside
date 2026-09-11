@@ -41,6 +41,23 @@ por otra cosa**.
 la fila en una ventanilla · el atardecer desde la terraza · la banda arrancando ·
 el patio llenándose.
 
+### A.1 bis · Las piezas de los eventos — 2 ítems nuevos (2026-09-11)
+
+Contexto: el carrusel de «This week in the yard» ya NO usa fotos genéricas del
+venue. Usa la **pieza gráfica real** que el local publica por evento, bajada del
+calendario del sitio viejo. Eso deja dos pendientes.
+
+| # | qué | por qué |
+|---|---|---|
+| 1 bis | **El flyer de «La Noche» SIN el dominio viejo.** La pieza que está publicada lleva impreso `WWW.EATDRINKPARADISE.COM` en el pie. | Publicada tal cual en el sitio nuevo, el evento **promociona la web que estamos reemplazando**. No se puede arreglar desde el código: el texto está adentro del JPG. Hace falta la pieza sin esa línea, o con el dominio nuevo |
+| 1 ter | **Las piezas de «Wooftop Wednesdays» y «Bingo Night»**, si esos eventos existen. | Hoy las dos tarjetas muestran el hueco gris marcado. No hay pieza de dónde bajarlas porque **el calendario del cliente no publica esos dos eventos** (ver `current-site-inventory.md` §9). Va atado a la pregunta «¿los miércoles pasan o no pasan?» |
+
+> ⚠️ El ítem 1 del bloque de arriba —la foto del perro— **queda supeditado a
+> esto**: si Wooftop tiene su propia pieza gráfica, ya no hace falta una foto
+> con un perro, alcanza con el flyer.
+
+---
+
 ### A.2 · Bloquean páginas internas — 4 ítems
 
 | # | qué | dónde cae |

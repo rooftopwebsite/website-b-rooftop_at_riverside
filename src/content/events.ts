@@ -122,25 +122,59 @@ function parseWeekday(days: string | null): Weekday | null {
  * el brief de la toma que hay que pedir. Ver `docs/media.md`.
  * ══════════════════════════════════════════════════════════════════════════
  */
+/**
+ * La pieza gráfica de cada evento.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SÓLO ENTRAN PIEZAS DEL EVENTO, NO FOTOS DE AMBIENTE. Es la regla que
+ * cambió acá el 2026-09-11, por pedido de Camila, y conviene entenderla
+ * antes de agregar una entrada.
+ *
+ * Antes esto mapeaba tres eventos a fotos genéricas del venue: un guitarrista
+ * cualquiera para Ross Brown, el patio de noche para Bingo, la pista para La
+ * Noche. Se leía bien pero decía algo falso — la foto del guitarrista no era
+ * Ross Brown, y la del patio no era una noche de Bingo. En una tarjeta que
+ * lleva el nombre del artista arriba, la imagen de abajo se lee como ESE
+ * artista.
+ *
+ * Ahora hay dos entradas y las dos son la pieza real que el local publica
+ * para ese evento, bajadas del calendario del sitio viejo. Los otros dos
+ * eventos NO tienen entrada y muestran el hueco gris marcado, que es lo
+ * honesto: decir «falta la pieza» en vez de poner una foto que no es.
+ *
+ * ⚠️ SON GRÁFICAS 4:5 CON TEXTO INCRUSTADO, no fotos. Quien agregue una acá
+ * tiene que mandarla al pipeline con el mismo tratamiento (ver los dos
+ * `calendar-*.jpg` en `scripts/build-media.mjs`): 4:5 y sin recorte, o el
+ * `fit:'cover'` le come el nombre del artista.
+ *
+ * ⚠️ El `alt` describe la PIEZA y transcribe lo que dice, porque el texto
+ * está dentro de la imagen: quien no la ve tiene que recibir la misma
+ * información que quien la ve.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
 const IMAGENES: Readonly<Record<string, { readonly src: string; readonly alt: string }>> = {
-  /* Ross Brown toca los jueves en el Sunset Bar. La foto ES un músico tocando
-     en el venue, así que acá la relación es directa. */
   'ross-brown': {
-    src: '/images/venue/event-live-music.jpg',
-    alt: 'A guitarist playing under the tent at the Rooftop, with a drum kit beside him',
+    src: '/images/venue/event-ross-brown.jpg',
+    alt: 'Event poster: “Live Entertainment — Ross Brown”, with Ross Brown singing into a microphone in a palm-print shirt',
   },
-  /* Bingo es los miércoles en The Yard. La foto es el patio de noche con gente
-     en las mesas y los trucks encendidos detrás: el espacio y la hora, dichos
-     con precisión en el alt. */
-  'bingo-night': {
-    src: '/images/venue/event-yard-night.jpg',
-    alt: 'Guests around a table in the yard at night, with the food trucks lit behind them',
-  },
-  /* La Noche es la fecha de DJ. La foto es la pista de noche. */
   'la-noche-dj-david-cast': {
-    src: '/images/venue/event-dj-night.jpg',
-    alt: 'People dancing at night under coloured lights at the Rooftop',
+    src: '/images/venue/event-la-noche.jpg',
+    alt: 'Event poster: “La Noche — every Saturday 10 PM to 2 AM, Latin music from DJ David Cast, free dance classes”',
   },
+  /*
+   * ⚠️ `bingo-night` y `wooftop-wednesdays` NO TIENEN ENTRADA, Y NO ES UN
+   * OLVIDO. Son los dos eventos que el calendario del cliente no publica
+   * (ver `docs/current-site-inventory.md` §9), así que no existe pieza
+   * gráfica de la que bajarlas.
+   *
+   * Bingo SÍ tenía una foto acá —el patio de noche— y se le sacó a
+   * propósito: era una foto del lugar, no de una noche de Bingo. Prefiere
+   * Camila el hueco gris marcado antes que una foto que no corresponde.
+   *
+   * `event-yard-night.jpg` y `event-dj-night.jpg` siguen en
+   * `public/images/venue/` y los sigue usando el divisor de fotos de la
+   * home. No se borran.
+   */
 };
 
 function adapt(r: RawEvent): VenueEvent {
