@@ -238,6 +238,39 @@ Y **siempre simétrico** (mismo `pt` que `pb`). The Orient documenta que el orig
 la mitad de las secciones con aire de un solo lado (144/0, 0/144, 194/64) y que eso fue
 un bug a corregir, no un patrón.
 
+### Los dos espacios que se ven — `bloque` y `cierre`
+
+Las bandas de arriba gobiernan la sección entera. Adentro y al pie quedan dos espacios
+más, y son los únicos dos que un visitante nota al scrollear una página larga:
+
+| Token | Qué separa | Mobile | Desktop |
+|---|---|---|---|
+| `--spacing-bloque` | encabezado de sección → su contenido | 40px | 48px |
+| `--spacing-cierre` | pie de sección → el cambio de fondo | 56px | 112px |
+| `--spacing-cierre-arco` | igual, pero bajo una sección montada con `-mt-22` | 144px | 200px |
+
+Los tres son `clamp` con `vw` —`bloque` en `3.4vw`, `cierre` en `7vw`— y
+`cierre-arco` es literalmente `cierre + --radius-band`: los 88px que la sección
+siguiente le tapa al montarse encima con su arco. Si cambia el radio, cambian los dos.
+
+**La proporción es la regla, no los números.** `bloque` siempre por debajo de la mitad
+de `cierre` (1:2,3 en desktop): un titular y su grilla son una sola cosa, así que lo que
+los une tiene que ser visiblemente menor que lo que separa esa cosa de la siguiente.
+Cuando los dos valían 72px —era el caso de `ThreeDoors`— la grilla flotaba entre dos
+secciones en vez de pertenecer a la suya.
+
+**Dos `<section>` pueden ser un solo bloque.** Si la de abajo comparte el fondo con la de
+arriba y no tiene titular propio, en pantalla es el contenido de aquel encabezado, no una
+sección nueva: el par se une con `bloque` y no con las dos bandas sumadas. Es el caso de
+`HowThisPlaceWorks` → `YardSteps` en la home, que medía 72 + 48 = 120px. La de arriba
+cierra con `pb` cero y la de abajo abre con `pt-bloque`; si las dos ponen padding, el
+espacio se duplica. Cuando la de abajo SÍ tiene titular —`/nfc-north-hq` y `/our-story`
+tienen dos secciones `paper` seguidas— son dos secciones de verdad y mandan las bandas.
+
+Vale para todo el sitio: las internas tenían este espacio escrito a mano como
+`mt-[40px]` en 25 lugares y hoy es `mt-bloque`; la home lo tenía entre 32 y 80 según la
+sección.
+
 ### Convergencia en los otros repos
 
 | Repo | Valores más usados |

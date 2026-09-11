@@ -43,7 +43,7 @@ export default function InquirePage() {
       <Section band="lg" width="prose">
         <InquiryForm />
 
-        <div className="mt-[40px]">
+        <div className="mt-bloque">
           <PendingBlock title="Events packet PDF">
             The brief calls for the events packet to be delivered the moment the form is sent. The
             PDF doesn&rsquo;t exist yet, so right now the confirmation says it comes attached to the

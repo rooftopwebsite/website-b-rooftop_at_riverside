@@ -27,7 +27,7 @@ const TRACKS = [
     id: 'play',
     eyebrow: 'Musicians and performers',
     title: 'Play here',
-    body: "We book live music five nights a week — solo acts, bands, DJs. Send a link to something we can listen to and a photo we can use.",
+    body: 'We book live music five nights a week: solo acts, bands, DJs. Send a link to something we can listen to and a photo we can use.',
     what: ['A link to your music or a video', 'Band name and genre', 'Your social handles', 'A photo and a logo if you have them'],
     cta: 'Send your material',
     mailto: `mailto:${BRAND.contact.email}?subject=Booking%20-%20live%20music`,
@@ -36,7 +36,7 @@ const TRACKS = [
     id: 'cook',
     eyebrow: 'Food truck owners',
     title: 'Park here',
-    body: 'Four trucks run the yard on a revenue share. You keep your own margin, your own menu and your own register — we bring the crowd, the seating and the bar.',
+    body: 'Four trucks run the yard on a revenue share. You keep your own margin, your own menu and your own register. We bring the crowd, the seating and the bar.',
     what: ['What you cook and how long you have been doing it', 'Your truck size and power needs', 'Your health permit status', 'Your Instagram'],
     cta: 'Pitch your truck',
     mailto: `mailto:${BRAND.contact.email}?subject=Food%20truck%20-%20partnership`,
@@ -77,7 +77,7 @@ export default function JoinUsPage() {
           title="What are you bringing?"
         />
 
-        <div className="mt-[48px] flex flex-col gap-[32px]">
+        <div className="mt-bloque flex flex-col gap-[32px]">
           {TRACKS.map((t) => (
             <article
               key={t.id}
@@ -116,11 +116,12 @@ export default function JoinUsPage() {
           ))}
         </div>
 
-        <div className="mt-[40px]">
+        <div className="mt-bloque">
           <PendingBlock title="Application forms">
-            The current site runs three separate upload forms — musician material, vendor details
-            and resumes — with a 15 MB file upload each. Until a form backend and a file store are
-            picked, this page routes to email instead, which is honest and works today.
+            The current site runs three separate upload forms, one each for musician material,
+            vendor details and resumes, with a 15 MB file upload apiece. Until a form backend and a
+            file store are picked, this page routes to email instead, which is honest and works
+            today.
           </PendingBlock>
         </div>
       </Section>
@@ -132,7 +133,7 @@ export default function JoinUsPage() {
           </Heading>
           <div className="flex flex-col gap-[12px] text-[16px] leading-[1.7] text-body/80">
             <p>
-              That&rsquo;s the Neighborhood Market, and it works differently — a $30 spot for the
+              That&rsquo;s the Neighborhood Market, and it works differently: a $30 spot for the
               afternoon rather than an ongoing arrangement.
             </p>
             <div className="mt-[4px]">

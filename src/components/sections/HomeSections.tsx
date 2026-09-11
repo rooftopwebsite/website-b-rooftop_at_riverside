@@ -50,10 +50,63 @@ export function HowThisPlaceWorks() {
   return (
     <section
       aria-labelledby="how-title"
-      className="relative z-[3] -mt-22 rounded-t-band bg-bone pt-16 pb-10 lg:pt-32 lg:pb-18"
+      /*
+        ⚠️ SIN PADDING ABAJO, y no es un olvido: esta sección NO TERMINA acá.
+        `YardSteps` viene pegada, sobre el MISMO hueso y sin titular propio
+        —su `aria-label` no se ve—, así que en pantalla los tres tickets son
+        el contenido de este encabezado y no otra sección. El aire entre los
+        dos lo pone `YardSteps` con `pt-bloque`, que es el token del par
+        «encabezado → su contenido». Si acá quedara un `pb`, se sumaría al
+        de allá y el par mediría 120px en vez de 48: el doble del mismo
+        espacio en «Three of them», cinco secciones más abajo.
+      */
+      className="relative z-[3] -mt-22 rounded-t-band bg-bone pt-16 lg:pt-32"
     >
-      <StaggerGroup className="caja-ancha grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-start gap-7 lg:gap-18">
-        <RevealItem className="flex flex-col gap-3">
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ LAS DOS COLUMNAS CIERRAN A LA MISMA ALTURA, y eso lo sostienen
+        TRES cosas juntas. Si se toca una, se rompe el remate:
+
+          1. La grilla NO lleva `items-start`. Sin eso las dos celdas miden
+             lo que mide su contenido y la derecha termina donde se le
+             ocurre; con el estiramiento por defecto las dos miden lo mismo
+             que la fila, que es el alto del titular.
+          2. La columna derecha es `flex-col justify-between`. El párrafo
+             queda arriba, contra la primera línea del titular, y el CTA cae
+             al piso de la celda, o sea a la última línea del titular.
+          3. EL COPY ESTÁ ESCRITO PARA ESA ALTURA. El titular son dos
+             renglones de `text-h2` (79,2px cada uno = 158px) y la derecha
+             tiene que entrar en eso: párrafo de TRES renglones de `lead`
+             (34,1px = 102px) + los 29px del CTA + el aire entre los dos.
+             Un renglón más de párrafo y la columna derecha pasa al titular.
+          4. El `gap-4` de esa celda es un PISO, no una medida. Mientras la
+             columna derecha mida menos que el titular, el `justify-between`
+             abre ese aire hasta donde haga falta (27px a 1600) y el 16 no se
+             ve nunca. Cuando la pantalla se achica sí se ve, y por eso es
+             chico: es lo que absorbe el desfasaje de abajo.
+
+        ⚠️ EL REMATE ES EXACTO DE 1440 PARA ARRIBA, y abajo de eso afloja: 2px
+        a 1280, 8px a 1100, 27px a 900. No es un bug que se pueda tapar con un
+        número. El titular y el párrafo son `clamp` con `vw` y encogen juntos,
+        pero el CTA mide 29px FIJOS —`text-dato` no es fluido— así que cuanto
+        más chica la pantalla, más pesa el CTA dentro de la columna. Para que
+        cerrara a 900 habría que hacer fluido un token de cuerpo que usa medio
+        sitio, y eso es mucho peor que 27px en un ancho donde las dos columnas
+        ya miden 400px. Medido en el navegador, no estimado.
+
+        ⚠️ EL PÁRRAFO NO PUEDE CRECER. La columna mide 608px y el `lead`
+        entra a ~57 caracteres por renglón, así que el techo son ~165
+        caracteres. Medido: la cuenta de renglones no cambia entre 1100 y
+        1920px, porque la columna y el cuerpo escalan con el mismo `vw` —
+        lo que se escriba acá tiene el mismo alto en todo el rango.
+
+        ⚠️ Lo que se fue del párrafo para llegar a tres renglones: «It
+        catches people out the first time, so here it is plainly» —que era
+        comentario sobre el texto y no el texto— y «it is the one tab we
+        run», que lo dice el ticket 02 de `YardSteps`, 48px más abajo.
+        ══════════════════════════════════════════════════════════════════ */}
+      <StaggerGroup className="caja-ancha grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-7 lg:gap-18">
+        <RevealItem>
           <h2
             id="how-title"
             className="m-0 font-display text-h2 font-extrabold uppercase leading-[0.9] text-ink"
@@ -62,6 +115,13 @@ export function HowThisPlaceWorks() {
             <br />
             one set of stairs.
           </h2>
+        </RevealItem>
+
+        <RevealItem className="flex flex-col justify-between gap-4">
+          <p className="m-0 font-body text-lead font-light text-ink">
+            Four independent kitchens park in the yard, each one its own business. You order at the
+            window and pay that truck. No table service, and the bar upstairs is ours.
+          </p>
 
           {/*
             ⚠️ El subrayado es un BORDE de 2px en `sunset` y no un
@@ -70,21 +130,22 @@ export function HowThisPlaceWorks() {
             tamaño— pero sí puede ser el de una línea decorativa debajo. Así
             el acento de marca aparece en el link sin que el link dependa de
             él para leerse.
+
+            ⚠️ Y VIVE ACÁ, en la columna del texto, y no debajo del titular.
+            Abajo del titular quedaba colgando en una columna que ya había
+            terminado, y dejaba el bloque de la derecha sin salida: se leía
+            el párrafo y no había adónde ir. Acá cierra el texto que lo pide
+            y, de paso, es lo que hace que las dos columnas rematen parejas.
+            Sin `mt`: el `justify-between` de la celda pone ese aire, y un
+            margen fijo encima pelearía con él.
           */}
           <Link
             href="/the-yard"
-            className="group mt-6.5 inline-flex w-fit items-center gap-2.5 border-b-2 border-sunset pb-1 font-body text-dato font-medium text-ink transition-colors duration-200 hover:border-ink"
+            className="group inline-flex w-fit items-center gap-2.5 border-b-2 border-sunset pb-1 font-body text-dato font-medium text-ink transition-colors duration-200 hover:border-ink"
           >
             See how the yard is laid out
             <ArrowRight className="size-3.75 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
-        </RevealItem>
-
-        <RevealItem as="p" className="m-0 font-body text-lead font-light text-ink">
-          It catches people out the first time, so here it is plainly. Four independent kitchens
-          park in the yard and each one is somebody’s own business — you order at the window and you
-          pay that truck. The Sunset Bar on the roof is ours, and it is the one tab we run. There is
-          no table service.
         </RevealItem>
       </StaggerGroup>
     </section>

@@ -96,7 +96,7 @@ interface Door {
 const DOORS: readonly Door[] = [
   {
     title: 'Four kitchens in the yard',
-    body: 'Four independent kitchens under the rooftop, each one its own business. You order at the truck — the bar upstairs is ours.',
+    body: 'Four independent kitchens under the rooftop, each one its own business. You order at the truck. The bar upstairs is ours.',
     link: 'Meet the trucks',
     href: '/food-trucks',
     field: 'bg-mint',
@@ -112,7 +112,7 @@ const DOORS: readonly Door[] = [
   },
   {
     title: 'The whole place, closed',
-    body: 'The rooftop, the yard, the patio — or the entire venue with the gates shut, and one person coordinating all of it.',
+    body: 'The rooftop, the yard, the patio, or the entire venue with the gates shut, and one person coordinating all of it.',
     link: 'Plan an event',
     href: '/events',
     field: 'bg-river',
@@ -122,7 +122,7 @@ const DOORS: readonly Door[] = [
 
 export default function ThreeDoors() {
   return (
-    <section aria-labelledby="doors-title" className="bg-bone pt-16 pb-10 lg:pt-30 lg:pb-18">
+    <section aria-labelledby="doors-title" className="bg-bone pt-16 pb-cierre lg:pt-30">
       <div className="caja-ancha">
         {/* El encabezado entra como un bloque —titular y bajada juntos— y las
             tarjetas después, en cascada. Separar el titular de su bajada en
@@ -141,7 +141,7 @@ export default function ThreeDoors() {
           </p>
         </Reveal>
 
-        <StaggerGroup as="ul" className="mt-10 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-3 lg:mt-18">
+        <StaggerGroup as="ul" className="mt-bloque grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-3">
           {DOORS.map(({ title, body, link, href, field, Icon }) => (
             <RevealItem as="li" key={href}>
               <Link href={href} className="group flex flex-col gap-3">

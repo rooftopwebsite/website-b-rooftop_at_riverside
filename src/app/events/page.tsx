@@ -85,7 +85,7 @@ const WHAT_WE_DO = [
   },
   {
     title: 'The bar is ours',
-    body: 'Cocktails, drafts, wine. Open bar, drink tickets or consumption — however you want to run it.',
+    body: 'Cocktails, drafts, wine. Open bar, drink tickets or consumption, however you want to run it.',
   },
   {
     title: 'The space is yours',
@@ -113,7 +113,7 @@ export default function EventsPage() {
       <PageHero
         eyebrow="Private events"
         title="Your event, two stories up"
-        lead="A rooftop bar, a gated yard and four independent kitchens — in downtown Bonita Springs, ten minutes from Naples and Estero."
+        lead="A rooftop bar, a gated yard and four independent kitchens in downtown Bonita Springs, ten minutes from Naples and Estero."
         image="/images/events/event-a.jpg"
         imageAlt="Guests at a private event on the rooftop at Rooftop at Riverside"
         crumbs={[{ name: 'Events', path: '/events' }]}
@@ -137,7 +137,7 @@ export default function EventsPage() {
           title="What we actually do"
           lead="We're a venue with a bar, not a caterer. Here's the honest split."
         />
-        <StaggerGroup as="ul" className="mt-[40px] grid gap-[28px] md:grid-cols-3">
+        <StaggerGroup as="ul" className="mt-bloque grid gap-[28px] md:grid-cols-3">
           {WHAT_WE_DO.map((w) => (
             <RevealItem as="li" key={w.title} className="border-t-2 border-ink pt-[18px]">
               <Heading level={3}>{w.title}</Heading>
@@ -147,7 +147,7 @@ export default function EventsPage() {
         </StaggerGroup>
         <p className="mt-[32px] max-w-[62ch] text-[16px] leading-[1.65] text-body/75">
           We don&rsquo;t have a kitchen of our own, and we don&rsquo;t pretend to. What you get
-          instead is four different menus in one yard — which is a better problem to hand a room of
+          instead is four different menus in one yard, which is a better problem to hand a room of
           two hundred people than one set entrée.
         </p>
       </Section>
@@ -172,7 +172,7 @@ export default function EventsPage() {
           id="process-title"
           title="Three steps, and the first one takes two minutes"
         />
-        <StaggerGroup as="ol" className="mt-[40px] grid gap-[28px] md:grid-cols-3">
+        <StaggerGroup as="ol" className="mt-bloque grid gap-[28px] md:grid-cols-3">
           {PLANNER_STEPS.map((s) => (
             <RevealItem as="li" key={s.n} className="flex flex-col border-t border-ink/20 pt-[18px]">
               <span aria-hidden="true" className="eyebrow text-terra">
@@ -230,7 +230,7 @@ export default function EventsPage() {
           id="verticals-title"
           title="Pick the night you're planning"
         />
-        <StaggerGroup as="ul" className="mt-[48px] grid gap-[28px] sm:grid-cols-2">
+        <StaggerGroup as="ul" className="mt-bloque grid gap-[28px] sm:grid-cols-2">
           {VERTICALS.map((v) => (
             <RevealItem as="li" key={v.href}>
               <Link href={v.href} className="group flex h-full flex-col">
@@ -258,7 +258,7 @@ export default function EventsPage() {
           ))}
         </StaggerGroup>
 
-        <div className="mt-[40px] grid gap-[20px] sm:grid-cols-2">
+        <div className="mt-bloque grid gap-[20px] sm:grid-cols-2">
           <Link
             href="/events/game-truck"
             className="group flex items-center justify-between gap-[16px] rounded-card border border-ink/15 p-[24px] transition-colors hover:border-ink/40"

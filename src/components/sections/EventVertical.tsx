@@ -63,7 +63,7 @@ export default function EventVertical({ config }: { readonly config: VerticalCon
           id="highlights-title"
           title="What makes this work"
         />
-        <StaggerGroup as="ul" className="mt-[40px] grid gap-[28px] md:grid-cols-3">
+        <StaggerGroup as="ul" className="mt-bloque grid gap-[28px] md:grid-cols-3">
           {config.highlights.map((h) => (
             <RevealItem as="li" key={h.title} className="border-t-2 border-ink pt-[18px]">
               <Heading level={3}>{h.title}</Heading>
@@ -99,7 +99,7 @@ export default function EventVertical({ config }: { readonly config: VerticalCon
           eyebrowTone="terra"
           id="spaces-title"
           title="Where it happens"
-          lead="Numbers are pending — we're not estimating them."
+          lead="Numbers are pending. We're not estimating them."
         />
         <div className="mt-[32px] overflow-x-auto" tabIndex={0} role="region" aria-label="Space capacities, scrollable">
           <table className="w-full min-w-[560px] border-collapse text-[16px]">

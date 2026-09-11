@@ -87,7 +87,7 @@ export default function SunsetBarPage() {
           title={SIGNATURE_COCKTAILS.title}
           lead="Fresh juice, house syrups, and a margarita we squeeze every morning."
         />
-        <div className="mt-[40px] grid gap-x-[56px] gap-y-[4px] lg:grid-cols-2">
+        <div className="mt-bloque grid gap-x-[56px] gap-y-[4px] lg:grid-cols-2">
           {SIGNATURE_COCKTAILS.items.map((item) => (
             <MenuRow key={item.name} item={item} detailed />
           ))}
@@ -118,7 +118,7 @@ export default function SunsetBarPage() {
           title="Beer & Seltzers"
           lead="Ankrolab and Riptide are both brewed within twenty minutes of here."
         />
-        <div className="mt-[40px] grid gap-[40px] md:grid-cols-3 md:gap-[40px]">
+        <div className="mt-bloque grid gap-[40px] md:grid-cols-3 md:gap-[40px]">
           {BEER_SECTIONS.map((s) => (
             <MenuColumn key={s.id} section={s} />
           ))}
@@ -134,7 +134,7 @@ export default function SunsetBarPage() {
           title="Wine & Bubbles"
           lead="Anything marked house is what happy hour runs on."
         />
-        <div className="mt-[40px] grid gap-[40px] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-bloque grid gap-[40px] sm:grid-cols-2 lg:grid-cols-4">
           {WINE_SECTIONS.map((s) => (
             <MenuColumn key={s.id} section={s} />
           ))}
@@ -156,7 +156,7 @@ export default function SunsetBarPage() {
         </div>
         <p className="mt-[20px] max-w-[60ch] text-[15px] leading-[1.6] text-body/75">
           Food comes from the trucks in the yard, and each one takes its own orders and its own
-          payment. We don&rsquo;t have a kitchen — what we have is the bar.
+          payment. We don&rsquo;t have a kitchen. What we have is the bar.
         </p>
       </Section>
     </>

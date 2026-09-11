@@ -83,7 +83,7 @@ export default function InquiryForm() {
         </Heading>
         <p className="mt-gap-bajada max-w-[54ch] text-lead text-body/80">{state.message}</p>
         <p className="mt-[16px] max-w-[54ch] text-[16px] leading-[1.65] text-body/75">
-          The events packet — spaces, capacities and food tiers — comes attached to the reply.
+          The events packet comes attached to the reply: spaces, capacities and food tiers.
         </p>
       </div>
     );

@@ -80,7 +80,7 @@ export default function NfcNorthPage() {
         />
 
         <ul
-          className="mt-[40px] grid gap-[16px] sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-bloque grid gap-[16px] sm:grid-cols-2 lg:grid-cols-4"
           aria-label="Team color palettes"
         >
           {PALETTES.map((p, i) => (
@@ -139,7 +139,7 @@ export default function NfcNorthPage() {
               Happy hour, {HAPPY_HOUR.days.toLowerCase()}
             </Heading>
             <p className="mt-gap-bajada text-lead text-paper/85">
-              {HAPPY_HOUR.time} — {HAPPY_HOUR.deals.join(' · ')}
+              {HAPPY_HOUR.time}: {HAPPY_HOUR.deals.join(' · ')}
             </p>
           </div>
           <ButtonLink href="/sunset-bar" variant="onDark" size="lg">

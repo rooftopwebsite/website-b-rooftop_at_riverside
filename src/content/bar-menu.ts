@@ -91,7 +91,7 @@ export const SIGNATURE_COCKTAILS: MenuSection = {
       description: 'Knob Creek rye, rosemary simple syrup, fresh lime juice, Goslings ginger beer',
     },
     {
-      name: 'Xtini — The Espresso Martini',
+      name: 'Xtini, the Espresso Martini',
       price: 14,
       description: 'It speaks for itself.',
     },
@@ -111,7 +111,7 @@ export const SPECIALS: MenuSection = {
     {
       name: 'Frozen Drink of the Month',
       price: 12,
-      description: "Each month brings a new frozen flavor — ask us what's blending now.",
+      description: "Each month brings a new frozen flavor. Ask us what's blending now.",
     },
     {
       name: 'Xtini Tower',

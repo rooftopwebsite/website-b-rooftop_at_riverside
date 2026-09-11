@@ -42,7 +42,8 @@ export default function OpenStatus({
     >
       <span className="eyebrow">Today</span>
       <span className="font-bold">
-        {label} {state ? state.today : '—'}
+        {label}
+        {state ? ` ${state.today}` : ''}
       </span>
       {state ? (
         <span className="inline-flex items-center gap-[6px]">

@@ -87,7 +87,7 @@ export default function VisitPage() {
         <p className="mt-[20px] text-[16px] text-body/75">
           <span className="eyebrow text-deep">Happy hour</span>{' '}
           <span className="ml-[6px]">
-            {HAPPY_HOUR.days}, {HAPPY_HOUR.time} — {HAPPY_HOUR.deals.join(' · ')}
+            {HAPPY_HOUR.days}, {HAPPY_HOUR.time}: {HAPPY_HOUR.deals.join(' · ')}
           </span>
         </p>
 

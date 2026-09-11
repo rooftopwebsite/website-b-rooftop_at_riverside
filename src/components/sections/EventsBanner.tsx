@@ -102,7 +102,7 @@ const CARDS = [
     alt: 'A bartender making cocktails at the Sunset Bar',
   },
   {
-    title: 'The rooftop, the yard, the patio — or the entire venue with the gates shut',
+    title: 'The rooftop, the yard, the patio, or the entire venue with the gates shut',
     src: '/images/venue/wall-dancing-night.jpg',
     alt: 'Guests dancing at a private party at Rooftop at Riverside',
   },
@@ -122,7 +122,7 @@ export default function EventsBanner() {
     <section
       id="events"
       aria-labelledby="events-banner-title"
-      className="relative overflow-hidden rounded-t-band bg-deep pt-14 pb-30 text-bone on-dark lg:pt-28 lg:pb-46"
+      className="relative overflow-hidden rounded-t-band bg-deep pt-14 pb-cierre-arco text-bone on-dark lg:pt-28"
     >
       <div className="caja-ancha relative">
         {/* ⚠️ El titular, la bajada y el sello entran JUNTOS. La bajada está
@@ -130,15 +130,71 @@ export default function EventsBanner() {
             moverían una respecto de la otra durante la animación y el ancla
             se vería trabajando. */}
         <Reveal className="relative">
-          <h2 id="events-banner-title" className="m-0 font-display text-banda font-extrabold uppercase leading-[0.86]">
+          <h2
+            id="events-banner-title"
+            className="m-0 font-display text-banda font-extrabold uppercase leading-[0.86]"
+          >
             {/*
               ⚠️ Las dos mitades son UN SOLO h2. Visualmente están separadas y
               alineadas a lados opuestos, pero es una frase: partirla en dos
               encabezados metería «For you» en el índice de la página como si
               fuera una sección.
             */}
-            <span className="block text-paper">We close the whole place</span>
-            <span className="block pr-27 text-right text-sunset lg:pr-39">For you</span>
+            <span className="block text-paper">
+              We close the whole place
+              {/*
+                El sello, PEGADO AL FINAL DEL PRIMER RENGLÓN.
+
+                ⚠️ VA EN EL FLUJO DEL TEXTO Y NO POSICIONADO, y ésa es toda la
+                diferencia. Una versión anterior lo colgaba del margen derecho
+                con `absolute right-6`: a cada ancho de pantalla el titular
+                mide otra cosa —es fluido, 7.5vw— así que el hueco entre
+                «place» y el sello cambiaba solo, y a 1920 quedaban 300px de
+                aire en el medio. Como una palabra más del renglón, la
+                distancia es siempre la misma.
+
+                ⚠️ LAS TRES MEDIDAS SALEN DE LA TIPOGRAFÍA:
+
+                  · `h-[0.814em]` es la altura de mayúscula de la Anton a este
+                    cuerpo —82px medidos sobre 100.8 de `font-size`—, así que
+                    el rombo mide exactamente lo que mide una letra del
+                    renglón.
+                  · `align-baseline` lo apoya en la línea de base. Con esa
+                    altura, la caja del rombo ocupa EXACTAMENTE la banda de la
+                    mayúscula: no hay que centrarlo a mano ni corregir nada
+                    cuando cambia el cuerpo.
+                  · `ml-[0.15em]` es el espacio entre palabras del titular. El
+                    rombo se separa de la «e» lo mismo que se separan dos
+                    palabras, que es lo que lo hace leer como parte del
+                    renglón y no como un adorno apoyado al lado.
+
+                Las tres en `em`, así que el conjunto sigue al titular fluido
+                sin repetir el `clamp` de `--text-banda`.
+
+                ⚠️ `lg:inline-block` y no `lg:block`: en flujo, `block` lo
+                bajaría a un renglón propio y partiría el titular en tres.
+              */}
+              <Image
+                src="/brand/badge-sun-teal.svg"
+                alt=""
+                width={113}
+                height={113}
+                className="ml-[0.15em] hidden size-[0.814em] align-baseline lg:inline-block"
+              />
+            </span>
+            {/*
+              ⚠️ SIN `pr`: «For you» va AL RAS del ancho máximo de contenido.
+              Antes llevaba `pr-27 lg:pr-39` —108/156px— para dejarle lugar al
+              sello, que estaba apoyado sobre este renglón. Con el sello subido
+              al primero ese hueco ya no protege nada: sólo despegaba la
+              palabra del borde y le sacaba a la composición su lado derecho.
+
+              Alineado al ras, «For you» y el margen de la caja son la misma
+              línea vertical, y el desalineado de las dos mitades del titular
+              pasa a medirse contra algo.
+            */}
+            <span className="block text-right text-sunset">For you</span>
+
           </h2>
 
           {/*
@@ -164,16 +220,6 @@ export default function EventsBanner() {
             and four kitchens, and one person coordinating all of it.
           </p>
 
-          {/* El sello. Se corre hacia arriba sobre el titular, que es donde el
-              diseño lo apoya: en el aire que deja «For you» al alinearse a la
-              derecha. */}
-          <Image
-            src="/brand/badge-sun-teal.svg"
-            alt=""
-            width={113}
-            height={113}
-            className="absolute top-40 right-6 z-40 hidden size-28 -translate-y-[45%] lg:block"
-          />
         </Reveal>
 
         <Link
@@ -184,7 +230,7 @@ export default function EventsBanner() {
           <ArrowRight className="size-4" />
         </Link>
 
-        <StaggerGroup as="ul" className="mt-9 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-3 lg:mt-15">
+        <StaggerGroup as="ul" className="mt-bloque grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-3">
           {CARDS.map(({ title, src, alt }) => (
             <RevealItem as="li" key={src} className="group flex flex-col overflow-hidden rounded-shell bg-deeper">
               <div className="relative h-45 bg-ink lg:h-60">

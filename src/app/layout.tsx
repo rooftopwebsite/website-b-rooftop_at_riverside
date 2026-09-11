@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import Footer from '@/components/shared/Footer';
 import Header from '@/components/shared/Header';
 import NavLock from '@/components/shared/NavLock';
+import NewsletterSignup from '@/components/shared/NewsletterSignup';
 import PageTransition from '@/components/shared/PageTransition';
 import Preloader from '@/components/shared/Preloader';
 import SmoothScroll from '@/components/shared/SmoothScroll';
@@ -162,6 +163,19 @@ export default function RootLayout({ children }: { readonly children: React.Reac
           {children}
         </main>
 
+        {/*
+          El pre-footer de newsletter, FUERA de `<main>`.
+
+          ⚠️ Va acá y no adentro del `main` a propósito: es navegación de
+          sitio, no contenido de la página, igual que el footer. Metido en
+          `main`, el enlace «Skip to content» dejaría al usuario de teclado
+          dentro de un formulario que no tiene nada que ver con la página que
+          está leyendo.
+
+          ⚠️ Y va ARRIBA del `Footer`, que es donde lo tiene el sitio actual.
+          Ver la nota de `NewsletterSignup.tsx`.
+        */}
+        <NewsletterSignup />
         <Footer />
       </body>
     </html>

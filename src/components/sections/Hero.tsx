@@ -198,7 +198,7 @@ export default function Hero() {
           {
             text:
               status.reopensOn && status.reopensOn !== 'today'
-                ? `Closed — back ${status.reopensOn}`
+                ? `Closed, back ${status.reopensOn}`
                 : 'Closed right now',
             Icon: Moon,
           },
@@ -365,7 +365,7 @@ export default function Hero() {
       </div>
 
       {/* ── Bajada + CTAs ─────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-end justify-between gap-8 pt-6.5 pb-12 lg:pt-11 lg:pb-24">
+      <div className="flex flex-wrap items-end justify-between gap-8 pt-6.5 pb-cierre lg:pt-11">
         <p className="m-0 max-w-[16ch] font-body text-intro font-light leading-[1.35] text-ink">
           Rooftop bar. Four kitchens. Walk in.
         </p>

@@ -37,7 +37,7 @@ export const FAQS: readonly Faq[] = [
   {
     group: 'Eating and drinking',
     q: 'Can I bring my own food?',
-    a: 'Please don’t. Four independent small businesses cook here and they are the reason the yard works. Outside drinks are not allowed at all — we are a licensed bar.',
+    a: 'Please don’t. Four independent small businesses cook here and they are the reason the yard works. Outside drinks are not allowed at all. We are a licensed bar.',
   },
   {
     group: 'Events',
@@ -62,7 +62,7 @@ export const FAQS: readonly Faq[] = [
   {
     group: 'Visiting',
     q: 'Is there an age limit at night?',
-    a: 'Families are welcome all day and there is no cover. Anyone drinking needs ID — Florida law, 21 and up. Late on Friday and Saturday the crowd skews older on its own, but we don’t close the yard to kids.',
+    a: 'Families are welcome all day and there is no cover. Anyone drinking needs ID. Florida law, 21 and up. Late on Friday and Saturday the crowd skews older on its own, but we don’t close the yard to kids.',
   },
   {
     group: 'Visiting',

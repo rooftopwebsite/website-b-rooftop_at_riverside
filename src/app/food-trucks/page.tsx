@@ -37,7 +37,7 @@ export default function FoodTrucksPage() {
       <PageHero
         eyebrow="The yard"
         title="Four kitchens. One yard."
-        lead="The trucks rotate. Each one is independently owned, sets its own menu and takes its own payment — we just give them the yard and the crowd."
+        lead="The trucks rotate. Each one is independently owned, sets its own menu and takes its own payment. We just give them the yard and the crowd."
         crumbs={[{ name: 'Food Trucks', path: '/food-trucks' }]}
       />
 
@@ -62,7 +62,7 @@ export default function FoodTrucksPage() {
           <div className="flex flex-col gap-[14px] text-[16px] leading-[1.7] text-body/80">
             <p>
               Every truck runs its own business. You order at the window you want and you pay that
-              truck — separate line, separate card, separate receipt.
+              truck: separate line, separate card, separate receipt.
             </p>
             <p>
               Drinks are the exception: those come from the Sunset Bar upstairs, and that one is

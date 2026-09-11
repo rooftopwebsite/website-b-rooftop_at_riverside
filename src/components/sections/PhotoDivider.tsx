@@ -93,21 +93,45 @@ export default function PhotoDivider() {
 
       <div className="relative h-140 w-full lg:h-[56vw] lg:max-h-205">
         {/*
-          ⚠️ El slot del diseño pide «the yard, or the rooftop at dusk», y esa
-          indicación es la que manda acá. La primera versión usaba
-          `wall-yard-night-wide.jpg` por el nombre del archivo y resultó ser un
-          interior de barra a plena luz: detrás de un tendal de fotos, un fondo
-          claro y de día deja de leerse como fondo y compite con el marquee.
-          Esta es el patio de noche con gente, que es lo que la banda tiene
-          que dejar entrever.
+          ⚠️ ES UNA TEXTURA Y NO UNA ESCENA, y ése es el cambio respecto de la
+          versión anterior. Antes iba `wall-yard-night-crowd.jpg` —el patio de
+          noche con gente— siguiendo el slot del diseño. El problema es que
+          detrás de un tendal de seis fotos, una escena con gente NO se lee
+          como fondo: se lee como una séptima foto tapada, y el ojo pelea por
+          reconstruirla.
+
+          La palmera resuelve las dos cosas de una: es verde de marca, no
+          tiene sujeto que reconstruir, y por densidad de hoja queda oscura sin
+          necesidad de que la oscurezcamos nosotros.
+
+          ⚠️ EL ORIGINAL ES VERTICAL Y SE GIRA EN `build-media.mjs`. Esto no
+          es un `rotate-90` de CSS: girar acá obligaría a agrandar la imagen
+          para que el rectángulo girado siga tapando la banda, y el `fill` con
+          `object-cover` dejaría de funcionar. El archivo llega ya apaisado.
         */}
         <Image
-          src="/images/venue/wall-yard-night-crowd.jpg"
+          src="/images/venue/leaf-backdrop.jpg"
           alt=""
           fill
           sizes="100vw"
           className="object-cover"
         />
+
+        {/*
+          El velo.
+
+          ⚠️ HACE FALTA aunque la foto ya sea oscura: las fotos del marquee
+          tienen sus propios verdes y sin el velo los bordes de los tiles se
+          pierden contra la hoja. Es `ink` y no negro para que el fondo caiga
+          al mismo verde casi negro que usa el resto de la página.
+
+          ⚠️ 60 % Y NO 45 %, que fue el primer valor. La hoja tiene mucho
+          contraste propio —las nervaduras claras contra el fondo de la
+          planta— y a 45 % esas líneas todavía competían con el tendal. A 60 %
+          la textura se sigue reconociendo pero pasa a ser superficie: es el
+          punto donde deja de pedir atención.
+        */}
+        <div className="absolute inset-0 bg-ink/60" />
 
         <div className="absolute inset-x-0 top-1/2 z-20 -translate-y-1/2">
           <div className="w-full overflow-hidden">
@@ -118,7 +142,7 @@ export default function PhotoDivider() {
               {[...PHOTOS, ...PHOTOS].map((photo, i) => (
                 <div
                   key={`${photo.src}-${i}`}
-                  className={`${photo.w} ${photo.h} shrink-0 overflow-hidden rounded-shell bg-fog`}
+                  className={`${photo.w} ${photo.h} relative shrink-0 overflow-hidden rounded-shell bg-fog`}
                 >
                   <Image
                     src={photo.src}
@@ -127,6 +151,37 @@ export default function PhotoDivider() {
                     height={360}
                     sizes="420px"
                     className="size-full object-cover"
+                  />
+
+                  {/*
+                    El recuadro punteado, POR DENTRO de la foto.
+
+                    ⚠️ ES EL MISMO RECURSO QUE LAS ETIQUETAS DE «Five
+                    businesses» —`border-dashed`, ver `YardSteps`— y ésa es
+                    justamente la razón para usarlo: la home ya tiene un
+                    lenguaje de línea punteada y esto lo repite en vez de
+                    inventar un segundo marco decorativo.
+
+                    ⚠️ PERO EL COLOR NO PUEDE SER `teal600` como allá. Aquellas
+                    etiquetas van sobre `paper`, con un fondo constante; éstas
+                    van sobre SEIS FOTOS distintas, de la barra de noche casi
+                    negra al cielo del mediodía. El teal desaparece sobre las
+                    oscuras. Blanco al 85 % es lo único que sobrevive a las dos
+                    puntas del rango.
+
+                    ⚠️ LA SOMBRA NO ES DECORACIÓN: sobre `truck-window-day` y
+                    `butcher-truck` el recuadro cae contra cielo blanco y sin
+                    ella el trazo se corta a la mitad. Es un pixel de negro al
+                    35 %, invisible salvo donde hace falta.
+
+                    ⚠️ `inset-3.5` (14px) y `rounded-ticket` (18px) están
+                    ATADOS: el tile es `rounded-shell` (32px) y el radio
+                    interno de un marco metido 14px es 32 − 14 = 18. Si se
+                    cambia uno hay que recalcular el otro, o las esquinas
+                    dejan de ser concéntricas y se nota.
+                  */}
+                  <div
+                    className="pointer-events-none absolute inset-3.5 rounded-ticket border border-dashed border-paper/85 [filter:drop-shadow(0_1px_1px_rgb(0_0_0/0.35))]"
                   />
                 </div>
               ))}

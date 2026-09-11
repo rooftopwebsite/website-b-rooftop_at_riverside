@@ -87,7 +87,28 @@ const STEPS: readonly TicketStep[] = [
 
 export default function YardSteps() {
   return (
-    <section id="yard" aria-label="How ordering works" className="bg-bone pt-6 pb-14 lg:pt-12 lg:pb-26">
+    <section
+      id="yard"
+      aria-label="How ordering works"
+      /*
+        ⚠️ EL `pt-bloque` ES EL PAR DE «Five businesses, one set of stairs.» —
+        el bloque de arriba, que cierra con `pb` cero justamente para esto.
+
+        Son dos `<section>` en el DOM porque son dos ideas —el malentendido y
+        cómo se ordena— pero comparten el hueso y esta no tiene titular
+        visible, así que en pantalla los tres tickets se leen como el
+        contenido de aquel encabezado. El espacio que los une tiene que ser el
+        mismo que separa cualquier otro encabezado de su grilla, y no la suma
+        de dos bandas: eran 72 + 48 = 120px, o sea el doble del par de «Three
+        of them», cinco secciones más abajo.
+
+        ⚠️ El `pt` llega hasta la LENGÜETA y no hasta la tarjeta: el número va
+        `absolute top-0` sobre el `<li>`, y los 38px de `pt-9.5` del `<li>`
+        son el hueco que le deja debajo. El borde de arriba del bloque es la
+        lengüeta, no el troquel.
+      */
+      className="bg-bone pt-bloque pb-cierre"
+    >
       {/*
         ⚠️ Es una LISTA (`ol`) y no tres `article` sueltos, y con el rediseño
         pasa a importar más que antes: el orden es el contenido. Antes la

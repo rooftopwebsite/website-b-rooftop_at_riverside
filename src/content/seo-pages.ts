@@ -30,7 +30,7 @@ export const PAGE_SEO = {
     h1: 'Bonita comes together',
     title: 'Rooftop at Riverside | Rooftop Bar & Food Truck Park in Bonita Springs, FL',
     description:
-      "A rooftop bar over four food trucks in downtown Bonita Springs. Live music most nights, happy hour Wednesday to Friday, dogs welcome in the yard. No reservations — just come up.",
+      "A rooftop bar over four food trucks in downtown Bonita Springs. Live music most nights, happy hour Wednesday to Friday, dogs welcome in the yard. No reservations, just come up.",
     keywords: ['rooftop bar bonita springs', 'food truck park'],
   },
 
@@ -46,7 +46,7 @@ export const PAGE_SEO = {
     h1: 'Four kitchens. One yard.',
     title: 'Food Trucks | Bonita Springs Food Truck Park',
     description:
-      'Four independent food trucks park in the yard at Rooftop at Riverside. Seafood, smashburgers, street tacos and Caribbean — order at whichever window you want.',
+      'Four independent food trucks park in the yard at Rooftop at Riverside. Seafood, smashburgers, street tacos and Caribbean. Order at whichever window you want.',
     keywords: ['food trucks bonita springs', 'where to eat downtown'],
   },
 
@@ -150,7 +150,7 @@ export const PAGE_SEO = {
     h1: 'A Magnus family project',
     title: 'Our Story | Rooftop at Riverside, Downtown Bonita Springs',
     description:
-      'Four years of planning by a Bonita family. How a corner of Old 41 became a rooftop bar over four independent kitchens — with the town’s own history on the walls.',
+      'Four years of planning by a Bonita family. How a corner of Old 41 became a rooftop bar over four independent kitchens, with the town’s own history on the walls.',
     keywords: [],
   },
 
@@ -158,7 +158,7 @@ export const PAGE_SEO = {
     h1: 'Bring your truck to the yard',
     title: 'Food Truck & Live Music Opportunities | Rooftop at Riverside',
     description:
-      'Four trucks run the yard on revenue share — you keep your own margin and your own register. We also book live music five nights a week.',
+      'Four trucks run the yard on revenue share. You keep your own margin and your own register. We also book live music five nights a week.',
     keywords: ['food truck spots bonita springs'],
   },
 

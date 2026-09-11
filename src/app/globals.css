@@ -296,19 +296,30 @@
   --container-tablet: 880px;
   --container-site: 1280px;
   /*
-   * `wide` — la caja del rediseño `food-truck-club`.
+   * `wide` — la caja del rediseño `food-truck-club`. La usan el header, la
+   * barra de servicio y las nueve secciones de la home.
    *
-   * ⚠️ ERA 1420px Y NO LA USABA NADIE: quedó declarada de una iteración
-   * anterior y el grep no la encontraba en un solo call site. Ahora vale
-   * 1400px, que es la medida del diseño, y la usan el header, la barra de
-   * servicio y las nueve secciones de la home.
+   * ⚠️ VALE 1280 Y NO 1400, QUE ES LA MEDIDA DEL DISEÑO. Es una decisión de
+   * Camila tomada sobre la página renderizada, y conviene que quede escrita
+   * porque contradice al prototipo: el canvas de Claude Design compone la
+   * home a 1400 y quien vaya a la fuente va a encontrar ese número.
    *
-   * No reemplaza a `site`. Las 22 páginas internas siguen en 1280, que es el
-   * ancho unánime de las seis fuentes auditadas; la home es más ancha porque
-   * su unidad de composición es la BANDA a sangre —el carrusel de eventos se
-   * va del borde a propósito— y a 1280 esa fuga no tiene de dónde salir.
+   * El motivo es de unidad. Las 22 páginas internas van en `site` —1280, el
+   * ancho unánime de las seis fuentes auditadas— y con la home a 1400 el
+   * sitio tenía DOS anchos de contenido: al pasar de la home a `/the-yard`
+   * el texto se corría 60px y el salto se veía. Igualadas, el header y el
+   * pie —que son los mismos en las 23 páginas— dejan de moverse.
+   *
+   * ⚠️ NO SE FUSIONA CON `site` aunque hoy valgan lo mismo. Los dos números
+   * son iguales, las dos cajas NO: `caja` lleva el gutter por fuera y
+   * `caja-ancha` por dentro (ver las dos utilidades más abajo). Colapsarlas
+   * cambiaría el ancho de texto de las 22 internas.
+   *
+   * La diferencia que se pierde: a 1400 el carrusel de eventos tenía 60px
+   * más de fuga antes de irse del borde. Sigue sangrando —no está envuelto
+   * en `caja-ancha`, justamente para eso—, sólo que arranca más adentro.
    */
-  --container-wide: 1400px;
+  --container-wide: 1280px;
   /*
    * `head` — el ancho del bloque de encabezado de sección (eyebrow + h2 +
    * bajada). Lo usa `max-w-head` en `SectionHead`.
@@ -368,6 +379,48 @@
   --spacing-band: 96px;
   --spacing-band-lg: 128px;
   --spacing-band-xl: 160px;
+
+  /* ── Ritmo del rediseño: `bloque` y `cierre` ────────────────────────────
+   * Los dos espacios que la home tenía escritos a mano, sección por sección,
+   * con un número distinto en cada una. Son los dos que se ven a simple vista
+   * en una página larga, así que son los dos que tienen que estar
+   * tokenizados:
+   *
+   *   `bloque`  encabezado de sección → su contenido (la grilla, el carrusel,
+   *             la lista de tarjetas). Estaba en 32, 36, 40 y 44 en mobile y
+   *             en 60, 72 y 80 en desktop, según la sección. En las internas,
+   *             en cambio, SIEMPRE valía 40 —`mt-[40px]`, 21 call sites— así
+   *             que el valor de la casa ya existía: era la home la que se
+   *             había ido para arriba. Queda en 40/48.
+   *
+   *             ⚠️ Va MÁS CHICO que el aire de cierre a propósito, y en esa
+   *             proporción está todo el sentido: un titular y su grilla son
+   *             UNA cosa, así que el espacio que los une tiene que ser
+   *             claramente menor que el que separa esa cosa de la siguiente.
+   *             Con 72 arriba de las tarjetas y 72 abajo de la sección, la
+   *             grilla flotaba entre dos secciones en lugar de pertenecer a
+   *             la suya. Hoy la relación es 48 contra 112, o sea 1:2,3.
+   *
+   *   `cierre`  el aire con el que una sección TERMINA cuando abajo cambia el
+   *             fondo. Estaba entre 72 y 104 en desktop, y el corte más
+   *             visible de la home —«Three of them» en hueso contra la banda
+   *             teal de Events— era justo el más apretado de todos, 72. Queda
+   *             en 56/112.
+   *
+   *   `cierre-arco`  el mismo aire, para una banda OSCURA a la que la sección
+   *             siguiente se le monta encima con `-mt-22`. Ahí los últimos
+   *             88px de padding quedan TAPADOS, así que el aire real es el
+   *             padding menos el radio: por eso el token le suma
+   *             `--radius-band`. No es un número más grande porque sí, es el
+   *             mismo `cierre` con la parte que no se ve devuelta. Si cambia
+   *             el radio, los dos se mueven juntos.
+   *
+   * Los valores estáticos son el TOPE; los `clamp` con `vw` los pisan desde
+   * el `:root` de más abajo, por el mismo límite de compilación de v4 que
+   * los `--text-*`.                                                         */
+  --spacing-bloque: 48px;
+  --spacing-cierre: 112px;
+  --spacing-cierre-arco: 200px;
 
   /* ── Ritmo interno del encabezado de sección ────────────────────────────
      Valores de DESKTOP. En mobile los pisa el `:root` de más abajo.         */
@@ -853,6 +906,22 @@
    * 350px, el recorte pasa de 4:1 y de la barra no queda nada legible.
    */
   --banda-titular: clamp(5.5rem, 13vw, 12.5rem);
+
+  /*
+   * El ritmo del rediseño, fluido. Los topes son los del `@theme`:
+   *
+   *     bloque  3.4vw → 390px: 40px (piso) · 1412px: 48px  (tope)
+   *     cierre  7vw   → 390px: 56px (piso) · 1600px: 112px (tope)
+   *
+   * ⚠️ `cierre` crece MÁS RÁPIDO que `bloque` —7vw contra 3.4— y por eso la
+   * proporción entre los dos se abre con la pantalla: en un teléfono es 1:1,4
+   * y en un desktop 1:2,3. Es lo que corresponde: en 390px de ancho, 112px de
+   * aire al pie se comen media pantalla, y en 1600 un corte de fondo sin esos
+   * 112px no se lee como corte.
+   */
+  --spacing-bloque: clamp(40px, 3.4vw, 48px);
+  --spacing-cierre: clamp(56px, 7vw, 112px);
+  --spacing-cierre-arco: calc(var(--spacing-cierre) + var(--radius-band));
 
   /* El ritmo del encabezado, un escalón más apretado en mobile. */
   --spacing-gap-kicker: 8px;

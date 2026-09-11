@@ -55,8 +55,8 @@ export default function OurStoryPage() {
 
       <Section band="lg" width="prose">
         <p className="text-intro leading-[1.5] text-body/90">
-          After four years of planning, the Magnus family — locals — got to build the thing they
-          kept talking about: somewhere the whole town could end up on the same night.
+          The Magnus family are from here. After four years of planning they got to build the
+          thing they kept talking about: somewhere the whole town could end up on the same night.
         </p>
 
         <div className="mt-[32px] flex flex-col gap-[16px] text-lead leading-[1.7] text-body/85">
@@ -72,7 +72,7 @@ export default function OurStoryPage() {
           </p>
         </div>
 
-        <blockquote className="mt-[40px] border-l-2 border-sunset pl-[24px]">
+        <blockquote className="mt-bloque border-l-2 border-sunset pl-[24px]">
           {/* Cita literal del cliente. */}
           <p className="text-intro leading-[1.45] text-body/85">
             &ldquo;We hope this park will be a staple for families in the community, a symbol for up
@@ -80,7 +80,7 @@ export default function OurStoryPage() {
             of.&rdquo;
           </p>
           <footer className="mt-[16px] eyebrow text-body/75">
-            Chris Magnus — Founder &amp; Operator
+            Chris Magnus, Founder &amp; Operator
           </footer>
         </blockquote>
       </Section>
@@ -135,7 +135,7 @@ export default function OurStoryPage() {
           id="places-title"
           title="What got built"
         />
-        <div className="mt-[40px] grid gap-[28px] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-bloque grid gap-[28px] sm:grid-cols-2 lg:grid-cols-4">
           {[
             ['Sunset Bar', 'The rooftop, facing west over the Imperial River. Ours.'],
             ['The Yard', 'Where the trucks park and the stage goes up. Being gated.'],
@@ -153,7 +153,7 @@ export default function OurStoryPage() {
 
         <p className="mt-[32px] max-w-[62ch] text-[16px] leading-[1.65] text-body/75">
           It shut for about six months in each of the last two years while the work got done. The
-          point of all of it was to make the place feel less like a lot with tables on it — warmer,
+          point of all of it was to make the place feel less like a lot with tables on it: warmer,
           softer, somewhere you stay past sunset.
         </p>
       </Section>
@@ -191,8 +191,8 @@ export default function OurStoryPage() {
               <PendingBlock title="Current charity partner">
                 This lived on <code className="text-[13px]">/giveback</code>, a page the brief
                 didn&rsquo;t account for. It&rsquo;s folded in here for now, and the partner shown on
-                the old site is stale. Tell us where this belongs — its own route or this section —
-                and who the current partner is.
+                the old site is stale. Tell us whether this belongs on its own route or inside
+                this section, and who the current partner is.
               </PendingBlock>
             </div>
           </div>

@@ -83,7 +83,7 @@ export default function ContactPage() {
           title="Pick the right door"
         />
 
-        <div className="mt-[48px] grid gap-[24px] lg:grid-cols-3">
+        <div className="mt-bloque grid gap-[24px] lg:grid-cols-3">
           {ROUTES.map((r) => (
             <article
               key={r.title}

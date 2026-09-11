@@ -179,6 +179,32 @@ cocinas independientes". Se reescribe completo.
 
 ## 6. Datos de contacto y horarios
 
+### ⚠️ Corrección del 2026-09-11 — el pre-footer de newsletter faltaba en este inventario
+
+Este documento **omitía el formulario de suscripción**, y esa omisión costó
+trabajo: el 2026-09-09 se borró el newsletter del sitio nuevo argumentando que
+«la web actual no tiene nada parecido», con este inventario como fuente. Se
+verificó en vivo el 2026-09-11 y **sí existe**, en el pre-footer, arriba de los
+horarios:
+
+| | |
+|---|---|
+| Título | «Sign Up» |
+| Bajada | «Stay up to date with all the latest from Rooftop at Riverside» |
+| Campos | First name · Last name · Email |
+| Botón | «Join» |
+| Confirmación | «Thanks for subscribing!» |
+
+Repuesto en `shared/NewsletterSignup.tsx`, con dos campos en vez de tres —se
+cayó el apellido, que en una lista de correo no se usa—. **Va a una planilla,
+no a un mail**, y la planilla todavía no existe: ítem 24 de
+`docs/pedido-al-cliente.md`.
+
+> **La lección, para el resto de este documento:** lo que no está acá se trata
+> como que no existe en el sitio actual, así que un hueco se lee como un dato.
+> Antes de borrar algo del sitio nuevo por ausencia en este inventario,
+> **verificar en vivo**.
+
 ### Coinciden con el brief ✅
 
 Horarios (footer, idénticos en las 23 páginas):

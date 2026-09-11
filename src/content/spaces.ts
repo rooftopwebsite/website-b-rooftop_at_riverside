@@ -67,14 +67,14 @@ export const SPACES: readonly Space[] = [
     name: 'The Patio',
     kicker: 'Currently in renovation',
     description:
-      'A covered patio between the yard and the bar. Under renovation — name and layout not final.',
+      'A covered patio between the yard and the bar. Under renovation. Name and layout not final.',
     standing: null,
     seated: null,
     minimum: null,
     bestFor: ['Smaller gatherings', 'Breakout space for larger events'],
     photo: null,
     photoAlt: null,
-    photoBrief: "The patio once the renovation is done — wide shot showing how it links the yard to the bar.",
+    photoBrief: "The patio once the renovation is done. Wide shot showing how it links the yard to the bar.",
     status: 'renovating',
   },
   {

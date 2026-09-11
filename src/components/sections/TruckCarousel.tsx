@@ -20,7 +20,7 @@ import type { Truck } from '@/content/trucks';
 export default function TruckCarousel({ trucks }: { readonly trucks: readonly Truck[] }) {
   return (
     <>
-      <DragCarousel label="Food trucks in the yard" className="mt-[40px]">
+      <DragCarousel label="Food trucks in the yard" className="mt-bloque">
         {trucks.map((t) => (
           <div
             key={t.slug}
@@ -48,7 +48,7 @@ export default function TruckCarousel({ trucks }: { readonly trucks: readonly Tr
             href="/sunset-bar"
             eyebrow="Drinks"
             title="Sunset Bar"
-            body="Cocktails, local drafts and wine — the one tab that’s ours, upstairs on the roof."
+            body="Cocktails, local drafts and wine. The one tab that’s ours, upstairs on the roof."
             cta="See the menu"
             photo="/images/venue-rooftop.jpg"
             photoAlt="The Sunset Bar rooftop at Rooftop at Riverside"

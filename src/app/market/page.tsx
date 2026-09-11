@@ -45,7 +45,7 @@ export default function MarketPage() {
         <div className="flex flex-col gap-[16px] text-lead leading-[1.7] text-body/85">
           <p>
             Explore a curated selection of local vendors showing unique goods, handmade crafts and
-            more — whether you&rsquo;re looking for a gift, treating yourself, or just enjoying the
+            more, whether you&rsquo;re looking for a gift, treating yourself, or just enjoying the
             atmosphere.
           </p>
           <p>
@@ -65,7 +65,7 @@ export default function MarketPage() {
           lead="First come, first served. Approved at check-in."
         />
 
-        <div className="mt-[40px] grid gap-[28px] lg:grid-cols-2 lg:gap-[56px]">
+        <div className="mt-bloque grid gap-[28px] lg:grid-cols-2 lg:gap-[56px]">
           <dl className="flex flex-col divide-y divide-ink/15 border-y border-ink/15">
             <div className="flex items-baseline justify-between gap-[16px] py-[16px]">
               <dt className="eyebrow text-body/75">Fee</dt>

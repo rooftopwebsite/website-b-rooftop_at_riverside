@@ -58,7 +58,7 @@ export default function SpacesPage() {
           title="Pick your footprint"
         />
 
-        <StaggerGroup as="ul" className="mt-[48px] flex flex-col gap-[32px]">
+        <StaggerGroup as="ul" className="mt-bloque flex flex-col gap-[32px]">
           {SPACES.map((s, i) => (
             <RevealItem as="li" key={s.slug}>
               <SpaceCard space={s} flipped={i % 2 === 1} />
@@ -67,10 +67,10 @@ export default function SpacesPage() {
         </StaggerGroup>
 
         {/* El aviso general, para que nadie lea los TBD como un error de maqueta. */}
-        <div className="mt-[40px]">
+        <div className="mt-bloque">
           <PendingBlock title="Capacities, minimums and floor plans">
             Every capacity, seated count and guest minimum on this page is marked TBD because we
-            don&rsquo;t have the numbers yet — and we&rsquo;re not going to estimate them. A
+            don&rsquo;t have the numbers yet, and we&rsquo;re not going to estimate them. A
             capacity on a venue page is a promise. Send them over and they drop straight into{' '}
             <code className="rounded-btn bg-ink/5 px-[5px] py-[1px] text-[13px]">
               src/content/spaces.ts
@@ -90,7 +90,7 @@ export default function SpacesPage() {
               The Sunset Bar and our team running it.
             </li>
             <li className="border-b border-ink/12 pb-[10px]">
-              Coordination with the food trucks — you pick a tier, we handle the vendors.
+              Coordination with the food trucks. You pick a tier, we handle the vendors.
             </li>
             <li className="border-b border-ink/12 pb-[10px]">
               Sound for live music or a DJ, and the stage in the yard.

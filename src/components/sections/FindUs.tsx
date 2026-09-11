@@ -58,7 +58,7 @@ export default function FindUs() {
     <section
       id="find-us"
       aria-labelledby="find-us-title"
-      className="relative z-[3] -mt-22 rounded-t-band bg-bone pt-16 pb-14 lg:pt-32 lg:pb-26"
+      className="relative z-[3] -mt-22 rounded-t-band bg-bone pt-16 pb-cierre lg:pt-32"
     >
       <div className="caja-ancha">
         <Reveal className="flex flex-wrap items-center gap-3">
@@ -92,7 +92,7 @@ export default function FindUs() {
           </ul>
         </Reveal>
 
-        <StaggerGroup className="mt-11 grid grid-cols-1 items-stretch gap-7 lg:mt-20 lg:grid-cols-3">
+        <StaggerGroup className="mt-bloque grid grid-cols-1 items-stretch gap-7 lg:grid-cols-3">
           {/* ── Contacto ─────────────────────────────────────────────── */}
           <RevealItem className="flex flex-col gap-6.5 rounded-shell bg-deep p-6.5 text-bone on-dark lg:p-9">
             <h3 className="m-0 font-display text-d5 font-bold uppercase leading-none tracking-[0.02em] text-paper">

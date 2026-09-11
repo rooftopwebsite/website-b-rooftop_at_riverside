@@ -34,7 +34,7 @@ export async function generateMetadata({
   if (!truck) return {};
 
   return pageMeta({
-    title: `${truck.name} — ${truck.cuisine} Food Truck`,
+    title: `${truck.name}, ${truck.cuisine} Food Truck`,
     description:
       truck.story ??
       `${truck.name} serves ${truck.specialty.toLowerCase()} in the yard at Rooftop at Riverside in Bonita Springs.`,
@@ -120,7 +120,7 @@ export default async function TruckPage({ params }: { params: Promise<{ slug: st
               <div className="mt-gap-bajada">
                 <PendingBlock title="Truck bio">
                   We don&rsquo;t have {truck.name}&rsquo;s story yet. Two or three sentences from
-                  the owner — who they are, where they came from, what they&rsquo;re known for.
+                  the owner: who they are, where they came from, what they&rsquo;re known for.
                   It has to come from them: nothing on this site is written by AI.
                 </PendingBlock>
               </div>

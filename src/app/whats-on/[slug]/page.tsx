@@ -30,7 +30,7 @@ export async function generateMetadata({
   if (!event) return {};
 
   return pageMeta({
-    title: `${event.title} — ${whenLabel(event)}`,
+    title: `${event.title}, ${whenLabel(event)}`,
     description: event.summary,
     path: `/whats-on/${event.slug}`,
     ...(event.image
@@ -57,7 +57,7 @@ export async function generateMetadata({
 function eventJsonLd(event: VenueEvent) {
   const location = {
     '@type': 'EventVenue',
-    name: `${event.space} — ${BRAND.name}`,
+    name: `${event.space} at ${BRAND.name}`,
     address: {
       '@type': 'PostalAddress',
       streetAddress: BRAND.address.street,
@@ -170,8 +170,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
             <div className="mt-[32px] border-t border-ink/15 pt-[24px]">
               <p className="max-w-[60ch] text-[16px] leading-[1.65] text-body/75">
-                Food comes from whichever trucks are in the yard that night — each takes its own
-                orders. Drinks are at the Sunset Bar upstairs.
+                Food comes from whichever trucks are in the yard that night, and each takes its
+                own orders. Drinks are at the Sunset Bar upstairs.
               </p>
             </div>
           </div>

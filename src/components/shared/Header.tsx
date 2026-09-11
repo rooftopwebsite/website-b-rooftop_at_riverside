@@ -180,7 +180,7 @@ export default function Header() {
           */}
           <Link
             href="/"
-            aria-label={`${BRAND.name} — home`}
+            aria-label={`${BRAND.name} home`}
             /*
               ══════════════════════════════════════════════════════════════
               ⚠️ EN MOBILE VA A LA IZQUIERDA Y EN EL FLUJO; EL MEDALLÓN

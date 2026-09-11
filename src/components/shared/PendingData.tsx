@@ -29,7 +29,7 @@ export function PendingData({
       {...(detail ? { title: detail } : {})}
     >
       {label}
-      {detail ? <span className="sr-only">— {detail}</span> : null}
+      {detail ? <span className="sr-only">. {detail}</span> : null}
     </span>
   );
 }
@@ -129,7 +129,7 @@ export function PhotoPending({
   return (
     <div
       role="img"
-      aria-label={`Image placeholder — ${brief}`}
+      aria-label={`Image placeholder: ${brief}`}
       className={[
         ratio,
         'relative flex flex-col items-center justify-center gap-3 overflow-hidden',
