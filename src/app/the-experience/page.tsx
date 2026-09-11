@@ -21,17 +21,24 @@ export const metadata: Metadata = pageMeta({
 /**
  * /the-experience — Game Lounge y camión de gaming.
  *
- * ⚠️ Los números de consolas NO coinciden entre las fuentes: el brief dice
- * «4 PS5, 4 Xbox Series X, 2 Switch 2, con A/C» y la página actual de Wix dice
- * «6 TVs» con «Xbox Series X, PlayStation 5, Nintendo Switch 2». Hasta que se
- * confirme, esta página NO publica cantidades: nombra las plataformas y marca
- * las cantidades como pendientes. Ver docs/current-site-inventory.md §7.
+ * ⚠️ CANTIDAD DE CONSOLAS: se publica LA DEL BRIEF —4 PS5, 4 Xbox Series X,
+ * 2 Switch 2, con A/C—. Decisión de Camila del 2026-09-11 ante el conflicto de
+ * fuentes: la página de Wix dice «6 TVs» sin desglosar consolas, y el brief sí
+ * desglosa. Ver docs/auditoria-servicios.md §3.
+ *
+ * ⚠️ LA CANTIDAD DE PANTALLAS SIGUE PENDIENTE, y no es un olvido: el brief no
+ * habla de pantallas, así que la decisión de «tomar lo del brief» no la cubre.
+ * El único número que existe es el «6 TVs» de Wix, que no cierra con diez
+ * consolas. Por eso tampoco se afirma que cada consola tenga su pantalla.
  *
  * ⚠️ Los precios SÍ están publicados en el sitio actual, así que se reutilizan
  * tal cual, con la nota de que hay que confirmar vigencia.
  */
 
 const PLATFORMS = ['PlayStation 5', 'Xbox Series X', 'Nintendo Switch 2'] as const;
+
+/** Del brief, sección Onboarding Call y cuestionario H5. */
+const CONSOLES = '4 PlayStation 5 · 4 Xbox Series X · 2 Nintendo Switch 2';
 
 export default function TheExperiencePage() {
   return (
@@ -70,10 +77,10 @@ export default function TheExperiencePage() {
           eyebrowTone="deep"
           id="inside-title"
           title="Air conditioning, which matters here"
-          lead="Every console on a screen of its own, a library that runs from E to M, and someone whose whole job is making sure nobody sits out a round."
+          lead="Ten consoles, a library that runs from E to M, and someone whose whole job is making sure nobody sits out a round."
         />
 
-        <div className="mt-[40px] grid gap-[32px] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-[56px]">
+        <div className="mt-bloque grid gap-[32px] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-[56px]">
           <div>
             <dl className="flex flex-col divide-y divide-ink/12 border-y border-ink/12">
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
@@ -83,7 +90,7 @@ export default function TheExperiencePage() {
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
                 <dt className="eyebrow text-body/75">Consoles</dt>
                 <dd>
-                  <PendingData detail="Console counts differ between the brief and the current site — pending confirmation" />
+                  <span className="text-[16px] font-bold">{CONSOLES}</span>
                 </dd>
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-[12px] py-[16px]">
@@ -107,8 +114,8 @@ export default function TheExperiencePage() {
             </dl>
 
             <p className="mt-[20px] max-w-[60ch] text-[15px] leading-[1.6] text-body/75">
-              Console and screen counts are marked pending because the numbers we have don&rsquo;t
-              agree with each other. We&rsquo;d rather show a gap than a wrong number.
+              The screen count is still pending: the sources we have don&rsquo;t agree, and we&rsquo;d
+              rather show a gap than a wrong number.
             </p>
           </div>
 
@@ -133,7 +140,7 @@ export default function TheExperiencePage() {
           title="What it costs"
         />
 
-        <StaggerGroup as="ul" className="mt-[40px] grid gap-[24px] md:grid-cols-2">
+        <StaggerGroup as="ul" className="mt-bloque grid gap-[24px] md:grid-cols-2">
           <RevealItem as="li" className="rounded-card border border-ink/15 bg-paper p-[28px]">
             <Eyebrow tone="deep">Drop in</Eyebrow>
             <p className="mt-[10px] font-display text-d2 uppercase">
@@ -157,7 +164,7 @@ export default function TheExperiencePage() {
         </StaggerGroup>
 
         <p className="mt-[24px] max-w-[62ch] text-[15px] leading-[1.6] text-body/75">
-          Pricing carried over from the current site. Confirm before booking — a waiver is required
+          Pricing carried over from the current site. Confirm before booking. A waiver is required
           to play.
         </p>
       </Section>

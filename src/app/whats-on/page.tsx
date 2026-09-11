@@ -5,6 +5,7 @@ import PageHero from '@/components/shared/PageHero';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import { type VenueEvent, timeRange } from '@/content/events';
+import { BRAND } from '@/lib/brand';
 import {
   dayNumber,
   groupByDay,
@@ -134,7 +135,7 @@ export default async function WhatsOnPage({
         </div>
 
         {occurrences.length === 0 ? (
-          <p className="mt-[40px] text-lead text-body/75">
+          <p className="mt-bloque text-lead text-body/75">
             Nothing on the books for {label} yet. The calendar for next month lands around the 10th.
           </p>
         ) : view === 'list' ? (
@@ -152,7 +153,7 @@ export default async function WhatsOnPage({
           </Heading>
           <div className="flex flex-col gap-[12px] text-[16px] leading-[1.7] text-body/80">
             <p>
-              Most of what&rsquo;s here repeats every week — Wooftop Wednesdays, Bingo Night, Ross
+              Most of what&rsquo;s here repeats every week: Wooftop Wednesdays, Bingo Night, Ross
               Brown on Thursdays, DJ David Cast on Saturdays. One-off shows and festivals show up on
               the month they happen.
             </p>
@@ -160,6 +161,25 @@ export default async function WhatsOnPage({
               Ticketed shows run in The Yard and sell through Eventbrite. Everything else is free
               and you just walk in.
             </p>
+            <p>
+              Festivals and big one-off nights are the ones that need a ticket bought ahead. If a
+              night is on sale, it is on our Eventbrite page.
+            </p>
+          {/*
+            ⚠️ EL CTA VA ACÁ, A NIVEL SECCIÓN, Y NO PEGADO A CADA EVENTO.
+            Pedido de Camila, y el dato le da la razón: el perfil de Eventbrite
+            del cliente sólo tiene los eventos grandes y puntuales —hoy, de
+            hecho, dice «No upcoming events»—, mientras que los cuatro
+            recurrentes del calendario son gratis. Un botón de entradas en cada
+            card prometería una compra que casi ningún evento necesita.
+          */}
+          {BRAND.eventbrite ? (
+            <div className="mt-[8px]">
+              <ButtonLink href={BRAND.eventbrite} variant="primary" external>
+                Tickets on Eventbrite
+              </ButtonLink>
+            </div>
+          ) : null}
           </div>
         </div>
       </Section>

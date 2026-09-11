@@ -11,7 +11,23 @@ por otra cosa**.
 > Regenerar el inventario:
 > `grep -rn "PhotoPending\|PendingData\|PendingBlock" src/`
 
-**Estado al 2026-09-10:** 27 ítems abiertos. Tres bloquean la home.
+**Estado al 2026-09-11:** 33 ítems abiertos. Tres bloquean la home y **uno
+bloquea toda la lógica de reservas**: el 0, OpenTable.
+
+> ### 0 · ⚠️ ¿Para qué usan OpenTable?
+>
+> El cliente **tiene cuenta de OpenTable** y no sabemos qué hace con ella.
+> Las tres respuestas posibles cambian páginas distintas:
+>
+> - **Reservas de mesa todos los días** → va un «Book a table» en el header, en
+>   `/visit` y al pie de cada página de venue.
+> - **Sólo en noches de evento** → el aviso de reserva vive en `/whats-on` y en
+>   la ficha de cada evento, al lado del de Eventbrite.
+> - **Sólo grupos grandes o eventos privados** → es parte del flujo de
+>   `/events/inquire` y no se menciona en ningún otro lado.
+>
+> Hace falta además **la URL del perfil**. Hasta que llegue la respuesta ninguna
+> página puede decir si se reserva, si se saca entrada, o las dos cosas.
 
 ---
 
@@ -21,7 +37,7 @@ por otra cosa**.
 |---|---:|---|
 | A · Fotos y video | 12 | el cliente / un fotógrafo |
 | B · Datos duros | 8 | el cliente (operaciones) |
-| C · Archivos y enlaces | 3 | el cliente / decisión técnica nuestra |
+| C · Archivos y enlaces | 9 | el cliente / decisión técnica nuestra |
 | D · Textos | 3 | los dueños de los trucks |
 | E · Marca | 1 | quien tenga el original del logo |
 
@@ -119,8 +135,61 @@ Los cuatro espacios están en `src/content/spaces.ts` y los trucks en
 | # | qué | dónde cae | qué se ve hoy |
 |---|---|---|---|
 | 21 | **El PDF del events packet** | `/events/inquire` | El brief pide que se entregue en el momento de enviar el formulario. Como el PDF no existe, la confirmación dice que llega adjunto en la respuesta. Con el archivo pasa a ser descarga inmediata |
-| 22 | **La URL de organizador de Eventbrite** | `/the-yard`, el bloque de entradas | Un bloque «Pending»: sin la URL la página no puede apuntar a ningún lado para comprar |
+| 0 | **⚠️ Para qué usan OpenTable, y la URL del perfil** | El header, `/visit`, `/whats-on` y `/events/inquire` — depende de la respuesta | Nada: el sitio hoy no menciona reservas en ningún lado. Es el ítem más importante de la lista, ver el bloque del principio |
+| 22 | **Confirmar el perfil de Eventbrite** (lo encontramos nosotros: `eventbrite.com/o/rooftop-at-riverside-104153700851`) | `/whats-on` y `/the-yard`, el CTA de entradas | Ya está puesto en `BRAND.eventbrite` y el bloque «Pending» se fue. Falta que el cliente confirme que es el suyo y que todo evento con entrada se vende por ahí. Hoy el perfil dice «No upcoming events» |
+| 28 | **¿Siguen vigentes los dos waivers?** Los textos de `/bar-games-waiver` y `/game-zone-waiver` siguen publicados y vivos en el sitio actual | `/the-experience`, `/events/game-truck` | Hoy los mandamos con un 301 a `/the-experience`, que sólo menciona que hay que firmar uno. Si siguen vigentes se publican como páginas propias y el 301 se cambia |
+| 29 | **¿Sigue corriendo el sorteo de los jueves?** (`/tnt-sign-ups`, «Enter to win free tickets», QR en el local, ganador los viernes) | `/whats-on` | Mismo caso: 301 a `/whats-on` sin una línea del sorteo. Las bases legales ya están escritas y se reutilizan tal cual |
+| 30 | **Los menús de los cuatro trucks vigentes** | las cuatro fichas de `/food-trucks` | El sitio actual sólo publica dos menús como imagen, y uno es de un truck que ya no está. De los cuatro del roster hoy sólo El Chilango tiene menú publicado |
+| 31 | **El calendario mensual completo, evento por evento** | `/whats-on`, y la base de RestoExp | La base tiene hoy sólo los cuatro recurrentes semanales. Los eventos puntuales (festivales, shows con entrada) no están cargados, y son justamente los que se venden por Eventbrite. El cliente ya entrega el calendario del mes siguiente el día 10 |
+| 32 | **¿La lista de email vive en Toast o en una planilla?** | el pre-footer de todo el sitio | El cuestionario F5 dice que el email marketing sale por Toast, que ya es el POS. El formulario del sitio apunta hoy a un webhook de planilla que todavía no existe. Según la respuesta cambia el destino del formulario, no el formulario |
 | 23 | **Backend de formularios + almacenamiento de archivos** — decisión técnica, no del cliente | `/join-us` | El sitio actual corre tres formularios con subida de hasta 15 MB (material de músicos, datos de vendors, CVs). Hasta que se elija dónde viven, la página manda a email, que es honesto y funciona hoy |
+| 24 | **⚠️ La planilla del newsletter y su webhook** — decisión técnica, no del cliente | El pre-footer de **las 23 páginas** | El formulario está terminado y valida, pero **el alta no se guarda**: sin `NEWSLETTER_SHEETS_WEBHOOK_URL` la action responde un error visible que manda a escribir a `info@eatdrinkparadise.com`. Ver el paso a paso abajo |
+
+### 24 · Cómo se conecta el newsletter — 15 minutos
+
+El formulario del pre-footer manda `{ firstName, email, source }` por POST a
+una URL de Apps Script. Falta crear esa punta.
+
+1. **Planilla nueva** en el Drive de la agencia. Primera fila:
+   `fecha · firstName · email · source`.
+2. **Extensiones → Apps Script**, pegar esto y guardar:
+
+```js
+function doPost(e) {
+  try {
+    var d = JSON.parse(e.postData.contents);
+    if (!d.email) throw new Error('email vacío');
+    SpreadsheetApp.getActiveSpreadsheet()
+      .getSheets()[0]
+      .appendRow([new Date(), d.firstName || '', d.email, d.source || '']);
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'ok' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    // ⚠️ Apps Script contesta 200 igual. Por eso el `result` va en el cuerpo
+    // y `actions.ts` lo lee: sin esto un fallo de escritura se le reportaría
+    // al usuario como éxito.
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'error', error: String(err) }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+```
+
+3. **Implementar → Nueva implementación → Aplicación web**, con
+   *Ejecutar como* **yo** y *Quién tiene acceso* **cualquier persona**. Sin ese
+   segundo valor el sitio recibe un 401 y el alta se pierde.
+4. Copiar la URL `/exec` y cargarla como `NEWSLETTER_SHEETS_WEBHOOK_URL` en
+   Vercel (los tres entornos) y en el `.env.local` de cada uno.
+
+**Después de conectarla hay que probar un alta real** y ver la fila en la
+planilla. El error de «no está conectado» y el de «falló la escritura» se ven
+distintos en el navegador pero los dos se registran en los logs con el prefijo
+`[newsletter]`.
+
+> **Lo que esto NO es:** una plataforma de envío. La planilla junta la lista;
+> mandar la campaña sigue siendo manual hasta que el cliente decida un
+> proveedor (Mailchimp, Klaviyo). Decisión aplazada por Camila el 2026-09-11.
 
 ---
 

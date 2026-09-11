@@ -23,12 +23,14 @@ import { Heading } from './Type';
  * ofreció la alternativa —convertir `FindUs` en un pre-footer global, como hace
  * the-orient— y eligió esto.
  *
- * ⚠️ SE FUERON dos bloques que estaban acá:
- *   · «Last call», la franja de cierre. Pedido de Camila.
- *   · El formulario de newsletter. No figura en `docs/current-site-inventory.md`
- *     —o sea que la web actual no tiene nada parecido— y el cliente no lo pidió:
- *     «si el cliente no lo pidió y la web actual no tiene nada similar, no lo
- *     pongamos». Con él se fue `subscribeToNewsletter` de `app/actions.ts`.
+ * ⚠️ SE FUE «Last call», la franja de cierre. Pedido de Camila.
+ *
+ * ⚠️ EL NEWSLETTER TAMBIÉN SE FUE DE ACÁ, PERO VOLVIÓ AL SITIO. No hay que
+ * reponerlo en este archivo: vive en `shared/NewsletterSignup.tsx`, montado en
+ * el layout justo arriba de este footer, que es donde lo tiene el sitio
+ * original. Se había eliminado porque «la web actual no tiene nada parecido»,
+ * y esa premisa resultó falsa —`eatdrinkparadise.com` sí lo tiene, verificado
+ * el 2026-09-11—. El detalle está en el encabezado de ese componente.
  *
  * ⚠️ NO hay links legales en la franja inferior. El sitio todavía no tiene
  * páginas de privacidad, términos ni cookies: poner los links ahora sería
@@ -36,17 +38,28 @@ import { Heading } from './Type';
  * copyright.
  */
 
-/** Lo que pasa EN el lugar: cómo comés, qué ves, qué alquilás. */
-const LINKS_LUGAR = [
+type FooterLink = { label: string; href: string; external?: boolean };
+
+/**
+ * Lo que pasa EN el lugar: cómo comés, qué ves, qué alquilás.
+ *
+ * ⚠️ GIFT CARDS ENTRA ACÁ el 2026-09-11, y es una reparación: es el ÚNICO
+ * enlace de comercio que tiene el negocio —Toast, el mismo POS— y en el sitio
+ * nuevo había quedado en una sola línea de `/contact`. La `UtilityBar`, que
+ * antes lo llevaba, pasó a ser el marquee de horarios y su comentario dice que
+ * Gift Cards «queda en el footer»: no quedó. Ahora sí.
+ */
+const LINKS_LUGAR: readonly FooterLink[] = [
   { label: 'Sunset Bar', href: '/sunset-bar' },
   { label: 'Food Trucks', href: '/food-trucks' },
   { label: 'The Yard', href: '/the-yard' },
   { label: "What's On", href: '/whats-on' },
   { label: 'The Market', href: '/market' },
-] as const;
+  { label: 'Gift Cards', href: BRAND.giftCards, external: true },
+];
 
 /** La vertical que factura, con sus puertas de entrada. */
-const LINKS_EVENTOS = [
+const LINKS_EVENTOS: readonly FooterLink[] = [
   { label: 'Private Events', href: '/events' },
   { label: 'Event Spaces', href: '/events/spaces' },
   { label: 'Corporate', href: '/events/corporate' },
@@ -61,7 +74,7 @@ const LINKS_EVENTOS = [
  * salieron del footer, pero las páginas que los tienen siguen a un clic. Es la
  * única compensación honesta que admite el pedido.
  */
-const LINKS_CONOCERNOS = [
+const LINKS_CONOCERNOS: readonly FooterLink[] = [
   { label: 'Our Story', href: '/our-story' },
   { label: 'The Experience', href: '/the-experience' },
   { label: 'Visit Us', href: '/visit' },
@@ -90,7 +103,7 @@ export default function Footer() {
         <div className="caja grid gap-12 py-16 desk:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] desk:gap-16 desk:py-20">
           {/* ── Identidad ────────────────────────────────────────────── */}
           <div className="flex flex-col items-center gap-5 text-center desk:items-start desk:text-left">
-            <Link href="/" aria-label={`${BRAND.name} — home`}>
+            <Link href="/" aria-label={`${BRAND.name} home`}>
               <Image
                 src="/brand/logo-reversed.svg"
                 alt=""
@@ -129,11 +142,26 @@ export default function Footer() {
                     naranja porque es decorativo y no le debe contraste a nadie. */}
                 <span aria-hidden="true" className="mt-2.5 block h-0.5 w-7 bg-sunset" />
                 <ul className="mt-3 flex flex-col">
-                  {links.map(({ label, href }) => (
+                  {links.map(({ label, href, external }) => (
                     <li key={href}>
-                      <Link href={href} className={LINK_BASE}>
-                        {label}
-                      </Link>
+                      {/* Gift Cards sale del sitio (Toast). Link externo: `rel`
+                          completo y aviso para lector de pantalla, como en el
+                          resto de las salidas del sitio. */}
+                      {external ? (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={LINK_BASE}
+                        >
+                          {label}
+                          <span className="sr-only"> (opens in a new tab)</span>
+                        </a>
+                      ) : (
+                        <Link href={href} className={LINK_BASE}>
+                          {label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>

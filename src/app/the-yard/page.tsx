@@ -73,7 +73,7 @@ export default function TheYardPage() {
         />
 
         {ticketed.length > 0 ? (
-          <StaggerGroup as="ul" className="mt-[40px] grid gap-[20px] sm:grid-cols-2">
+          <StaggerGroup as="ul" className="mt-bloque grid gap-[20px] sm:grid-cols-2">
             {ticketed.map((e) => (
               <RevealItem as="li" key={e.slug}>
                 <article className="flex h-full flex-col rounded-card border border-ink/12 p-[24px]">
@@ -105,7 +105,7 @@ export default function TheYardPage() {
           </StaggerGroup>
         ) : (
           /* Fallback elegante: no hay nada con entrada cargado todavía. */
-          <div className="mt-[40px] flex flex-col gap-[24px]">
+          <div className="mt-bloque flex flex-col gap-[24px]">
             <p className="max-w-[62ch] text-lead text-body/75">
               Nothing ticketed on the books right now. Everything else in the yard this week is free
               and you just walk in.
@@ -114,6 +114,14 @@ export default function TheYardPage() {
               <ButtonLink href="/whats-on" variant="primary">
                 What&rsquo;s on this week
               </ButtonLink>
+              {/* La salida a la ticketera, aunque hoy no haya nada cargado con
+                  entrada de nuestro lado: los festivales y las noches grandes se
+                  publican allá primero. */}
+              {BRAND.eventbrite ? (
+                <ButtonLink href={BRAND.eventbrite} variant="secondary" external>
+                  Tickets on Eventbrite
+                </ButtonLink>
+              ) : null}
             </div>
           </div>
         )}
@@ -172,8 +180,8 @@ export default function TheYardPage() {
           </Heading>
           <div className="flex flex-col gap-[14px] text-[16px] leading-[1.7] text-body/80">
             <p>
-              The gate means the yard can be closed off and run as its own room — a ticketed door, a
-              private festival, a fundraiser with a headcount you actually control.
+              The gate means the yard can be closed off and run as its own room: a ticketed door,
+              a private festival, a fundraiser with a headcount you actually control.
             </p>
             <p>
               Stage and sound are already there. So are the trucks, and the bar upstairs.

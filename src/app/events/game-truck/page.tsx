@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { ButtonLink } from '@/components/shared/Button';
 import PageHero from '@/components/shared/PageHero';
-import { PendingData } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
@@ -66,7 +65,7 @@ export default function GameTruckPage() {
           title="Two hours, then by the hour"
         />
 
-        <div className="mt-[40px] overflow-x-auto" tabIndex={0} role="region" aria-label="Gaming truck pricing, scrollable">
+        <div className="mt-bloque overflow-x-auto" tabIndex={0} role="region" aria-label="Gaming truck pricing, scrollable">
           <table className="w-full min-w-[520px] border-collapse text-[16px]">
             <caption className="sr-only">Gaming truck party pricing</caption>
             <thead>
@@ -99,10 +98,15 @@ export default function GameTruckPage() {
               </tr>
               <tr>
                 <th scope="row" className="py-[16px] pr-[16px] text-left font-bold">
-                  Max players at once
+                  Consoles on board
                 </th>
                 <td className="py-[16px] pr-[16px]" colSpan={2}>
-                  <PendingData detail="Player capacity depends on console count, which is pending confirmation" />
+                  {/* Del brief. La decisión de publicar los números del brief y no
+                      los del sitio viejo es del 2026-09-11: ver el encabezado de
+                      /the-experience. */}
+                  <span className="text-[16px] font-bold">
+                    4 PlayStation 5 · 4 Xbox Series X · 2 Nintendo Switch 2
+                  </span>
                 </td>
               </tr>
             </tbody>
@@ -118,7 +122,7 @@ export default function GameTruckPage() {
             <ul className="mt-[14px] flex flex-col gap-[8px] text-[16px] leading-[1.65] text-body/80">
               <li className="border-b border-ink/12 pb-[8px]">A Game Coach for the full session</li>
               <li className="border-b border-ink/12 pb-[8px]">
-                PlayStation 5, Xbox Series X and Nintendo Switch 2
+                Ten consoles: PlayStation 5, Xbox Series X and Nintendo Switch 2
               </li>
               <li className="border-b border-ink/12 pb-[8px]">
                 The physical library plus subscription catalogues
@@ -161,7 +165,7 @@ export default function GameTruckPage() {
             </p>
             <p>
               If the truck is coming to you rather than staying here, tell us the address and the
-              parking situation in the request — it changes what we can bring.
+              parking situation in the request. It changes what we can bring.
             </p>
             <p className="text-body/75">
               Pricing carried over from the current site. Confirm before booking.

@@ -195,8 +195,24 @@ export const BRAND = {
   giftCards:
     'https://www.toasttab.com/rooftop-and-riverside-new-27333-old-41-road/giftcards',
 
-  /** ⚠️ Pendiente: el cliente gestiona el ticketing y todavía no pasó la URL. */
-  eventbrite: null as string | null,
+  /**
+   * El perfil de organizador en Eventbrite.
+   *
+   * El ticketing lo gestiona el cliente —el cuestionario de onboarding lo deja
+   * por escrito: «EventBrite se queda del lado del cliente para ticketing;
+   * nosotros hacemos creative y promoción»—, así que el sitio NO construye
+   * checkout: manda afuera y listo.
+   *
+   * ⚠️ LA URL LA ENCONTRAMOS NOSOTROS, no la pasó el cliente. Sale del HTML de
+   * un evento suyo real (Freedom & Fireworks, 4 de julio) y el perfil responde
+   * 200 con el nombre exacto del venue. **Confirmar con el cliente igual.**
+   *
+   * ⚠️ Y OJO CON EL COPY QUE LA USA: el perfil hoy dice «No upcoming events».
+   * Usan Eventbrite para los eventos grandes y puntuales, no para los
+   * recurrentes semanales, que son gratis. Un botón que prometa entradas para
+   * cualquier noche manda a una página vacía.
+   */
+  eventbrite: 'https://www.eventbrite.com/o/rooftop-at-riverside-104153700851' as string | null,
 
   credit: { label: 'Resto Experience', url: 'https://restoexp.com' },
 } as const;
