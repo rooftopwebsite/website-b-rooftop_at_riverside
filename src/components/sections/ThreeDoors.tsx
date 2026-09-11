@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { ComponentType, SVGProps } from 'react';
-import { ArrowRight, ArrowUpRight, Confetti, Martini, Truck } from '@/components/shared/Icon';
+import { ArrowRight, ArrowUpRight, Balloons, Martini, Truck } from '@/components/shared/Icon';
 import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 
 /**
@@ -116,7 +116,7 @@ const DOORS: readonly Door[] = [
     link: 'Plan an event',
     href: '/events',
     field: 'bg-river',
-    Icon: Confetti,
+    Icon: Balloons,
   },
 ];
 
@@ -141,7 +141,7 @@ export default function ThreeDoors() {
           </p>
         </Reveal>
 
-        <StaggerGroup as="ul" className="mt-10 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 p-0 lg:mt-18">
+        <StaggerGroup as="ul" className="mt-10 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-3 lg:mt-18">
           {DOORS.map(({ title, body, link, href, field, Icon }) => (
             <RevealItem as="li" key={href}>
               <Link href={href} className="group flex flex-col gap-3">

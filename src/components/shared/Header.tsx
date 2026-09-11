@@ -181,7 +181,29 @@ export default function Header() {
           <Link
             href="/"
             aria-label={`${BRAND.name} — home`}
-            className="group absolute top-1 left-1/2 z-30 grid size-25 -translate-x-1/2 place-items-center rounded-pill bg-bone ring-1 ring-fog transition-shadow duration-300 ease-brand hover:shadow-btn desk:size-30"
+            /*
+              ══════════════════════════════════════════════════════════════
+              ⚠️ EN MOBILE VA A LA IZQUIERDA Y EN EL FLUJO; EL MEDALLÓN
+              CENTRADO ES SÓLO DE `desk` PARA ARRIBA. Pedido de Camila, y en
+              un teléfono es además lo correcto por tres motivos concretos:
+
+                · Un círculo de 100px colgando del centro de una barra de 78
+                  se come 26px de la primera pantalla, que en 844 de alto es
+                  aire que le falta al hero.
+                · Con el logo en el centro, los dos lados quedan asimétricos:
+                  a la izquierda no hay nada (la nav está oculta) y a la
+                  derecha está la hamburguesa. El logo centrado sólo cierra
+                  cuando tiene peso a los dos lados.
+                · Es donde se lo busca. El logo arriba a la izquierda es la
+                  convención de vuelta a la home en mobile, y acá encima es
+                  el único link de navegación que queda visible.
+
+              ⚠️ El orden del DOM ya lo deja primero, así que al pasar a
+              `static` cae solo en el extremo izquierdo del flex. No hace
+              falta ningún `order-*`.
+              ══════════════════════════════════════════════════════════════
+            */
+            className="group z-30 flex shrink-0 items-center transition-shadow duration-300 ease-brand desk:absolute desk:top-1 desk:left-1/2 desk:grid desk:size-30 desk:-translate-x-1/2 desk:place-items-center desk:rounded-pill desk:bg-bone desk:ring-1 desk:ring-fog desk:hover:shadow-btn"
           >
             <Image
               src="/brand/logo-primary.svg"

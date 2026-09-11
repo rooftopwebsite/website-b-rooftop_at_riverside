@@ -245,14 +245,45 @@ export function Dot({ className = 'size-2', ...rest }: IconProps) {
    cuerpo el trazo de 1.7 se ve filoso, así que los tres bajan a 1.4: el peso
    ÓPTICO es el mismo porque escala con la caja. */
 
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LOS TRES ESTÁN REDIBUJADOS. La primera versión se veía mal a 104px y
+ * conviene dejar anotado QUÉ estaba mal, porque los tres errores son los
+ * típicos de dibujar un icono pensándolo a 20px:
+ *
+ *   · El camión tenía las ruedas en `cy=17.8 r=1.9`, o sea que su borde
+ *     superior quedaba en 15.9 mientras la caja terminaba en 16.5: las
+ *     ruedas se montaban 0,6 sobre la carrocería. Y encima había tres
+ *     segmentos de «piso» a la altura del EJE, que dejaban la caja flotando
+ *     sobre una línea suelta. A 20px no se nota; a 104 es lo primero que se
+ *     ve.
+ *   · El confeti era directamente ilegible: un triángulo con cuatro marcas
+ *     sueltas alrededor que no se leían como chispas ni como nada.
+ *   · La copa estaba bien pero le faltaba peso: un triángulo hueco.
+ *
+ * Ahora las ruedas APOYAN (su borde superior toca el piso de la caja, 16 con
+ * 16), el camión tiene ventanilla —que es lo que lo vuelve un food truck y
+ * no una camioneta de reparto— y el confeti se reemplazó por globos.
+ *
+ * ⚠️ POR QUÉ GLOBOS Y NO UN CONFETI MEJOR DIBUJADO. Un popper es una forma
+ * ambigua: cono más chispas se lee como cono más chispas, y hay que
+ * interpretarlo. Dos globos con su nudo y su piolín se leen como fiesta sin
+ * pensar, y no compiten con la copa de la tarjeta de al lado — que era el
+ * otro riesgo, porque «brindis» habría puesto dos vidrios en tres tarjetas.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+
 export function Truck(props: IconProps) {
   return (
     <Svg strokeWidth="1.4" {...props}>
-      <path d="M2.5 6.5h11v10h-11z" />
-      <path d="M13.5 9.5h3.8l3.2 3.4v3.6h-7z" />
-      <circle cx="7" cy="17.8" r="1.9" />
-      <circle cx="17" cy="17.8" r="1.9" />
-      <path d="M8.9 17.8h6.2M2.5 17.8h2.6M19 17.8h1.5" />
+      {/* La caja. Termina en 16, que es donde apoyan las ruedas. */}
+      <path d="M3 8h11v8H3z" />
+      {/* La ventanilla: es lo que lo vuelve un food truck. */}
+      <path d="M5.6 10.4h5.8v3.2H5.6z" />
+      {/* La trompa. */}
+      <path d="M14 11h3.6L21 14.4V16h-7z" />
+      <circle cx="7.2" cy="18" r="2" />
+      <circle cx="17.4" cy="18" r="2" />
     </Svg>
   );
 }
@@ -260,18 +291,34 @@ export function Truck(props: IconProps) {
 export function Martini(props: IconProps) {
   return (
     <Svg strokeWidth="1.4" {...props}>
-      <path d="M3.4 4.5h17.2L12 13.2 3.4 4.5Z" />
-      <path d="M12 13.2V20M8 20h8M6.4 7.6h11.2" />
+      <path d="M3.5 5h17L12 13.5 3.5 5Z" />
+      <path d="M12 13.5V20M8 20h8" />
+      {/* La aceituna. Va RELLENA y es lo único macizo del dibujo: a 104px un
+          triángulo hueco con un palito no tiene dónde apoyar la vista. */}
+      <circle cx="15.2" cy="7.6" r="1.15" fill="currentColor" stroke="none" />
     </Svg>
   );
 }
 
-export function Confetti(props: IconProps) {
+/**
+ * Globos. El icono de «el lugar entero, cerrado para vos».
+ *
+ * ⚠️ Reemplaza a `Confetti`, que se llamaba así porque el prototipo pedía
+ * `ph-confetti`. El nombre sigue al DIBUJO y no al prototipo: un componente
+ * que se llama `Confetti` y dibuja globos es una trampa para el próximo que
+ * lo busque.
+ */
+export function Balloons(props: IconProps) {
   return (
     <Svg strokeWidth="1.4" {...props}>
-      <path d="m3 21 4.6-11.6L14.6 16.4 3 21Z" />
-      <path d="m9.3 11.1 3.6 3.6" />
-      <path d="M14.5 3.2v2.2M20.8 9.5h-2.2M19.2 4.8l-1.6 1.6M16.6 10.9a2.6 2.6 0 0 1 2.6-2.6" />
+      <circle cx="8.8" cy="8.4" r="4.8" />
+      {/* El nudo, un triángulo chico. Es el detalle que lo separa de «dos
+          círculos con una línea». */}
+      <path d="M8.8 13.2 7.7 15.1h2.2z" />
+      <path d="M8.8 15.1c0 2.3 2.7 2.6 2.7 5.1" />
+      <circle cx="17.2" cy="11" r="3.6" />
+      <path d="M17.2 14.6 16.3 16.2h1.8z" />
+      <path d="M17.2 16.2c0 1.7-1.9 2-1.9 4" />
     </Svg>
   );
 }

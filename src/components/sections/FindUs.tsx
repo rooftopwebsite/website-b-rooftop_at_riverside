@@ -92,7 +92,7 @@ export default function FindUs() {
           </ul>
         </Reveal>
 
-        <StaggerGroup className="mt-11 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-stretch gap-7 lg:mt-20">
+        <StaggerGroup className="mt-11 grid grid-cols-1 items-stretch gap-7 lg:mt-20 lg:grid-cols-3">
           {/* ── Contacto ─────────────────────────────────────────────── */}
           <RevealItem className="flex flex-col gap-6.5 rounded-shell bg-deep p-6.5 text-bone on-dark lg:p-9">
             <h3 className="m-0 font-display text-d5 font-bold uppercase leading-none tracking-[0.02em] text-paper">

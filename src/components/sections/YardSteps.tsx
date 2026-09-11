@@ -105,9 +105,28 @@ export default function YardSteps() {
         `StaggerGroup` + `RevealItem` ya resuelven `prefers-reduced-motion`:
         con movimiento reducido renderizan la etiqueta pelada, sin `motion`.
       */}
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ 1 COLUMNA Y DESPUÉS 3, SIN PASAR POR 2. Vale para las cuatro
+        grillas de tres de la home y es la convención de la casa —casa-pirul
+        usa `grid-cols-1 md:grid-cols-3` en el mismo caso—.
+
+        El motivo: con `auto-fit minmax(300px,1fr)`, a 768px entraban DOS
+        columnas y la tercera tarjeta caía sola en la fila de abajo, a media
+        página de ancho. Tres elementos en una grilla de dos siempre dejan
+        una huérfana, y una huérfana se lee como que falta contenido.
+
+        ⚠️ ACÁ EL SALTO ES EN `lg` Y NO EN `md` COMO EN LAS OTRAS TRES. Los
+        tickets son la tarjeta más cargada de la home: rótulo, título de dos
+        renglones, párrafo de 34ch y cuatro etiquetas en píldora. A 768px
+        tres columnas dan 209px cada una, y ahí «Happy hour Wednesday –
+        Friday, 3–6 PM» ocupa cuatro renglones él solo. Apiladas a ancho
+        completo se leen; en tres columnas de 209 no.
+        ══════════════════════════════════════════════════════════════════
+      */}
       <StaggerGroup
         as="ol"
-        className="caja-ancha grid list-none grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6 p-0"
+        className="caja-ancha grid list-none grid-cols-1 gap-6 p-0 lg:grid-cols-3"
       >
         {STEPS.map((step) => (
           <RevealItem

@@ -184,7 +184,7 @@ export default function EventsBanner() {
           <ArrowRight className="size-4" />
         </Link>
 
-        <StaggerGroup as="ul" className="mt-9 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 p-0 lg:mt-15">
+        <StaggerGroup as="ul" className="mt-9 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-3 lg:mt-15">
           {CARDS.map(({ title, src, alt }) => (
             <RevealItem as="li" key={src} className="group flex flex-col overflow-hidden rounded-shell bg-deeper">
               <div className="relative h-45 bg-ink lg:h-60">

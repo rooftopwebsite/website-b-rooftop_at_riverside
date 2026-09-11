@@ -442,7 +442,23 @@ export default function WhatsOn() {
                 type="button"
                 onClick={() => scrollToCard(i)}
                 aria-current={i === index ? 'true' : undefined}
-                className="group grid size-6 place-items-center rounded-pill"
+                /*
+                  ⚠️ EL BOTÓN MIDE 44px Y EL PUNTO 9. La auditoría en seis
+                  anchos los encontró en 24×24: cumplen el mínimo de WCAG
+                  2.5.8 (24) pero quedan por debajo del target táctil
+                  recomendado, y son cinco controles pegados uno al lado del
+                  otro en la parte más angosta de la pantalla — el peor caso
+                  posible para errarle.
+
+                  Se agranda el ÁREA, no el dibujo: el `<button>` es
+                  invisible y el punto adentro sigue midiendo 9px. Es la
+                  técnica estándar y no cambia nada de lo que se ve.
+
+                  ⚠️ El `-mx-1` recorta el aire que suman los cinco botones
+                  de 44px, para que la fila de puntos no se separe de las
+                  flechas más de lo que el diseño marca.
+                */
+                className="group -mx-1 grid size-11 place-items-center rounded-pill"
               >
                 <span className="sr-only">{slide}</span>
                 <span

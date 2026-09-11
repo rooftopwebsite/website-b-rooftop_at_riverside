@@ -23,11 +23,32 @@ import { venueStatus } from '@/lib/hours';
  * absoluto que se monta sobre la esquina superior izquierda del marco de la
  * foto, corrida un 56 % de su propio alto hacia arriba.
  *
- * ⚠️ La placa va en `terra` y no en `sunset` como el prototipo. El naranja
- * sobre `bone` da 2.35:1 y no pasa AA ni a 144px. Acá axe NO lo marca —la
- * placa es `aria-hidden`, porque el h1 ya dice el texto completo— así que el
- * guard no habría avisado nunca: el problema es para quien VE la página. El
- * razonamiento completo está en el encabezado de `ThreeDoors.tsx`.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LA PLACA VA EN `sunset` (NARANJA) Y NO EN `terra`, POR DECISIÓN DE
+ * CAMILA TOMADA SOBRE LA PÁGINA. Queda escrito con el número al lado porque
+ * es la única excepción viva a la ley del color del repo, y quien la lea
+ * mañana tiene que saber que no es un descuido.
+ *
+ *     #F58521 sobre #FAF6EA  →  2.35:1
+ *     mínimo WCAG AA para texto grande  →  3:1
+ *
+ * Yo la había pasado a `terra` (7.43:1) junto con los otros tres lugares
+ * donde el prototipo usa naranja como tinta sobre claro. Camila revisó y
+ * pidió el naranja de vuelta ACÁ y sólo acá: los otros tres —«Three of
+ * them», «Across from Riverside Park» y los hovers de la nav— se quedan en
+ * `terra`.
+ *
+ * ⚠️ `npm run a11y` NO lo va a marcar nunca, y eso es lo peligroso: la placa
+ * es `aria-hidden` porque el h1 ya dice la frase completa, así que axe la
+ * saltea. El guard va a seguir dando verde con esto roto para quien ve la
+ * página. Si algún día se audita el contraste a ojo, este es el nodo.
+ *
+ * Lo que lo hace defendible: es un titular de 144px en caja alta y peso 800
+ * sobre una placa de fondo propio, o sea el texto más grande y más aislado
+ * de todo el sitio. No hay ningún dato que dependa de leerlo —«Bonita comes
+ * together» es la marca, no información— y el h1 real lo dice igual para
+ * quien no lo ve.
+ * ══════════════════════════════════════════════════════════════════════════
  *
  * Si la placa se apoyara encima de la foto, el naranja quedaría sobre la
  * imagen y el titular sería ilegible sobre cualquier foto clara. La solución
@@ -310,7 +331,7 @@ export default function Hero() {
             calcula desde la posición real de la placa.
             ══════════════════════════════════════════════════════════════
           */
-          className="pointer-events-none absolute top-0 -left-3.5 z-30 m-0 rounded-door bg-bone px-3.5 pt-[0.06em] pb-[0.1em] font-display text-titan font-extrabold uppercase text-terra lg:px-7"
+          className="pointer-events-none absolute top-0 -left-3.5 z-30 m-0 rounded-door bg-bone px-3.5 pt-[0.06em] pb-[0.1em] font-display text-titan font-extrabold uppercase text-sunset lg:px-7"
         >
           Together
         </p>
