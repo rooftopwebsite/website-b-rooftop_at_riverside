@@ -304,23 +304,48 @@ desde la propia página se puede leer su contenido.
 
 Es exactamente el diagnóstico del brief, confirmado.
 
-### Los eventos recurrentes reales, leídos del iframe
+### Los eventos recurrentes reales
 
-⚠️ **No coinciden con los que nombra el brief.**
+> ⚠️ **CORREGIDO EL 2026-09-11.** Esta sección afirmaba que los CUATRO eventos estaban
+> «leídos del iframe». **Es falso para dos de ellos.** Lo detectó Camila mirando el
+> calendario, y se verificó abriendo el iframe con un navegador real — el HTML servido
+> no alcanza, porque el `<iframe title="Calendar">` no trae `src` y lo inyecta Wix por
+> JS en runtime. La URL real del widget es
+> `calendar.boomte.ch/widget/index.html?lang=en&…`.
+>
+> El calendario público publica **SÓLO DOS** recurrentes, alternados semana por semana:
+>
+> ```
+> La Noche | Dj David Cast   sáb 12 sep · 10:00 pm – 2:00 am
+> Ross Brown                 jue 17 sep · 6:00 pm – 8:00 pm
+> La Noche | Dj David Cast   sáb 19 sep
+> Ross Brown                 jue 24 sep
+> La Noche | Dj David Cast   sáb 26 sep
+> Ross Brown                 jue 01 oct
+> ```
+>
+> Los miércoles —16, 23 y 30 de septiembre— **no tienen un solo evento**.
 
-| Evento | Cuándo | Detalle |
-|---|---|---|
-| **Wooftop Wednesdays** | miércoles | 2x1 en tragos todo el día (excluye flights) · ítems de $5 para perros en cada truck |
-| **Bingo Night** | miércoles 7–9 PM | premios en gift cards · pozo progresivo semanal |
-| **Ross Brown** | jueves 6–8 PM | música en vivo, recurrente |
-| **La Noche · DJ David Cast** | sábados 10 PM – 2 AM | recurrente |
+| Evento | Cuándo | ¿Está en el calendario público? | Detalle |
+|---|---|---|---|
+| **Ross Brown** | jueves 6–8 PM | ✅ sí, verificado en vivo | música en vivo, recurrente |
+| **La Noche · DJ David Cast** | sábados 10 PM – 2 AM | ✅ sí, verificado en vivo | recurrente |
+| **Wooftop Wednesdays** | miércoles | ❌ **NO aparece** | 2x1 en tragos todo el día (excluye flights) · ítems de $5 para perros en cada truck |
+| **Bingo Night** | miércoles 7–9 PM | ❌ **NO aparece** | premios en gift cards · pozo progresivo semanal |
 
-El brief lista "Sunset Saturdays, Jazz Wednesdays, Wooftop Wednesdays, Happy Hour".
-De esos, **sólo Wooftop Wednesdays aparece** en el calendario. "Sunset Saturdays" y
-"Jazz Wednesdays" no existen en los datos; el sábado a la noche es "La Noche · DJ David Cast".
+⚠️ **LOS CUATRO EXISTEN EN EL DASHBOARD DE RESTOEXP**, cada uno con su UUID, su
+descripción, su horario y sus tags — no son inventados ni los escribió nadie a mano en
+el código. O sea que **el dashboard y el sitio público no coinciden**: hay dos eventos
+cargados que el calendario del cliente no está mostrando.
 
-**A confirmar con el cliente** cuál es la lista canónica de recurrentes antes de modelar
-el contenido de `/whats-on`.
+Eso cambia el sentido de la pregunta abierta #8. No es sólo «cuál es la lista canónica»:
+es **«los miércoles pasan o no pasan»**. Si pasan, el calendario público lleva meses sin
+publicarlos —y es justamente el agujero que el sitio nuevo viene a tapar—. Si no pasan,
+hay dos eventos de más en el dashboard y el sitio nuevo los está publicando.
+
+El brief, por su lado, lista "Sunset Saturdays, Jazz Wednesdays, Wooftop Wednesdays,
+Happy Hour". Ninguno de esos cuatro nombres coincide del todo con los datos: "Sunset
+Saturdays" y "Jazz Wednesdays" no existen en ninguna de las dos fuentes.
 
 ---
 
@@ -360,5 +385,10 @@ sirve detrás de Cloudflare · **ninguna página de contenido tiene un `<h1>` re
 5. **Camión de gaming** — cantidad real de consolas y pantallas; y si los precios de 2026 siguen vigentes.
 6. **Destino de** `/giveback`, `/tnt-sign-ups` y los dos waivers.
 7. **URL de Eventbrite** para `/the-yard`.
-8. **Recurrentes canónicos** de `/whats-on`.
+8. **Recurrentes canónicos** de `/whats-on` — y ahora con una pregunta más concreta y
+   más urgente: **¿los miércoles pasan o no pasan?** El dashboard tiene cargados
+   *Wooftop Wednesdays* y *Bingo Night*, y el calendario público del cliente **no
+   muestra ninguno de los dos** (verificado en vivo el 2026-09-11, ver §9). El sitio
+   nuevo los está publicando porque lee el dashboard. Si no pasan, hay que bajarlos del
+   dashboard; si pasan, el calendario viejo lleva meses sin publicarlos.
 9. **Los assets del brief** que todavía no recibí: WOFF2 de Steelfish / Bronx / Futura PT, los SVG de marca y el patrón de azulejo, y las fotos reales del venue.
