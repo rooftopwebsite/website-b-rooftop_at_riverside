@@ -52,30 +52,37 @@ import TilePattern, { TileMark } from './TilePattern';
  * abajo y no se mezcla con nada.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ EL LOGO SE ACHICA AL PEGARSE, Y NO ES DECORACIÓN: ES LA CONDICIÓN PARA
- * QUE EL HEADER PUEDA PEGARSE.
+ * ⚠️ EL HEADER NO CAMBIA DE TAMAÑO AL PEGARSE, Y EL LOGO TAMPOCO. Camila:
+ * «cuando se scrollea, no achicar el header, y la sombra verde no».
  *
- * En desktop el lockup mide 80px dentro de una barra de 78 y está centrado
- * `absolute`, o sea que CUELGA 26px por debajo del filete. Arriba de todo eso
- * está bien —cae sobre el hero y lo monta sobre la página—, pero pegado al
- * viewport son 26px de logo opaco tapando el contenido que scrollea por
- * debajo, en el medio exacto de la pantalla. Camila lo anticipó: «revisar cómo
- * tratar el logo para que no quede mal, si hacerle un borde que lo contenga o
- * achicarlo y que se ajuste al header».
+ * Hubo una versión que sí lo hacía —barra de 78 a 64px, logo de 80 a 52, y el
+ * filete reemplazado por una sombra al despegarse del tope— y conviene dejar
+ * escrito por qué existía, porque el problema que resolvía sigue estando.
  *
- * De las dos opciones va la segunda. Un borde que lo contenga es volver al
- * medallón que ya se sacó —y se sacó porque el círculo repetía por fuera la
- * forma que el logo ya tiene—. Achicarlo no agrega ninguna pieza: a 52px entra
- * entero dentro de una barra de 64 y deja de colgar.
+ * El problema: en desktop el lockup mide 80px dentro de una barra de 78 y está
+ * centrado `absolute`, o sea que CUELGA 26px por debajo del filete. Arriba de
+ * todo eso está bien —cae sobre el hero y lo monta sobre la página— pero con
+ * el header pegado al viewport son 26px de logo opaco encima del contenido que
+ * scrollea, en el medio exacto de la pantalla.
  *
- * ⚠️ LOS DOS ALTOS ESTÁN ATADOS Y NO SE TOCAN DE A UNO: barra 78 → 64, logo
- * 80 → 52. Lo que fija el segundo par es que el logo TIENE QUE ENTRAR: 52
- * dentro de 64 deja 6px arriba y 6 abajo. Si la barra compacta cambia de alto,
- * el logo cambia con ella.
+ * ⚠️ AHORA LO RESUELVE EL STICKER, NO EL TAMAÑO. Camila lo había anticipado
+ * desde el principio, con las dos opciones sobre la mesa: «revisar cómo tratar
+ * el logo para que no quede mal, si hacerle un borde que lo contenga o
+ * achicarlo y que se ajuste al header». Primero fue la segunda; ahora es la
+ * primera, con el pedido que la define: «le agregaría un fondo al logo y un
+ * borde blanco modo sticker».
  *
- * ⚠️ EL UMBRAL SON 8px Y NO 0. A cero, el estado parpadea con el rebote del
- * scroll elástico de macOS y con el propio suavizado de Lenis, que devuelve
- * valores negativos y de decimal en el borde.
+ * Con el disco blanco el lockup deja de ser un dibujo suelto encima de lo que
+ * pasa: tiene fondo propio, así que colgar deja de leerse como invadir y pasa
+ * a leerse como estar apoyado. Es lo que hace cualquier sticker sobre una
+ * superficie.
+ *
+ * ⚠️ Y NO ES EL MEDALLÓN QUE ESTE PROYECTO YA SACÓ. Aquel era un `ring` en
+ * `ink` alrededor del logo: un círculo dibujado que repetía por fuera la forma
+ * que el lockup ya tiene. Éste no dibuja nada —el disco es blanco sobre hueso,
+ * 1.08:1, invisible como color— y lo único que lo despega es la sombra más
+ * corta del sistema. La diferencia es que uno agrega un borde y el otro agrega
+ * un fondo.
  * ══════════════════════════════════════════════════════════════════════════
  *
  * ⚠️ EL HEADER ES `bone` Y NO `paper`. Es la misma superficie que arranca el
@@ -152,28 +159,6 @@ export default function Header() {
   const moreRef = useRef<HTMLDivElement | null>(null);
   const drawerCloseRef = useRef<HTMLButtonElement | null>(null);
 
-  /*
-    ⚠️ `pegado` NO ES «el header está sticky» —lo está siempre— sino «ya se
-    despegó del tope del documento», que es cuando tiene que compactarse. Ver
-    la nota grande del encabezado.
-
-    ⚠️ SE LEE DEL SCROLL Y NO CON UN `IntersectionObserver` sobre un centinela.
-    El centinela sería más barato, pero el sitio usa Lenis: el scroll real lo
-    escribe Lenis en el documento, así que `scrollY` es la misma fuente para
-    los dos y no hay forma de que se desincronicen. Con un observer habría que
-    acordarse de que Lenis existe cada vez que alguien toque el suavizado.
-
-    El handler es `passive` y sólo compara contra un umbral: no mide layout,
-    así que no fuerza reflow en cada frame.
-  */
-  const [pegado, setPegado] = useState(false);
-
-  useEffect(() => {
-    const mirar = () => setPegado(window.scrollY > 8);
-    mirar();
-    window.addEventListener('scroll', mirar, { passive: true });
-    return () => window.removeEventListener('scroll', mirar);
-  }, []);
 
   const route = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
   const isCurrent = (href: string) => route === href || route.startsWith(`${href}/`);
@@ -218,29 +203,26 @@ export default function Header() {
         PRELOADER (`z-[120]`). Son las dos únicas cosas del sitio que tapan al
         header, y las dos son pantallas completas.
 
-        ⚠️ LA TRANSICIÓN VA EN `border-color` ADEMÁS DE LA SOMBRA: pegado, el
-        filete de 1px en `fog` se apaga y lo reemplaza la sombra. Los dos
-        juntos dibujan dos bordes, y el de 1px contra una sombra difusa se lee
-        como un hilo suelto.
+        ⚠️ NO CAMBIA NADA AL PEGARSE: NI DE TAMAÑO NI DE SOMBRA. Hubo una
+        versión que al despegarse del tope achicaba la barra de 78 a 64px, el
+        logo de 80 a 52 y cambiaba el filete por una sombra. Camila la sacó:
+        «cuando se scrollea, no achicar el header, y la sombra verde no».
+
+        El compactado existía por un motivo concreto —el logo cuelga 26px por
+        debajo del filete y pegado al viewport eso es logo opaco tapando lo que
+        scrollea— y ese motivo lo resuelve ahora el STICKER: con su fondo
+        blanco el lockup deja de leerse como algo que invade y pasa a leerse
+        como algo apoyado encima. Ver la nota del logo.
+
+        Queda el filete de 1px en `fog`, siempre, que es el corte entre la
+        barra y la página.
       */}
       <div
         ref={moreRef}
-        className={`sticky top-0 z-40 border-b bg-bone transition-[box-shadow,border-color] duration-300 ease-brand ${
-          pegado ? 'border-transparent shadow-card' : 'border-fog'
-        }`}
+        className="sticky top-0 z-40 border-b border-fog bg-bone"
         onMouseLeave={() => setMoreOpen(false)}
       >
-        {/*
-          ⚠️ EL ALTO ES UNA TRANSICIÓN DE `min-height` Y NO UN CAMBIO DE CLASE
-          SECO. Sin transición, al cruzar los 8px de scroll la barra salta 14px
-          de golpe y arrastra con ella todo lo que tiene al lado. Con 300ms el
-          header se asienta.
-        */}
-        <header
-          className={`caja-ancha relative flex items-center gap-6 transition-[min-height] duration-300 ease-brand ${
-            pegado ? 'min-h-16' : 'min-h-19.5'
-          }`}
-        >
+        <header className="caja-ancha relative flex min-h-19.5 items-center gap-6">
           {/*
             ══════════════════════════════════════════════════════════════
             ⚠️ EL LOGO VA CENTRADO Y EN UN MEDALLÓN, por pedido de Camila.
@@ -318,21 +300,31 @@ export default function Header() {
               ══════════════════════════════════════════════════════════════
             */
             /*
-              ⚠️ LA CAJA DEL LOGO SE COMPACTA JUNTO CON LA IMAGEN, y hay que
-              tocar LAS DOS o el arreglo no sirve de nada. La caja es
-              `absolute` y mide 120px (`size-30`) con `top-1`: su centro cae a
-              64px del borde de arriba, que es el medio de la barra alta. Si
-              sólo se achica la imagen, el centro sigue en 64 y una imagen de
-              52 va de 38 a 90 — o sea que sigue colgando 26px por debajo de
-              una barra de 64, que es exactamente lo que había que evitar.
+              ══════════════════════════════════════════════════════════════
+              ⚠️ EL LOGO VA MODO STICKER: disco blanco, filo blanco más ancho
+              que el dibujo, y una sombra corta. Pedido de Camila: «le agregaría
+              un fondo al logo y un borde blanco modo sticker».
 
-              Pegado, la caja pasa a `size-16` (64px) con `top-0`: su centro
-              cae a 32, que es el medio de la barra compacta, y la imagen de 52
-              va de 6 a 58. Adentro, con 6px de aire arriba y abajo.
+              ⚠️ Y NO ES SÓLO DECORACIÓN: ES LO QUE PERMITE QUE EL HEADER NO SE
+              ACHIQUE. El lockup cuelga 26px por debajo del filete, y con el
+              header pegado eso son 26px de dibujo suelto encima de lo que
+              scrollea. Ese era el argumento del compactado que ella acaba de
+              sacar. Con el disco blanco el logo deja de estar suelto: tiene un
+              fondo propio que lo separa de lo que pasa por abajo, que es
+              exactamente lo que hace un sticker pegado sobre una superficie.
+
+              ⚠️ EL BLANCO ES `paper` Y LA BARRA ES `bone`: 1.08:1 medido, o sea
+              que el disco por sí solo NO se distingue del header. Lo que lo
+              despega es la sombra —`shadow-btn`, la más corta del sistema— y no
+              el color. Subirle el contraste al disco lo convertiría en un
+              medallón, que es justo lo que este proyecto ya sacó una vez.
+
+              ⚠️ EL DISCO MIDE 100px Y EL LOCKUP 80: los 10px de anillo son el
+              «borde» del sticker. En mobile son 64 y 52, la misma proporción.
+              Si el logo cambia de tamaño, el disco cambia con él.
+              ══════════════════════════════════════════════════════════════
             */
-            className={`group z-30 flex shrink-0 items-center desk:absolute desk:left-1/2 desk:grid desk:-translate-x-1/2 desk:place-items-center desk:transition-[width,height,top] desk:duration-300 desk:ease-brand ${
-              pegado ? 'desk:top-0 desk:size-16' : 'desk:top-1 desk:size-30'
-            }`}
+            className="group z-30 grid size-16 shrink-0 place-items-center rounded-pill bg-paper shadow-btn desk:absolute desk:top-1 desk:left-1/2 desk:size-25 desk:-translate-x-1/2"
           >
             {/*
               ⚠️ 80px EN DESKTOP Y NO 64. Creció un 25 % cuando se fue el
@@ -353,20 +345,9 @@ export default function Header() {
               creciera se lo comería al alto del header.
             */}
             {/*
-              ⚠️ EN DESKTOP EL ALTO DEPENDE DE `pegado`: 80px arriba de todo,
-              52 una vez que el header se despegó. Los 80 cuelgan 26px por
-              debajo del filete —que es lo que monta el lockup sobre el hero— y
-              los 52 entran enteros dentro de la barra compacta de 64. Ver la
-              nota grande del encabezado: sin este cambio, el header no se
-              puede pegar.
-
-              ⚠️ La transición es de `height` Y de `transform`, no sólo de
-              transform: el hover sigue siendo un `scale-105` y las dos cosas
-              tienen que poder convivir sin pisarse.
-
-              ⚠️ En mobile sigue en 52px (`h-13`) pase lo que pase. Ahí el logo
-              está EN EL FLUJO, a la izquierda y contra la hamburguesa, así que
-              nunca colgó de nada y no hay nada que compactar.
+              ⚠️ 52px EN MOBILE Y 80 EN DESKTOP, SIEMPRE. Dependían del scroll
+              —80 arriba de todo y 52 al despegarse— y eso se fue con el
+              compactado del header. Ver la nota del disco, acá arriba.
             */}
             <Image
               src="/brand/logo-primary.svg"
@@ -374,9 +355,7 @@ export default function Header() {
               width={240}
               height={254}
               priority
-              className={`h-13 w-auto transition-[height,transform] duration-300 ease-brand group-hover:scale-105 ${
-                pegado ? 'desk:h-13' : 'desk:h-20'
-              }`}
+              className="h-13 w-auto transition-transform duration-300 ease-brand group-hover:scale-105 desk:h-20"
             />
             <span className="sr-only">{BRAND.name}</span>
           </Link>
