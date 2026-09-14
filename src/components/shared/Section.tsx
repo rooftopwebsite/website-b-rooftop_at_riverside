@@ -110,19 +110,7 @@ export default function Section({
       {...(id ? { id } : {})}
       {...(labelledBy ? { 'aria-labelledby': labelledBy } : {})}
       {...(label ? { 'aria-label': label } : {})}
-      /*
-        ⚠️ `grano` ES LA TEXTURA DE PELÍCULA y entra por acá para las 23 rutas
-        de una sola vez: cada `Section` es un fondo liso, y son la enorme
-        mayoría de los fondos lisos del sitio. Lo que no pasa por este
-        componente —el footer, la barra del header, el hero de la home— lo
-        escribe a mano. El porqué de cada número está en globals.css.
-
-        ⚠️ El `relative` que ya estaba es lo que ancla el `::before` del grano.
-        No estaba puesto para eso, pero ahora también sirve para eso: sacarlo
-        deja el grano anclado al primer ancestro posicionado, que puede ser el
-        documento entero.
-      */
-      className={['relative grano', TONES[tone], spacing, GUTTER, className]
+      className={['relative', TONES[tone], spacing, GUTTER, className]
         .filter(Boolean)
         .join(' ')}
     >

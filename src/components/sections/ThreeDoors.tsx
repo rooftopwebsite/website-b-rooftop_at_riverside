@@ -131,14 +131,9 @@ const DOORS: readonly Door[] = [
 
 export default function ThreeDoors() {
   return (
-    /*
-    Lleva `grano` como todas las superficies planas del sitio — la utilidad
-    está documentada en globals.css. Las secciones que pasan por `<Section>` lo
-    reciben solas; ésta está escrita a mano, así que lo escribe a mano.
-    */
     <section
       aria-labelledby="doors-title"
-      className="grano relative bg-bone pt-16 pb-cierre lg:pt-30"
+      className="relative bg-bone pt-16 pb-cierre lg:pt-30"
     >
       <div className="caja-ancha">
         {/* El encabezado entra como un bloque —titular y bajada juntos— y las

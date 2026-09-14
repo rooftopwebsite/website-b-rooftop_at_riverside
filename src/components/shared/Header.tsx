@@ -850,7 +850,24 @@ export default function Header() {
               ninguna puerta en teléfono. */}
           <nav aria-label="Site" className={`flex-1 overflow-y-auto pb-6 ${GUTTER}`}>
             <ul className="flex flex-col border-t border-ink/12">
-              {[...NAV_PRIMARY, ...NAV_MORE, NAV_MORE_FEATURED].map(({ label, href }) => (
+              {/*
+                ⚠️ EL DESTACADO SE SUMA SÓLO SI NO ESTÁ YA EN LA LISTA. Desde
+                que apunta al calendario —antes iba a `/nfc-north-hq`, que era
+                una página propia— su destino es el mismo que el de un item de
+                `NAV_PRIMARY`, y el drawer lo listaba dos veces con la misma
+                `key`. React lo marcaba en consola: «encountered two children
+                with the same key, /whats-on».
+
+                El filtro deja la entrada de la nav, que es la que tiene el
+                nombre corto y el orden del embudo.
+              */}
+              {[
+                ...NAV_PRIMARY,
+                ...NAV_MORE,
+                ...([...NAV_PRIMARY, ...NAV_MORE].some((l) => l.href === NAV_MORE_FEATURED.href)
+                  ? []
+                  : [NAV_MORE_FEATURED]),
+              ].map(({ label, href }) => (
                 <li key={href}>
                   <Link
                     href={href}

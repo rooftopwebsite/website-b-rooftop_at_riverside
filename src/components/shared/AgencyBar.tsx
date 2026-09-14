@@ -82,19 +82,34 @@ export default function AgencyBar() {
         debe ser completamente blanco».
 
         La barra vive DENTRO del `<footer>`, y el footer tiene dos capas
-        decorativas en `absolute inset-0`: el grano y el fondo de nubes con la
-        palmera. Las dos llegaban hasta acá abajo —el tronco de la palmera se
-        veía cruzando la franja— y sobre blanco puro un ruido al 9 % más una
-        textura al 22 % dan exactamente lo que se veía: un blanco sucio.
+        decorativa en `absolute inset-0`: el fondo de nubes con la
+        palmera. Llegaba hasta acá abajo —el tronco de la palmera se
+        veía cruzando la franja— y sobre blanco puro esa textura al 22 % daba
+        exactamente lo que se veía: un blanco sucio.
 
-        Con contexto propio por encima del `z-0` de esas capas, la franja
-        queda fuera del alcance de las dos. El color no cambió: `chalk` ya
+        Con contexto propio por encima del `z-0` de esa capa, la franja
+        queda fuera de su alcance. El color no cambió: `chalk` ya
         resuelve a `paper`, que es #FFFFFF.
       */
-      className={`relative z-[1] bg-chalk ${GUTTER}`}
+      className="relative z-[1] bg-chalk"
     >
       {/* Desktop: la pastilla a la izquierda, el crédito a la derecha. */}
-      <div className="caja hidden h-[72px] items-center justify-between desk:flex">
+      {/*
+        ⚠️ `caja-ancha` Y NO EL PAR `GUTTER` + `caja`. Pedido de Camila: «el
+        footer de la agencia también debe adaptarse al ancho máximo de
+        sección».
+
+        Es el mismo arreglo que acaba de hacerse en el `<footer>` que la
+        contiene, y por el mismo motivo: `caja` lleva el gutter POR FUERA y
+        `caja-ancha` lo lleva adentro. Con el par viejo el contenido arrancaba
+        56px antes que el del resto del sitio, así que el «powered by» y el año
+        quedaban desalineados con las columnas de arriba.
+
+        ⚠️ SON DOS FILAS Y LAS DOS TIENEN QUE CAMBIAR: la de desktop y la de
+        mobile. Si una se queda con `caja`, el desfasaje aparece sólo en una
+        medida y es de los que no se ven hasta que alguien pone una regla.
+      */}
+      <div className="caja-ancha hidden h-[72px] items-center justify-between desk:flex">
         {poweredBy}
         <div className="flex items-center gap-[24px]">
           <span className="font-body text-[14px] text-[#5c5c5c]">{AGENCY.tagline}</span>
@@ -107,7 +122,7 @@ export default function AgencyBar() {
       </div>
 
       {/* Mobile y tablet: apilado y centrado, con el filete como separador. */}
-      <div className="caja flex flex-col items-center gap-[10px] py-[16px] desk:hidden">
+      <div className="caja-ancha flex flex-col items-center gap-[10px] py-[16px] desk:hidden">
         {poweredBy}
         <span
           aria-hidden="true"

@@ -1754,62 +1754,62 @@ main:has(+ .banda-arco) > :last-child {
 
 /**
  * ══════════════════════════════════════════════════════════════════════════
- * GRANO — la textura de película sobre las superficies planas.
+ * EL GRANO, SOBRE TODO EL SITIO.
  *
- * Pedido de Camila: «colocar noise effect en todos los fondos lisos».
+ * Pedido de Camila: «noise effect en toda la web, en todos los fondos de la
+ * web, sin importar color».
  *
- * ⚠️ VA SOBRE LOS FONDOS Y NO SOBRE TODO EL SITIO, y la diferencia es el
- * pedido literal. La solución de una línea sería un `body::after` fijo que
- * cubra el viewport, y es la que usa medio internet; pero eso le pone grano
- * también a las CUATRO filas de fotos de la home, y una foto nocturna con
- * ruido encima no se lee como textura, se lee como una foto con ruido. Por eso
- * la clase se aplica a las superficies —`Section`, el footer, la barra del
- * header— y no al documento.
+ * ⚠️ ESTO REEMPLAZA A LA UTILIDAD `grano`, que se aplicaba superficie por
+ * superficie. Aquella versión cubría las secciones —que es la mayor parte del
+ * sitio— pero dejaba afuera todo lo que no es una sección: la barra del
+ * header, el mega-menú, el drawer de mobile, las tarjetas, los campos de color
+ * de las tres puertas, la franja de la agencia. Cada una habría necesitado su
+ * propia clase, y la siguiente que se agregue nace sin grano.
  *
- * ⚠️ ES UN `::before` CON `inset: 0` Y NO UN `background-image` SOBRE EL
- * PROPIO ELEMENTO. Dos motivos: el elemento ya tiene su color de fondo y un
- * segundo `background` obligaría a repetir ese color en cada superficie; y con
- * pseudo-elemento el grano puede llevar su propia opacidad sin tocar la del
- * contenido.
+ * Una capa fija sobre el viewport no se puede olvidar de nada.
  *
- * ⚠️ `z-index: 0` Y NO NEGATIVO. Con `-1` el grano se va DETRÁS del fondo del
- * propio elemento y no se ve nada. Con `0` queda por encima del fondo y por
- * debajo de cualquier hijo, que es exactamente donde tiene que estar. Las
- * secciones ya son `relative`, así que el `absolute` se ancla solo.
+ * ⚠️ VA EN EL `<body>` Y ES `fixed`, NO `absolute`. Con `absolute` el tile se
+ * repetiría a lo largo de toda la altura del documento —catorce mil píxeles en
+ * la home— y el navegador tendría que pintarlo entero. Fijo al viewport es
+ * siempre la misma superficie de pantalla, sin importar cuánto mida la página.
  *
- * ⚠️ EL TILE ES SVG Y NO UN PNG. `feTurbulence` se rasteriza UNA vez y el
- * navegador repite el mosaico: pesa 300 bytes en el CSS contra los ~8 KB de un
- * PNG de 160px, y no es un pedido de red. El `stitchTiles='stitch'` es lo que
- * hace que el mosaico no muestre costuras en las uniones — sin eso se ve una
- * grilla de cuadrados de 160px, que es peor que no tener grano.
+ * ⚠️ `mix-blend-mode: overlay` ES LO QUE LO HACE FUNCIONAR EN CUALQUIER COLOR,
+ * y es exactamente lo que el pedido pide. Overlay aclara lo oscuro y oscurece
+ * lo claro, así que el mismo tile gris da relieve sobre el hueso, sobre el
+ * verde y sobre el naranja sin que nadie tenga que declarar una opacidad por
+ * superficie. La utilidad vieja necesitaba dos valores —0.05 sobre claro, 0.09
+ * sobre oscuro— justamente porque no tenía blend.
  *
- * ⚠️ `baseFrequency 0.8` ES GRANO FINO, casi a nivel de píxel. Más bajo (0.3)
- * da manchas y se lee como suciedad o como un JPG mal comprimido; más alto se
- * pierde contra el antialias de la pantalla.
+ * ⚠️ `pointer-events: none` NO ES OPCIONAL: sin eso, una capa fija sobre todo
+ * el viewport se come cada clic del sitio.
  *
- * ⚠️ LA OPACIDAD ES DISTINTA SEGÚN LA SUPERFICIE. Sobre claro el ruido oscuro
- * se ve mucho antes que sobre oscuro: a la misma opacidad, `bone` queda sucio y
- * `deep` queda liso. De ahí los dos valores, y de ahí que `.on-dark` —la clase
- * que el repo ya usa para invertir cosas sobre losa oscura— lo suba.
+ * ⚠️ EL `z-index` ES ALTÍSIMO A PROPÓSITO (200). Tiene que quedar por encima
+ * del header pegado (40), del drawer (110) y del preloader (120): si quedara
+ * debajo, esas tres superficies serían las únicas sin textura, que es el
+ * problema que este bloque viene a resolver.
+ *
+ * ⚠️ LA OPACIDAD ES 0.09 Y NO MÁS. Medido sobre el par más delicado del sitio
+ * —`muted` sobre `bone`, que pasa AA por poco—, más arriba de eso el ruido
+ * empieza a comerse el contraste del texto chico.
+ *
+ * ⚠️ EL TILE ES SVG Y NO UN PNG. `feTurbulence` se rasteriza una vez y el
+ * navegador repite el mosaico: pesa 300 bytes contra los ~8 KB de un PNG, y no
+ * es un pedido de red. El `stitchTiles='stitch'` es lo que evita que se vea la
+ * grilla de 160px en las uniones.
  * ══════════════════════════════════════════════════════════════════════════
  */
-@utility grano {
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.05;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 160px 160px;
-  }
-
-  &.on-dark::before,
-  .on-dark &::before {
-    opacity: 0.09;
-  }
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
 }
+
 
 @utility rodillo {
   position: relative;

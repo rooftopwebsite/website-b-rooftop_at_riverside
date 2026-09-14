@@ -63,12 +63,7 @@ export function HowThisPlaceWorks() {
         de allá y el par mediría 120px en vez de 48: el doble del mismo
         espacio en «Three of them», cinco secciones más abajo.
       */
-      /*
-    Lleva `grano` como todas las superficies planas del sitio — la utilidad
-    está documentada en globals.css. Las secciones que pasan por `<Section>` lo
-    reciben solas; ésta está escrita a mano, así que lo escribe a mano.
-      */
-      className="grano relative z-[3] banda-arco bg-bone pt-16 lg:pt-32"
+      className="relative z-[3] banda-arco bg-bone pt-16 lg:pt-32"
     >
       {/*
         ══════════════════════════════════════════════════════════════════

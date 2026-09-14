@@ -756,12 +756,7 @@ export default function WhatsOn() {
     <section
       id="whats-on"
       aria-labelledby="whats-on-title"
-      /*
-    Lleva `grano` como todas las superficies planas del sitio — la utilidad
-    está documentada en globals.css. Las secciones que pasan por `<Section>` lo
-    reciben solas; ésta está escrita a mano, así que lo escribe a mano.
-      */
-      className="grano banda-arco relative z-[2] bg-deep pt-14 pb-cierre-arco text-bone on-dark lg:pt-[110px]"
+      className="banda-arco relative z-[2] bg-deep pt-14 pb-cierre-arco text-bone on-dark lg:pt-[110px]"
     >
       <div className="caja-ancha">
         <h2

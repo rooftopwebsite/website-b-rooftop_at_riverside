@@ -293,12 +293,7 @@ export default function Hero() {
        hueso, pero la de las 22 internas sigue siendo el blanco puro. El
        recorte del marco depende de que este color sea exactamente el mismo
        que el del bloque de arriba — ver el bloque del encabezado. */
-    /*
-    Lleva `grano` como todas las superficies planas del sitio — la utilidad
-    está documentada en globals.css. Las secciones que pasan por `<Section>` lo
-    reciben solas; ésta está escrita a mano, así que lo escribe a mano.
-    */
-    <section className="grano relative bg-bone pt-9 lg:pt-18">
+    <section className="relative bg-bone pt-9 lg:pt-18">
       <div className="caja-ancha">
       {/* ── Titular, primera mitad + pill ─────────────────────────────── */}
       {/*
