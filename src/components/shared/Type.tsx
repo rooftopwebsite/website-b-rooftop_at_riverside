@@ -145,9 +145,18 @@ export function Heading({
  *
  * ⚠️ DOS colores según la superficie, y no uno. `sunset` sobre claro da
  * **2.54:1** sobre `paper` y **2.35:1** sobre `bone`: no alcanza ni el 3:1 que
- * pide el texto grande (WCAG 1.4.3). Sobre `deep` sí, 4.26:1. Sobre claro va
- * `terra`, que da 7.43:1 sobre `paper` y 6.87:1 sobre `bone` — y de paso es el
- * color que ya usan los eyebrows, así que no entra un color nuevo a la paleta.
+ * pide el texto grande (WCAG 1.4.3). Sobre `deep` sí, 4.26:1.
+ *
+ * ⚠️ SOBRE CLARO VA `sunset-deep` Y YA NO `terra`. El acento era `terra`
+ * (#A62000), que pasaba de sobra —7.43:1— pero a esa luminosidad el tono se
+ * lee como rojo ladrillo y no como el naranja de la marca. Camila: «las
+ * palabras destacadas en los títulos deben estar en naranja no en rojo».
+ *
+ * `sunset-deep` es `sunset` con el mismo hue y la misma saturación y 10 puntos
+ * menos de luminosidad: 3.54:1 sobre `paper` y 3.28:1 sobre `bone`. Pasa el
+ * 3:1 de texto grande, que es la barra que corresponde porque este acento sólo
+ * existe dentro de un titular de display. NO pasa cuerpo — si mañana alguien
+ * quiere acentuar una palabra de una bajada, éste no es el color.
  *
  * ⚠️ MÁXIMO EN DOS TITULARES DE LA HOME, y en los dos la palabra acentuada
  * tiene que cargar significado: el h1 del hero y el h2 de Events banner. Un
@@ -165,7 +174,7 @@ export function Accent({
   readonly on: 'light' | 'dark';
   readonly children: ReactNode;
 }) {
-  return <span className={on === 'dark' ? 'text-sunset' : 'text-terra'}>{children}</span>;
+  return <span className={on === 'dark' ? 'text-sunset' : 'text-sunset-deep'}>{children}</span>;
 }
 
 /**

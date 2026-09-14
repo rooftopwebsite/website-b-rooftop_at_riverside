@@ -46,8 +46,32 @@ const LABELS = {
 
 type FieldName = keyof typeof LABELS;
 
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LOS CAMPOS VAN EN PÍLDORA (`rounded-pill`) Y NO EN `rounded-btn`. Pedido
+ * de Camila, y explícitamente para TODO el sitio: «inputs redondos (en el news
+ * están cuadrados con esquinas redondas y deberían tener inputs redondos como
+ * los cta, ojo esto es para toda la web, todos los inputs deberían ser así)».
+ *
+ * Es la misma decisión que ya está tomada en `Button.tsx`: el sitio entero
+ * está en radios de 10px, así que un control completamente redondo dejó de ser
+ * «el lenguaje general» y pasó a ser la marca de qué se puede TOCAR. Un campo
+ * de texto es exactamente eso, y en un formulario donde el botón es píldora y
+ * el campo de al lado tiene 10px, los dos se leen como de sistemas distintos.
+ *
+ * ⚠️ EL PADDING SUBE DE 14 A 22px CON EL RADIO, y no es cosmético: con 25px de
+ * radio y 14 de padding, la primera letra del placeholder cae ADENTRO de la
+ * curva y se lee pegada al borde. La regla práctica es padding ≥ radio · 0.85.
+ *
+ * ⚠️ EL `<textarea>` NO VA EN PÍLDORA y es la única excepción. Es una caja de
+ * cuatro renglones: un radio de 25px sobre 110px de alto le come las esquinas
+ * al texto y la primera y la última línea quedan recortadas contra la curva. Se
+ * queda en `rounded-shell`, que es el radio de las tarjetas — la familia
+ * correcta para una caja, no para un control de una línea.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
 const INPUT_BASE =
-  'h-[50px] w-full rounded-btn border bg-paper px-[14px] font-body text-[16px] transition-colors';
+  'h-[50px] w-full rounded-pill border bg-paper px-[22px] font-body text-[16px] transition-colors';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -183,7 +207,9 @@ export default function InquiryForm() {
             id={fid('comments')}
             name="comments"
             rows={4}
-            className="w-full rounded-btn border border-ink/25 bg-paper px-[14px] py-[12px] font-body text-[16px] transition-colors focus:border-ink"
+            /* La excepción en píldora: ver la nota de `INPUT_BASE`. Un
+                textarea de cuatro renglones no puede ir redondo. */
+            className="w-full rounded-shell border border-ink/25 bg-paper px-[22px] py-[14px] font-body text-[16px] transition-colors focus:border-ink"
           />
         </div>
         <SelectField k="referral" fid={fid} eid={eid} errors={errors} options={REFERRAL_SOURCES} placeholder="Choose one" />

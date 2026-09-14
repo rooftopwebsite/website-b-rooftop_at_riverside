@@ -170,7 +170,25 @@ export default function PhotoDivider() {
         <div className="absolute inset-0 bg-ink/60" />
 
         <div className="absolute inset-x-0 top-1/2 z-20 -translate-y-1/2">
-          <div className="w-full overflow-hidden">
+          {/*
+            ⚠️ EL `py-13` ES LA SOMBRA DE LAS FOTOS, NO ES AIRE. El
+            `overflow-hidden` de acá existe para el marquee —recorta la tira
+            que se desplaza, que es más ancha que la pantalla— pero recorta
+            también ARRIBA Y ABAJO, y ahí no hay nada que esconder: las fotos
+            llevan `sombra-card` y quedaba cortada al ras.
+
+            ⚠️ SON 52px Y NO 32, QUE ES LO QUE DECÍA ANTES. Los 32 salían de
+            calcular el alcance como `blur / 2 + spread`, que da el punto
+            medio del degradé y no el final de la cola. Con la cuenta buena
+            —`blur + spread`— `sombra-card` baja 50px. El porqué completo está
+            en el encabezado de `scripts/check-sombras.mjs`.
+
+            Los 52px van sin margen negativo que los compense a propósito. El
+            envoltorio está centrado con `top-1/2` + `-translate-y-1/2`, así
+            que un padding SIMÉTRICO crece para los dos lados y el centro no se
+            mueve: la tira queda donde estaba. Un `-my` acá sí la correría.
+          */}
+          <div className="w-full overflow-hidden py-13">
             {/* El set va DOS VECES: el marquee se desplaza el 50 % y vuelve al
                 origen, así que la segunda copia es la que tapa el hueco en el
                 punto de reinicio. Sin ella se ve el corte. */}

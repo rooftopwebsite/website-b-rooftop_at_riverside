@@ -87,9 +87,15 @@ const INITIAL: ActionState = { status: 'idle', message: '' };
  *
  * ⚠️ `text-[16px]` NO ES DECORATIVO: abajo de 16px Safari en iOS hace zoom solo
  * al enfocar el campo y descuadra la página entera.
+ *
+ * ⚠️ PÍLDORA Y PADDING DE 22px. El porqué está escrito una sola vez, en el
+ * `INPUT_BASE` de `InquiryForm.tsx`. Los dos tienen que cambiar juntos: son
+ * copias deliberadas, y si uno queda con el radio viejo, los dos formularios
+ * del sitio dejan de verse iguales, que es justo lo que la nota de arriba
+ * pide evitar.
  */
 const INPUT_BASE =
-  'h-[50px] w-full rounded-btn border bg-paper px-[14px] font-body text-[16px] text-ink transition-colors placeholder:text-body/45 focus-visible:border-deep';
+  'h-[50px] w-full rounded-pill border bg-paper px-[22px] font-body text-[16px] text-ink transition-colors placeholder:text-body/45 focus-visible:border-deep';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -131,8 +137,15 @@ export default function NewsletterSignup() {
             botón: partido al medio, la columna del texto queda con un pozo de
             aire a la derecha y la del formulario aprieta los campos. El peso
             extra va donde hay más piezas.
+
+            ⚠️ LAS DOS COLUMNAS ARRANCAN EN `md` Y NO EN `lg`. Pedido de Camila
+            sobre la tarjeta en tablet: el texto de un lado y los campos del
+            otro. A 834px la tarjeta mide 700 y de sobra da para partirla; con
+            el corte en `lg` (1024) quedaba el título arriba y los tres
+            controles en una fila abajo, cada input en 200px para un
+            placeholder de «First name».
           */}
-          <div className="grid items-center gap-9 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
+          <div className="grid items-center gap-9 md:grid-cols-[1fr_1.15fr] md:gap-10 lg:gap-16">
             <div>
               <Heading level={2} id={`${id}-title`} className="m-0 text-d3 text-paper">
                 Sign up
@@ -169,7 +182,22 @@ export default function NewsletterSignup() {
               </p>
             ) : (
               <form action={action} noValidate className="flex flex-col gap-3">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                {/*
+                  ⚠️ LOS CAMPOS SE APILAN HASTA `desk` Y RECIÉN AHÍ VAN EN FILA.
+                  Estaba en `sm` (640), o sea que en tablet los dos inputs y el
+                  botón compartían renglón dentro de media tarjeta: medido a
+                  834px eso deja 130px por campo, menos que el propio
+                  placeholder.
+
+                  Apilados —«First name» arriba, «Email» abajo, «Join» debajo—
+                  cada campo usa el ancho entero de su columna, que es
+                  exactamente lo que Camila marcó con las dos elipses.
+
+                  ⚠️ EL CORTE ES `desk` (1344) Y NO `lg`. La fila de tres sólo
+                  entra cómoda cuando la columna del formulario pasa los 500px,
+                  y eso recién pasa con la caja en su ancho máximo.
+                */}
+                <div className="flex flex-col gap-3 desk:flex-row desk:items-start">
                   <div className="flex-1">
                     {/*
                       ⚠️ LABEL REAL Y OCULTO, no un `placeholder` haciendo de
@@ -275,7 +303,23 @@ export default function NewsletterSignup() {
                     lee `--lead-ink` y elige el token según la superficie. Acá
                     resuelve en `muted-dark`, 7.48:1.
                 */}
-                <p className="bajada font-body text-micro">No spam. Unsubscribe any time.</p>
+                {/*
+                  ⚠️ CENTRADO CONTRA LOS CAMPOS, NO CONTRA LA TARJETA. Pedido
+                  de Camila: «esto centrado a los inputs y cta del form».
+
+                  El `<p>` es hermano del bloque de campos dentro del mismo
+                  `<form>`, así que su caja mide exactamente lo que miden los
+                  inputs y el botón: centrar el texto ahí lo centra contra
+                  ellos y no contra la mitad de la tarjeta, que es más ancha.
+
+                  Alineado a la izquierda quedaba colgando del borde del primer
+                  campo, y con los campos apilados —que es como van en mobile y
+                  en tablet— esa esquina es el único punto de la columna que no
+                  tiene nada encima.
+                */}
+                <p className="bajada text-center font-body text-micro">
+                  No spam. Unsubscribe any time.
+                </p>
               </form>
             )}
       </div>

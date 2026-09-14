@@ -75,7 +75,24 @@ export default function AgencyBar() {
   const año = new Date().getFullYear();
 
   return (
-    <div className={`bg-chalk ${GUTTER}`}>
+    <div
+      /*
+        ⚠️ EL `relative z-[1]` ES LO QUE LA MANTIENE BLANCA, y sin eso el
+        `bg-chalk` no alcanzaba. Pedido de Camila: «el footer de la agencia
+        debe ser completamente blanco».
+
+        La barra vive DENTRO del `<footer>`, y el footer tiene dos capas
+        decorativas en `absolute inset-0`: el grano y el fondo de nubes con la
+        palmera. Las dos llegaban hasta acá abajo —el tronco de la palmera se
+        veía cruzando la franja— y sobre blanco puro un ruido al 9 % más una
+        textura al 22 % dan exactamente lo que se veía: un blanco sucio.
+
+        Con contexto propio por encima del `z-0` de esas capas, la franja
+        queda fuera del alcance de las dos. El color no cambió: `chalk` ya
+        resuelve a `paper`, que es #FFFFFF.
+      */
+      className={`relative z-[1] bg-chalk ${GUTTER}`}
+    >
       {/* Desktop: la pastilla a la izquierda, el crédito a la derecha. */}
       <div className="caja hidden h-[72px] items-center justify-between desk:flex">
         {poweredBy}

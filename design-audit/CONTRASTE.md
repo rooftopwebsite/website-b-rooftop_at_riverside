@@ -24,6 +24,8 @@ de interfaz y no tiene mínimo.
 | `teal600` | `#028382` |
 | `tomato` | `#EB452C` |
 | `terra` | `#A62000` |
+| `sunset-deep` | `#D66A0A` |
+| `tomato-soft` | `#FF8F7A` |
 | `plum` | `#402639` |
 | `magenta` | `#A24584` |
 | `sunset-hover` | `#E0741A` |
@@ -58,9 +60,12 @@ de interfaz y no tiene mínimo.
 | `#000000` `#000000` sobre `cream` `#FDF0B4` | Texto sobre la píldora amarilla | **18.30:1** | 4.5:1 | ✅ AAA |
 | `deep` `#014545` sobre `cream` `#FDF0B4` | Texto sobre botón crema (el CTA sobre oscuro) | **9.44:1** | 4.5:1 | ✅ AAA |
 | **— El acento del titular, a dos colores según superficie —** | | | | |
-| `terra` `#A62000` sobre `paper` `#FFFFFF` | Acento sobre claro | **7.43:1** | 4.5:1 | ✅ AAA |
-| `terra` `#A62000` sobre `bone` `#FAF6EA` | Acento sobre la segunda superficie | **6.87:1** | 4.5:1 | ✅ AA |
+| `sunset-deep` `#D66A0A` sobre `paper` `#FFFFFF` | Acento sobre claro — sólo display, NO cuerpo | **3.54:1** | 3:1 | ✅ AA |
+| `sunset-deep` `#D66A0A` sobre `bone` `#FAF6EA` | Acento sobre la segunda superficie — sólo display | **3.28:1** | 3:1 | ✅ AA |
 | `sunset` `#F58521` sobre `deep` `#014545` | Acento sobre oscuro — sólo display, NO cuerpo | **4.26:1** | 3:1 | ✅ AA |
+| **— El rojo de error y de dato pendiente sobre claro —** | | | | |
+| `terra` `#A62000` sobre `paper` `#FFFFFF` | Error de formulario y marcador de pendiente | **7.43:1** | 4.5:1 | ✅ AAA |
+| `terra` `#A62000` sobre `bone` `#FAF6EA` | Lo mismo sobre la segunda superficie | **6.87:1** | 4.5:1 | ✅ AA |
 | **— Eyebrows: sólo los tonos que pasan —** | | | | |
 | `deep` `#014545` sobre `paper` `#FFFFFF` | Eyebrow y texto de color sobre claro | **10.83:1** | 4.5:1 | ✅ AAA |
 | `deep` `#014545` sobre `bone` `#FAF6EA` | Eyebrow sobre la segunda superficie | **10.03:1** | 4.5:1 | ✅ AAA |
@@ -89,12 +94,17 @@ de interfaz y no tiene mínimo.
    2.54:1 y 2.50:1 sobre la base, y sobre la segunda superficie
    todavía menos (2.35:1). No pasan ni el mínimo de texto grande, en
    ningún tamaño. Por eso el acento del titular es **a dos colores según la
-   superficie**: `terra` sobre claro, `sunset` sobre oscuro.
+   superficie**: `sunset-deep` sobre claro, `sunset` sobre oscuro. Los dos
+   son el MISMO tono (28.3°) y la misma saturación; entre ellos sólo cambia la
+   luminosidad, y por eso el acento se lee naranja en las dos superficies.
 2. **Sobre relleno naranja o teal, el texto va negro.** El blanco da
    2.54:1 y 2.50:1; el negro da 8.26:1 y 8.40:1.
-3. **El acento sobre oscuro es sólo para display.** `sunset` sobre `deep` da
-   4.26:1: pasa el 3:1 de texto grande, no el 4.5:1 de cuerpo. Sirve
-   para una palabra de un titular de 88px, no para una bajada.
+3. **El acento del titular es sólo para display, de los dos lados.** `sunset`
+   sobre `deep` da 4.26:1, y `sunset-deep` sobre `paper` da
+   3.54:1 (sobre `bone`, 3.28:1). Los dos pasan el 3:1 de
+   texto grande y ninguno el 4.5:1 de cuerpo: sirven para una palabra de un
+   titular de 88px, no para una bajada. El rojo `terra` —7.43:1— es el
+   que sí puede ir en cuerpo, y es el de los errores de formulario.
 4. **La bajada tiene un token opaco y no una opacidad.** `muted`
    `#487270` pasa AA en las tres superficies claras
    (5.36:1 · 4.96:1 · 4.67:1). Con `text-body/75` el color

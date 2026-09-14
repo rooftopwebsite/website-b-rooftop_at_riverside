@@ -259,16 +259,54 @@ function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly is
           la función que lo formatea —`timeRange`— ya existía en
           `content/events.ts`. Sencillamente no se estaba mostrando.
 
-          ⚠️ El separador es un punto medio y no un guión: «Thursday · 6 – 8
-          PM». Un guión entre el día y la hora se lee como un rango de días.
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ SEGUNDA VUELTA: EL HORARIO PASÓ A SER LO SEGUNDO QUE SE LEE DE LA
+          TARJETA, DESPUÉS DEL TÍTULO. Camila: «resaltar horario en cards
+          events, pasa muy desapercibido el día y hora y es de lo más
+          importante».
+
+          Tenía razón por composición, no por tamaño: el rótulo iba en
+          `text-caption` (13px), en `muted-dark` —que es el gris de las bajadas,
+          o sea el tono de lo SECUNDARIO— y en el mismo renglón corrido que el
+          día. Era un pie de foto arriba de un titular de 36px. En una tarjeta
+          de evento, la hora es la mitad del dato: quien mira esto está
+          decidiendo si puede venir.
+
+          Ahora son dos piezas con dos jerarquías, y el contraste entre ellas es
+          lo que hace el trabajo:
+
+            · el DÍA en `cream`, negrita, caja alta. Sube de 13 a 15px y deja
+              de ser gris: pasa a ser el mismo color que la marca usa para
+              destacar sobre oscuro.
+            · la HORA en una PÍLDORA de `cream` sólido con texto `deep`. Es el
+              único bloque de color macizo de la tarjeta en reposo, y por eso
+              es lo que el ojo agarra primero.
+
+          ⚠️ LA PÍLDORA ES SÓLIDA Y NO UN TINTE. Con `bg-cream/15` se lee como
+          un chip apagado —el mismo problema que tenían los tags del yard— y
+          además se desarma en el hover, cuando el fondo pasa de `deeper` a
+          `sunset` y un 15 % de crema sobre naranja no es ningún color. Sólida
+          funciona sobre los dos.
+
+          ⚠️ EN EL HOVER SE INVIERTE. El cajón pasa a `sunset` y el texto a
+          `ink`; si la píldora se quedara en crema, quedaría amarillo sobre
+          naranja (1.71:1). Pasa a `ink` con la hora en `cream`: 14.91:1, y de
+          paso sigue siendo el elemento más marcado de la tarjeta.
+
+          Ratios medidos: `cream` sobre `deeper` 11.87:1 · `deep` sobre `cream`
+          9.44:1 · `cream` sobre `ink` 14.91:1.
+
+          ⚠️ SE FUE EL PUNTO MEDIO SEPARADOR. Existía para partir «Thursday ·
+          6 – 8 PM» dentro de un renglón corrido; con la hora en su propia
+          píldora, la separación la hace la forma y un punto en el medio sería
+          ruido.
           ══════════════════════════════════════════════════════════════════
         */}
-        <span className="flex flex-wrap items-center gap-x-2 font-body text-caption font-medium uppercase tracking-eyebrow text-muted-dark transition-colors duration-300 ease-brand group-hover:text-ink">
-          <span>{event.weekday !== null ? weekdayLabel(event.weekday) : whenLabel(event)}</span>
-          <span aria-hidden="true" className="opacity-50">
-            ·
+        <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+          <span className="font-body text-dato font-bold uppercase tracking-eyebrow text-cream transition-colors duration-300 ease-brand group-hover:text-ink">
+            {event.weekday !== null ? weekdayLabel(event.weekday) : whenLabel(event)}
           </span>
-          <span className="text-cream normal-case tracking-normal transition-colors duration-300 ease-brand group-hover:text-ink">
+          <span className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-caption font-bold whitespace-nowrap text-deep transition-colors duration-300 ease-brand group-hover:bg-ink group-hover:text-cream">
             {timeRange(event)}
           </span>
         </span>
@@ -304,29 +342,54 @@ function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly is
           ══════════════════════════════════════════════════════════════════
         */}
         <div className="relative mt-2.5 h-24">
-          <div className="absolute inset-x-0 top-0 transition-opacity duration-300 ease-brand group-hover:opacity-0">
+          {/*
+            ══════════════════════════════════════════════════════════════
+            ⚠️ ES UNA COLUMNA CON `inset-0` Y NO UN BLOQUE CON `top-0`, Y ESO
+            ES LO QUE ALINEA EL ESPACIO. Pedido de Camila: «alineá siempre
+            abajo el nombre del espacio donde se realiza».
+
+            Antes el rótulo del espacio colgaba de la bajada con un `mt-3.5`,
+            así que su altura la decidía el largo del texto de arriba: «Bring
+            the dog.» ocupa un renglón y «Live music on the rooftop every
+            Thursday evening…» dos, y los tres rótulos quedaban en tres
+            alturas distintas dentro de una fila de tarjetas iguales.
+
+            Con el bloque estirado a todo el cajón (`inset-0`) y el rótulo en
+            `mt-auto`, el espacio se apoya SIEMPRE en el piso del cajón, que
+            mide 96px fijos en las cuatro tarjetas. Da igual cuántos renglones
+            tenga la bajada.
+
+            ⚠️ EL `mt-auto` NECESITA QUE EL PADRE SEA `flex-col` Y TENGA ALTO.
+            Los dos vienen de acá: `inset-0` le da el alto del cajón —que es
+            el `h-24` de afuera— y `flex-col` el eje. Volver a `top-0` deja el
+            bloque midiendo su contenido y el `mt-auto` no tiene de dónde
+            sacar el sobrante.
+            ══════════════════════════════════════════════════════════════
+          */}
+          <div className="absolute inset-0 flex flex-col transition-opacity duration-300 ease-brand group-hover:opacity-0">
             <p className="m-0 line-clamp-2 font-body text-base font-light text-paper/92">
               {event.summary}
             </p>
 
-            <span className="mt-3.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 font-body text-micro uppercase tracking-cta text-muted-dark">
-              <span>{event.space}</span>
-              {/*
-                ⚠️ LA RECURRENCIA VA EN UNA PÍLDORA Y NO EN EL RÓTULO DE
-                ARRIBA. «Every week» es una propiedad del evento, no de esta
-                fecha, así que mezclarla con «Thursday · 6 – 8 PM» haría leer
-                las tres cosas como un solo dato. Separada, contesta la
-                pregunta que se hace quien no puede venir hoy: ¿vuelve a
-                pasar?
+            {/*
+              ⚠️ SE FUE LA PÍLDORA DE «EVERY WEEK». Pedido de Camila: «sacá el
+              tag de every week».
 
-                Sólo aparece si el evento ES recurrente — un evento de una
-                sola fecha no muestra nada.
-              */}
-              {event.kind === 'recurring' ? (
-                <span className="rounded-pill px-2.5 py-1 text-cream ring-1 ring-muted-dark/50">
-                  Every week
-                </span>
-              ) : null}
+              Estaba para contestar «¿vuelve a pasar?» a quien no podía venir
+              ese día, y el argumento no era malo; lo que lo vuelve
+              innecesario es el rótulo de arriba, que dice el DÍA DE LA SEMANA
+              —«Wednesday», «Thursday»— y no una fecha. Un día de la semana ya
+              se lee como algo que se repite: la píldora estaba diciendo dos
+              veces lo mismo, y encima con la forma de un control.
+
+              El dato completo de recurrencia sigue estando en la página del
+              evento y en el calendario de `/whats-on`.
+
+              ⚠️ `event.kind` SIGUE EXISTIENDO y lo usan el calendario y la
+              página de cada evento. Lo que se fue es este render, no el campo.
+            */}
+            <span className="mt-auto font-body text-micro uppercase tracking-cta text-muted-dark">
+              {event.space}
             </span>
           </div>
 
@@ -607,7 +670,12 @@ export default function WhatsOn() {
     <section
       id="whats-on"
       aria-labelledby="whats-on-title"
-      className="relative z-[2] rounded-t-band bg-deep pt-14 pb-cierre-arco text-bone on-dark lg:pt-[110px]"
+      /*
+    Lleva `grano` como todas las superficies planas del sitio — la utilidad
+    está documentada en globals.css. Las secciones que pasan por `<Section>` lo
+    reciben solas; ésta está escrita a mano, así que lo escribe a mano.
+      */
+      className="grano banda-arco relative z-[2] bg-deep pt-14 pb-cierre-arco text-bone on-dark lg:pt-[110px]"
     >
       <div className="caja-ancha">
         <h2
@@ -675,24 +743,62 @@ export default function WhatsOn() {
           aria-label="This week’s events"
           /*
             ⚠️ SIN `px-borde`, SIN `scroll-px-borde` Y SIN `justify-center-safe`.
-            Los tres estaban para parchar el mismo problema, que ya no existe.
+            Los tres estaban para parchar el mismo problema, que ya no existe:
+            el track vive DENTRO de `caja-ancha` y las tarjetas son una
+            fracción exacta de ese ancho, así que el primer anclaje es
+            `scrollLeft: 0` porque no hay padding que correrlo, y no hay nada
+            que centrar porque la fila mide lo que mide la caja.
 
-            El track tenía padding propio y las tarjetas medían `30vw`, o sea
-            que ni el principio ni el final de la fila coincidían con la caja.
-            De ahí salían las dos notas largas que había acá: una explicaba que
-            sin `scroll-px-borde` el carrusel abría en la SEGUNDA tarjeta
-            —porque con 56px de padding el `scrollLeft: 0` no era un punto de
-            anclaje válido y `snap-mandatory` saltaba al más cercano— y la otra
-            que `justify-center-safe` hacía falta para que el centrado no
-            recortara el principio del contenido al desbordar.
+            ══════════════════════════════════════════════════════════════
+            ⚠️ EL PADDING LATERAL SE PROBÓ ACÁ ADENTRO Y HUBO QUE SACARLO, y
+            conviene dejarlo escrito porque la idea vuelve sola.
 
-            Ahora el track vive DENTRO de `caja-ancha` y las tarjetas son una
-            fracción exacta de ese ancho: el primer anclaje es `scrollLeft: 0`
-            porque no hay padding que correrlo, y no hay nada que centrar
-            porque la fila mide lo que mide la caja. Los parches se fueron con
-            la causa.
+            El argumento para meterlo era la sombra: con el padding afuera, el
+            borde que recorta cae justo sobre el borde de la primera y la
+            última tarjeta y `sombra-card` se corta a pico de costado. Cierto.
+            Pero el costado de un carrusel NO es un borde cualquiera: es la
+            ventana por la que se ve que hay más contenido. Corriéndola 56px
+            hacia afuera, la CUARTA tarjeta asomaba media cortada dentro de la
+            caja, que es peor que la sombra. Camila: «se ve un poco de la 4
+            card y queda recortada y se ve mal, antes estaba bien».
+
+            En el eje en que un contenedor scrollea, el recorte es diseño y no
+            un defecto. Lo que sí es un defecto es el recorte en el eje
+            TRANSVERSAL, y ese sigue resuelto abajo.
+            ══════════════════════════════════════════════════════════════
+
+            ⚠️ LOS `py` SE QUEDAN, Y NO SON AIRE. Declarar `overflow-x: auto`
+            computa el `overflow-y` a `auto` también, así que este track
+            recorta arriba y abajo aunque nadie haya pedido scroll vertical.
+            Sin los `py`, `sombra-card` quedaba cortada al ras del borde
+            inferior.
+
+            ══════════════════════════════════════════════════════════════
+            ⚠️ SEGUNDA MEDICIÓN, Y LOS NÚMEROS SUBIERON. Estaban en 8 y 32,
+            calculados con `blur / 2 + spread` — la lectura literal del spec
+            de `box-shadow`. Esa cuenta da el punto MEDIO del degradé, no
+            dónde la sombra deja de verse: el desenfoque es una gaussiana de
+            sigma = blur/2 y a esa distancia todavía queda cerca de un tercio
+            del valor. Con una sombra al 55 % sobre una losa oscura, ese
+            tercio se ve.
+
+            Medido con perfil de píxeles: al borde del track la luminancia
+            seguía 4 niveles por debajo del fondo, y ese escalón recto a lo
+            ancho de las tres tarjetas es lo que Camila marcó dos veces
+            —«sigo viendo la sombra contenida en un frame»—.
+
+            Con la cuenta corregida (`blur + spread`), `shadow-card-dark`
+            —`0 18px 44px -12px`— alcanza 50px hacia abajo y 14 hacia arriba.
+            De ahí `pt-3.5` y `pb-13`.
+
+            ⚠️ LOS MÁRGENES NEGATIVOS MANTIENEN EL LAYOUT DONDE ESTABA. El
+            padding creció 8px arriba y 20 abajo, y los dos se devuelven con
+            `-mt-2` y `-mb-5`: el aire visible entre el titular, la fila y los
+            controles es exactamente el de antes. Lo único que creció es la
+            caja que RECORTA.
+            ══════════════════════════════════════════════════════════════
           */
-          className="flex snap-x snap-mandatory gap-6 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="-mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto pt-3.5 pb-13 [scrollbar-width:none] max-lg:-mx-borde max-lg:scroll-px-borde max-lg:px-borde [&::-webkit-scrollbar]:hidden"
         >
           {events.map((event) => (
             <EventCard key={event.slug} event={event} isToday={today !== null && event.weekday === today} />

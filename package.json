@@ -15,6 +15,7 @@
     "check:css": "node scripts/check-css.mjs",
     "check:tokens": "node scripts/check-tokens.mjs",
     "check:contrast": "node scripts/contrast.mjs --check",
+    "check:sombras": "node scripts/check-sombras.mjs --check",
     "specimen": "node design-audit/specimen.mjs",
     "media": "node scripts/build-media.mjs",
     "greca": "node scripts/build-greca.mjs",

@@ -26,10 +26,16 @@ import { BRAND, addressLine, mapsUrl } from '@/lib/brand';
  * dice una dirección, no un argumento — «Downtown» es el dato que la mitad de
  * la gente busca y por eso va primero, grande y solo.
  *
- * ⚠️ La segunda mitad va en `terra` y no en `sunset` como el prototipo: el
- * naranja sobre superficie clara da 2.35:1 y no pasa AA ni como titular. El
+ * ⚠️ La segunda mitad va en `sunset-deep` y no en `sunset` como el prototipo:
+ * el naranja de marca sobre superficie clara da 2.35:1 y no pasa AA ni como
+ * titular. `sunset-deep` es ese mismo naranja —mismo hue, misma saturación—
+ * diez puntos más oscuro, y sobre el `bone` de esta sección da 3.28:1. El
  * razonamiento completo está en el encabezado de `ThreeDoors.tsx`, que es
  * donde vive esa decisión para toda la home.
+ *
+ * ⚠️ ACÁ ESTUVO `terra` Y SE FUE junto con el de `ThreeDoors`, en el mismo
+ * commit y por el mismo motivo: pasaba contraste de sobra pero se leía rojo
+ * ladrillo, y el acento de titular de esta home es naranja.
  *
  * ⚠️ LAS REDES VAN ACÁ ADEMÁS DE EN LA BARRA DE SERVICIO, y no es
  * duplicación por descuido. Arriba son tres iconos de 17px en una franja de
@@ -60,7 +66,7 @@ export default function FindUs() {
     <section
       id="find-us"
       aria-labelledby="find-us-title"
-      className="relative z-[3] [margin-top:calc(var(--radius-band)*-1)] rounded-t-band bg-bone pt-16 pb-cierre lg:pt-32"
+      className="grano relative z-[3] banda-arco bg-bone pt-16 pb-cierre lg:pt-32"
     >
       <div className="caja-ancha">
         {/*
@@ -155,7 +161,19 @@ export default function FindUs() {
           >
             {/* Las dos mitades, un solo h2. Ver la nota del encabezado. */}
             <span className="block">Downtown,</span>
-            <span className="mt-1 block text-right text-terra">Across from Riverside Park</span>
+            {/*
+              ⚠️ LAS DOS MITADES ALINEAN A LA IZQUIERDA. La segunda iba
+              `text-right` —era el diseño de origen: «Downtown,» arriba a la
+              izquierda y el resto empujado al otro borde, como un bloque en
+              diagonal—. Camila lo marcó sobre la página: las dos líneas al
+              margen izquierdo.
+
+              El motivo práctico se ve en mobile, que es donde ella lo marcó:
+              ahí la segunda mitad cae en DOS renglones, y alineados a la
+              derecha los tres quedan en tres puntos de partida distintos. Una
+              dirección se lee de corrido, no en zigzag.
+            */}
+            <span className="mt-1 block text-sunset-deep">Across from Riverside Park</span>
           </h2>
 
           {/* ⚠️ Sin `order-*`: las redes van DESPUÉS del titular en el DOM, que
@@ -171,7 +189,19 @@ export default function FindUs() {
               ⚠️ El `absolute` arranca en `desk`. Abajo de ahí las redes van en
               flujo, debajo del titular, que es lo que pidió Camila para mobile
               y tablet. Ver el bloque de arriba. */}
-          <ul className="flex list-none flex-wrap items-center justify-end gap-3 p-0 desk:absolute desk:top-0 desk:right-0">
+          {/*
+            ⚠️ EL `w-full` ES LO QUE MANDA LAS REDES A LA DERECHA. El
+            `justify-end` ya estaba, pero un `<ul>` con `display: flex` dentro
+            de un contenedor que no lo estira mide SU CONTENIDO: medido a
+            393px, la lista arrancaba en 0 y terminaba 165px antes del borde
+            derecho, o sea pegada a la izquierda, y `justify-end` no tenía
+            espacio sobrante que repartir. Con el ancho completo, los tres
+            círculos se van al margen derecho, que es donde Camila los marcó.
+
+            ⚠️ En `desk` el `absolute` lo deja sin flujo y el `w-full` no
+            interviene: ahí la posición la fijan `top-0` y `right-0`.
+          */}
+          <ul className="flex w-full list-none flex-wrap items-center justify-end gap-3 p-0 desk:absolute desk:top-0 desk:right-0 desk:w-auto">
             {SOCIAL.map(({ label, href, Icon }) => (
               <li key={label}>
                 <a

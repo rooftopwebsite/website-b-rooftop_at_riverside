@@ -27,32 +27,55 @@ import TilePattern, { TileMark } from './TilePattern';
  * contacto y un CTA. Debajo de la barra de servicio (`UtilityBar`).
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ DEJÓ DE SER `fixed` Y VOLVIÓ AL FLUJO — rediseño `food-truck-club`.
+ * ⚠️ ES `sticky` Y SE COMPACTA AL PEGARSE — pedido de Camila: «header fijo al
+ * hacer scroll como los otros proyectos de la agencia».
  *
- * Fue `fixed`, pasó a `sticky` cuando se sumó el `PromoBar`, volvió a `fixed`
- * cuando el banner salió, y ahora es estático. No es ir y venir: cada vez el
- * motivo fue el mismo —qué necesita el elemento que está arriba de todo— y
- * esta vez arriba hay dos cosas nuevas.
+ * Historia, porque esto fue y vino tres veces y conviene que la cuarta quede
+ * argumentada: fue `fixed`, pasó a `sticky` cuando se sumó el `PromoBar`,
+ * volvió a `fixed` cuando el banner salió, quedó ESTÁTICO en el rediseño
+ * `food-truck-club`, y ahora es `sticky`.
  *
- * La razón concreta es el HERO. El diseño apoya el hero en un mecanismo que
- * con un header flotante no funciona: el titular «TOGETHER» es una placa
- * naranja sobre fondo `bone` que se monta sobre el marco de la foto, y el
- * marco tiene un recorte (el «notch») que se calcula midiendo dónde termina
- * esa placa. Las tres piezas —placa, notch y marco— tienen que estar en el
- * mismo sistema de coordenadas del documento. Con el header encima flotando
- * y translúcido, la placa pasa por debajo de la barra al scrollear y el
- * naranja se mezcla con el blur: el recorte queda dibujado contra un color
- * que ya no es el del fondo.
+ * ⚠️ `sticky` Y NO `fixed`, Y LA DIFERENCIA ES TODO EL ARGUMENTO DE LA NOTA
+ * ANTERIOR. Lo que hacía imposible el header flotante era el hero: el titular
+ * «TOGETHER» es una placa naranja sobre `bone` que se monta sobre el marco de
+ * la foto, y el marco tiene un recorte calculado midiendo dónde termina esa
+ * placa. Las tres piezas tienen que vivir en el mismo sistema de coordenadas
+ * del documento. Un `fixed` las saca de ahí y obliga a que los 22 heroes
+ * compensen la altura del header a mano. Un `sticky` NO: sigue ocupando su
+ * lugar en el flujo, el hero arranca donde arrancaba, y el header recién se
+ * despega cuando el hero ya pasó.
  *
- * Y el beneficio que se pierde ya no existía. El header era translúcido con
- * `backdrop-blur` para verse SOBRE el hero verde a pantalla completa; con el
- * hero claro y en flujo, no hay nada que difuminar — el blur estaba activo
- * en cada frame sin dibujar nada.
+ * ⚠️ Y EL HEADER ES OPACO. El otro motivo de la nota anterior era que la placa
+ * naranja pasaba por debajo de una barra translúcida con `backdrop-blur` y el
+ * recorte quedaba dibujado contra un color mezclado. El `backdrop-blur` se
+ * había ido con el rediseño y no vuelve: `bg-bone` opaco, la placa pasa por
+ * abajo y no se mezcla con nada.
  *
- * ⚠️ CONSECUENCIA, y hay que tenerla presente: los heroes ya NO compensan la
- * altura del header. `Hero.tsx` (home) y `PageHero.tsx` (las 22 internas)
- * tenían un `pt` con los 77px sumados a mano; ese padding se sacó. Si algún
- * día el header vuelve a flotar, vuelve también ahí.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EL LOGO SE ACHICA AL PEGARSE, Y NO ES DECORACIÓN: ES LA CONDICIÓN PARA
+ * QUE EL HEADER PUEDA PEGARSE.
+ *
+ * En desktop el lockup mide 80px dentro de una barra de 78 y está centrado
+ * `absolute`, o sea que CUELGA 26px por debajo del filete. Arriba de todo eso
+ * está bien —cae sobre el hero y lo monta sobre la página—, pero pegado al
+ * viewport son 26px de logo opaco tapando el contenido que scrollea por
+ * debajo, en el medio exacto de la pantalla. Camila lo anticipó: «revisar cómo
+ * tratar el logo para que no quede mal, si hacerle un borde que lo contenga o
+ * achicarlo y que se ajuste al header».
+ *
+ * De las dos opciones va la segunda. Un borde que lo contenga es volver al
+ * medallón que ya se sacó —y se sacó porque el círculo repetía por fuera la
+ * forma que el logo ya tiene—. Achicarlo no agrega ninguna pieza: a 52px entra
+ * entero dentro de una barra de 64 y deja de colgar.
+ *
+ * ⚠️ LOS DOS ALTOS ESTÁN ATADOS Y NO SE TOCAN DE A UNO: barra 78 → 64, logo
+ * 80 → 52. Lo que fija el segundo par es que el logo TIENE QUE ENTRAR: 52
+ * dentro de 64 deja 6px arriba y 6 abajo. Si la barra compacta cambia de alto,
+ * el logo cambia con ella.
+ *
+ * ⚠️ EL UMBRAL SON 8px Y NO 0. A cero, el estado parpadea con el rebote del
+ * scroll elástico de macOS y con el propio suavizado de Lenis, que devuelve
+ * valores negativos y de decimal en el borde.
  * ══════════════════════════════════════════════════════════════════════════
  *
  * ⚠️ EL HEADER ES `bone` Y NO `paper`. Es la misma superficie que arranca el
@@ -129,6 +152,29 @@ export default function Header() {
   const moreRef = useRef<HTMLDivElement | null>(null);
   const drawerCloseRef = useRef<HTMLButtonElement | null>(null);
 
+  /*
+    ⚠️ `pegado` NO ES «el header está sticky» —lo está siempre— sino «ya se
+    despegó del tope del documento», que es cuando tiene que compactarse. Ver
+    la nota grande del encabezado.
+
+    ⚠️ SE LEE DEL SCROLL Y NO CON UN `IntersectionObserver` sobre un centinela.
+    El centinela sería más barato, pero el sitio usa Lenis: el scroll real lo
+    escribe Lenis en el documento, así que `scrollY` es la misma fuente para
+    los dos y no hay forma de que se desincronicen. Con un observer habría que
+    acordarse de que Lenis existe cada vez que alguien toque el suavizado.
+
+    El handler es `passive` y sólo compara contra un umbral: no mide layout,
+    así que no fuerza reflow en cada frame.
+  */
+  const [pegado, setPegado] = useState(false);
+
+  useEffect(() => {
+    const mirar = () => setPegado(window.scrollY > 8);
+    mirar();
+    window.addEventListener('scroll', mirar, { passive: true });
+    return () => window.removeEventListener('scroll', mirar);
+  }, []);
+
   const route = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
   const isCurrent = (href: string) => route === href || route.startsWith(`${href}/`);
   const moreActive =
@@ -163,14 +209,38 @@ export default function Header() {
 
   return (
     <>
-      {/* `relative` + `z-40` para que el panel del «More», que es absoluto y
-          se despliega a todo el ancho, quede por encima del hero. */}
+      {/*
+        `sticky top-0` + `z-40` para que el header se pegue al viewport y para
+        que el panel del «More», que es absoluto y se despliega a todo el
+        ancho, quede por encima del contenido.
+
+        ⚠️ EL `z-40` TIENE QUE SEGUIR POR DEBAJO DEL DRAWER (`z-[110]`) Y DEL
+        PRELOADER (`z-[120]`). Son las dos únicas cosas del sitio que tapan al
+        header, y las dos son pantallas completas.
+
+        ⚠️ LA TRANSICIÓN VA EN `border-color` ADEMÁS DE LA SOMBRA: pegado, el
+        filete de 1px en `fog` se apaga y lo reemplaza la sombra. Los dos
+        juntos dibujan dos bordes, y el de 1px contra una sombra difusa se lee
+        como un hilo suelto.
+      */}
       <div
         ref={moreRef}
-        className="relative z-40 border-b border-fog bg-bone"
+        className={`sticky top-0 z-40 border-b bg-bone transition-[box-shadow,border-color] duration-300 ease-brand ${
+          pegado ? 'border-transparent shadow-card' : 'border-fog'
+        }`}
         onMouseLeave={() => setMoreOpen(false)}
       >
-        <header className="caja-ancha relative flex min-h-19.5 items-center gap-6">
+        {/*
+          ⚠️ EL ALTO ES UNA TRANSICIÓN DE `min-height` Y NO UN CAMBIO DE CLASE
+          SECO. Sin transición, al cruzar los 8px de scroll la barra salta 14px
+          de golpe y arrastra con ella todo lo que tiene al lado. Con 300ms el
+          header se asienta.
+        */}
+        <header
+          className={`caja-ancha relative flex items-center gap-6 transition-[min-height] duration-300 ease-brand ${
+            pegado ? 'min-h-16' : 'min-h-19.5'
+          }`}
+        >
           {/*
             ══════════════════════════════════════════════════════════════
             ⚠️ EL LOGO VA CENTRADO Y EN UN MEDALLÓN, por pedido de Camila.
@@ -247,7 +317,22 @@ export default function Header() {
               falta ningún `order-*`.
               ══════════════════════════════════════════════════════════════
             */
-            className="group z-30 flex shrink-0 items-center desk:absolute desk:top-1 desk:left-1/2 desk:grid desk:size-30 desk:-translate-x-1/2 desk:place-items-center"
+            /*
+              ⚠️ LA CAJA DEL LOGO SE COMPACTA JUNTO CON LA IMAGEN, y hay que
+              tocar LAS DOS o el arreglo no sirve de nada. La caja es
+              `absolute` y mide 120px (`size-30`) con `top-1`: su centro cae a
+              64px del borde de arriba, que es el medio de la barra alta. Si
+              sólo se achica la imagen, el centro sigue en 64 y una imagen de
+              52 va de 38 a 90 — o sea que sigue colgando 26px por debajo de
+              una barra de 64, que es exactamente lo que había que evitar.
+
+              Pegado, la caja pasa a `size-16` (64px) con `top-0`: su centro
+              cae a 32, que es el medio de la barra compacta, y la imagen de 52
+              va de 6 a 58. Adentro, con 6px de aire arriba y abajo.
+            */
+            className={`group z-30 flex shrink-0 items-center desk:absolute desk:left-1/2 desk:grid desk:-translate-x-1/2 desk:place-items-center desk:transition-[width,height,top] desk:duration-300 desk:ease-brand ${
+              pegado ? 'desk:top-0 desk:size-16' : 'desk:top-1 desk:size-30'
+            }`}
           >
             {/*
               ⚠️ 80px EN DESKTOP Y NO 64. Creció un 25 % cuando se fue el
@@ -267,13 +352,31 @@ export default function Header() {
               tiene que entrar dentro de la barra: no cuelga de nada y lo que
               creciera se lo comería al alto del header.
             */}
+            {/*
+              ⚠️ EN DESKTOP EL ALTO DEPENDE DE `pegado`: 80px arriba de todo,
+              52 una vez que el header se despegó. Los 80 cuelgan 26px por
+              debajo del filete —que es lo que monta el lockup sobre el hero— y
+              los 52 entran enteros dentro de la barra compacta de 64. Ver la
+              nota grande del encabezado: sin este cambio, el header no se
+              puede pegar.
+
+              ⚠️ La transición es de `height` Y de `transform`, no sólo de
+              transform: el hover sigue siendo un `scale-105` y las dos cosas
+              tienen que poder convivir sin pisarse.
+
+              ⚠️ En mobile sigue en 52px (`h-13`) pase lo que pase. Ahí el logo
+              está EN EL FLUJO, a la izquierda y contra la hamburguesa, así que
+              nunca colgó de nada y no hay nada que compactar.
+            */}
             <Image
               src="/brand/logo-primary.svg"
               alt=""
               width={240}
               height={254}
               priority
-              className="h-13 w-auto transition-transform duration-300 ease-brand group-hover:scale-105 desk:h-20"
+              className={`h-13 w-auto transition-[height,transform] duration-300 ease-brand group-hover:scale-105 ${
+                pegado ? 'desk:h-13' : 'desk:h-20'
+              }`}
             />
             <span className="sr-only">{BRAND.name}</span>
           </Link>
@@ -366,12 +469,31 @@ export default function Header() {
             <ButtonLink
               href={NAV_CTA.primary.href}
               variant="primary"
-              /* ⚠️ Ya no lleva `normal-case tracking-normal`: eran el parche
-                 para que ESTE botón se saliera de la caja alta que `Button`
-                 imponía a todos. Ahora la caja baja es la regla y el parche
-                 sobra. `hidden sm:inline-flex` sí se queda: es lo que lo saca
-                 de la barra en pantallas chicas. */
-              className="hidden sm:inline-flex"
+              size="sm"
+              /*
+                ⚠️ YA NO SE ESCONDE EN MOBILE. Tenía `hidden sm:inline-flex`,
+                que lo sacaba de la barra por debajo de 640px. Camila: «en
+                mobile falta el cta en el header».
+
+                La cuenta de por qué ahora entra, medida a 393px —el ancho más
+                angosto que el sitio soporta—: gutter 16 + logo 52 + CTA 128 +
+                hamburguesa 44 + gutter 16 = 256, más los `gap-6` de la barra.
+                Sobra. Lo que no entraba era el botón en `md` (40px de alto y
+                16px de texto), no el botón en sí.
+
+                ⚠️ POR ESO `size="sm"` HASTA `sm` Y `md` DE AHÍ PARA ARRIBA.
+                El escalón chico son 36px de alto y 15 de texto: suficiente
+                para un control que se toca —el mínimo táctil se cubre con el
+                área, no con el alto visible— y 22px más angosto que el
+                mediano. De `sm` para arriba vuelve al tamaño de siempre, que
+                es el que la barra de desktop tenía calibrado.
+
+                ⚠️ Ya no lleva `normal-case tracking-normal`: eran el parche
+                para que ESTE botón se saliera de la caja alta que `Button`
+                imponía a todos. Ahora la caja baja es la regla y el parche
+                sobra.
+              */
+              className="sm:h-10 sm:px-5.5 sm:text-base"
             >
               {NAV_CTA.primary.label}
             </ButtonLink>

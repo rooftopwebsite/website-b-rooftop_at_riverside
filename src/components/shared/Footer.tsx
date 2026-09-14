@@ -162,8 +162,143 @@ export default function Footer() {
       a `muted-dark`, que es de lo que depende la utilidad `bajada` de la
       tarjeta de newsletter. Ver globals.css.
     */
-    <footer className="rounded-t-band bg-deep text-paper on-dark">
-      <div className={GUTTER}>
+    /*
+      ⚠️ EL MARGEN NEGATIVO ES LA OTRA MITAD DEL ARREGLO DEL ARCO. La regla
+      `main > :last-child` de globals.css estira la última sección 88px hacia
+      abajo; esto monta el footer encima de esos mismos 88. El resultado es
+      que detrás de las esquinas redondeadas queda la sección anterior y no
+      el blanco del `<body>`. Los dos números son el mismo token
+      (`--radius-band`) y no se tocan de a uno.
+
+      ⚠️ VA COMO PROPIEDAD ARBITRARIA Y NO COMO `-mt-band`. Son dos tokens
+      distintos y se parecen demasiado: `--spacing-band` son 96px fijos —el
+      ritmo vertical entre bandas— y `--radius-band` es `clamp(2.25rem, 9vw,
+      5.5rem)`, el radio del arco. `-mt-band` compila contra el primero y
+      dejaría el footer 96px arriba de donde tiene que estar en desktop y 60
+      abajo en mobile. Es la misma sintaxis que ya usa `FindUs` para montarse
+      sobre `EventsBanner`.
+
+      ⚠️ EL `z-[4]` NO ES OPCIONAL Y ES LO QUE ROMPIÓ EL ARCO LA PRIMERA VEZ.
+      Desde que el footer se monta 88px sobre la sección anterior, entra en
+      disputa de pintado con ella — y varias de las últimas secciones del sitio
+      llevan `z-index` propio para montarse a su vez sobre la que tienen
+      arriba: `FindUs` en la home es `relative z-[3]`.
+
+      Sin z-index, el footer es contenido normal y `z-[3]` le gana: la sección
+      anterior se pinta ENCIMA de los 88px superiores del footer, que es
+      exactamente la franja donde vive el arco. En pantalla el footer arrancaba
+      con un borde recto de lado a lado y el radio no se veía por ningún lado.
+
+      El 4 es el escalón siguiente al 3 de `FindUs`, y queda muy por debajo del
+      `z-40` del header y del `z-[110]` del drawer: el footer tiene que tapar a
+      la sección de arriba, no a la navegación.
+
+      El porqué completo está en globals.css.
+    */
+    <footer className="grano relative z-[4] banda-arco bg-deep text-paper on-dark">
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        EL FONDO DEL FOOTER: NUBES + PALMERAS, LAS DOS PIEZAS DEL BRAND BOOK.
+
+        Pedido de Camila, con las dos referencias de Figma a mano: «al footer
+        agreguémosle algo de fondo, una textura con la palmera en grande con
+        contraste bajo para que no moleste la lectura, pero en verde obvio».
+
+        ⚠️ LA TEXTURA ES UNA FOTO DE NUBES, y eso no se adivina mirando el
+        brand book: la portada parece una acuarela naranja, y lo que hay
+        debajo es un cielo cubierto en escala de grises fundido contra el
+        color. Bajada del nodo `2036-600` del archivo de marca.
+
+        `clouds.webp` va en GRIS y con el contraste aplanado —`linear(0.55,
+        70)` sobre la original de 4096px— para que el color lo ponga la losa
+        y no el archivo. 16 KB.
+
+        ⚠️ `mix-blend-mode: multiply` Y NO `soft-light`, QUE FUE EL PRIMER
+        INTENTO. `soft-light` aclara y oscurece a la vez —se comporta como una
+        luz— y sobre un verde oscuro lo que más se nota es lo que ACLARA: la
+        losa perdía saturación y quedaba gris verdosa. Camila: «el fondo del
+        footer mucho más oscuro, no tan grisado; que la imagen sea una textura
+        sutil».
+
+        `multiply` sólo puede oscurecer. Las nubes claras dejan el verde como
+        está y las zonas medias lo hunden, así que la textura aparece como
+        sombra y el footer termina MÁS oscuro que antes de tener fondo, no más
+        claro. Es también lo que hace la portada del brand book contra su
+        naranja.
+
+        ⚠️ Y LA OPACIDAD BAJÓ DE 35 A 22. Con multiply, 35 ya era una nube
+        dibujada; a 22 se lee el relieve y no la foto.
+
+        ⚠️ LAS PALMERAS SON EL VECTOR DEL BRAND (`2036-604`), no un dibujo
+        nuevo. Se guardaron en `public/brand/palms.svg` con el fill de marca
+        —el tomate `#EB452C` de la portada— cambiado por `currentColor`.
+
+        ⚠️ VAN COMO `mask` Y NO COMO `<img>`, y por eso pueden ser verdes. Un
+        SVG servido por `<Image>` no hereda color: habría que duplicar el
+        archivo por cada tono. Como máscara, el archivo define la SILUETA y el
+        color lo pone `bg-deeper` — el verde un peldaño más oscuro que la losa,
+        que es la relación que la portada tiene entre su palmera y su fondo.
+
+        ⚠️ EL CONTRASTE ES DELIBERADAMENTE MÍNIMO Y HUBO QUE BAJARLO DOS
+        VECES. `deeper` (#013434) sobre `deep` (#014545) ya mide 1.18:1, pero
+        a opacidad plena —y con las nubes aclarando la losa por debajo— la
+        silueta se leía como un dibujo y su borde cruzaba las dos columnas de
+        links de la derecha. Camila pidió «contraste bajo para que no moleste
+        la lectura», y el tamaño grande es parte del pedido: lo que se baja es
+        la presencia, no la escala.
+
+        Con `opacity-55` la mezcla da ~#013B3B contra el `deep` de la losa: a
+        esa distancia el borde deja de recortarse contra las letras y la
+        palmera pasa a leerse como profundidad.
+
+        ⚠️ LA LEGIBILIDAD DEL TEXTO NO DEPENDE DE ESTO Y NO HAY QUE CONFUNDIR
+        LAS DOS COSAS. Los links van en `paper/70` sobre una losa oscura: su
+        ratio lo fija el par texto/fondo y la silueta sólo mueve el fondo entre
+        dos verdes casi idénticos. Lo que molestaba no era el contraste del
+        texto sino el CONTORNO cruzándolo.
+
+        ⚠️ EL RECORTE VA EN ESTA CAPA Y NO EN EL `<footer>`. El footer no puede
+        llevar `overflow-hidden`: adentro está la tarjeta del newsletter con
+        `sombra-card`, y recortarla al borde dejaría la sombra cortada a pico
+        —es lo que `npm run check:sombras` vigila—. Con el recorte acá, el
+        fondo se contiene y la tarjeta no se entera.
+
+        ⚠️ `rounded-t-band` EN LA CAPA: sin él, las nubes y la palmera se
+        dibujarían sobre las dos esquinas redondeadas y taparían el arco.
+
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ LA CAPA NO PUEDE LLEVAR `z-0`, Y ESO ROMPIÓ EL `multiply` SIN DAR
+        NINGÚN ERROR. Lo tenía, para quedar por debajo del contenido.
+
+        `z-index: 0` sobre un elemento posicionado CREA UN CONTEXTO DE
+        APILAMIENTO, y un `mix-blend-mode` sólo se mezcla con lo que hay dentro
+        de su contexto. Encerradas ahí, las nubes se mezclaban contra el fondo
+        transparente de su propio contenedor —o sea contra nada— y terminaban
+        dibujándose tal cual: gris claro al 22 % encima del verde. Medido con
+        píxeles, la losa pasaba de #014545 a #306262: cuarenta y siete puntos
+        de rojo de más. Eso era el «grisado» que marcó Camila, y no la
+        opacidad.
+
+        Con `z-index: auto` la capa no crea contexto, el blend alcanza al
+        fondo del footer y multiply hace lo que tiene que hacer: oscurecer.
+
+        ⚠️ SIGUE QUEDANDO POR DEBAJO DEL CONTENIDO, que es para lo que estaba
+        el `z-0`. Lo resuelven los `relative z-[1]` de los tres bloques de
+        contenido —las columnas, la franja legal y la barra de la agencia—: un
+        elemento con `z-index: 1` gana contra uno en `auto` sin necesidad de
+        que éste declare nada.
+        ══════════════════════════════════════════════════════════════════
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden rounded-t-band"
+      >
+        <div className="absolute inset-0 bg-[url('/brand/clouds.webp')] bg-cover bg-center opacity-22 mix-blend-multiply" />
+        <div className="absolute -right-16 bottom-0 aspect-[1100/1024] w-[34rem] bg-deeper opacity-55 [mask-image:url('/brand/palms.svg')] [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] sm:w-[44rem] lg:-right-20 lg:w-[56rem]" />
+      </div>
+
+      <div className={`relative z-[1] ${GUTTER}`}>
         {/*
           La tarjeta del newsletter abre el footer. Va DENTRO del mismo `GUTTER`
           y la misma `caja` que las columnas de abajo: así su título y el logo
@@ -246,7 +381,13 @@ export default function Footer() {
       </div>
 
       {/* ── Franja inferior ──────────────────────────────────────────── */}
-      <div className="border-t border-paper/15">
+      {/* ⚠️ EL `relative z-[1]` ES OBLIGATORIO Y FALTABA. Esta franja está
+          FUERA del envoltorio de contenido de arriba, así que sin su propio
+          contexto quedaba al mismo nivel que el fondo: el tronco de la palmera
+          le pasaba por encima y partía «Terms of Service» al medio. Todo lo
+          que sea texto dentro del footer tiene que estar por encima del
+          `z-0` de la capa decorativa. */}
+      <div className="relative z-[1] border-t border-paper/15">
         <div className={GUTTER}>
           {/*
             ⚠️ LAS DOS PIEZAS SE PONEN EN FILA RECIÉN EN `lg`, Y NO EN `sm`.

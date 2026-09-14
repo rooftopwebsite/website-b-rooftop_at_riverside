@@ -89,7 +89,18 @@ const NOTCH_PAD_X = 26;
 const NOTCH_PAD_Y = 14;
 
 /** Cada cuánto rota el mensaje del pill. */
-const STATUS_MS = 3400;
+/*
+ * ⚠️ SUBIÓ DE 3400 A 4600 ms. Pedido de Camila: «que el cambio entre uno y otro
+ * tenga un efecto más vistoso y no tan rápido para que se vea un juego y se
+ * aprecie que eso va cambiando».
+ *
+ * El número no es sólo «más lento»: la animación de entrada pasó de 420 a
+ * 620ms, así que con 3400 el mensaje quedaba QUIETO apenas 2,8 segundos — que
+ * es menos de lo que tarda un lector medio en leer «Live music five nights» y
+ * mirar el icono. Con 4600 quedan 4 segundos de reposo, que es el tiempo en el
+ * que el ojo alcanza a ir del texto al icono y volver.
+ */
+const STATUS_MS = 4600;
 
 export default function Hero() {
   const frameRef = useRef<HTMLDivElement | null>(null);
@@ -207,8 +218,43 @@ export default function Hero() {
    * 3–6 PM» leído un sábado es falso. Los rangos completos —días y horas—
    * están en el pill de `/visit`, en `WhatsOn` y en `YardSteps`.
    */
-  const HAPPY = { text: 'Happy hour Wed – Fri', Icon: Martini };
-  const MUSIC = { text: 'Live music five nights', Icon: MusicNote };
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ CADA MENSAJE TRAE SU COLOR DE MEDALLA, y es el cambio que pidió Camila:
+   * «icono de pastilla en hero cambiante de color, quiero que resalte más, que
+   * se note el cambio, quizá otro color que vaya cambiando».
+   *
+   * Antes el círculo era `bg-paper` fijo y sólo rotaban el texto y el dibujo.
+   * Un círculo blanco sobre el mint es un HUECO: no compite con nada, que era
+   * exactamente el argumento con el que se había elegido —está escrito abajo,
+   * en la nota del círculo— pero también es lo que hacía que el cambio pasara
+   * desapercibido. Con el color rotando, lo primero que se ve de la primera
+   * pantalla es que ahí hay algo vivo.
+   *
+   * ⚠️ ESTO PISA UNA REGLA DE COLOR QUE ESTABA ESCRITA, y conviene saberlo: la
+   * nota del círculo argumenta que en esta home el naranja significa «algo en
+   * lo que se hace clic». Sigue siendo cierto para los doce `bg-sunset` del
+   * repo. La excepción es ésta y es deliberada, con el pedido de por medio.
+   *
+   * ⚠️ LOS CUATRO COLORES SON DE LA PALETA Y NINGUNO ES TEXTO. Son rellenos, y
+   * el glifo de arriba lleva su par medido:
+   *
+   *     sunset  #F58521  →  ink     8.26:1   abierto
+   *     deep    #014545  →  cream   9.44:1   cerrado
+   *     cream   #FDF0B4  →  ink    15.55:1   happy hour
+   *     river   #0EB6B8  →  ink     8.40:1   música
+   *
+   * `river` tiene prohibido ser TEXTO (2.50:1 sobre claro) y acá no lo es: es
+   * el relleno de un círculo de 92px.
+   *
+   * ⚠️ LOS CUATRO SE DISTINGUEN ENTRE SÍ SOBRE EL MINT DEL PILL. Es lo que
+   * hace que el cambio se lea: dos tonos vecinos rotando parecerían un
+   * parpadeo de render. `mint` es #C4F2EC; naranja, verde oscuro, amarillo y
+   * teal saltan los cuatro contra ese fondo.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  const HAPPY = { text: 'Happy hour Wed – Fri', Icon: Martini, medalla: 'bg-cream text-ink' };
+  const MUSIC = { text: 'Live music five nights', Icon: MusicNote, medalla: 'bg-river text-ink' };
 
   const messages = status
     ? status.isOpen
@@ -216,6 +262,7 @@ export default function Hero() {
           {
             text: status.closesAt ? `Open until ${status.closesAt}` : 'Open now',
             Icon: SunHorizon,
+            medalla: 'bg-sunset text-ink',
           },
           HAPPY,
           MUSIC,
@@ -227,6 +274,7 @@ export default function Hero() {
                 ? `Closed till ${status.reopensOn}`
                 : 'Closed right now',
             Icon: Moon,
+            medalla: 'bg-deep text-cream',
           },
           HAPPY,
           MUSIC,
@@ -245,7 +293,12 @@ export default function Hero() {
        hueso, pero la de las 22 internas sigue siendo el blanco puro. El
        recorte del marco depende de que este color sea exactamente el mismo
        que el del bloque de arriba — ver el bloque del encabezado. */
-    <section className="bg-bone pt-9 lg:pt-18">
+    /*
+    Lleva `grano` como todas las superficies planas del sitio — la utilidad
+    está documentada en globals.css. Las secciones que pasan por `<Section>` lo
+    reciben solas; ésta está escrita a mano, así que lo escribe a mano.
+    */
+    <section className="grano relative bg-bone pt-9 lg:pt-18">
       <div className="caja-ancha">
       {/* ── Titular, primera mitad + pill ─────────────────────────────── */}
       {/*
@@ -327,9 +380,44 @@ export default function Hero() {
 
           De `lg` para arriba queda exactamente como estaba.
         */}
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ EL ALTO EN DESKTOP LO PONE `self-stretch` Y NO UN NÚMERO. Pedido
+          de Camila: «la pastilla del hero debe tener mismo alto que la font
+          del título, que encajen a la perfección».
+
+          El pill y el h1 son los dos hijos de un flex row. Con
+          `align-self: stretch` el pill toma el alto de SU LÍNEA del flex, y esa
+          línea la define el h1, que es el elemento alto. O sea que el pill mide
+          exactamente la caja de línea del titular —medido, 110px a 1440— sin
+          que nadie tenga que escribir 110 en ningún lado. Si el titular cambia
+          de cuerpo, de familia o de interlínea, el pill lo sigue solo.
+
+          Tenía `min-h-20` (80px) contra una línea de 110: quedaba 30px más
+          bajo y flotando, que es lo que se veía como que no encajaban.
+
+          ⚠️ SE FUE EL `mb-4.5`. Existía para bajar el pill y que su base
+          coincidiera más o menos con la del titular. Con `stretch` el ajuste
+          lo hace el flex, y un margen ahí le RESTA alto al estirado: el pill
+          volvía a quedar corto, ahora por 18px.
+
+          ⚠️ EL `stretch` ARRANCA EN `sm` Y NO EN `lg`, Y ESTUVO MAL UNA VEZ.
+          Lo que decide cuándo hace falta no es un breakpoint sino CUÁNDO EL
+          PILL Y EL TITULAR COMPARTEN FILA, y eso pasa entre los 760 y los 800px
+          —está medido en la nota de `flex-wrap-reverse`, más arriba—. Con el
+          stretch en `lg` (1024) quedaba una franja de 224px de ancho de
+          pantalla donde los dos iban al lado y el pill medía su contenido:
+          medido a 834px, el titular 64px de alto y el pill 56. Camila: «en
+          tablet la pastilla tiene mismo alto que la font? parece más chica».
+
+          Por debajo de los 760 el pill se envuelve y queda solo en su línea,
+          así que `stretch` ahí no hace nada: el alto de esa línea es el suyo.
+          Por eso puede arrancar tan abajo como `sm` sin efecto colateral.
+          ══════════════════════════════════════════════════════════════════
+        */}
         <p
           aria-live="polite"
-          className="mb-1.5 flex flex-1 basis-85 items-center gap-2.5 rounded-pill bg-mint py-1.5 pr-1.5 pl-5 lg:mb-4.5 lg:min-h-20 lg:gap-3.5 lg:py-2 lg:pr-2 lg:pl-6.5"
+          className="mb-1.5 flex flex-1 basis-85 items-center gap-2.5 rounded-pill bg-mint py-1.5 pr-1.5 pl-5 sm:mb-0 sm:self-stretch lg:gap-3.5 lg:py-2 lg:pr-2 lg:pl-6.5"
         >
           <span className="min-w-0 flex-1 font-body text-pastilla font-medium text-ink">
             {/* La `key` es lo que reinicia la animación: sin ella React
@@ -361,14 +449,39 @@ export default function Hero() {
             texto, pero se lee como un hueco dentro del mint. El icono queda en
             `ink`: 17.11:1 sobre `paper`.
           */}
+          {/*
+            ⚠️ EL CÍRCULO CRECIÓ Y EL DIBUJO DE ADENTRO MÁS: 36→44 en mobile y
+            80→92 en desktop el círculo, 18→24 y 26→44 el glifo. Pedido de
+            Camila: «más grandes los iconos». El que más cambia es el DIBUJO, y
+            es a propósito: el círculo ya era grande —80px— pero el icono
+            ocupaba 26 de esos 80, o sea un tercio, y se leía como una mota en
+            el medio de un disco. A 44 sobre 92 ocupa la mitad, que es la
+            proporción de un pictograma.
+
+            ⚠️ LOS 92px SALEN DEL ALTO DEL PILL Y NO DE UN GUSTO. Con
+            `self-stretch` el pill mide la línea del titular (110px) y lleva
+            `py-2`: quedan 94 libres. 92 deja un pelo de aire y evita que el
+            círculo empuje el alto si el titular se achica en algún ancho
+            intermedio.
+
+            ⚠️ `rt-medalla` Y NO `rt-roll`. El texto sube con un fundido, que
+            para una frase está bien; el círculo entra girando y creciendo, con
+            la curva de rebote. Son dos gestos distintos para dos cosas
+            distintas, y juntos son lo que hace que el cambio se lea como «un
+            juego» y no como un reemplazo. Ver `rt-medalla` en globals.css.
+
+            ⚠️ La `key` es lo que reinicia las dos animaciones: sin ella React
+            reusa el nodo, el contenido cambia y no hay transición. Tiene que
+            ser la MISMA que la del texto para que los dos entren juntos.
+          */}
           <span
             key={`icono-${message.text}`}
-            className="rt-roll grid size-9 shrink-0 place-items-center rounded-pill bg-paper lg:size-20"
+            className={`rt-medalla grid size-11 shrink-0 place-items-center rounded-pill lg:size-23 ${message.medalla}`}
           >
             {/* `strokeWidth` uniforme para los cuatro: `Martini` se dibuja en
-                1.4 porque en «Three doors» va a 104px, y a 26px ese trazo se
-                ve más liviano que el resto del juego. */}
-            <message.Icon className="size-4.5 text-ink lg:size-6.5" strokeWidth="1.8" />
+                1.4 porque en «Three doors» va a 104px, y a este tamaño ese
+                trazo se ve más liviano que el resto del juego. */}
+            <message.Icon className="size-6 lg:size-11" strokeWidth="1.8" />
           </span>
         </p>
       </div>
@@ -417,7 +530,29 @@ export default function Hero() {
             calcula desde la posición real de la placa.
             ══════════════════════════════════════════════════════════════
           */
-          className="pointer-events-none absolute top-0 -left-3.5 z-30 m-0 rounded-door bg-bone px-3.5 pt-[0.06em] pb-[0.1em] font-display text-titan font-extrabold uppercase text-sunset lg:px-7"
+          /*
+            ⚠️ EL PADDING ES ASIMÉTRICO EN MOBILE: 14px a la izquierda y 6 a la
+            derecha. Pedido de Camila: «en mobile reducí este espacio», por el
+            hueco entre la última letra de «TOGETHER» y el borde de la placa.
+
+            Los dos lados hacen trabajos distintos y por eso no pueden medir lo
+            mismo. El izquierdo COMPENSA el `-left-3.5`: la placa sobresale 14px
+            de la caja para que el fondo llegue al borde, y esos mismos 14px de
+            padding devuelven la primera letra a la alineación del h1 de arriba.
+            El derecho no alinea con nada — es aire suelto, y a 56px de cuerpo
+            se leía como que la placa era más ancha que su palabra.
+
+            ⚠️ EL RECORTE DEL MARCO SE ACOMODA SOLO. El notch se calcula
+            midiendo dónde termina esta placa (`plateRef` + `syncNotch`), así
+            que al achicar el padding derecho el recorte se achica con él. No
+            hay ningún número que actualizar del otro lado.
+
+            ⚠️ EN `lg` VUELVEN A SER SIMÉTRICOS (28px). Ahí el cuerpo es de
+            144px y la placa se monta sobre el marco de la foto: el aire de la
+            derecha deja de leerse como sobra y pasa a ser el respiro que
+            separa la palabra del borde del recorte.
+          */
+          className="pointer-events-none absolute top-0 -left-3.5 z-30 m-0 rounded-door bg-bone pr-1.5 pl-3.5 pt-[0.06em] pb-[0.1em] font-display text-titan font-extrabold uppercase text-sunset lg:px-7"
         >
           Together
         </p>
@@ -467,27 +602,32 @@ export default function Hero() {
       {/* ── Bajada + CTAs ─────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-end justify-between gap-8 pt-6.5 pb-cierre lg:pt-11">
         {/*
-          ⚠️ EN UN SOLO RENGLÓN HASTA `lg`, Y EN DOS DE AHÍ PARA ARRIBA.
+          ⚠️ UN SOLO RENGLÓN EN TODAS LAS MEDIDAS. Pedido de Camila: «la bajada
+          del hero a una línea no a dos (menos en mobile que quizá es
+          necesario)».
 
-          El `max-w-[16ch]` es lo que parte la frase en «Rooftop bar. Four /
-          kitchens. Walk in.», y en desktop ESO ES EL DISEÑO: un bloque de dos
-          renglones que hace de contrapeso a los dos CTA del otro lado. En
-          mobile el mismo corte dejaba una bajada de dos renglones cortitos
-          debajo de un titular de 56px, que es lo que Camila marcó.
+          El `max-w-[16ch]` de `lg` para arriba partía la frase en «Rooftop bar.
+          Four / kitchens. Walk in.» a propósito: era un bloque de dos renglones
+          que hacía de contrapeso a los dos CTA del otro lado. Lo que el pedido
+          corrige es que ese contrapeso costaba la lectura — son tres frases de
+          tres palabras, y partidas al medio la segunda arranca con «kitchens»
+          colgando de la nada.
 
-          Son dos cambios y hacen falta los dos:
+          ⚠️ EN MOBILE SE ENVUELVE IGUAL Y ESTÁ BIEN. A 390px no hay ancho para
+          36 caracteres a 25px pase lo que pase: ahí el propio `text-hero-lead`
+          es lo que la hace entrar en dos renglones largos en vez de cuatro
+          cortos. El pedido ya lo contempla («menos en mobile»).
 
-            · `max-w-none` saca el corte por debajo de `lg`;
-            · `text-hero-lead` baja el cuerpo lo justo para que entre.
+          ⚠️ NO LLEVA `whitespace-nowrap`. Forzar el no-corte en desktop es
+          pedirle a la frase que desborde el flex y empuje a los CTA fuera de la
+          caja en cuanto alguien edite el texto. Sin `max-w`, la frase ocupa lo
+          que necesita —medido, 367px a 25px contra los ~700 que tiene
+          disponibles— y se envuelve sola el día que crezca.
 
-          Sacar sólo el ancho no alcanza: a 25px la frase pide 367px y a 390
-          hay 358. Se pasaba por 9px. El número y la medición están en la nota
-          del token, en `globals.css`.
-
-          La interlínea ahora la trae el token (`--text-hero-lead--line-height`),
-          así que se fue el `leading-[1.35]` de acá.
+          La interlínea la trae el token (`--text-hero-lead--line-height`), así
+          que se fue el `leading-[1.35]` de acá.
         */}
-        <p className="m-0 max-w-none font-body text-hero-lead font-light text-ink lg:max-w-[16ch]">
+        <p className="m-0 max-w-none font-body text-hero-lead font-light text-ink">
           Rooftop bar. Four kitchens. Walk in.
         </p>
         <div className="flex flex-wrap items-center gap-3.5">

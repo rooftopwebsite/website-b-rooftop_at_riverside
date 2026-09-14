@@ -25,14 +25,14 @@ import { venueStatus } from '@/lib/hours';
  * ══════════════════════════════════════════════════════════════════════════
  *
  * ⚠️ EL MARQUEE NO SE PAUSA Y NO ES INTERACTIVO. Es la única animación en
- * bucle del sitio que muestra TEXTO, así que hay que justificarla: son siete
- * filas de día + horario, o sea ~450px de contenido que no entran en una
- * franja de 40px de alto sin achicar el cuerpo a 9px. El bucle es lo que
- * permite mostrarlas enteras y legibles. La alternativa —mostrar sólo hoy—
- * ya está en la tarjeta de `FindUs` y en el pill del hero.
+ * bucle del sitio que muestra TEXTO, así que hay que justificarla: son cinco
+ * tramos de días + horario que no entran en una franja de 40px de alto sin
+ * achicar el cuerpo a 9px. El bucle es lo que permite mostrarlos enteros y
+ * legibles. La alternativa —mostrar sólo hoy— ya está en la tarjeta de
+ * `FindUs` y en el pill del hero.
  *
  * ⚠️ Y por eso mismo va DUPLICADO en el DOM con la copia en `aria-hidden`:
- * un lector de pantalla tiene que oír los siete días una vez, no catorce.
+ * un lector de pantalla tiene que oír la semana una vez, no dos veces.
  * La segunda copia existe sólo para que el bucle no muestre un hueco al
  * volver al origen.
  *
@@ -45,6 +45,67 @@ import { venueStatus } from '@/lib/hours';
 /** Cuántas veces se repite la tira. Dos es el mínimo para que el bucle cierre. */
 const COPIAS = 2;
 
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LOS DÍAS CON EL MISMO HORARIO SE MUESTRAN JUNTOS. Pedido de Camila:
+ * «unifiquemos horarios, los dos días que está cerrado nombrémoslos juntos, y
+ * los días que hay misma hora de apertura y cierre lo mismo, para que sea
+ * menos a leer».
+ *
+ * La semana pasa de siete filas a cinco:
+ *
+ *     Monday – Tuesday      Closed
+ *     Wednesday – Thursday  3:00 PM – 8:00 PM
+ *     Friday                3:00 PM – 12:00 AM
+ *     Saturday              11:00 AM – 2:00 AM
+ *     Sunday                11:00 AM – 8:00 PM
+ *
+ * Son 34 caracteres menos por vuelta y dos paradas menos para el ojo, que en
+ * una tira que se mueve sola es la diferencia entre leerla y resignarse.
+ *
+ * ⚠️ AGRUPA POR CONSECUTIVOS Y NO POR VALOR. Dos días con el mismo horario
+ * pero separados en la semana —un martes y un viernes— NO pueden mostrarse
+ * como «Tuesday – Friday»: eso diría que el miércoles y el jueves también
+ * abren a esa hora. El acumulador corta el tramo en cuanto el horario cambia,
+ * así que sólo une días pegados.
+ *
+ * ⚠️ EL RANGO SE ESCRIBE CON EL PRIMERO Y EL ÚLTIMO, y con un solo día se
+ * escribe el día solo. Sin ese caso, el viernes saldría «Friday – Friday».
+ *
+ * ⚠️ NO SE LEE DE UNA LISTA APARTE. Sale de `HOURS`, que es la única fuente de
+ * horarios del repo: si mañana el miércoles abre a otra hora, el tramo se
+ * parte solo y nadie tiene que acordarse de deshacer la agrupación.
+ *
+ * ⚠️ `TODAY` SIGUE FUNCIONANDO Y AHORA MARCA EL TRAMO. Cada tramo guarda los
+ * índices de los días que contiene, así que el lunes y el martes resaltan la
+ * misma fila. Es lo correcto: lo que está resaltado es el horario de hoy, y el
+ * horario de hoy es el del tramo.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+interface Tramo {
+  readonly label: string;
+  readonly horario: string;
+  readonly dias: readonly number[];
+}
+
+function agrupar(): readonly Tramo[] {
+  const out: { label: string; horario: string; dias: number[]; primero: string }[] = [];
+
+  HOURS.forEach((row, i) => {
+    const ultimo = out[out.length - 1];
+    if (ultimo && ultimo.horario === row.bar) {
+      ultimo.dias.push(i);
+      ultimo.label = `${ultimo.primero} – ${row.day}`;
+      return;
+    }
+    out.push({ label: row.day, horario: row.bar, dias: [i], primero: row.day });
+  });
+
+  return out.map(({ label, horario, dias }) => ({ label, horario, dias }));
+}
+
+const TRAMOS = agrupar();
+
 export default function UtilityBar() {
   const [todayIdx, setTodayIdx] = useState(-1);
 
@@ -54,22 +115,22 @@ export default function UtilityBar() {
   }, []);
 
   const fila = (copia: number) =>
-    HOURS.map((row, i) => {
-      const isToday = i === todayIdx;
+    TRAMOS.map((tramo) => {
+      const isToday = tramo.dias.includes(todayIdx);
       return (
         <span
-          key={`${copia}-${row.day}`}
+          key={`${copia}-${tramo.label}`}
           className="flex shrink-0 items-center gap-2.5 font-body text-caption font-medium uppercase tracking-eyebrow"
         >
           <span className={isToday ? 'text-cream' : 'text-muted-dark'}>
-            {row.day}
+            {tramo.label}
             {isToday ? ' · today' : ''}
           </span>
           <span className={isToday ? 'text-paper' : 'text-bone/80'}>
             {/* ⚠️ `tabular-nums` para que los horarios no bailen de ancho
                 mientras la tira se mueve: con cifras proporcionales, un «11»
                 y un «3» cambian el largo de la fila en cada vuelta. */}
-            <span className="tabular-nums">{row.bar}</span>
+            <span className="tabular-nums">{tramo.horario}</span>
           </span>
           {/* El separador es decorativo y va aparte del texto para que un
               lector de pantalla no lea «barra» entre cada día. */}

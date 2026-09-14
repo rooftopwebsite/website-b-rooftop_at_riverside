@@ -74,9 +74,13 @@ const PARES = [
   ['deep', 'cream', 'Texto sobre botón crema (el CTA sobre oscuro)', 'body'],
 
   ['— El acento del titular, a dos colores según superficie —'],
-  ['terra', 'paper', 'Acento sobre claro', 'body'],
-  ['terra', 'bone', 'Acento sobre la segunda superficie', 'body'],
+  ['sunset-deep', 'paper', 'Acento sobre claro — sólo display, NO cuerpo', 'large'],
+  ['sunset-deep', 'bone', 'Acento sobre la segunda superficie — sólo display', 'large'],
   ['sunset', 'deep', 'Acento sobre oscuro — sólo display, NO cuerpo', 'large'],
+
+  ['— El rojo de error y de dato pendiente sobre claro —'],
+  ['terra', 'paper', 'Error de formulario y marcador de pendiente', 'body'],
+  ['terra', 'bone', 'Lo mismo sobre la segunda superficie', 'body'],
 
   ['— Eyebrows: sólo los tonos que pasan —'],
   ['deep', 'paper', 'Eyebrow y texto de color sobre claro', 'body'],
@@ -174,12 +178,17 @@ md += `
    ${ratio('sunset', 'paper').toFixed(2)}:1 y ${ratio('river', 'paper').toFixed(2)}:1 sobre la base, y sobre la segunda superficie
    todavía menos (${ratio('sunset', 'bone').toFixed(2)}:1). No pasan ni el mínimo de texto grande, en
    ningún tamaño. Por eso el acento del titular es **a dos colores según la
-   superficie**: \`terra\` sobre claro, \`sunset\` sobre oscuro.
+   superficie**: \`sunset-deep\` sobre claro, \`sunset\` sobre oscuro. Los dos
+   son el MISMO tono (28.3°) y la misma saturación; entre ellos sólo cambia la
+   luminosidad, y por eso el acento se lee naranja en las dos superficies.
 2. **Sobre relleno naranja o teal, el texto va negro.** El blanco da
    ${ratio('paper', 'sunset').toFixed(2)}:1 y ${ratio('paper', 'river').toFixed(2)}:1; el negro da ${ratio('#000000', 'sunset').toFixed(2)}:1 y ${ratio('#000000', 'river').toFixed(2)}:1.
-3. **El acento sobre oscuro es sólo para display.** \`sunset\` sobre \`deep\` da
-   ${ratio('sunset', 'deep').toFixed(2)}:1: pasa el 3:1 de texto grande, no el 4.5:1 de cuerpo. Sirve
-   para una palabra de un titular de 88px, no para una bajada.
+3. **El acento del titular es sólo para display, de los dos lados.** \`sunset\`
+   sobre \`deep\` da ${ratio('sunset', 'deep').toFixed(2)}:1, y \`sunset-deep\` sobre \`paper\` da
+   ${ratio('sunset-deep', 'paper').toFixed(2)}:1 (sobre \`bone\`, ${ratio('sunset-deep', 'bone').toFixed(2)}:1). Los dos pasan el 3:1 de
+   texto grande y ninguno el 4.5:1 de cuerpo: sirven para una palabra de un
+   titular de 88px, no para una bajada. El rojo \`terra\` —${ratio('terra', 'paper').toFixed(2)}:1— es el
+   que sí puede ir en cuerpo, y es el de los errores de formulario.
 4. **La bajada tiene un token opaco y no una opacidad.** \`muted\`
    \`${P.muted}\` pasa AA en las tres superficies claras
    (${ratio('muted', 'paper').toFixed(2)}:1 · ${ratio('muted', 'bone').toFixed(2)}:1 · ${ratio('muted', 'cream').toFixed(2)}:1). Con \`text-body/75\` el color

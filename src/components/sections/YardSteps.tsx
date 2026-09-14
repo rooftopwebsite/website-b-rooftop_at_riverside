@@ -230,7 +230,12 @@ export default function YardSteps() {
         son el hueco que le deja debajo. El borde de arriba del bloque es la
         lengüeta, no el troquel.
       */
-      className="bg-bone pt-bloque pb-cierre"
+      /*
+    Lleva `grano` como todas las superficies planas del sitio — la utilidad
+    está documentada en globals.css. Las secciones que pasan por `<Section>` lo
+    reciben solas; ésta está escrita a mano, así que lo escribe a mano.
+      */
+      className="grano relative bg-bone pt-bloque pb-cierre"
     >
       {/*
         ⚠️ Es una LISTA (`ol`) y no tres `article` sueltos, y con el rediseño
@@ -269,34 +274,98 @@ export default function YardSteps() {
         ══════════════════════════════════════════════════════════════════
       */}
       {/*
-        ⚠️ EL ENVOLTORIO EXISTE PARA EL REF. Ver la nota de `cajaRef` arriba: el
-        `StaggerGroup` no reenvía `ref`, así que el nodo del track se toma de
-        acá. También es el que lleva la `caja-ancha`, que antes estaba en el
-        track: el padding tiene que quedar FUERA del contenedor que scrollea,
-        porque si no, el primer punto de anclaje deja de ser `scrollLeft: 0` y
-        `snap-mandatory` abre el carrusel en la segunda tarjeta. Es la misma
-        pelea entre padding y snap que está documentada en `WhatsOn`.
+        ⚠️ EL ENVOLTORIO EXISTE PARA EL REF, Y NADA MÁS. Ver la nota de
+        `cajaRef` arriba: el `StaggerGroup` no reenvía `ref`, así que el nodo
+        del track se toma de acá.
+
+        ⚠️ LA `caja-ancha` SE MUDÓ AL TRACK, Y ES EL ARREGLO DE LA SOMBRA.
+        Vivía acá, en el envoltorio, con esta nota al lado: «el padding tiene
+        que quedar FUERA del contenedor que scrollea, porque si no el primer
+        punto de anclaje deja de ser `scrollLeft: 0` y `snap-mandatory` abre el
+        carrusel en la segunda tarjeta».
+
+        El diagnóstico era cierto, pero el remedio dejaba la sombra afuera: con
+        el padding en el envoltorio, el borde del `ol` —que es el que recorta—
+        cae EXACTAMENTE sobre el borde de la primera y de la última tarjeta, y
+        los 26px de sombra de los costados se los come. En pantalla se veía
+        como un rectángulo gris cortado a pico alrededor de los tres tickets.
+
+        Con `scroll-px-borde` el padding puede volver adentro: ese scroll
+        padding corre el snapport los mismos píxeles que el padding, así que el
+        primer anclaje vuelve a ser `scrollLeft: 0`. Es la pareja que el track
+        ya tenía antes y que se había ido junto con el padding.
+
+        La cuenta del carrusel no se mueve: el ancho de CONTENIDO del `ol` es
+        el mismo que tenía el envoltorio, así que `ANCHO` sigue dando lo mismo
+        y `paso()` también. Lo único que cambia de tamaño es la caja que
+        RECORTA.
       */}
-      <div ref={cajaRef} className="caja-ancha">
+      <div ref={cajaRef}>
         <StaggerGroup
           as="ol"
           tabIndex={0}
           aria-label="How ordering works, step by step"
           /*
-            ⚠️ `pb-10` NO ES AIRE, ES LA SOMBRA. El `<li>` proyecta su sombra
-            con `filter: drop-shadow` —tiene que ser drop-shadow y no
-            box-shadow, ver la nota del troquel—, y un contenedor con
-            `overflow-x` recorta también abajo. Sin el padding, la sombra de
-            los tres tickets quedaba cortada al ras del borde inferior.
+            ⚠️ LOS PADDINGS SON LA SOMBRA, NO SON AIRE. El `<li>` proyecta su
+            sombra con `filter: drop-shadow` —tiene que ser drop-shadow y no
+            box-shadow, ver la nota del troquel—, y declarar `overflow-x: auto`
+            computa el `overflow-y` a `auto` también: este track recorta arriba
+            y abajo aunque nadie haya pedido scroll vertical.
+
+            La sombra —ver la nota de la clase del `<li>`— sube 8px (16 de
+            blur menos 8 de desplazamiento) y baja 24. De ahí `pt-2` y `pb-7`,
+            con un par de píxeles de sobra abajo. Los números salen medidos por
+            `npm run check:sombras`, no a ojo: con `pt-1.5` el guard marcaba
+            que faltaban 2px arriba.
+
+            ⚠️ A LOS COSTADOS LOS PONE `caja-ancha`, y el track los tiene
+            ADENTRO —no en el envoltorio— con `scroll-px-borde` al lado para
+            que el snap no se corra. Acá sí conviene, al revés que en
+            `WhatsOn`: en `lg` entran los tres tickets y el track NO scrollea,
+            así que no hay tarjeta siguiente que pueda asomar por el hueco. Lo
+            único que entra en esos 56px es la sombra.
           */
-          className="flex snap-x snap-mandatory list-none gap-6 overflow-x-auto p-0 pb-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="caja-ancha scroll-px-borde flex snap-x snap-mandatory list-none gap-6 overflow-x-auto pt-2 pb-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
         {STEPS.map((step) => (
           <RevealItem
             key={step.n}
             as="li"
-            /* La sombra va acá y no en la tarjeta. Ver la nota de `troquel`. */
-            className={`relative flex shrink-0 snap-start pt-9.5 [filter:drop-shadow(0_12px_26px_rgba(10,31,30,0.14))] ${ANCHO}`}
+            /*
+              La sombra va acá y no en la tarjeta. Ver la nota de `troquel`.
+
+              ══════════════════════════════════════════════════════════════
+              ⚠️ SON DOS SOMBRAS CHICAS Y NO UNA GRANDE, y el motivo es que una
+              sola grande dejaba de leerse como sombra.
+
+              Era `drop-shadow(0 12px 26px rgba(10,31,30,0.14))`: 26px de blur
+              se extienden 26px A CADA LADO, y el gap entre tickets es de 24.
+              O sea que la sombra de cada tarjeta llegaba MÁS LEJOS que su
+              vecina: las tres se fundían en una sola mancha gris continua y el
+              bloque entero se leía como un rectángulo de fondo distinto detrás
+              de las tarjetas. Camila: «no le pongas content frame».
+
+              ⚠️ Medido con perfil de píxeles, no a ojo: la luminancia bajaba
+              de 246 a 230 a lo largo de 52px a cada lado, sin un solo salto
+              duro. No estaba recortada — era así de grande.
+
+              Ahora son dos capas, que es como está armada `--shadow-card` para
+              el resto del sitio:
+
+                  0 1px 2px  / 0.10   el contacto, que apoya la tarjeta
+                  0 8px 16px / 0.16   la caída, que le da altura
+
+              El alcance lateral queda en 16px contra los 24 del gap, así que
+              entre dos tickets vuelve a haber fondo limpio y cada tarjeta
+              tiene su propia sombra.
+
+              ⚠️ `drop-shadow` NO TIENE SPREAD, que es como `--shadow-card` se
+              contiene (`-12px`). Acá el único control es el blur, y por eso
+              hay dos capas en vez de una: la de contacto da el filo que el
+              spread negativo daría, y la de caída da la altura.
+              ══════════════════════════════════════════════════════════════
+            */
+            className={`relative flex shrink-0 snap-start pt-9.5 [filter:drop-shadow(0_1px_2px_rgba(10,31,30,0.10))_drop-shadow(0_8px_16px_rgba(10,31,30,0.16))] ${ANCHO}`}
           >
             <span className="lengueta absolute top-0 left-1/2 z-30 flex w-15.5 -translate-x-1/2 flex-col items-center gap-0.5 bg-cream pt-2.5 pb-4">
               <span className="font-body text-[8px] font-medium uppercase tracking-[0.18em] text-muted">
@@ -328,13 +397,49 @@ export default function YardSteps() {
                 {step.tags.map((tag) => (
                   <li
                     key={tag}
-                    /* ⚠️ Borde PUNTEADO, y en `teal600`. Es el único borde
-                       punteado del sitio que no marca un dato faltante —eso
-                       lo hace `PhotoPending`—, así que se distingue por el
-                       color: los huecos van en `fog`, estas etiquetas en el
-                       teal de marca. */
-                    className="rounded-pill border border-dashed border-teal600 px-3 py-1.25 font-body text-caption text-ink"
+                    /*
+                      ══════════════════════════════════════════════════════
+                      ⚠️ SON ETIQUETAS Y TIENEN QUE PARECERLO. Eran píldoras
+                      con borde punteado en `teal600`, y Camila las leyó como
+                      lo que parecían: «los tags/chips de cards five business
+                      parecen botones, ctas, y no deberían; parecen ctas
+                      desactivados».
+
+                      Tenía razón y el motivo es acumulativo. Traían las TRES
+                      señales de control del sistema a la vez —píldora (que en
+                      este sitio significa «esto se toca», ver `Button.tsx`),
+                      contorno cerrado, y texto en `ink` al mismo peso que el
+                      cuerpo—; y encima el punteado, que en cualquier interfaz
+                      lee como «inactivo». Cuatro de esas debajo de un párrafo
+                      son cuatro botones apagados.
+
+                      Ahora no hay ninguna de las tres:
+
+                        · `rounded-btn` (10px) y no píldora — el radio de la
+                          familia, no el del control.
+                        · fondo tenue en vez de contorno. Un tag es una mancha
+                          de color con texto, no una caja con filo.
+                        · `text-muted` y no `ink`: es metadato, va por debajo
+                          del párrafo que acompaña.
+                        · un punto de color al principio, que es el gesto que
+                          termina de decir «tag» y que ningún botón del sitio
+                          tiene.
+
+                      ⚠️ EL FONDO ES `bone` Y NO UN TINTE DEL TEAL. `bone` es
+                      el color de la sección: el chip se lee como un recorte de
+                      la página apoyado sobre la tarjeta blanca, y no suma un
+                      color nuevo. Medido, `muted` sobre `bone` da 4.91:1, que
+                      pasa AA para el cuerpo de 13px.
+
+                      ⚠️ EL PUNTO VA EN `river`, que es el teal brillante y es
+                      `aria-hidden`. `river` tiene prohibido ser texto —2.50:1—
+                      pero acá no es texto: es un cuadrado de 4px decorativo, y
+                      el dato lo dice la palabra de al lado.
+                      ══════════════════════════════════════════════════════
+                    */
+                    className="inline-flex items-center gap-1.75 rounded-btn bg-bone px-2.5 py-1.25 font-body text-caption font-medium text-muted"
                   >
+                    <span aria-hidden="true" className="size-1 shrink-0 rounded-pill bg-river" />
                     {tag}
                   </li>
                 ))}

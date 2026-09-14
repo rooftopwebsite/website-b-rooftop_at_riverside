@@ -126,7 +126,32 @@
   --color-deeper: #013434; /* un peldaño más para capas dentro de una losa */
   --color-teal600: #028382;
   --color-tomato: #eb452c;
-  --color-terra: #a62000; /* acento de titular sobre claro: 7.43:1 sobre paper */
+  --color-terra: #a62000; /* rojo de error y de dato pendiente sobre claro: 7.43:1 sobre paper */
+  /*
+   * `sunset-deep` — EL ACENTO DE TITULAR SOBRE CLARO. Es el naranja de marca
+   * llevado a una luminosidad que se pueda leer.
+   *
+   * El acento iba en `terra` (#A62000) y el problema no era de contraste sino
+   * de FAMILIA: a esa luminosidad el tono 18° se lee como rojo ladrillo, no
+   * como el naranja del logo. Camila: «las palabras destacadas en los títulos
+   * deben estar en naranja no en rojo».
+   *
+   * ⚠️ Y NO PUEDE SER `sunset` A SECAS. Medido, 2.54:1 sobre `paper` y 2.35:1
+   * sobre `bone`: no llega ni al 3:1 que pide el texto grande de WCAG 1.4.3.
+   * Es exactamente el motivo por el que el acento no era naranja.
+   *
+   * ⚠️ ES EL MISMO TONO QUE `sunset`, NO UN NARANJA NUEVO. Hue 28.3°,
+   * saturación 91 %: los dos valores de `#F58521`, sin tocar. Lo único que
+   * baja es la luminosidad, de 54.5 % a 44 %. Por eso sigue leyéndose como el
+   * naranja de la marca y no como un color aparte.
+   *
+   * Medido: 3.54:1 sobre `paper`, 3.28:1 sobre `bone`, 3.09:1 sobre `cream`.
+   *
+   * ⚠️ PASA EL 3:1 DE TEXTO GRANDE Y NO EL 4.5:1 DE CUERPO, así que vive
+   * ÚNICAMENTE dentro de un titular de display. Sobre oscuro el acento sigue
+   * siendo `sunset` a secas, que ahí da 4.26:1.
+   */
+  --color-sunset-deep: #d66a0a;
   /*
    * `tomato-soft` — el rojo de error PARA SUPERFICIE OSCURA. Es el par de
    * `terra` del otro lado del sitio.
@@ -773,6 +798,24 @@
 
   /* ── Motion ─────────────────────────────────────────────────────────────*/
   --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
+  /*
+   * `--ease-rodillo` — la curva CON REBOTE, sólo para el texto que rueda en el
+   * hover de los CTA.
+   *
+   * Está copiada de defoodtruckclub.nl, que es la referencia que trajo Camila
+   * para las microinteracciones: `0.4s cubic-bezier(0.35, 1.5, 0.6, 1)`.
+   *
+   * ⚠️ EL 1.5 DEL TERCER NÚMERO ES UN SOBREPASO DELIBERADO. La curva se va
+   * arriba de 1 y vuelve, o sea que el texto entra pasándose de posición y
+   * retrocede. Es lo que hace que se lea como un gesto físico y no como una
+   * interpolación. `--ease-brand` no sirve acá: es una curva de desaceleración
+   * pura, sin sobrepaso, y el rodado queda blando.
+   *
+   * ⚠️ NO SE USA PARA NADA MÁS. Un sobrepaso en una transición de color o de
+   * opacidad no se ve; en una de layout se lee como un error de cálculo. Vive
+   * únicamente en `rodillo`.
+   */
+  --ease-rodillo: cubic-bezier(0.35, 1.5, 0.6, 1);
 
   /* ── Radios ─────────────────────────────────────────────────────────────
      ⚠️ TERCERA revisión, y ésta viene de medir, no de suponer.
@@ -1329,6 +1372,67 @@
 }
 
 /**
+ * MORDISCO — el hueco redondo que la flecha le muerde a la esquina.
+ *
+ * Las tres puertas de la home tienen un campo de color con un círculo claro en
+ * la esquina de abajo a la derecha. Antes el círculo se apoyaba ENCIMA del
+ * campo, como una chapita pegada. Ahora el campo está mordido: el círculo se
+ * mete en un hueco recortado con el mismo aire alrededor, y el fondo de la
+ * página se ve pasar entre los dos.
+ *
+ * ⚠️ EL HUECO SE ABRE A LA ESQUINA, no es un agujero flotando en el medio del
+ * campo. Es la diferencia entre que se lea como un troquel y que se lea como
+ * una mancha: el radio del mordisco (--mordisco-radio) es MÁS GRANDE que la distancia
+ * del centro al borde (--mordisco-centro), así que el círculo se pasa de los dos bordes
+ * y el recorte queda abierto. Si se invierte esa relación —hueco más chico que
+ * la distancia al borde— aparece un agujero cerrado con un anillo de color
+ * alrededor, que es exactamente lo que no se busca.
+ *
+ * ⚠️ ES `mask` Y NO `clip-path`, por el mismo motivo que el `troquel`: hace falta
+ * combinar el radio de la tarjeta con el mordisco, y un `clip-path: path()` que
+ * los dibuje juntos tendría que estar en píxeles absolutos y dejaría de cuadrar
+ * en cuanto la tarjeta cambie de alto. Con máscara, el `border-radius` y el
+ * `overflow-hidden` siguen haciendo las esquinas y la máscara sólo saca el
+ * mordisco. Los dos recortes conviven sin saber uno del otro.
+ *
+ * ⚠️ LOS TRES NÚMEROS ESTÁN ATADOS AL BOTÓN Y NO SE TOCAN DE A UNO:
+ *
+ *     --mordisco-boton   53px   el diámetro del círculo — es `size-13.25`
+ *     --mordisco-aire     9px   lo que se ve del fondo entre círculo y campo
+ *     --mordisco-sangria  4px   lo que el círculo entra desde la esquina
+ *
+ * Si el botón cambia de tamaño en el TSX, `--mordisco-boton` cambia con él o el
+ * aire deja de ser parejo. Es el mismo trato que tienen el diente y el paso del
+ * `troquel`.
+ *
+ * ⚠️ EL `-webkit-mask` DUPLICADO NO SOBRA. Es la misma regla que ya lleva el
+ * `troquel` unas líneas más arriba: sin el prefijo, Safari sirve la tarjeta sin
+ * máscara y el círculo vuelve a quedar apoyado encima.
+ */
+@utility mordisco {
+  --mordisco-boton: 53px;
+  --mordisco-aire: 9px;
+  --mordisco-sangria: 4px;
+  --mordisco-centro: calc(var(--mordisco-boton) / 2 + var(--mordisco-sangria));
+  --mordisco-radio: calc(var(--mordisco-boton) / 2 + var(--mordisco-aire));
+
+  /* El medio píxel del segundo tope es antialias, igual que en el `troquel`:
+     con los dos topes en el mismo valor el filo del mordisco se ve aserrado. */
+  mask: radial-gradient(
+    circle var(--mordisco-radio) at calc(100% - var(--mordisco-centro))
+      calc(100% - var(--mordisco-centro)),
+    #0000 var(--mordisco-radio),
+    #000 calc(var(--mordisco-radio) + 0.5px)
+  );
+  -webkit-mask: radial-gradient(
+    circle var(--mordisco-radio) at calc(100% - var(--mordisco-centro))
+      calc(100% - var(--mordisco-centro)),
+    #0000 var(--mordisco-radio),
+    #000 calc(var(--mordisco-radio) + 0.5px)
+  );
+}
+
+/**
  * La lengüeta numerada que asoma arriba de cada ticket.
  *
  * El radio es elíptico y asimétrico —esquinas de arriba casi rectas, las de
@@ -1515,6 +1619,227 @@
  */
 @utility sombra-card {
   box-shadow: var(--sombra-card);
+}
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * RODILLO — la etiqueta del CTA rueda hacia arriba en el hover y entra una
+ * copia idéntica desde abajo.
+ *
+ * Pedido de Camila con la referencia puesta: «copiar micro interacciones de la
+ * web de ejemplo defoodtruckclub.nl en los hovers de cta, me gusta el
+ * movimiento de los textos de los ctas con el hover».
+ *
+ * ⚠️ SON DOS COPIAS DEL MISMO CONTENIDO Y NO UNA QUE SE MUEVE. Con una sola,
+ * en el hover el botón se queda un instante VACÍO mientras el texto sale y
+ * vuelve, y ese hueco es exactamente lo que hace que el recurso se vea barato.
+ * Con dos, siempre hay una etiqueta adentro: una se va por arriba mientras la
+ * otra entra por abajo, y el botón nunca queda hueco.
+ *
+ * ⚠️ LA SEGUNDA COPIA LLEVA `aria-hidden` DESDE EL TSX. Es texto duplicado en
+ * el DOM: sin eso, cada botón del sitio se anunciaría dos veces. Ver `Rodillo`
+ * en `Button.tsx`, que es lo único que puede escribir estas clases.
+ *
+ * ⚠️ EL `padding-block` NO ES AIRE, ES EL RECORTE. El `overflow: hidden` es lo
+ * que esconde la copia de abajo y recorta a ras de la caja: sin los 0.18em las
+ * colas de la `y` y de la `p` de «Plan your event» quedaban cortadas EN
+ * REPOSO. Los mismos 0.18em se le restan al margen para que el botón no
+ * crezca — el alto del CTA está fijado en 42px como techo y no se puede mover.
+ *
+ * ⚠️ EL 115 % Y NO 100 %. A 100 % la copia arranca justo pegada al borde de la
+ * caja y en pantallas con DPR fraccional se ve un hilo de la letra asomando
+ * abajo. El 15 % extra la saca del paso del antialias.
+ *
+ * ⚠️ CON MOVIMIENTO REDUCIDO NO RUEDA NADA: la copia se esconde con
+ * `visibility` y la cara de arriba no se mueve. Un texto que se desplaza es
+ * justo lo que `prefers-reduced-motion` viene a apagar.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * BANDA-ARCO — la sección abre con un arco y deja ver la sección ANTERIOR por
+ * detrás, no el fondo del documento.
+ *
+ * Un `border-radius` deja ver lo que hay atrás, y detrás de una sección no hay
+ * nada: se ve el `background` del `<body>`, que es blanco puro. Sobre las
+ * bandas que vienen después de una superficie crema o verde, las dos esquinas
+ * de arriba aparecían con dos triángulos blancos. Camila: «ojo con los bordes,
+ * quedan ahí espacios blancos que deberían ser crema».
+ *
+ * ⚠️ NO SE PUEDE RESOLVER PINTANDO ALGO DETRÁS, porque el color CAMBIA en cada
+ * par y la sección no tiene manera de saber cuál le tocó. En la home sola hay
+ * cuatro pares distintos, y en las 23 rutas el footer cierra sobre `bone`,
+ * `paper`, `cream` y `deep` según la página.
+ *
+ * ⚠️ LA SOLUCIÓN ES GEOMÉTRICA Y NO DE COLOR: la sección anterior se estira el
+ * alto del arco hacia abajo y ésta se monta encima esos mismos píxeles. Detrás
+ * del arco queda la sección de arriba, sea cual sea su color, sin que nadie
+ * tenga que declararlo. La altura total no cambia: lo que se estira es
+ * exactamente lo que el `margin-top` negativo resta.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SE ESTIRA CON UN BORDE TRANSPARENTE Y NO CON `padding-bottom`, Y ESTE ES
+ * EL ERROR QUE HUBO QUE ARREGLAR.
+ *
+ * La primera versión usaba `padding-bottom: var(--radius-band)`. Un
+ * `padding-bottom` no se SUMA al que la sección ya tiene: lo PISA. Todas las
+ * secciones cierran con `pb-cierre`, así que el resultado fue que el aire de
+ * cierre se reemplazaba por el alto del arco y después el arco se lo comía
+ * entero — aire neto CERO. En mobile, donde el radio son 36px, el último
+ * párrafo y su CTA quedaban tocando el borde de la banda siguiente. Camila:
+ * «en mobile acá quedó pegado el contenido al cambio de fondo, cuidado».
+ *
+ * Un `border-bottom` transparente hace lo mismo sin pisar nada: el
+ * `background` de un elemento se pinta hasta el BORDER box, así que la franja
+ * se ve del color de la sección, y el `padding-bottom` que ya estaba sigue
+ * ahí, empujando el contenido como siempre.
+ *
+ * ⚠️ TIENE QUE SER `transparent` Y NO `currentColor`: el borde no está para
+ * verse, está para que el fondo llegue más abajo.
+ * ══════════════════════════════════════════════════════════════════════════
+ *
+ * ⚠️ EL `:has(+ .banda-arco)` ES LA MITAD QUE FALTABA Y POR ESO ESTO ESTUVO
+ * ROTO EN DOS SECCIONES. El par se venía escribiendo A MANO en el `className`
+ * de cada sección —`[margin-top:calc(var(--radius-band)*-1)] rounded-t-band`—
+ * y de las cinco que abren con arco, dos no lo tenían: `WhatsOn` y
+ * `EventsBanner`. Un par que hay que acordarse de escribir en los dos lados es
+ * un par que se rompe. Acá la sección declara UNA clase y el padding del
+ * vecino sale solo.
+ *
+ * ⚠️ HACE FALTA UN `z-index` CRECIENTE, y eso sí sigue a cargo de cada
+ * sección. Montarse encima es pintar encima: sin `z-index` propio, una sección
+ * con `z-[3]` le gana a la siguiente y le tapa el arco. Ese fue exactamente el
+ * bug del footer contra `FindUs`. El orden en la home es 2 → 3 → 3 → 4, y
+ * entre iguales decide el orden del DOM, que es el correcto.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+@utility banda-arco {
+  border-start-start-radius: var(--radius-band);
+  border-start-end-radius: var(--radius-band);
+  margin-top: calc(var(--radius-band) * -1);
+}
+
+:has(+ .banda-arco) {
+  border-bottom: var(--radius-band) solid transparent;
+}
+
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * GRANO — la textura de película sobre las superficies planas.
+ *
+ * Pedido de Camila: «colocar noise effect en todos los fondos lisos».
+ *
+ * ⚠️ VA SOBRE LOS FONDOS Y NO SOBRE TODO EL SITIO, y la diferencia es el
+ * pedido literal. La solución de una línea sería un `body::after` fijo que
+ * cubra el viewport, y es la que usa medio internet; pero eso le pone grano
+ * también a las CUATRO filas de fotos de la home, y una foto nocturna con
+ * ruido encima no se lee como textura, se lee como una foto con ruido. Por eso
+ * la clase se aplica a las superficies —`Section`, el footer, la barra del
+ * header— y no al documento.
+ *
+ * ⚠️ ES UN `::before` CON `inset: 0` Y NO UN `background-image` SOBRE EL
+ * PROPIO ELEMENTO. Dos motivos: el elemento ya tiene su color de fondo y un
+ * segundo `background` obligaría a repetir ese color en cada superficie; y con
+ * pseudo-elemento el grano puede llevar su propia opacidad sin tocar la del
+ * contenido.
+ *
+ * ⚠️ `z-index: 0` Y NO NEGATIVO. Con `-1` el grano se va DETRÁS del fondo del
+ * propio elemento y no se ve nada. Con `0` queda por encima del fondo y por
+ * debajo de cualquier hijo, que es exactamente donde tiene que estar. Las
+ * secciones ya son `relative`, así que el `absolute` se ancla solo.
+ *
+ * ⚠️ EL TILE ES SVG Y NO UN PNG. `feTurbulence` se rasteriza UNA vez y el
+ * navegador repite el mosaico: pesa 300 bytes en el CSS contra los ~8 KB de un
+ * PNG de 160px, y no es un pedido de red. El `stitchTiles='stitch'` es lo que
+ * hace que el mosaico no muestre costuras en las uniones — sin eso se ve una
+ * grilla de cuadrados de 160px, que es peor que no tener grano.
+ *
+ * ⚠️ `baseFrequency 0.8` ES GRANO FINO, casi a nivel de píxel. Más bajo (0.3)
+ * da manchas y se lee como suciedad o como un JPG mal comprimido; más alto se
+ * pierde contra el antialias de la pantalla.
+ *
+ * ⚠️ LA OPACIDAD ES DISTINTA SEGÚN LA SUPERFICIE. Sobre claro el ruido oscuro
+ * se ve mucho antes que sobre oscuro: a la misma opacidad, `bone` queda sucio y
+ * `deep` queda liso. De ahí los dos valores, y de ahí que `.on-dark` —la clase
+ * que el repo ya usa para invertir cosas sobre losa oscura— lo suba.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+@utility grano {
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+  }
+
+  &.on-dark::before,
+  .on-dark &::before {
+    opacity: 0.09;
+  }
+}
+
+@utility rodillo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+  overflow: hidden;
+  padding-block: 0.18em;
+  margin-block: -0.18em;
+}
+
+.rodillo > .rodillo-cara {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+  transition: transform 0.4s var(--ease-rodillo);
+}
+
+.rodillo > .rodillo-copia {
+  position: absolute;
+  inset: 0;
+  transform: translateY(115%);
+}
+
+/**
+ * El disparador. Va en el elemento que recibe el hover —el botón o el link— y
+ * no en el `rodillo`, porque el área sensible es el control entero y no sólo
+ * su etiqueta.
+ *
+ * ⚠️ TAMBIÉN CON `:focus-visible`. Quien navega con teclado tiene que ver el
+ * mismo gesto que quien usa el mouse; si no, el foco pasa por el botón y no
+ * pasa nada.
+ */
+.rueda:hover .rodillo > .rodillo-base,
+.rueda:focus-visible .rodillo > .rodillo-base {
+  transform: translateY(-115%);
+}
+
+.rueda:hover .rodillo > .rodillo-copia,
+.rueda:focus-visible .rodillo > .rodillo-copia {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rodillo > .rodillo-cara {
+    transition: none;
+  }
+
+  .rodillo > .rodillo-copia {
+    visibility: hidden;
+  }
+
+  .rueda:hover .rodillo > .rodillo-base,
+  .rueda:focus-visible .rodillo > .rodillo-base {
+    transform: none;
+  }
 }
 
 @utility link-texto {
@@ -1769,16 +2094,26 @@
 /**
  * El texto del pill de estado del hero, cuando cambia de mensaje.
  *
- * Es de UNA PASADA y dura 420ms: no es ambiente, es la transición entre dos
- * estados. Sube desde abajo con un fundido, que es lo que hace legible el
- * cambio — sin esto el texto se reemplaza de golpe y se lee como un parpadeo
- * o, peor, no se lee (alguien mirando el hero se pierde el cambio y ve otra
- * frase que no sabe de dónde salió).
+ * Es de UNA PASADA: no es ambiente, es la transición entre dos estados. Sube
+ * desde abajo con un fundido, que es lo que hace legible el cambio — sin esto
+ * el texto se reemplaza de golpe y se lee como un parpadeo o, peor, no se lee
+ * (alguien mirando el hero se pierde el cambio y ve otra frase que no sabe de
+ * dónde salió).
+ *
+ * ⚠️ PASÓ DE 420 A 620ms Y CAMBIÓ DE CURVA. Pedido de Camila: «que el cambio
+ * entre uno y otro tenga un efecto más vistoso y no tan rápido». La curva es
+ * ahora `--ease-rodillo`, la misma con sobrepaso que usan los CTA, así que el
+ * texto entra pasándose un pelo y vuelve. El recorrido también creció, de
+ * 0.7em a 1em: desde más abajo, el movimiento se ve.
+ *
+ * ⚠️ VA DE LA MANO CON `STATUS_MS` EN `Hero.tsx`, que subió a 4600. Una
+ * entrada de 620ms dentro de un ciclo de 3400 dejaba el mensaje quieto menos
+ * de tres segundos. Los dos números se tocan juntos.
  */
 @keyframes rt-roll {
   from {
     opacity: 0;
-    transform: translateY(0.7em);
+    transform: translateY(1em);
   }
   to {
     opacity: 1;
@@ -1787,8 +2122,82 @@
 }
 
 .rt-roll {
-  animation: rt-roll 420ms cubic-bezier(0.2, 0, 0, 1) both;
+  animation: rt-roll 620ms var(--ease-rodillo) both;
 }
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * `rt-medalla` — la entrada del círculo con el icono del pill del hero.
+ *
+ * Pedido de Camila: «que el cambio entre uno y otro tenga un efecto más
+ * vistoso y no tan rápido para que se vea un juego y se aprecie que eso va
+ * cambiando».
+ *
+ * ⚠️ ES UN GESTO DISTINTO AL DEL TEXTO, Y ESO ES EL RECURSO. El texto entra
+ * con `rt-roll`: sube medio renglón y se funde, que es lo que corresponde a
+ * una frase que se lee. El círculo entra girando y creciendo, que es lo que
+ * corresponde a un objeto. Los dos con la misma `key` y el mismo momento de
+ * arranque: se lee como que la medalla gira y trae el texto con ella.
+ *
+ * Con la MISMA animación en los dos, el pill entero parecía un fundido cruzado
+ * y el cambio pasaba desapercibido — que es el problema que el pedido nombra.
+ *
+ * ⚠️ EL GIRO ES DE 40° Y NO DE 360. Una vuelta completa convierte el pill en
+ * un spinner y arrastra la mirada a un elemento que sólo informa; 40 grados
+ * con sobrepaso se leen como que la pieza cayó en su lugar.
+ *
+ * ⚠️ ARRANCA EN `scale(0.5)` Y NO EN 0. Desde cero el círculo NACE, y con un
+ * color de relleno distinto cada vez eso parpadea. Desde la mitad, crece.
+ *
+ * ⚠️ LA OPACIDAD LLEGA A 1 EN EL 55 % Y NO AL FINAL. El sobrepaso de
+ * `--ease-rodillo` ocurre sobre el final del recorrido: si el fundido siguiera
+ * abierto ahí, el rebote se vería contra un círculo todavía translúcido y
+ * parecería un error de composición.
+ *
+ * ⚠️ CON MOVIMIENTO REDUCIDO NO HAY NADA DE ESTO. Lo cubre el bloque general
+ * de `prefers-reduced-motion` de este archivo, igual que `rt-roll`.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+@keyframes rt-medalla {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-40deg);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.rt-medalla {
+  animation: rt-medalla 620ms var(--ease-rodillo) both;
+}
+
+/**
+ * ⚠️ CON MOVIMIENTO REDUCIDO EL PILL CAMBIA SIN ANIMARSE, Y NO SE QUEDA
+ * CONGELADO. Las dos animaciones son `both`, o sea que si sólo se les pusiera
+ * `animation: none` el nodo quedaría con los valores del frame 0 —el texto
+ * medio renglón abajo y transparente, el círculo a la mitad y girado— y el
+ * pill del hero sería un hueco. Hay que apagar la animación Y reponer el
+ * estado final a mano.
+ *
+ * ⚠️ NO ALCANZA CON NO ANIMAR: el contenido tiene que seguir CAMBIANDO. El
+ * intervalo de `Hero.tsx` corre igual, así que quien pidió menos movimiento ve
+ * los cuatro mensajes rotando, sólo que sin transición. Eso es lo correcto —
+ * la información no es movimiento.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rt-roll,
+  .rt-medalla {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 
 /**
  * El marquee de fotos del divisor, al REVÉS que `rt-marquee`.

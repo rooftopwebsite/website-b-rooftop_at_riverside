@@ -141,9 +141,46 @@ const BASE = [
     medicamento. Acá el radio pertenece al botón, no a la familia de radios.
   */
   'rounded-pill',
+  /*
+    `rueda` es el disparador del texto rodante: el hover se escucha acá, en
+    el control entero, y el movimiento pasa adentro del `Rodillo`. Ver la
+    utilidad `rodillo` en globals.css.
+  */
+  'rueda',
   'transition-colors duration-200',
   'disabled:opacity-50 disabled:pointer-events-none',
 ].join(' ');
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * El texto que RUEDA en el hover. Es lo único que puede escribir las clases
+ * `rodillo-*`; la mecánica y el porqué de cada número están en la utilidad
+ * `rodillo` de `globals.css`.
+ *
+ * ⚠️ DUPLICA `children` ENTERO Y NO SÓLO EL TEXTO. Muchos CTA son etiqueta más
+ * flecha —`Plan your event <ArrowRight />`— y separarlos obligaría a que cada
+ * call site pasara dos props en vez de children. Duplicado entero, la flecha
+ * rueda junto a la palabra, que además es como se ve en la referencia.
+ *
+ * ⚠️ LA COPIA VA CON `aria-hidden`. Es el mismo texto dos veces en el DOM: sin
+ * esto, un lector de pantalla anuncia «Plan your event Plan your event» en los
+ * sesenta CTA del sitio.
+ *
+ * ⚠️ NO SE PUEDE DUPLICAR CUALQUIER COSA. Vale para etiquetas cortas: texto,
+ * un icono, una flecha. Si algún día un CTA lleva adentro algo con estado o
+ * con `id` propio, esto lo clona y hay que sacarlo de acá.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+function Rodillo({ children }: { readonly children: ReactNode }) {
+  return (
+    <span className="rodillo">
+      <span className="rodillo-cara rodillo-base">{children}</span>
+      <span aria-hidden="true" className="rodillo-cara rodillo-copia">
+        {children}
+      </span>
+    </span>
+  );
+}
 
 /**
  * ⚠️ Va con `cn` y NO con `join(' ')`. Con el join, una clase que venga por
@@ -184,7 +221,7 @@ export function ButtonLink({
         className={cls}
         {...(rest as ComponentProps<'a'>)}
       >
-        {children}
+        <Rodillo>{children}</Rodillo>
         <ExternalIcon />
         <span className="sr-only">(opens in a new tab)</span>
       </a>
@@ -193,7 +230,7 @@ export function ButtonLink({
 
   return (
     <Link href={href} className={cls} {...rest}>
-      {children}
+      <Rodillo>{children}</Rodillo>
     </Link>
   );
 }
@@ -212,7 +249,7 @@ export function Button({
 } & ComponentProps<'button'>) {
   return (
     <button className={classes(variant, size, className)} {...rest}>
-      {children}
+      <Rodillo>{children}</Rodillo>
     </button>
   );
 }

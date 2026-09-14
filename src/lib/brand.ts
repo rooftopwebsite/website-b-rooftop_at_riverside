@@ -49,8 +49,14 @@ export const COLORS = {
   deeper: '#013434',
   teal600: '#028382',
   tomato: '#EB452C',
-  /** Acento de titular sobre superficie clara. 7.43:1 sobre `paper`. */
+  /** Rojo de error y de dato pendiente sobre superficie clara. 7.43:1 sobre `paper`. */
   terra: '#A62000',
+  /**
+   * Acento de titular sobre superficie clara. Es `sunset` con el mismo tono y
+   * la misma saturación, 10 puntos más oscuro: 3.54:1 sobre `paper`.
+   * ⚠️ Sólo dentro de un titular de display — pasa texto grande, no cuerpo.
+   */
+  'sunset-deep': '#D66A0A',
   /** El rojo de error sobre superficie OSCURA. 6.14:1 sobre `deeper`, 4.88:1 sobre `deep`. */
   'tomato-soft': '#FF8F7A',
   plum: '#402639',
@@ -103,12 +109,12 @@ export const COLOR_RULES = {
    * El acento del titular es a DOS colores según la superficie, y máximo en
    * dos titulares de la home.
    */
-  headlineAccent: { onLight: 'terra', onDark: 'sunset' },
+  headlineAccent: { onLight: 'sunset-deep', onDark: 'sunset' },
   /**
    * ⚠️ `sunset` sobre `deep` da 4.26:1: pasa el 3:1 de texto grande, NO el
    * 4.5:1 de cuerpo. Sirve para una palabra de un titular, no para una bajada.
    */
-  displayOnly: ['sunset on deep'],
+  displayOnly: ['sunset on deep', 'sunset-deep on paper', 'sunset-deep on bone'],
 } as const;
 
 export interface Hours {

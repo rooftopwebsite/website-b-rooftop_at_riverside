@@ -27,7 +27,28 @@ export default function SmoothScroll() {
   useEffect(() => {
     if (reduced) return;
 
-    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true, anchors: false });
+    /*
+      ⚠️ EL `lerp` SUBIÓ DE 0.1 A 0.16, o sea que el suavizado AFLOJA. Pedido
+      de Camila: «debemos disminuir un poco el lenis para que no moleste tanto
+      en el scroll».
+
+      Qué significa el número: en cada frame Lenis mueve la página ese
+      porcentaje de la distancia que le falta. Con 0.1 le quedaba un arrastre
+      largo —la página seguía deslizándose bastante después de soltar la rueda,
+      y ese retardo entre el gesto y lo que hace la pantalla es lo que se
+      siente como que el scroll «va atrás»—. Con 0.16 el mismo gesto se resuelve
+      en poco más de la mitad de frames y el suavizado se nota sólo en el
+      arranque y en el frenado, que es para lo que está.
+
+      ⚠️ NO SE PONE EN 1. Eso apagaría el suavizado del todo, y el sitio lo usa
+      para algo más que gusto: el `PhotoDivider` y los reveals están calibrados
+      contra un scroll continuo. El pedido es «un poco menos», no «sacarlo».
+
+      ⚠️ Con `prefers-reduced-motion` Lenis no se instancia — ver el `return`
+      de arriba—, así que este número no le llega a nadie que haya pedido menos
+      movimiento.
+    */
+    const lenis = new Lenis({ lerp: 0.16, smoothWheel: true, anchors: false });
     lenisRef.current = lenis;
 
     let raf = 0;

@@ -365,10 +365,12 @@ export function MaskedLines({
    * opcional en la práctica: son dos colores distintos porque uno solo no
    * pasa contraste en las dos superficies.
    *
-   * ⚠️ `sunset` sobre claro da **2.48:1** y no pasa ni el 3:1 de texto grande;
-   * sobre `deep` da 4.26:1. Sobre claro el acento es `terra` (7.43:1 sobre
-   * `paper`). Es exactamente al revés que en los botones, donde el naranja es
-   * el FONDO y el texto va negro.
+   * ⚠️ `sunset` sobre claro da **2.54:1** y no pasa ni el 3:1 de texto grande;
+   * sobre `deep` da 4.26:1. Sobre claro el acento es `sunset-deep` — el mismo
+   * naranja con 10 puntos menos de luminosidad, 3.54:1 sobre `paper` —, que
+   * reemplazó a `terra` cuando el acento pasó de rojo ladrillo a naranja. Ver
+   * la nota de `Accent` en `Type.tsx`. Es exactamente al revés que en los
+   * botones, donde el naranja es el FONDO y el texto va negro.
    *
    * El default es `dark` porque el único call site cuando esto se escribió era
    * el hero, que va sobre `deep`.
@@ -376,7 +378,7 @@ export function MaskedLines({
   readonly accentOn?: 'light' | 'dark';
 }) {
   const reduced = useReducedMotion();
-  const acento = accentOn === 'light' ? 'text-terra' : 'text-sunset';
+  const acento = accentOn === 'light' ? 'text-sunset-deep' : 'text-sunset';
   const tone = (i: number) => (accentLast && i === lines.length - 1 ? acento : undefined);
 
   // ⚠️ El espacio al final de cada línea salvo la última NO es cosmético: sin
@@ -505,8 +507,30 @@ export function Marquee({
  * lleve al foco a la tarjeta visible al tabular. Lo único que se agrega es el
  * arrastre con el MOUSE, que el scroll nativo no da en desktop.
  *
- * ⚠️ `overflow: clip` recortaría las sombras de las tarjetas, así que el track
- * lleva padding vertical y un margen negativo que lo compensa.
+ * ⚠️ EL TRACK RECORTA LAS SOMBRAS DE LAS TARJETAS, Y POR ESO LLEVA PADDING EN
+ * LOS CUATRO LADOS con un margen negativo que lo compensa. Un contenedor con
+ * `overflow-x: auto` computa el `overflow-y` a `auto` también, así que recorta
+ * arriba y abajo aunque uno sólo haya pedido scroll horizontal.
+ *
+ * Los números salen de `--shadow-card` y `--shadow-float`, que es la del hover,
+ * calculados con el alcance REAL de la cola —`blur + spread`, no `blur / 2`—.
+ * Ver el encabezado de `scripts/check-sombras.mjs`: la cuenta de la mitad da el
+ * punto medio del degradé y deja un escalón recto visible en el borde.
+ *
+ * Con la cuenta buena, `shadow-float` baja 82px y sube 22. De ahí `pb-21` (84)
+ * y `pt-6` (24). Eran 48 y 4, y el guard los marcaba.
+ *
+ * ⚠️ A LOS COSTADOS NO LLEVA NADA, Y ES A PROPÓSITO. El costado de un carrusel
+ * es la ventana por la que se ve que hay más contenido: correrla hacia afuera
+ * para que entre la sombra deja asomar media tarjeta siguiente dentro de la
+ * caja, que se lee como un error de maquetación. En el eje en que un
+ * contenedor scrollea, el recorte es diseño. El que hay que arreglar es el del
+ * eje transversal, que es el de acá arriba.
+ *
+ * ⚠️ EL `className` DEL CONSUMIDOR VA EN UN ENVOLTORIO Y NO ACÁ. Los llamadores
+ * pasan márgenes (`mt-bloque`), y un margen del consumidor contra el margen
+ * negativo del track es una pelea que se resuelve por orden de aparición en el
+ * CSS emitido, o sea por azar. Separados, cada uno manda en su elemento.
  */
 export function DragCarousel({
   children,
@@ -563,30 +587,31 @@ export function DragCarousel({
   }, []);
 
   return (
-    <div
-      ref={ref}
-      role="region"
-      aria-label={label}
-      tabIndex={0}
-      onClickCapture={(e) => {
-        // Si el gesto fue un arrastre, no se navega.
-        if (dragging) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }}
-      className={[
-        'flex snap-x snap-mandatory gap-[20px] overflow-x-auto',
-        // Espacio para que la sombra del hover no se recorte.
-        'py-[12px] -my-[12px]',
-        'scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-        dragging ? 'cursor-grabbing select-none' : 'cursor-grab',
-        className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
-      {children}
+    <div className={className}>
+      <div
+        ref={ref}
+        role="region"
+        aria-label={label}
+        tabIndex={0}
+        onClickCapture={(e) => {
+          // Si el gesto fue un arrastre, no se navega.
+          if (dragging) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}
+        className={[
+          'flex snap-x snap-mandatory gap-[20px] overflow-x-auto',
+          // El aire para que la sombra no se recorte. Ver el encabezado.
+          'pt-6 -mt-6 pb-21 -mb-21',
+          'scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          dragging ? 'cursor-grabbing select-none' : 'cursor-grab',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {children}
+      </div>
     </div>
   );
 }

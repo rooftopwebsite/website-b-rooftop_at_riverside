@@ -110,9 +110,31 @@ export default function Section({
       {...(id ? { id } : {})}
       {...(labelledBy ? { 'aria-labelledby': labelledBy } : {})}
       {...(label ? { 'aria-label': label } : {})}
-      className={['relative', TONES[tone], spacing, GUTTER, className].filter(Boolean).join(' ')}
+      /*
+        ⚠️ `grano` ES LA TEXTURA DE PELÍCULA y entra por acá para las 23 rutas
+        de una sola vez: cada `Section` es un fondo liso, y son la enorme
+        mayoría de los fondos lisos del sitio. Lo que no pasa por este
+        componente —el footer, la barra del header, el hero de la home— lo
+        escribe a mano. El porqué de cada número está en globals.css.
+
+        ⚠️ El `relative` que ya estaba es lo que ancla el `::before` del grano.
+        No estaba puesto para eso, pero ahora también sirve para eso: sacarlo
+        deja el grano anclado al primer ancestro posicionado, que puede ser el
+        documento entero.
+      */
+      className={['relative grano', TONES[tone], spacing, GUTTER, className]
+        .filter(Boolean)
+        .join(' ')}
     >
-      <div className={[WIDTHS[width], innerClassName].filter(Boolean).join(' ')}>{children}</div>
+      {/*
+        ⚠️ EL CONTENIDO VA EN UN CONTEXTO POR ENCIMA DEL GRANO. El `::before`
+        está en `z-index: 0`; sin el `relative z-[1]` de acá, cualquier hijo que
+        no cree su propio contexto queda pintado por debajo del ruido. Con
+        opacidad 0.05 casi no se notaría, pero «casi» sobre texto es un velo.
+      */}
+      <div className={['relative z-[1]', WIDTHS[width], innerClassName].filter(Boolean).join(' ')}>
+        {children}
+      </div>
     </Tag>
   );
 }
