@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import FeaturedEvent from '@/components/sections/FeaturedEvent';
 import { ButtonLink } from '@/components/shared/Button';
 import PageHero from '@/components/shared/PageHero';
 import Section from '@/components/shared/Section';
@@ -86,6 +87,15 @@ export default async function WhatsOnPage({
           </ButtonLink>
         </div>
       </PageHero>
+
+      {/*
+        ⚠️ EL DESTACADO VA ANTES DEL CALENDARIO Y NO ADENTRO. Es un evento que
+        se repite todas las semanas de la temporada, así que como fila del mes
+        aparecería cuatro o cinco veces y ninguna se vería. Arriba, una sola
+        vez y en grande, es lo que reemplaza a la página que tenía. Ver
+        `FeaturedEvent`.
+      */}
+      <FeaturedEvent />
 
       <Section band="md" labelledBy="cal-title">
         {/* ── Barra de navegación del mes ─────────────────────────────── */}

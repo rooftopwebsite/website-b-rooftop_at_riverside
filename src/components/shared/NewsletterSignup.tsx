@@ -93,9 +93,12 @@ const INITIAL: ActionState = { status: 'idle', message: '' };
  * copias deliberadas, y si uno queda con el radio viejo, los dos formularios
  * del sitio dejan de verse iguales, que es justo lo que la nota de arriba
  * pide evitar.
+ *
+ * ⚠️ EL ALTO ES 42px, EL MISMO QUE EL BOTÓN. Ver la nota de `INPUT_BASE` en
+ * `InquiryForm.tsx`: los dos formularios tienen que cambiar juntos.
  */
 const INPUT_BASE =
-  'h-[50px] w-full rounded-pill border bg-paper px-[22px] font-body text-[16px] text-ink transition-colors placeholder:text-body/45 focus-visible:border-deep';
+  'h-10.5 w-full rounded-pill border bg-paper px-[22px] font-body text-[16px] text-ink transition-colors placeholder:text-body/45 focus-visible:border-deep';
 
 function SubmitButton() {
   const { pending } = useFormStatus();

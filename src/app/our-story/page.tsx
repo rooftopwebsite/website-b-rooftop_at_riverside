@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import AboutExperience from '@/components/sections/AboutExperience';
+import AboutFaq from '@/components/sections/AboutFaq';
 import { ButtonLink } from '@/components/shared/Button';
 import { Reveal } from '@/components/shared/Motion';
 import PageHero from '@/components/shared/PageHero';
 import { PendingBlock } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
+import { FAQS } from '@/content/faq';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
@@ -34,6 +37,26 @@ export const metadata: Metadata = pageMeta({
  * enero 2026; no se nombran otros «cócteles con nombre local» sin tenerlos a la
  * vista, porque sería inventar producto.
  */
+/**
+ * `FAQPage` en JSON-LD. Vivía en `/faq` y se muda con las preguntas.
+ *
+ * ⚠️ NO ES OPCIONAL Y ERA EL ÚNICO COSTO REAL de sacar la página: es el dato
+ * estructurado que le permite a Google mostrar las preguntas como resultado
+ * desplegable. Moverlo acá lo conserva; borrarlo con la página lo habría
+ * perdido sin que nada avisara.
+ */
+function faqJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQS.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  };
+}
+
 export default function OurStoryPage() {
   return (
     <>
@@ -42,6 +65,11 @@ export default function OurStoryPage() {
         dangerouslySetInnerHTML={{
           __html: jsonLdScript(breadcrumbJsonLd([{ name: 'Our Story', path: '/our-story' }])),
         }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(faqJsonLd()) }}
       />
 
       <PageHero
@@ -199,6 +227,24 @@ export default function OurStoryPage() {
         </div>
       </Section>
 
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ DOS PÁGINAS ENTERAS SE MUDARON ACÁ ADENTRO: `/the-experience` y
+        `/faq`. Camila, definiendo qué páginas secundarias tiene que tener el
+        sitio: «about y dentro las preguntas, no una pág de preguntas» y «the
+        experience dentro de about».
+
+        Las dos contaban la misma cosa desde distinto ángulo. About decía de
+        dónde viene el lugar, The Experience qué es, y las preguntas cerraban
+        los cabos —si se puede llevar el perro, dónde se estaciona—. Repartido
+        en tres URLs, el relato se cortaba dos veces.
+
+        Las dos rutas viejas redirigen con 301 a su ancla. Ver `next.config.ts`.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <AboutExperience />
+      <AboutFaq />
+
       <Section tone="deep" band="md">
         <div className="flex flex-col gap-[20px] lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-[560px]">
@@ -211,7 +257,7 @@ export default function OurStoryPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-[12px]">
-            <ButtonLink href="/visit" variant="onDark" size="lg">
+            <ButtonLink href="/contact#visit" variant="onDark" size="lg">
               Plan a visit
             </ButtonLink>
             <ButtonLink href="/whats-on" variant="primary" size="lg">

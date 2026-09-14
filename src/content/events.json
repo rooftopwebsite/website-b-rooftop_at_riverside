@@ -74,5 +74,25 @@
       "weekly",
       "sunset-bar"
     ]
+  },
+  {
+    "id": "5003d6d6-4f42-49bf-8f13-7f2ac9ff114c",
+    "title": "NFC North HQ",
+    "description": "Sound on, screens up, and a rooftop that turns into somebody’s hometown bar. Every game that matters, plus the Sunday drink list.",
+    "bannerUrl": null,
+    "startDate": "2026-09-13",
+    "endDate": null,
+    "startTime": "12:00:00",
+    "endTime": "20:00:00",
+    "isRecurring": true,
+    "recurrenceType": "weekly",
+    "recurrenceDays": "[0]",
+    "price": null,
+    "tags": [
+      "featured",
+      "weekly",
+      "sunset-bar",
+      "sports"
+    ]
   }
 ]

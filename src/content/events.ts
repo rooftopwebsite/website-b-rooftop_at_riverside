@@ -178,6 +178,21 @@ function adapt(r: RawEvent): VenueEvent {
 export const EVENTS: readonly VenueEvent[] = (raw as readonly RawEvent[]).map(adapt);
 
 export const recurringEvents = () => EVENTS.filter((e) => e.kind === 'recurring');
+
+/**
+ * El evento DESTACADO del calendario: el que abre `/whats-on` con una card
+ * grande. Es el que lleva el tag `featured` en el dashboard.
+ *
+ * ⚠️ DEVUELVE UNO SOLO, aunque haya varios marcados. Dos cards grandes
+ * seguidas dejan de destacar y empujan la primera fecha real dos pantallas
+ * abajo. Si el cliente marca dos, gana el primero del calendario y el segundo
+ * aparece como una fila normal — que es el peor caso aceptable.
+ *
+ * ⚠️ EL TAG SE PONE EN LA BASE, NO ACÁ. Es lo que le permite al cliente
+ * cambiar el destacado sin tocar el código. Hoy lo lleva el evento de los
+ * domingos de fútbol, que antes era la página `/nfc-north-hq`.
+ */
+export const featuredEvent = () => EVENTS.find((e) => e.tags.includes('featured')) ?? null;
 export const eventBySlug = (slug: string) => EVENTS.find((e) => e.slug === slug);
 
 const WEEKDAY_LABEL = [

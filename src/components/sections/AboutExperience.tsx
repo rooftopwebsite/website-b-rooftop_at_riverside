@@ -1,22 +1,24 @@
-import type { Metadata } from 'next';
+/**
+ * «More than a bar with a view», como sección de About.
+ *
+ * ⚠️ ERA LA PÁGINA `/the-experience`. Camila, definiendo el mapa del sitio:
+ * «the experience dentro de about». Y tiene sentido: la página no vendía un
+ * servicio ni resolvía una pregunta, contaba QUÉ ES este lugar — que es
+ * exactamente el trabajo de `/our-story`. Dos páginas para el mismo relato de
+ * marca se reparten el tráfico y ninguna de las dos lo cuenta entero.
+ *
+ * ⚠️ EL TEXTO NO SE TOCÓ.
+ *
+ * ⚠️ EL `id="experience"` ES EL DESTINO DEL REDIRECT 301 de `/the-experience`.
+ * No se renombra. Ver `next.config.ts`.
+ */
 import Image from 'next/image';
 import { ButtonLink } from '@/components/shared/Button';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
-import PageHero from '@/components/shared/PageHero';
 import { PendingData } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
-import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
-export const metadata: Metadata = pageMeta({
-  route: "/the-experience",
-  image: {
-    url: '/images/game-truck.jpg',
-    width: 1800,
-    height: 1200,
-    alt: 'The gaming truck at Rooftop at Riverside',
-  },
-});
 
 /**
  * /the-experience — Game Lounge y camión de gaming.
@@ -40,35 +42,9 @@ const PLATFORMS = ['PlayStation 5', 'Xbox Series X', 'Nintendo Switch 2'] as con
 /** Del brief, sección Onboarding Call y cuestionario H5. */
 const CONSOLES = '4 PlayStation 5 · 4 Xbox Series X · 2 Nintendo Switch 2';
 
-export default function TheExperiencePage() {
+export default function AboutExperience() {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLdScript(
-            breadcrumbJsonLd([{ name: 'The Experience', path: '/the-experience' }]),
-          ),
-        }}
-      />
-
-      <PageHero
-        eyebrow="Game Lounge"
-        title="More than a bar with a view"
-        lead="A climate-controlled truck full of consoles and screens, with a Game Coach keeping the rounds moving. Parked in the yard, or parked at your party."
-        image="/images/game-truck.jpg"
-        imageAlt="The gaming truck parked in the yard at Rooftop at Riverside"
-        crumbs={[{ name: 'The Experience', path: '/the-experience' }]}
-      >
-        <div className="flex flex-wrap gap-[12px]">
-          <ButtonLink href="/events/game-truck" variant="primary" size="lg">
-            Book it for a party
-          </ButtonLink>
-          <ButtonLink href="/visit" variant="secondary" size="lg">
-            Just come by
-          </ButtonLink>
-        </div>
-      </PageHero>
+    <div id="experience" className="scroll-mt-24">
 
       {/* ── Qué hay adentro ────────────────────────────────────────────── */}
       <Section band="lg" labelledBy="inside-title">
@@ -182,12 +158,12 @@ export default function TheExperiencePage() {
                 school function.
               </p>
             </div>
-            <ButtonLink href="/events/game-truck" variant="dark" size="lg">
+            <ButtonLink href="/events#game-truck" variant="dark" size="lg">
               Book the gaming truck
             </ButtonLink>
           </div>
         </div>
       </Section>
-    </>
+    </div>
   );
 }

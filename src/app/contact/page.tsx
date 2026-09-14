@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import ContactVisit from '@/components/sections/ContactVisit';
 import { ButtonLink } from '@/components/shared/Button';
 import OpenStatus from '@/components/shared/OpenStatus';
 import PageHero from '@/components/shared/PageHero';
@@ -29,7 +30,7 @@ const ROUTES = [
     title: 'Booking the place',
     body: 'Buyouts, holiday parties, fundraisers and anything with a headcount. The request form gets you the events packet.',
     ctaLabel: 'Request a proposal',
-    href: '/events/inquire',
+    href: '/events#inquire',
     email: BRAND.contact.events,
     primary: true,
   },
@@ -38,7 +39,7 @@ const ROUTES = [
     title: 'General questions',
     body: 'Hours, dogs, big groups on a Sunday, lost property, or anything the FAQ does not cover.',
     ctaLabel: 'Read the FAQ first',
-    href: '/faq',
+    href: '/our-story#faq',
     email: BRAND.contact.email,
     primary: false,
   },
@@ -173,6 +174,22 @@ export default function ContactPage() {
           more on a weekend in season, message ahead and we&rsquo;ll do what we can.
         </p>
       </Section>
+
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ TODA LA PÁGINA `/visit` SE MUDÓ ACÁ ABAJO. Camila: «contact con
+        visit dentro».
+
+        Las dos contestaban la misma pregunta —cómo los alcanzo— desde dos
+        ángulos: acá estaban los tres inboxes y allá el mapa, el horario y el
+        estacionamiento. Quien entra a Contact buscando un teléfono suele
+        necesitar también la dirección, y viceversa.
+
+        La ruta vieja redirige con 301 a `/contact#visit`, y el `/parking` del
+        sitio de Wix a `/contact#parking`. Ver `next.config.ts`.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <ContactVisit />
     </>
   );
 }

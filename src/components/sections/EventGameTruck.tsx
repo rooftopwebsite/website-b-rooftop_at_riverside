@@ -1,20 +1,20 @@
-import type { Metadata } from 'next';
+/**
+ * El camión de juegos, como sección de `/events`.
+ *
+ * ⚠️ ERA LA PÁGINA `/events/game-truck`. Es un add-on del evento privado —se
+ * contrata junto con el lugar, no por separado— así que su sitio es la página
+ * donde se decide el evento. Mismo criterio que `EventSpaces`.
+ *
+ * ⚠️ EL TEXTO NO SE TOCÓ, y la tabla de precios tampoco. Lo único que cambia
+ * son los links al formulario, que ahora son anclas.
+ *
+ * ⚠️ EL `id="game-truck"` ES EL DESTINO DEL REDIRECT 301 de la ruta vieja.
+ */
 import Image from 'next/image';
 import { ButtonLink } from '@/components/shared/Button';
-import PageHero from '@/components/shared/PageHero';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
-import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
-export const metadata: Metadata = pageMeta({
-  route: "/events/game-truck",
-  image: {
-    url: '/images/game-truck.jpg',
-    width: 1800,
-    height: 1200,
-    alt: 'The gaming truck at Rooftop at Riverside',
-  },
-});
 
 const GOOD_FOR = [
   'Kids and teen birthdays',
@@ -26,36 +26,9 @@ const GOOD_FOR = [
 ] as const;
 
 /** /events/game-truck — el camión de gaming como producto de eventos. */
-export default function GameTruckPage() {
+export default function EventGameTruck() {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLdScript(
-            breadcrumbJsonLd([
-              { name: 'Events', path: '/events' },
-              { name: 'Gaming truck', path: '/events/game-truck' },
-            ]),
-          ),
-        }}
-      />
-
-      <PageHero
-        eyebrow="Events add-on"
-        title="The party arrives on wheels"
-        lead="Two hours, a Game Coach, and a truck full of consoles with the air conditioning running. It parks at your event here, or drives to it."
-        image="/images/game-truck.jpg"
-        imageAlt="The gaming truck parked and open at Rooftop at Riverside"
-        crumbs={[
-          { name: 'Events', path: '/events' },
-          { name: 'Gaming truck', path: '/events/game-truck' },
-        ]}
-      >
-        <ButtonLink href="/events/inquire" variant="primary" size="lg">
-          Request a proposal
-        </ButtonLink>
-      </PageHero>
+    <div id="game-truck" className="scroll-mt-24">
 
       <Section band="lg" labelledBy="pricing-title">
         <SectionHead
@@ -171,13 +144,13 @@ export default function GameTruckPage() {
               Pricing carried over from the current site. Confirm before booking.
             </p>
             <div className="mt-[8px]">
-              <ButtonLink href="/events/inquire" variant="primary">
+              <ButtonLink href="#inquire" variant="primary">
                 Request a proposal
               </ButtonLink>
             </div>
           </div>
         </div>
       </Section>
-    </>
+    </div>
   );
 }

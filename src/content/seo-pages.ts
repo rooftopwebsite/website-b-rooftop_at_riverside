@@ -74,69 +74,13 @@ export const PAGE_SEO = {
     keywords: ['private event venue bonita springs'],
   },
 
-  '/events/spaces': {
-    h1: 'Pick your corner of paradise',
-    title: 'Event Spaces | Rooftop at Riverside, Bonita Springs',
-    description:
-      'Four spaces to rent in downtown Bonita Springs: the rooftop Sunset Bar, the gated Yard, the patio, or a full buyout of the whole place.',
-    keywords: ['event space rental bonita springs'],
-  },
 
-  '/events/corporate': {
-    h1: "Take the team somewhere they'll actually want to go",
-    title: 'Corporate Event Venue in Bonita Springs, FL',
-    description:
-      'Client nights, team outings and company dinners on a rooftop in downtown Bonita Springs. Four kitchens means nobody gets a plate they did not pick.',
-    keywords: ['corporate event venue bonita springs'],
-  },
 
-  '/events/holiday-parties': {
-    h1: 'Trade the ballroom for the rooftop',
-    title: 'Holiday Party Venue in Bonita Springs, FL',
-    description:
-      'Company holiday parties outdoors, in December, with nobody in a coat. Take the rooftop, the yard, or the whole place with the gates closed.',
-    keywords: ['holiday party venue bonita springs'],
-  },
 
-  '/events/celebrations': {
-    h1: 'Every milestone deserves a view',
-    title: 'Birthday & Celebration Venue in Bonita Springs, FL',
-    description:
-      'Birthdays, quinceañeras, engagements, showers and reunions on a rooftop over the Imperial River. Kids and dogs welcome, and the bar runs late on weekends.',
-    keywords: ['birthday party venue', 'quinceañera venue'],
-  },
 
-  '/events/fundraisers': {
-    h1: 'Raise more, spend less on the room',
-    title: 'Fundraiser & Nonprofit Event Venue in Bonita Springs',
-    description:
-      'Spirit nights, galas and school fundraisers in a gated yard on Old 41, across from Riverside Park. The stage and the sound are already there.',
-    keywords: ['fundraiser venue bonita springs'],
-  },
 
-  '/events/game-truck': {
-    h1: 'The party arrives on wheels',
-    title: 'Video Game Truck Rental | Rooftop at Riverside',
-    description:
-      "Southwest Florida's first gaming truck: consoles, screens, a Game Coach and air conditioning. Two hours from $400, here or at your place.",
-    keywords: ['game truck rental bonita springs'],
-  },
 
-  '/nfc-north-hq': {
-    h1: 'Sunday belongs to the rooftop',
-    title: 'Football Watch Parties in Bonita Springs | Rooftop at Riverside',
-    description:
-      'Half of Bonita came down from somewhere with real winter, and on Sunday it shows. Doors at 11, sound on the big game, four kitchens open the whole time.',
-    keywords: ['football watch party bonita springs'],
-  },
 
-  '/the-experience': {
-    h1: 'More than a bar with a view',
-    title: 'The Experience | Games, Live Music & Family Nights',
-    description:
-      "Live music, Bingo, dog nights and Southwest Florida's first gaming truck. Things to do in downtown Bonita Springs, most of them free.",
-    keywords: ['things to do bonita springs', 'game lounge'],
-  },
 
   '/market': {
     h1: 'The Neighborhood Market',
@@ -162,21 +106,7 @@ export const PAGE_SEO = {
     keywords: ['food truck spots bonita springs'],
   },
 
-  '/faq': {
-    h1: 'How this place works',
-    title: 'FAQ | Rooftop at Riverside',
-    description:
-      'Delivery, takeout, outside food, catering, reservations, paying the trucks, dogs, age limits, parking and rain. The short answers.',
-    keywords: [],
-  },
 
-  '/visit': {
-    h1: 'Find us across from Riverside Park',
-    title: 'Visit | Hours, Directions & Parking, Bonita Springs',
-    description:
-      'Rooftop at Riverside is at 27333 Old 41 Rd, downtown Bonita Springs. Hours for the bar and the trucks, where to park, and how to get here.',
-    keywords: ['rooftop bar bonita springs hours'],
-  },
 
   '/contact': {
     h1: 'Say hello',

@@ -1,17 +1,27 @@
-import type { Metadata } from 'next';
+/**
+ * Los espacios que se alquilan, como sección de `/events`.
+ *
+ * ⚠️ ERA LA PÁGINA `/events/spaces` y se mudó acá entera. Camila, definiendo
+ * qué tiene que tener la página de eventos: «quiero que esté la info de qué se
+ * alquila y cierra para eventos privados, y el formulario o info para
+ * reservar». Esto es literalmente la primera mitad de esa frase —cuatro
+ * espacios con sus capacidades— y vivía a un click de la página que lo
+ * necesitaba.
+ *
+ * ⚠️ EL TEXTO NO SE TOCÓ. Lo único que cambia son los links al formulario, que
+ * pasan de `/events/inquire` a `#inquire`: ahora está en la misma página.
+ *
+ * ⚠️ EL `id="spaces"` ES EL DESTINO DEL REDIRECT 301 de la ruta vieja, así que
+ * no se renombra. Ver `next.config.ts`.
+ */
 import Image from 'next/image';
 import { ButtonLink } from '@/components/shared/Button';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
-import PageHero from '@/components/shared/PageHero';
 import { PendingBlock, PendingData, PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { SPACES, type Space } from '@/content/spaces';
-import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
-export const metadata: Metadata = pageMeta({
-  route: "/events/spaces",
-});
 
 /**
  * /events/spaces — la página que más plata deja.
@@ -21,34 +31,9 @@ export const metadata: Metadata = pageMeta({
  * capacidades.» Un número inventado en esta página es una promesa contractual
  * que después alguien tiene que cumplir con una grúa.
  */
-export default function SpacesPage() {
+export default function EventSpaces() {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLdScript(
-            breadcrumbJsonLd([
-              { name: 'Events', path: '/events' },
-              { name: 'Spaces', path: '/events/spaces' },
-            ]),
-          ),
-        }}
-      />
-
-      <PageHero
-        eyebrow="Event spaces"
-        title="Pick your corner of paradise"
-        lead="A rooftop, a gated yard, a patio, and the option to take all of it. Every one of them comes with the bar and the trucks."
-        crumbs={[
-          { name: 'Events', path: '/events' },
-          { name: 'Spaces', path: '/events/spaces' },
-        ]}
-      >
-        <ButtonLink href="/events/inquire" variant="primary" size="lg">
-          Request a proposal
-        </ButtonLink>
-      </PageHero>
+    <div id="spaces" className="scroll-mt-24">
 
       <Section band="lg" labelledBy="spaces-title">
         <SectionHead
@@ -116,13 +101,13 @@ export default function SpacesPage() {
                 the earlier the better.
               </p>
             </div>
-            <ButtonLink href="/events/inquire" variant="dark" size="lg">
+            <ButtonLink href="#inquire" variant="dark" size="lg">
               Request a proposal
             </ButtonLink>
           </div>
         </div>
       </Section>
-    </>
+    </div>
   );
 }
 
@@ -214,7 +199,7 @@ function SpaceCard({ space, flipped }: { readonly space: Space; readonly flipped
         </div>
 
         <div className="mt-[24px]">
-          <ButtonLink href="/events/inquire" variant="secondary">
+          <ButtonLink href="#inquire" variant="secondary">
             Ask about {space.name}
           </ButtonLink>
         </div>

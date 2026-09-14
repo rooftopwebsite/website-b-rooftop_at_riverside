@@ -1,15 +1,25 @@
-import type { Metadata } from 'next';
+/**
+ * Las preguntas frecuentes, como sección de About.
+ *
+ * ⚠️ ERA LA PÁGINA `/faq`. Camila: «about y dentro las preguntas, no una pág
+ * de preguntas». Una página de FAQ es un destino al que nadie va por su
+ * cuenta: se llega buscando UNA respuesta concreta —si se puede llevar el
+ * perro, dónde se estaciona— y esas respuestas cierran el mismo relato que
+ * cuenta About.
+ *
+ * ⚠️ EL `FAQPage` DE JSON-LD SE MANTIENE y ahora vive en `/our-story`. Es el
+ * dato estructurado que le permite a Google mostrar las preguntas como
+ * resultado desplegable, y perderlo habría sido el único costo real de sacar
+ * la página. Está en el `page.tsx` de About, no acá.
+ *
+ * ⚠️ EL `id="faq"` ES EL DESTINO DEL REDIRECT 301 de `/faq`.
+ */
 import { ButtonLink } from '@/components/shared/Button';
-import PageHero from '@/components/shared/PageHero';
 import Section from '@/components/shared/Section';
-import { Heading } from '@/components/shared/Type';
+import { Heading, SectionHead } from '@/components/shared/Type';
 import { FAQ_GROUPS, FAQS } from '@/content/faq';
 import { BRAND } from '@/lib/brand';
-import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
-export const metadata: Metadata = pageMeta({
-  route: "/faq",
-});
 
 /** `FAQPage` en JSON-LD, requisito de la Fase 3. */
 function faqJsonLd() {
@@ -33,28 +43,24 @@ function faqJsonLd() {
  * un solo kilobyte de JS. Un acordeón custom sólo tendría sentido si hiciera
  * falta animar la altura, y no hace falta.
  */
-export default function FaqPage() {
+export default function AboutFaq() {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdScript(faqJsonLd()) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLdScript(breadcrumbJsonLd([{ name: 'FAQ', path: '/faq' }])),
-        }}
-      />
+    <div id="faq" className="scroll-mt-24">
+      {/*
+        El encabezado pasa de `PageHero` a `SectionHead`: ya no abre una
+        página, abre una sección dentro de About.
+      */}
+      <Section band="lg" bandBottom="none">
+        <SectionHead
+          eyebrow="Questions"
+          eyebrowTone="deep"
+          id="faq-title"
+          title="How this place works"
+          lead="Mostly one question in different shapes: how does this place actually work?"
+        />
+      </Section>
 
-      <PageHero
-        eyebrow="Questions"
-        title="How this place works"
-        lead="Mostly one question in different shapes: how does this place actually work?"
-        crumbs={[{ name: 'FAQ', path: '/faq' }]}
-      />
-
-      <Section band="lg" width="prose">
+      <Section bandTop="none" band="lg" width="prose" labelledBy="faq-title">
         {FAQ_GROUPS.map((group) => (
           <section key={group} className="mb-[48px] last:mb-0" aria-labelledby={`faq-${group}`}>
             <Heading level={2} id={`faq-${group}`} role="label" className="text-d5">
@@ -108,6 +114,6 @@ export default function FaqPage() {
           </ButtonLink>
         </div>
       </Section>
-    </>
+    </div>
   );
 }

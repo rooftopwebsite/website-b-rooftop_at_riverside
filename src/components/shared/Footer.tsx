@@ -57,38 +57,59 @@ type FooterLink = { label: string; href: string; external?: boolean };
  * antes lo llevaba, pasó a ser el marquee de horarios y su comentario dice que
  * Gift Cards «queda en el footer»: no quedó. Ahora sí.
  */
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LOS TRES GRUPOS DEL FOOTER SON EL MISMO MAPA QUE EL MEGA-MENÚ, y eso era
+ * el defecto que había que arreglar.
+ *
+ * Camila, revisando la navegación: «las opciones del footer deben estar todas
+ * en el hero o mega menú también». Estaban desalineados: el footer tenía seis
+ * destinos que el mega-menú no —Event Spaces, Corporate, Holiday Parties,
+ * Events Packet, FAQ, Careers— y el mega-menú tenía una tarjeta destacada que
+ * el footer no. Dos navegaciones que describen dos sitios distintos.
+ *
+ * Ahora las dos listan las MISMAS diez páginas, agrupadas igual:
+ *
+ *     The place        Sunset Bar · Food Trucks · The Yard · What's On · Market
+ *     Events           Private Events · Request a Proposal
+ *     Get to know us   About · Contact · Join Us · Gift Cards
+ *
+ * ⚠️ LAS ANCLAS DE EVENTS NO SON PÁGINAS Y POR ESO NO ESTÁN. Corporate, Holiday
+ * Parties y Event Spaces dejaron de ser rutas: son secciones de `/events`.
+ * Listarlas acá como si fueran destinos propios volvería a contar un sitio de
+ * quince páginas que ya no existe. Se llega por la página, que es donde el
+ * argumento se lee entero.
+ *
+ * ⚠️ «Request a Proposal» SÍ SE QUEDA aunque también sea un ancla: es la
+ * acción, no una sección. Es el único link del footer que pide algo.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
 const LINKS_LUGAR: readonly FooterLink[] = [
   { label: 'Sunset Bar', href: '/sunset-bar' },
   { label: 'Food Trucks', href: '/food-trucks' },
   { label: 'The Yard', href: '/the-yard' },
   { label: "What's On", href: '/whats-on' },
   { label: 'The Market', href: '/market' },
-  { label: 'Gift Cards', href: BRAND.giftCards, external: true },
 ];
 
-/** La vertical que factura, con sus puertas de entrada. */
+/** La vertical que factura: la página y la acción. */
 const LINKS_EVENTOS: readonly FooterLink[] = [
   { label: 'Private Events', href: '/events' },
-  { label: 'Event Spaces', href: '/events/spaces' },
-  { label: 'Corporate', href: '/events/corporate' },
-  { label: 'Holiday Parties', href: '/events/holiday-parties' },
-  { label: 'Request a Proposal', href: '/events/inquire' },
+  { label: 'Request a Proposal', href: '/events#inquire' },
 ] as const;
 
 /**
- * Conocernos y lo práctico.
+ * Conocernos, y la única venta directa del sitio.
  *
- * ⚠️ `/visit` y `/contact` están acá y NO en una columna de datos: los datos
- * salieron del footer, pero las páginas que los tienen siguen a un clic. Es la
- * única compensación honesta que admite el pedido.
+ * ⚠️ `Gift Cards` SE MUDÓ ACÁ DESDE «The place» y ahora está también en el
+ * mega-menú. Camila lo pidió en los dos lados: es una venta y estaba escondida
+ * al fondo de la página, mezclada entre las secciones del local.
  */
 const LINKS_CONOCERNOS: readonly FooterLink[] = [
-  { label: 'Our Story', href: '/our-story' },
-  { label: 'The Experience', href: '/the-experience' },
-  { label: 'Visit Us', href: '/visit' },
+  { label: 'About', href: '/our-story' },
   { label: 'Contact', href: '/contact' },
-  { label: 'FAQ', href: '/faq' },
   { label: 'Join Us', href: '/join-us' },
+  { label: 'Gift Cards', href: BRAND.giftCards, external: true },
 ] as const;
 
 /**
@@ -327,7 +348,7 @@ export default function Footer() {
               A rooftop bar over a curated food truck park, in downtown Bonita Springs.
             </p>
 
-            <ButtonLink href="/events/inquire" variant="onDark">
+            <ButtonLink href="/events#inquire" variant="onDark">
               Plan an event
             </ButtonLink>
 

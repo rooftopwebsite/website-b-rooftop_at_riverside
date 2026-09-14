@@ -1,41 +1,25 @@
-import type { Metadata } from 'next';
+/**
+ * Cómo llegar, horarios y estacionamiento, como sección de Contact.
+ *
+ * ⚠️ ERA LA PÁGINA `/visit`. Camila: «contact con visit dentro». Las dos
+ * contestaban la misma pregunta desde dos ángulos —«cómo los alcanzo»— y
+ * estaban a un click una de la otra: Contact tenía tres inboxes y Visit el
+ * mapa, el horario y el estacionamiento.
+ *
+ * ⚠️ EL `id="visit"` ES EL DESTINO DEL REDIRECT 301 de `/visit`, y el ancla
+ * `#parking` de adentro también está redirigida desde el sitio de Wix
+ * (`/parking` → `/contact#parking`). Los dos están en `next.config.ts`.
+ */
 import { ButtonLink } from '@/components/shared/Button';
 import OpenStatus from '@/components/shared/OpenStatus';
-import PageHero from '@/components/shared/PageHero';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { BRAND, HAPPY_HOUR, HOURS, addressLine, mapsUrl } from '@/lib/brand';
-import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
-export const metadata: Metadata = pageMeta({
-  route: "/visit",
-});
 
-export default function VisitPage() {
+export default function ContactVisit() {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLdScript(breadcrumbJsonLd([{ name: 'Visit', path: '/visit' }])),
-        }}
-      />
-
-      <PageHero
-        eyebrow="Getting here"
-        title="Find us across from Riverside Park"
-        lead="On Old 41, across from Riverside Park. Twenty minutes from Naples, fifteen from Estero, and no cover to walk in."
-        crumbs={[{ name: 'Visit', path: '/visit' }]}
-      >
-        <div className="flex flex-wrap gap-[12px]">
-          <ButtonLink href={mapsUrl()} variant="primary" size="lg" external>
-            Open in Google Maps
-          </ButtonLink>
-          <ButtonLink href={BRAND.contact.phoneHref} variant="secondary" size="lg">
-            {BRAND.contact.phone}
-          </ButtonLink>
-        </div>
-      </PageHero>
+    <div id="visit" className="scroll-mt-24">
 
       {/* ── Horarios: los DOS sets ─────────────────────────────────────── */}
       <Section band="lg" labelledBy="hours-title">
@@ -185,7 +169,7 @@ export default function VisitPage() {
               <ButtonLink href={mapsUrl()} variant="secondary" external>
                 Directions
               </ButtonLink>
-              <ButtonLink href="/faq" variant="secondary">
+              <ButtonLink href="/our-story#faq" variant="secondary">
                 Dogs, kids, ordering
               </ButtonLink>
             </div>
@@ -202,6 +186,6 @@ export default function VisitPage() {
           </div>
         </div>
       </Section>
-    </>
+    </div>
   );
 }

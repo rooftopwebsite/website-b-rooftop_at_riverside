@@ -56,7 +56,7 @@ export default function TheYardPage() {
           <ButtonLink href="/whats-on" variant="primary" size="lg">
             See the calendar
           </ButtonLink>
-          <ButtonLink href="/events/inquire" variant="secondary" size="lg">
+          <ButtonLink href="/events#inquire" variant="secondary" size="lg">
             Book the yard
           </ButtonLink>
         </div>
@@ -187,10 +187,10 @@ export default function TheYardPage() {
               Stage and sound are already there. So are the trucks, and the bar upstairs.
             </p>
             <div className="mt-[8px] flex flex-wrap gap-[12px]">
-              <ButtonLink href="/events/inquire" variant="primary">
+              <ButtonLink href="/events#inquire" variant="primary">
                 Request a proposal
               </ButtonLink>
-              <ButtonLink href="/events/spaces" variant="secondary">
+              <ButtonLink href="/events#spaces" variant="secondary">
                 Capacities
               </ButtonLink>
             </div>

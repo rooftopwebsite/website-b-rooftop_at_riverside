@@ -67,11 +67,23 @@ type FieldName = keyof typeof LABELS;
  * cuatro renglones: un radio de 25px sobre 110px de alto le come las esquinas
  * al texto y la primera y la última línea quedan recortadas contra la curva. Se
  * queda en `rounded-shell`, que es el radio de las tarjetas — la familia
- * correcta para una caja, no para un control de una línea.
+ * correcta para una caja, no para un control de una línea. *
+ * ⚠️ EL ALTO ES 42px Y ES EL MISMO QUE EL DEL BOTÓN. Pedido de Camila sobre la
+ * tarjeta del newsletter: «mismo alto de input y cta». Eran 50 contra 42 y la
+ * diferencia se veía justo donde los tres controles comparten renglón.
+ *
+ * Los 42 salen del botón y no al revés: es el TECHO que Camila ya había fijado
+ * para los CTA —«máximo quiero que tengan 42px»— y subir el botón a 50 lo
+ * rompería en los sesenta call sites del sitio. Bajar el campo sólo toca los
+ * dos formularios.
+ *
+ * ⚠️ NO BAJA DE AHÍ. El mínimo táctil recomendado es 44px y 42 ya está en el
+ * límite; lo sostiene que el área sensible de un campo de texto es toda su
+ * caja, incluido el padding lateral de 22px.
  * ══════════════════════════════════════════════════════════════════════════
  */
 const INPUT_BASE =
-  'h-[50px] w-full rounded-pill border bg-paper px-[22px] font-body text-[16px] transition-colors';
+  'h-10.5 w-full rounded-pill border bg-paper px-[22px] font-body text-[16px] transition-colors';
 
 function SubmitButton() {
   const { pending } = useFormStatus();

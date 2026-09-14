@@ -80,9 +80,9 @@ const nextConfig: NextConfig = {
       { source: '/neighborhood-market', destination: '/market', statusCode: 301 },
       // /entertainment NO es programación: es reclutamiento de músicos.
       { source: '/entertainment', destination: '/join-us', statusCode: 301 },
-      { source: '/game-lounge', destination: '/the-experience', statusCode: 301 },
-      { source: '/find-us', destination: '/visit', statusCode: 301 },
-      { source: '/parking', destination: '/visit#parking', statusCode: 301 },
+      { source: '/game-lounge', destination: '/our-story#experience', statusCode: 301 },
+      { source: '/find-us', destination: '/contact#visit', statusCode: 301 },
+      { source: '/parking', destination: '/contact#parking', statusCode: 301 },
 
       // ── Fichas de truck del sitio viejo ───────────────────────────────
       { source: '/primecarvery', destination: truckUrl('prime-carvery'), statusCode: 301 },
@@ -116,11 +116,58 @@ const nextConfig: NextConfig = {
        */
       { source: '/giveback', destination: '/our-story', statusCode: 301 },
       { source: '/tnt-sign-ups', destination: '/whats-on', statusCode: 301 },
-      { source: '/bar-games-waiver', destination: '/the-experience', statusCode: 301 },
-      { source: '/game-zone-waiver', destination: '/the-experience', statusCode: 301 },
+      { source: '/bar-games-waiver', destination: '/our-story#experience', statusCode: 301 },
+      { source: '/game-zone-waiver', destination: '/our-story#experience', statusCode: 301 },
       { source: '/blank', destination: '/market', statusCode: 301 },
       { source: '/blank-1', destination: '/', statusCode: 301 },
-      { source: '/inquiry-services-page', destination: '/events/inquire', statusCode: 301 },
+      { source: '/inquiry-services-page', destination: '/events#inquire', statusCode: 301 },
+
+      /*
+       * ══════════════════════════════════════════════════════════════════
+       * ⚠️ LAS RUTAS QUE SE FUSIONARON. Son 301 a un ANCLA, no a una página.
+       *
+       * El sitio pasó de 23 rutas a 10. Camila, revisando qué páginas
+       * secundarias tiene que tener el sitio de verdad: «eventos privados con
+       * sus servicios ahí, no cada pág de servicios», «about y dentro las
+       * preguntas, no una pág de preguntas», «contact con visit dentro».
+       *
+       * ⚠️ ESTOS REDIRECTS NO SON OPCIONALES aunque el sitio no esté todavía
+       * en producción con tráfico. Dos motivos concretos:
+       *
+       *   · los ~60 CTA del sitio apuntan a `/events/inquire`, y no hubo que
+       *     tocar ni uno: el redirect los lleva al ancla;
+       *   · las URLs viejas ya circularon —hay un `/inquiry-services-page`
+       *     del sitio de Wix que apunta ahí— y el cliente pudo compartirlas.
+       *
+       * ⚠️ EL ANCLA TIENE QUE EXISTIR. Cada destino de acá abajo es un `id`
+       * puesto a mano en su componente. Renombrar uno rompe el redirect en
+       * silencio: el navegador carga la página y se queda arriba de todo.
+       * Están anotados en cada archivo.
+       * ══════════════════════════════════════════════════════════════════
+       */
+      { source: '/the-experience', destination: '/our-story#experience', statusCode: 301 },
+      { source: '/faq', destination: '/our-story#faq', statusCode: 301 },
+      { source: '/visit', destination: '/contact#visit', statusCode: 301 },
+      /*
+       * ⚠️ EL FÚTBOL NO VA A UN ANCLA, VA AL CALENDARIO. `/nfc-north-hq` no se
+       * fusionó con otra página: dejó de ser una página. Ahora es un evento
+       * recurrente cargado en el dashboard con el tag `featured`, y `/whats-on`
+       * lo abre con una card grande. Camila: «domingos de fútbol debería ser un
+       * evento recurrente del calendario» + «irán en calendario pero con un
+       * espacio o card grande, mucho más destacada».
+       */
+      { source: '/nfc-north-hq', destination: '/whats-on', statusCode: 301 },
+      { source: '/events/inquire', destination: '/events#inquire', statusCode: 301 },
+      { source: '/events/spaces', destination: '/events#spaces', statusCode: 301 },
+      { source: '/events/game-truck', destination: '/events#game-truck', statusCode: 301 },
+      { source: '/events/corporate', destination: '/events#corporate', statusCode: 301 },
+      { source: '/events/celebrations', destination: '/events#celebrations', statusCode: 301 },
+      { source: '/events/fundraisers', destination: '/events#fundraisers', statusCode: 301 },
+      {
+        source: '/events/holiday-parties',
+        destination: '/events#holiday-parties',
+        statusCode: 301,
+      },
 
       // ── Generados desde los datos ─────────────────────────────────────
       ...retiredTruckRedirects(),

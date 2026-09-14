@@ -393,7 +393,7 @@ export default function EventsBanner() {
           sobre oscuro— y es la misma que el repo ya aplicaba en el botón del
           footer y en el de `FindUs`.
         */}
-        <ButtonLink href="/events/inquire" variant="onDark" size="lg" className="mt-7 lg:mt-11">
+        <ButtonLink href="/events#inquire" variant="onDark" size="lg" className="mt-7 lg:mt-11">
           Plan your event
           <ArrowRight className="size-4" />
         </ButtonLink>

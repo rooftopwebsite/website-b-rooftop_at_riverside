@@ -60,25 +60,19 @@ import { chromium } from 'playwright';
 const BASE = process.env.BASE ?? 'http://localhost:3000';
 const CHECK = process.argv.includes('--check');
 
-/** Las rutas con tarjetas, carruseles o fotos. Las 17 que tienen sombra. */
+/** Las 10 rutas del sitio. Todas tienen tarjetas, carruseles o fotos. */
 const RUTAS = [
   '/',
   '/the-yard',
   '/sunset-bar',
-  '/the-experience',
   '/whats-on',
   '/events',
-  '/events/spaces',
-  '/events/game-truck',
-  '/events/inquire',
   '/food-trucks',
   '/our-story',
-  '/visit',
   '/contact',
-  '/faq',
   '/join-us',
   '/market',
-  '/nfc-north-hq',
+  
 ];
 
 const VIEWPORTS = [

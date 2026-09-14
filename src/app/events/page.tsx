@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
+import EventGameTruck from '@/components/sections/EventGameTruck';
+import EventSpaces from '@/components/sections/EventSpaces';
+import EventTypes from '@/components/sections/EventTypes';
+import InquiryForm from '@/components/sections/InquiryForm';
 import { ButtonLink } from '@/components/shared/Button';
 import { CountUp, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import PageHero from '@/components/shared/PageHero';
@@ -17,37 +19,6 @@ export const metadata: Metadata = pageMeta({
     alt: 'Guests at a private event at Rooftop at Riverside',
   },
 });
-
-const VERTICALS = [
-  {
-    href: '/events/corporate',
-    title: 'Corporate',
-    body: 'Client nights, team outings, sales kickoffs and quarterly dinners.',
-    photo: '/images/events/event-b.jpg',
-    alt: 'A corporate gathering on the rooftop at Rooftop at Riverside',
-  },
-  {
-    href: '/events/holiday-parties',
-    title: 'Holiday parties',
-    body: 'December fills first. The whole place, closed to the public, for your company.',
-    photo: '/images/events/event-c.jpg',
-    alt: 'A large group celebrating at Rooftop at Riverside',
-  },
-  {
-    href: '/events/celebrations',
-    title: 'Celebrations',
-    body: 'Milestone birthdays, engagements, showers and reunions.',
-    photo: '/images/events/event-d.jpg',
-    alt: 'Guests raising glasses at a celebration at Rooftop at Riverside',
-  },
-  {
-    href: '/events/fundraisers',
-    title: 'Fundraisers',
-    body: 'Spirit nights, nonprofit galas and school events, with the yard as the room.',
-    photo: '/images/venue-guests.jpg',
-    alt: 'A crowd gathered in the yard at Rooftop at Riverside',
-  },
-] as const;
 
 /**
  * Los tres pasos del proceso. VIENEN DE LA HOME: eran `PLANNER_STEPS` en
@@ -119,10 +90,10 @@ export default function EventsPage() {
         crumbs={[{ name: 'Events', path: '/events' }]}
       >
         <div className="flex flex-wrap gap-[12px]">
-          <ButtonLink href="/events/inquire" variant="primary" size="lg">
+          <ButtonLink href="#inquire" variant="primary" size="lg">
             Request a proposal
           </ButtonLink>
-          <ButtonLink href="/events/spaces" variant="secondary" size="lg">
+          <ButtonLink href="#spaces" variant="secondary" size="lg">
             See the spaces
           </ButtonLink>
         </div>
@@ -223,72 +194,25 @@ export default function EventsPage() {
       </Section>
 
       {/* ── Verticales ─────────────────────────────────────────────────── */}
-      <Section band="lg" labelledBy="verticals-title">
-        <SectionHead
-          eyebrow="What we host"
-          eyebrowTone="plum"
-          id="verticals-title"
-          title="Pick the night you're planning"
-        />
-        <StaggerGroup as="ul" className="mt-bloque grid gap-[28px] sm:grid-cols-2">
-          {VERTICALS.map((v) => (
-            <RevealItem as="li" key={v.href}>
-              <Link href={v.href} className="group flex h-full flex-col">
-                <div className="relative aspect-[16/10] overflow-hidden rounded-card bg-mint sombra-card">
-                  <Image
-                    src={v.photo}
-                    alt={v.alt}
-                    fill
-                    sizes="(max-width: 639px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-500 ease-brand group-hover:scale-[1.03]"
-                  />
-                </div>
-                <Heading level={3} className="mt-[18px]">
-                  {v.title}
-                </Heading>
-                <p className="mt-[8px] flex-1 text-[16px] leading-[1.6] text-body/75">{v.body}</p>
-                <span
-                  aria-hidden="true"
-                  className="mt-[14px] text-caption font-bold uppercase tracking-[0.14em] underline decoration-ink/45 decoration-1 underline-offset-4 transition-[text-decoration-color] group-hover:decoration-sunset group-hover:decoration-2"
-                >
-                  Learn more
-                </span>
-              </Link>
-            </RevealItem>
-          ))}
-        </StaggerGroup>
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ ACÁ HABÍA CUATRO TARJETAS-LINK Y DOS BOTONES, Y AHORA ESTÁ EL
+        CONTENIDO. La sección mostraba seis atajos —las cuatro verticales, los
+        espacios y el camión de juegos— que llevaban a seis páginas distintas.
 
-        <div className="mt-bloque grid gap-[20px] sm:grid-cols-2">
-          <Link
-            href="/events/game-truck"
-            className="group flex items-center justify-between gap-[16px] rounded-card border border-ink/15 p-[24px] transition-colors hover:border-ink/40"
-          >
-            <span>
-              <Eyebrow tone="terra">Add-on</Eyebrow>
-              <Heading level={3} className="mt-[6px]">
-                The gaming truck
-              </Heading>
-              <span className="mt-[6px] block text-[16px] text-body/75">
-                Consoles, screens and a Game Coach, parked at your event.
-              </span>
-            </span>
-          </Link>
-          <Link
-            href="/events/spaces"
-            className="group flex items-center justify-between gap-[16px] rounded-card border border-ink/15 p-[24px] transition-colors hover:border-ink/40"
-          >
-            <span>
-              <Eyebrow tone="terra">Capacities</Eyebrow>
-              <Heading level={3} className="mt-[6px]">
-                The spaces
-              </Heading>
-              <span className="mt-[6px] block text-[16px] text-body/75">
-                Four rooms, from the rooftop to a full buyout.
-              </span>
-            </span>
-          </Link>
-        </div>
-      </Section>
+        Camila, revisando la arquitectura del sitio: «eventos privados con sus
+        servicios ahí, no cada pág de servicios», y sobre esta página en
+        particular: «quiero que esté la info de qué se alquila y cierra para
+        eventos privados, y el formulario o info para reservar».
+
+        Las seis páginas se mudaron acá adentro y las seis rutas redirigen con
+        301 a su ancla. Quien está evaluando cerrar el lugar ve el argumento
+        entero sin volver atrás seis veces.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <EventTypes />
+      <EventSpaces />
+      <EventGameTruck />
 
       {/* ── Cierre ─────────────────────────────────────────────────────── */}
       <Section band="md">
@@ -304,11 +228,31 @@ export default function EventsPage() {
                 send it.
               </p>
             </div>
-            <ButtonLink href="/events/inquire" variant="dark" size="lg">
+            <ButtonLink href="#inquire" variant="dark" size="lg">
               Request a proposal
             </ButtonLink>
           </div>
         </div>
+      </Section>
+
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ EL FORMULARIO CIERRA LA PÁGINA Y YA NO ES UNA RUTA APARTE. Era
+        `/events/inquire`. Camila: «quiero que esté […] el formulario o info
+        para reservar» en la misma página.
+
+        ⚠️ TODOS LOS CTA DEL SITIO SIGUEN APUNTANDO A `/events/inquire`, que
+        ahora redirige con 301 a `/events#inquire`. No hubo que tocar los
+        sesenta call sites, y un link viejo compartido por el cliente sigue
+        cayendo donde tiene que caer.
+
+        ⚠️ `width="prose"` ES EL MISMO ANCHO QUE TENÍA. Un formulario de ocho
+        campos a 1168px de ancho deja los campos tan largos que dejan de
+        leerse como campos.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <Section id="inquire" tone="bone" band="lg" width="prose" className="scroll-mt-24">
+        <InquiryForm />
       </Section>
     </>
   );

@@ -606,7 +606,19 @@ export default function Header() {
             el círculo de 120px colgaban 46px; el lockup de 80px cuelga 26.
             Si el logo vuelve a cambiar de tamaño, este número cambia con él.
           */}
-          <div className="caja-ancha grid gap-x-10 gap-y-9 pt-11 pb-11 desk:grid-cols-[repeat(3,minmax(0,1fr))_21rem]">
+          {/*
+            ⚠️ DOS COLUMNAS DE LINKS Y LA TARJETA SE QUEDA CON EL RESTO. Eran
+            tres columnas de `1fr` más una tarjeta de 21rem fijos, y con el
+            mapa nuevo los grupos bajaron de tres a dos: quedaba una columna
+            vacía en el medio y la tarjeta encogida contra el borde. Camila lo
+            marcó sobre el menú: que ocupe todo el espacio que sobra.
+
+            Los dos grupos toman el ancho que necesitan (`max-content`, topeado
+            a 15rem para que una línea larga no los estire) y el `1fr` de la
+            tarjeta se queda con todo lo demás. Si mañana entra un tercer
+            grupo, se agrega un `max-content` y la tarjeta se achica sola.
+          */}
+          <div className="caja-ancha grid gap-x-10 gap-y-9 pt-11 pb-11 desk:grid-cols-[repeat(2,minmax(0,15rem))_1fr]">
             {NAV_MORE_GROUPS.map((group) => (
               <div key={group.label}>
                 {/*

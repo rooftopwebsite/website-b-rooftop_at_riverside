@@ -128,39 +128,27 @@ export const NAV_SIDE: readonly NavLink[] = NAV_PRIMARY.filter((l) => l.side);
  */
 export const NAV_MORE_GROUPS: readonly NavGroup[] = [
   {
-    label: 'The Place',
+    label: 'Get to know us',
     links: [
       {
-        label: 'Our Story',
+        label: 'About',
         href: '/our-story',
-        hint: 'The Magnus family and four years of planning.',
+        hint: 'The Magnus family, what this place is, and the questions.',
       },
-      {
-        label: 'The Experience',
-        href: '/the-experience',
-        hint: "The Game Lounge and Southwest Florida's first gaming truck.",
-        badge: 'New',
-      },
-      { label: 'Market', href: '/market', hint: 'Local vendors and handmade goods in the yard.' },
-    ],
-  },
-  {
-    label: 'Plan Your Visit',
-    links: [
-      { label: 'Visit', href: '/visit', hint: 'Hours, parking and directions.' },
-      { label: 'FAQ', href: '/faq', hint: 'Parking, dogs, kids and how ordering works.' },
-      {
-        label: 'Events Packet',
-        href: '/events/inquire',
-        hint: 'Spaces, capacities and food tiers, as a PDF.',
-      },
-    ],
-  },
-  {
-    label: 'Work With Us',
-    links: [
       { label: 'Join Us', href: '/join-us', hint: 'Play here, park a truck here, work here.' },
-      { label: 'Contact', href: '/contact', hint: 'Three inboxes, so you reach the right one.' },
+      { label: 'Contact', href: '/contact', hint: 'Three inboxes, hours, parking and the map.' },
+    ],
+  },
+  {
+    label: 'While you’re here',
+    links: [
+      { label: 'Market', href: '/market', hint: 'Local vendors and handmade goods in the yard.' },
+      {
+        label: 'Gift Cards',
+        href: 'GIFT_CARDS',
+        external: true,
+        hint: 'Any amount, good at the bar and every truck.',
+      },
     ],
   },
 ];
@@ -168,22 +156,23 @@ export const NAV_MORE_GROUPS: readonly NavGroup[] = [
 /**
  * La pieza destacada del mega-menú: la cuarta columna.
  *
- * ⚠️ POR QUÉ ESTA PÁGINA. `/nfc-north-hq` existe, está en el sitemap y no la
- * linkeaba NADIE — ni la nav, ni el footer, ni el mega-menú viejo. Era una
- * página huérfana. La tarjeta le da la única puerta de entrada que tiene, y
- * de paso le da al menú algo que mirar que no sea una grilla de texto.
+ * ⚠️ APUNTA AL CALENDARIO Y YA NO A UNA PÁGINA PROPIA. Era `/nfc-north-hq`,
+ * una landing de los domingos de fútbol que existía, estaba en el sitemap y no
+ * la linkeaba nadie más que esta tarjeta.
  *
- * ⚠️ EL LABEL ES EL MISMO QUE EL BREADCRUMB de la página, a propósito. Esa
- * página tiene la restricción legal más dura del proyecto (ver su encabezado)
- * y acá no se inventa una forma nueva de nombrarla.
+ * Revisando qué páginas secundarias tiene que tener el sitio, Camila la mandó
+ * al calendario —«domingos de fútbol debería ser un evento recurrente del
+ * calendario»— con una condición: «irán en calendario pero con un espacio o
+ * card grande, mucho más destacada». Ahora es un evento con el tag
+ * `featured`, y `FeaturedEvent` le da esa card grande al abrir `/whats-on`.
  *
  * ⚠️ SE ROTA. Es un solo objeto justamente para que cambiarlo sea cambiar
- * cuatro strings: cuando arranque la temporada de eventos, acá va otra cosa.
+ * cuatro strings: cuando termine la temporada, acá va otra cosa.
  */
 export const NAV_MORE_FEATURED = {
   eyebrow: 'Featured',
   label: 'NFC North HQ',
-  href: '/nfc-north-hq',
+  href: '/whats-on',
   hint: "Sundays in season. Sound on, screens up, and a rooftop that turns into somebody's hometown bar.",
   cta: 'See Sundays',
 } as const;
@@ -205,7 +194,7 @@ export const NAV_MORE: readonly NavLink[] = NAV_MORE_GROUPS.flatMap((g) => g.lin
  * lugar del primario lo ocupa la vertical que más factura.
  */
 export const NAV_CTA = {
-  primary: { label: 'Plan an Event', href: '/events/inquire' },
+  primary: { label: 'Plan an Event', href: '/events#inquire' },
   secondary: { label: "What's On", href: '/whats-on' },
 } as const;
 
@@ -217,9 +206,9 @@ export const NAV_CTA = {
  * puede caer en el mismo buzón que una pregunta sobre estacionamiento.
  */
 export const FOOTER_QUICK_LINKS: readonly NavLink[] = [
-  { label: 'Events Packet', href: '/events/inquire' },
-  { label: 'Event Spaces', href: '/events/spaces' },
-  { label: 'Corporate Events', href: '/events/corporate' },
+  { label: 'Events Packet', href: '/events#inquire' },
+  { label: 'Event Spaces', href: '/events#spaces' },
+  { label: 'Corporate Events', href: '/events#corporate' },
   { label: 'Join Us', href: '/join-us' },
   { label: 'FAQ', href: '/faq' },
   { label: 'Gift Cards', href: 'GIFT_CARDS', external: true },

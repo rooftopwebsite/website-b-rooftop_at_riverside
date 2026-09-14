@@ -40,17 +40,10 @@ const PAGES = [
   '/whats-on?view=month',
   '/whats-on/bingo-night',
   '/events',
-  '/events/spaces',
-  '/events/inquire',
-  '/events/corporate',
   '/the-yard',
-  '/the-experience',
-  '/nfc-north-hq',
   '/market',
   '/our-story',
   '/join-us',
-  '/faq',
-  '/visit',
   '/contact',
 ];
 

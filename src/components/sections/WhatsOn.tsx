@@ -799,8 +799,55 @@ export default function WhatsOn() {
             controles es exactamente el de antes. Lo único que creció es la
             caja que RECORTA.
             ══════════════════════════════════════════════════════════════
+
+            ══════════════════════════════════════════════════════════════
+            ⚠️ EL PADDING LATERAL ES EXACTAMENTE EL GAP (24px), Y ESE NÚMERO ES
+            EL ÚNICO QUE CUMPLE LAS DOS COSAS A LA VEZ. Esto fue y volvió
+            cuatro veces; conviene dejar las cuatro escritas.
+
+              1 · Sin padding. El borde de recorte cae sobre el borde de la
+                  primera y la última tarjeta y les corta la sombra al ras.
+                  Camila: «la sombra sigue cortada a los laterales del frame».
+              2 · Sangrado hasta el filo de la pantalla (56px). Entró la sombra
+                  y entró también media tarjeta siguiente: «otra vez se ve la
+                  4 card y cortada».
+              3 · Sangrado con un degradé en los bordes. Descartado: «no pongas
+                  degradé ni nada de eso».
+              4 · Padding = gap. Acá.
+
+            ⚠️ POR QUÉ 24 Y NO OTRO NÚMERO. La tarjeta siguiente arranca a un
+            GAP de distancia del borde de la última visible. Si el padding vale
+            lo mismo que el gap, el borde de recorte cae EXACTAMENTE sobre el
+            borde de esa tarjeta: no asoma ni un píxel, y al mismo tiempo la
+            sombra de las laterales tiene 24px de aire donde antes tenía cero.
+
+            Un píxel más de padding y empieza a verse la tarjeta siguiente; uno
+            menos y se vuelve a comer sombra. Es el único punto de equilibrio,
+            y por eso los dos valores están atados: si cambia `gap-6`, cambia
+            el padding con él.
+
+            ⚠️ `sombra-card` PIDE 32px Y ACÁ TIENE 24, así que la cola más tenue
+            se sigue cortando ocho píxeles. Es el resto que el layout no puede
+            dar sin mostrar la tarjeta de al lado, y está aceptado: a esa
+            distancia la sombra vale menos de un 10 % de su opacidad.
+
+            ⚠️ EL MARGEN NEGATIVO VA COMO PROPIEDAD ARBITRARIA
+            (`[margin-inline:-1.5rem]`) Y NO COMO `-mx-6`. Medido en el
+            navegador, Tailwind no emite `-mx-*` en este proyecto —`-mt-2` y
+            `-mb-5` sí salen, y de `-mx-6` no hay ninguna regla en el CSS—, así
+            que la clase quedaba en el DOM sin hacer nada: el padding achicaba
+            las tarjetas de 373 a 357px en vez de correr el borde de recorte.
+
+            ⚠️ `scroll-px-6` VA CON EL `px-6`: sin él, `scrollLeft: 0` deja de
+            ser un punto de anclaje válido y `snap-mandatory` abre el carrusel
+            en la segunda tarjeta.
+
+            ⚠️ SIGUEN VIÉNDOSE TRES TARJETAS. Eso lo decide `ANCHO`
+            —`(100% - 48px) / 3` en `lg`—, no el recorte. El padding sólo mueve
+            dónde se corta lo que no entra.
+            ══════════════════════════════════════════════════════════════
           */
-          className="-mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto pt-3.5 pb-13 [scrollbar-width:none] -mx-borde scroll-px-borde px-borde [&::-webkit-scrollbar]:hidden"
+          className="[margin-inline:-1.5rem] -mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pt-3.5 pb-13 scroll-px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {events.map((event) => (
             <EventCard key={event.slug} event={event} isToday={today !== null && event.weekday === today} />

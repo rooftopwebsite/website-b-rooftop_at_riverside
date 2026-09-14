@@ -279,7 +279,7 @@ export default function FindUs() {
               </span>
               <p className="m-0 font-body text-dato font-light leading-[1.6] text-paper">
                 Street parking on Old 41 and public lots around Riverside Park.{' '}
-                <Link href="/visit#parking" className="border-b border-cream text-cream">
+                <Link href="/contact#parking" className="border-b border-cream text-cream">
                   Details
                 </Link>
               </p>
