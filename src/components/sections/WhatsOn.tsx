@@ -124,7 +124,16 @@ function venueWeekday(): Weekday {
 /** Lunes y martes el lugar está cerrado. Dato del brief, no inventado. */
 const CLOSED_DAYS: readonly Weekday[] = [1, 2];
 
-function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly isToday: boolean }) {
+function EventCard({
+  event,
+  isToday,
+  fuera,
+}: {
+  readonly event: VenueEvent;
+  readonly isToday: boolean;
+  /** No entra en la ventana del carrusel: se apaga. Ver el track. */
+  readonly fuera: boolean;
+}) {
   /*
    * ⚠️ A DÓNDE VA LA TARJETA. La entrada si el evento la tiene, la página del
    * evento si no. Hoy los cuatro recurrentes traen `ticketUrl` en `null` —el
@@ -423,14 +432,16 @@ function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly is
    * toque navega igual.
    */
   const clases =
-    `group relative block aspect-[4/5] shrink-0 snap-start overflow-hidden rounded-shell bg-deeper sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1.5 ${ANCHO}`;
+    `group relative block aspect-[4/5] shrink-0 snap-start overflow-hidden rounded-shell bg-deeper sombra-card transition-[transform,opacity] duration-300 ease-brand hover:-translate-y-1.5 ${ANCHO} ${
+      fuera ? 'pointer-events-none opacity-0' : ''
+    }`;
 
   return entradas ? (
-    <a href={entradas} target="_blank" rel="noopener noreferrer" className={clases}>
+    <a href={entradas} target="_blank" rel="noopener noreferrer" className={clases} inert={fuera || undefined}>
       {contenido}
     </a>
   ) : (
-    <Link href={href} className={clases}>
+    <Link href={href} className={clases} inert={fuera || undefined}>
       {contenido}
     </Link>
   );
@@ -454,11 +465,14 @@ function EventCard({ event, isToday }: { readonly event: VenueEvent; readonly is
  * prohibido en todo el sitio — es el error que más veces estuvo a punto de
  * colarse.
  */
-function CalendarCard() {
+function CalendarCard({ fuera }: { readonly fuera: boolean }) {
   return (
     <Link
       href="/whats-on"
-      className={`group flex shrink-0 snap-start flex-col justify-between gap-8 rounded-shell bg-sunset p-7 sombra-card text-ink transition-colors duration-300 ease-brand hover:bg-sunset-hover lg:p-9 ${ANCHO}`}
+      inert={fuera || undefined}
+      className={`group flex shrink-0 snap-start flex-col justify-between gap-8 rounded-shell bg-sunset p-7 sombra-card text-ink transition-[background-color,opacity] duration-300 ease-brand hover:bg-sunset-hover lg:p-9 ${ANCHO} ${
+        fuera ? 'pointer-events-none opacity-0' : ''
+      }`}
     >
       {/*
         ⚠️ `text-ink` OPACO y no `text-ink/70`. La primera versión bajaba la
@@ -605,6 +619,78 @@ export default function WhatsOn() {
    */
   const maxIndexRef = useRef(0);
   maxIndexRef.current = maxIndex;
+
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ LAS TARJETAS QUE NO ENTRAN EN LA VENTANA SE APAGAN, Y ESO ES LO QUE
+   * CIERRA EL PROBLEMA DE LA SOMBRA.
+   *
+   * Idea de Camila: «¿no podés hacer que las cards que no están visibles en el
+   * carrusel estén con opacidad 0 o como ocultas? así no se ve la sombra».
+   *
+   * Cuatro intentos anteriores movieron el RECORTE buscando un lugar donde la
+   * sombra de las visibles entrara y la de la siguiente no. No existe: la
+   * sombra alcanza 32px y el gap mide 24, así que las dos ocupan el mismo
+   * espacio. Con 0 de padding se corta la propia; con 24, entra la ajena.
+   *
+   * Apagando la tarjeta se apaga TAMBIÉN SU SOMBRA —es parte del mismo
+   * elemento— y el conflicto desaparece: ya no hay nada de lo que viene
+   * después que pueda asomar, así que el padding puede valer los 32px que la
+   * sombra necesita y las visibles la muestran entera.
+   *
+   * ⚠️ SE MIDE CON `IntersectionObserver` Y NO CON EL ÍNDICE. El índice sólo
+   * cambia al cruzar un punto de anclaje, así que durante un arrastre lento la
+   * tarjeta entrante se quedaría invisible hasta el salto. El observer
+   * responde de forma continua.
+   *
+   * ⚠️ EL `rootMargin` NEGATIVO ES EL PADDING DEL TRACK. El root de un observer
+   * es el PADDING box, así que sin restarlo una tarjeta metida en el aire de
+   * la sombra contaría como visible. Restados los 32px de cada lado, el root
+   * es exactamente el área donde caben las tres.
+   *
+   * ⚠️ EL UMBRAL ES 0.98 Y NO 1. Los anchos de tarjeta salen de un `calc` con
+   * decimales, así que una tarjeta perfectamente encuadrada devuelve 0.999 y
+   * con el umbral en 1 parpadearía apagada.
+   *
+   * ⚠️ `pointer-events-none` + `inert` VAN CON EL `opacity-0`. Una tarjeta
+   * invisible que igual recibe clics es una trampa, y `opacity: 0` NO saca del
+   * orden de tabulación ni del árbol de accesibilidad: sin `inert`, tabular
+   * por el carrusel pasaría por tres links que nadie ve. `aria-hidden` no
+   * serviría —es una violación ponerlo sobre algo enfocable— y `inert` hace
+   * las dos cosas de una vez.
+   *
+   * ⚠️ El teclado igual las alcanza: el track tiene `tabIndex={0}`, así que se
+   * scrollea con las flechas y las tarjetas dejan de ser inert al entrar.
+   *
+   * ⚠️ MIENTRAS EL ARRAY ESTÉ VACÍO NO SE APAGA NADA. Es el primer pintado,
+   * antes de que el observer haya corrido: si el default fuera «apagada», el
+   * carrusel abriría en blanco.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  const [dentro, setDentro] = useState<readonly boolean[]>([]);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const cards = [...track.children];
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        setDentro((prev) => {
+          const next = [...prev];
+          for (const e of entries) {
+            const i = cards.indexOf(e.target);
+            if (i >= 0) next[i] = e.intersectionRatio > 0.98;
+          }
+          return next;
+        });
+      },
+      { root: track, rootMargin: '0px -32px', threshold: [0, 0.98, 1] },
+    );
+
+    cards.forEach((c) => io.observe(c));
+    return () => io.disconnect();
+  }, []);
 
   const onScroll = useCallback(() => {
     const el = trackRef.current;
@@ -847,14 +933,19 @@ export default function WhatsOn() {
             dónde se corta lo que no entra.
             ══════════════════════════════════════════════════════════════
           */
-          className="[margin-inline:-1.5rem] -mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pt-3.5 pb-13 scroll-px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="[margin-inline:-2rem] -mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto px-8 pt-3.5 pb-13 scroll-px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {events.map((event) => (
-            <EventCard key={event.slug} event={event} isToday={today !== null && event.weekday === today} />
+          {events.map((event, i) => (
+            <EventCard
+              key={event.slug}
+              event={event}
+              isToday={today !== null && event.weekday === today}
+              fuera={dentro.length > 0 && !dentro[i]}
+            />
           ))}
 
           {/* La última: el CTA al calendario. Ver `CalendarCard`. */}
-          <CalendarCard />
+          <CalendarCard fuera={dentro.length > 0 && !dentro[events.length]} />
         </div>
 
         {/*

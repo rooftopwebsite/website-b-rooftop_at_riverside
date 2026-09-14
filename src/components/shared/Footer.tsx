@@ -319,18 +319,35 @@ export default function Footer() {
         <div className="absolute -right-16 bottom-0 aspect-[1100/1024] w-[34rem] bg-deeper opacity-55 [mask-image:url('/brand/palms.svg')] [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] sm:w-[44rem] lg:-right-20 lg:w-[56rem]" />
       </div>
 
-      <div className={`relative z-[1] ${GUTTER}`}>
+      {/*
+        ⚠️ EL FOOTER USA `caja-ancha` COMO EL RESTO DEL SITIO, Y ANTES NO.
+        Llevaba el par `GUTTER` + `caja`, que es el contenedor viejo: 1280px de
+        ancho máximo con el gutter de 16/32px puesto por fuera. El resto de las
+        páginas usa `caja-ancha`, que es 1280 con el gutter ADENTRO —de 24 a
+        56px según el ancho—.
+
+        Medido a 1598px: el contenido de la home arrancaba en 215 y el del
+        footer en 159. Cincuenta y seis píxeles de diferencia, o sea
+        exactamente el padding que `caja-ancha` tiene y `caja` no. Camila lo
+        marcó con dos líneas verticales sobre la captura: «el footer no está
+        respetando el ancho máximo».
+
+        ⚠️ LAS DOS COSAS NO SE COMBINAN. `caja-ancha` reemplaza al par entero,
+        no se le suma: poner las dos deja el contenido 88px adentro en desktop.
+        Está dicho en la definición de la utilidad, en globals.css.
+      */}
+      <div className="relative z-[1]">
         {/*
           La tarjeta del newsletter abre el footer. Va DENTRO del mismo `GUTTER`
           y la misma `caja` que las columnas de abajo: así su título y el logo
           arrancan del mismo margen, que es lo que el componente antes tenía que
           replicar a mano.
         */}
-        <div className="caja pt-14 desk:pt-20">
+        <div className="caja-ancha pt-14 desk:pt-20">
           <NewsletterSignup />
         </div>
 
-        <div className="caja grid gap-12 py-16 desk:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] desk:gap-16 desk:py-20">
+        <div className="caja-ancha grid gap-12 py-16 desk:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] desk:gap-16 desk:py-20">
           {/* ── Identidad ────────────────────────────────────────────── */}
           <div className="flex flex-col items-center gap-5 text-center desk:items-start desk:text-left">
             <Link href="/" aria-label={`${BRAND.name} home`}>
@@ -409,7 +426,7 @@ export default function Footer() {
           que sea texto dentro del footer tiene que estar por encima del
           `z-0` de la capa decorativa. */}
       <div className="relative z-[1] border-t border-paper/15">
-        <div className={GUTTER}>
+        <div>
           {/*
             ⚠️ LAS DOS PIEZAS SE PONEN EN FILA RECIÉN EN `lg`, Y NO EN `sm`.
             Con `sm:flex-row` el copyright y la fila legal se repartían el
@@ -422,7 +439,7 @@ export default function Footer() {
             Apiladas hasta `lg`, la fila legal se lleva el ancho entero y entra
             en una línea desde los 390px.
           */}
-          <div className="caja flex flex-col items-center justify-between gap-4 py-5 text-micro text-paper/60 lg:flex-row">
+          <div className="caja-ancha flex flex-col items-center justify-between gap-4 py-5 text-micro text-paper/60 lg:flex-row">
             <p className="order-2 text-center lg:order-1 lg:text-left">
               © {new Date().getFullYear()} {BRAND.name}. {BRAND.group}. Bonita Springs, Florida.
             </p>
