@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { BRAND, COLORS } from '@/lib/brand';
+import { BRAND } from '@/lib/brand';
 import {
   NAV_CTA,
   NAV_MAIN,
@@ -223,41 +223,6 @@ export default function Header() {
         className="sticky top-0 z-40 border-b border-fog bg-bone"
         onMouseLeave={() => setMoreOpen(false)}
       >
-        {/*
-          ══════════════════════════════════════════════════════════════════
-          ⚠️ EL TROQUEL DEL STICKER. Cada filtro engorda el alfa del lockup y
-          rellena esa silueta agrandada de crema: es el corte del sticker,
-          siguiendo la forma del dibujo en vez de un disco. El detalle de por
-          qué son dos y por qué `feMorphology` está en `.troquel`, en
-          `globals.css`.
-
-          ⚠️ EL `<svg>` NO DIBUJA NADA Y NO PUEDE OCUPAR LUGAR: mide 0 y va
-          `absolute`, o sea fuera del flujo del flex del header. Un `display:
-          none` acá rompería el filtro en Firefox.
-
-          ⚠️ LA REGIÓN DEL FILTRO ES 150% Y NO LA DE FÁBRICA. El default es
-          -10%/+10%, y el troquel se va 5px para afuera de un dibujo de 80:
-          con el default el borde se cortaría en los cuatro lados.
-          ══════════════════════════════════════════════════════════════════
-        */}
-        <svg aria-hidden="true" focusable="false" className="absolute h-0 w-0">
-          <defs>
-            {[
-              { id: 'troquel-sm', r: 3 },
-              { id: 'troquel-desk', r: 5 },
-            ].map(({ id, r }) => (
-              <filter key={id} id={id} x="-25%" y="-25%" width="150%" height="150%">
-                <feMorphology in="SourceAlpha" operator="dilate" radius={r} result="troquel" />
-                <feFlood floodColor={COLORS.cream} result="crema" />
-                <feComposite in="crema" in2="troquel" operator="in" result="borde" />
-                <feMerge>
-                  <feMergeNode in="borde" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            ))}
-          </defs>
-        </svg>
 
         <header className="caja-ancha relative flex min-h-19.5 items-center gap-6">
           {/*
@@ -409,14 +374,35 @@ export default function Header() {
               —80 arriba de todo y 52 al despegarse— y eso se fue con el
               compactado del header. Ver la nota del disco, acá arriba.
             */}
-            <Image
-              src="/brand/logo-primary.svg"
-              alt=""
-              width={240}
-              height={254}
-              priority
-              className="troquel h-13 w-auto transition-transform duration-300 ease-brand group-hover:scale-105 desk:h-20"
-            />
+            {/*
+              ⚠️ LAS DOS CAPAS VAN ADENTRO DE UN ENVOLTORIO Y NO SUELTAS, y no
+              es acomodo: el `drop-shadow` tiene que calcularse sobre LA SUMA
+              de la plancha y el lockup, o sea sobre la silueta del sticker
+              entero. Puesto en cualquiera de las dos por separado sale la
+              sombra de esa pieza sola.
+
+              ⚠️ EL HOVER TAMBIÉN SE MUDÓ ACÁ POR EL MISMO MOTIVO: el
+              `scale-105` sobre el lockup solo lo haría crecer adentro de una
+              plancha quieta, y el logo se comería su propio contorno.
+            */}
+            <span className="sticker relative inline-flex transition-transform duration-300 ease-brand group-hover:scale-105">
+              <span aria-hidden="true" className="plancha-filo" />
+              <span aria-hidden="true" className="plancha" />
+              {/*
+                ⚠️ `relative` NO ES DECORATIVO: sin eso el lockup queda por
+                debajo de la plancha. Un elemento posicionado —la plancha es
+                `absolute`— se pinta después del contenido en flujo aunque
+                venga antes en el DOM, así que el troquel taparía el dibujo.
+              */}
+              <Image
+                src="/brand/logo-primary.svg"
+                alt=""
+                width={240}
+                height={254}
+                priority
+                className="relative h-13 w-auto desk:h-20"
+              />
+            </span>
             <span className="sr-only">{BRAND.name}</span>
           </Link>
 

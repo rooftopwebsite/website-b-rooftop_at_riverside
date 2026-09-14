@@ -1757,7 +1757,8 @@ main:has(+ .banda-arco) > :last-child {
  * EL GRANO, SOBRE TODO EL SITIO.
  *
  * Pedido de Camila: «noise effect en toda la web, en todos los fondos de la
- * web, sin importar color».
+ * web, sin importar color», y después «el noise effect en los fondos claros no
+ * se ve».
  *
  * ⚠️ ESTO REEMPLAZA A LA UTILIDAD `grano`, que se aplicaba superficie por
  * superficie. Aquella versión cubría las secciones —que es la mayor parte del
@@ -1768,17 +1769,64 @@ main:has(+ .banda-arco) > :last-child {
  *
  * Una capa fija sobre el viewport no se puede olvidar de nada.
  *
- * ⚠️ VA EN EL `<body>` Y ES `fixed`, NO `absolute`. Con `absolute` el tile se
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SON DOS CAPAS Y NO UNA, Y ÉSA ES LA CORRECCIÓN. Hubo una versión de una
+ * sola capa en `overlay`, que es el modo que la teoría manda para «textura
+ * sobre cualquier color»: aclara lo oscuro y oscurece lo claro. En la práctica
+ * no funcionó, y se puede medir por qué.
+ *
+ * `overlay` sobre un fondo claro es la fórmula del `screen`: el resultado vale
+ * 1 - 2(1-Cb)(1-Cs). Sobre `bone`, que es 0.965, el (1-Cb) vale 0.035, así que
+ * TODO el ruido —de negro a blanco— sale comprimido en un rango del 7 %, y
+ * después el 0.09 de opacidad lo divide otra vez por once. Medido sobre un
+ * bloque plano de `bone`: desvío de 0.47 sobre 255. Eso no es sutil, es nada.
+ *
+ * Y del lado oscuro pasaba lo mismo por el otro extremo: 0.93 de desvío sobre
+ * la losa del footer. O sea que el grano no se veía en ningún lado, no sólo en
+ * los claros.
+ *
+ * LA SOLUCIÓN ES UNA CAPA POR EXTREMO, cada una en el modo que NO se comprime
+ * de ese lado:
+ *
+ *   · `multiply` trabaja sobre lo claro. El resultado es Cb·Cs, y con Cb≈1 el
+ *     ruido pasa casi entero. Sobre lo oscuro es inerte: Cb≈0.05 lo aplasta.
+ *   · `screen` trabaja sobre lo oscuro, por el motivo simétrico, y es inerte
+ *     sobre lo claro.
+ *
+ * Cada una hace su mitad y no estorba en la otra. Medido: `bone` pasa de 0.47
+ * a 2.49 de desvío y la losa `deep` de 0.93 a 3.84.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EL `feComponentTransfer` CON `slope: 5` NO ES DECORACIÓN: ES LO QUE HACE
+ * QUE EL GRANO NO ENSUCIE LOS COLORES. El problema de `multiply` y `screen` es
+ * que además de dar textura corren la MEDIA de la superficie: multiply oscurece
+ * el claro, screen aclara el oscuro. Y ese corrimiento depende de la opacidad,
+ * mientras que la textura depende de la opacidad Y del contraste del ruido.
+ *
+ * O sea que estirando el ruido alrededor de 0.5 —eso hace el `slope`, y el
+ * `intercept` de -2 es lo que mantiene el centro en su lugar— se consigue el
+ * mismo grano con menos opacidad, y por lo tanto con menos corrimiento.
+ * Medido, a igual desvío: sin estirar, `bone` se iba 5.8 niveles; con slope 5,
+ * 3.1.
+ *
+ * ⚠️ LOS VALORES SALEN DE UN BARRIDO CONTRA LOS PARES DE CONTRASTE MÁS
+ * AJUSTADOS DEL SITIO, no de probar hasta que se viera lindo. El grano corre
+ * los dos colores de cada par y por lo tanto baja el ratio. El par crítico es
+ * `muted` sobre `bone`, que ya pasaba AA raspando: 4.96 sin grano, 4.67 con
+ * este. Sigue arriba de 4.5. Los otros tres medidos: `muted-dark` sobre `deep`
+ * 5.95 → 5.56, `paper` sobre `deep` 10.83 → 9.93, `ink` sobre `sunset` 6.73 →
+ * 6.31.
+ *
+ * ⚠️ SUBIR ESTAS OPACIDADES SIN REHACER ESA CUENTA ROMPE LA ACCESIBILIDAD, y
+ * `npm run check:contrast` NO lo va a avisar: ese guardia lee los tokens
+ * declarados, y el grano es una capa que se compone encima. La cuenta hay que
+ * hacerla a mano.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ VAN EN EL `<body>` Y SON `fixed`, NO `absolute`. Con `absolute` el tile se
  * repetiría a lo largo de toda la altura del documento —catorce mil píxeles en
  * la home— y el navegador tendría que pintarlo entero. Fijo al viewport es
  * siempre la misma superficie de pantalla, sin importar cuánto mida la página.
- *
- * ⚠️ `mix-blend-mode: overlay` ES LO QUE LO HACE FUNCIONAR EN CUALQUIER COLOR,
- * y es exactamente lo que el pedido pide. Overlay aclara lo oscuro y oscurece
- * lo claro, así que el mismo tile gris da relieve sobre el hueso, sobre el
- * verde y sobre el naranja sin que nadie tenga que declarar una opacidad por
- * superficie. La utilidad vieja necesitaba dos valores —0.05 sobre claro, 0.09
- * sobre oscuro— justamente porque no tenía blend.
  *
  * ⚠️ `pointer-events: none` NO ES OPCIONAL: sin eso, una capa fija sobre todo
  * el viewport se come cada clic del sitio.
@@ -1788,26 +1836,35 @@ main:has(+ .banda-arco) > :last-child {
  * debajo, esas tres superficies serían las únicas sin textura, que es el
  * problema que este bloque viene a resolver.
  *
- * ⚠️ LA OPACIDAD ES 0.09 Y NO MÁS. Medido sobre el par más delicado del sitio
- * —`muted` sobre `bone`, que pasa AA por poco—, más arriba de eso el ruido
- * empieza a comerse el contraste del texto chico.
- *
  * ⚠️ EL TILE ES SVG Y NO UN PNG. `feTurbulence` se rasteriza una vez y el
- * navegador repite el mosaico: pesa 300 bytes contra los ~8 KB de un PNG, y no
- * es un pedido de red. El `stitchTiles='stitch'` es lo que evita que se vea la
- * grilla de 160px en las uniones.
+ * navegador repite el mosaico: pesa medio kilobyte contra los ~8 KB de un PNG,
+ * y no es un pedido de red. El `stitchTiles='stitch'` es lo que evita que se
+ * vea la grilla de 160px en las uniones, y el `saturate 0` lo que evita que el
+ * ruido salga de colores: `feTurbulence` genera los cuatro canales por
+ * separado, así que sin desaturar el grano es confeti.
  * ══════════════════════════════════════════════════════════════════════════
  */
+body::before,
 body::after {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 200;
   pointer-events: none;
-  opacity: 0.09;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='5' intercept='-2'/%3E%3CfeFuncG type='linear' slope='5' intercept='-2'/%3E%3CfeFuncB type='linear' slope='5' intercept='-2'/%3E%3CfeFuncA type='discrete' tableValues='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
+}
+
+/** La mitad clara del grano. Inerte sobre las losas oscuras. */
+body::before {
+  opacity: 0.03;
+  mix-blend-mode: multiply;
+}
+
+/** La mitad oscura. Inerte sobre `bone`, `paper` y `cream`. */
+body::after {
+  opacity: 0.05;
+  mix-blend-mode: screen;
 }
 
 
@@ -2345,57 +2402,112 @@ body::after {
 
 /**
  * ══════════════════════════════════════════════════════════════════════════
- * EL TROQUEL DEL LOGO: el sticker sigue la forma del lockup.
+ * LA PLANCHA DEL STICKER: el troquel del logo, dibujado.
  *
- * Pedido de Camila: «de hecho quiero que sea tipo sticker que siga la forma
- * del logo, no redondo».
+ * Pedido de Camila: «usá este elemento pero en el color correcto por detrás,
+ * así parece un sticker con sombra sutil», con el nodo `fondo-para-logo` del
+ * Figma del proyecto.
  *
- * ⚠️ NO ES UN FONDO: ES UNA DILATACIÓN DE LA SILUETA. La versión anterior era
- * un disco `rounded-pill` en crema detrás del logo, y el problema es que el
- * lockup NO es un círculo: tiene el arco naranja asomando arriba y la cinta de
- * «EAT. DRINK. PARADISE.» colgando abajo, los dos fuera del redondel. Adentro
- * de un disco esas dos piezas quedaban flotando en un campo de crema que no
- * seguía nada. Un sticker de verdad se corta siguiendo el dibujo.
+ * ⚠️ ESTO REEMPLAZA UN TROQUEL CALCULADO CON `feMorphology`. Aquella versión
+ * dilataba el alfa del lockup en vivo, y el problema es que una dilatación por
+ * kernel cuadrado no sabe nada del dibujo: seguía cada letra de la cinta de
+ * abajo por separado y dejaba las esquinas del arco achaflanadas. El troquel
+ * del Figma está dibujado: une lo que tiene que unir y redondea lo que tiene
+ * que redondear. Es una decisión de diseño, no una operación.
  *
- * ⚠️ LO HACE `feMorphology operator="dilate"`, que es literalmente el troquel:
- * engorda el canal alfa del dibujo N píxeles en todas las direcciones. Eso da
- * la silueta agrandada; se la rellena de crema con `feFlood` + `feComposite`,
- * y el logo original se monta encima con `feMerge`. El filtro vive en el
- * header, ver el `<svg>` de defs.
+ * ⚠️ VA COMO MÁSCARA Y NO COMO IMAGEN PINTADA, que es lo que permite que el
+ * color salga del token. El archivo es una silueta blanca sobre transparente;
+ * acá se usa de recorte sobre un `background-color`. Si mañana la plancha
+ * cambia de color, cambia el token y no el SVG. Ya pasó una vez: estuvo en
+ * `cream` y el archivo no se tocó.
  *
- * ⚠️ POR QUÉ NO SE HIZO CON `drop-shadow` REPETIDO, que es el truco habitual:
- * los `drop-shadow` encadenados se aplican cada uno sobre el resultado del
- * anterior, así que el contorno sale más grueso en las diagonales que en los
- * ejes y en un dibujo con tanto detalle chico —la cinta de abajo tiene letras
- * de 4px— eso se ve. `feMorphology` dilata parejo de una sola pasada.
+ * ⚠️ EL COLOR ES `bone`, EL MISMO DEL HEADER, Y ESO ES EL PUNTO. Pedido de
+ * Camila: «debe tener el mismo color que el header». Contra la barra la
+ * plancha desaparece —es exactamente el mismo valor— así que arriba de todo
+ * el lockup se lee como siempre se leyó, sin una chapa atrás. El troquel
+ * aparece recién en los 30px que el sticker cuelga por debajo del filete,
+ * sobre lo que scrollea, que es el único lugar donde hace falta: ahí da
+ * 10.03:1 contra la losa `deep`.
  *
- * ⚠️ EL RADIO CAMBIA CON EL TAMAÑO DEL LOGO Y POR ESO HAY DOS FILTROS. El
- * radio de `feMorphology` está en píxeles del elemento, no en porcentaje, así
- * que uno solo daría un borde proporcionalmente 1.5 veces más gordo en mobile
- * —el lockup mide 52px ahí y 80 en desktop—. Medidos: 5px sobre 80 y 3px
- * sobre 52 son el mismo 6% de borde.
+ * Es lo contrario de lo que haría un fondo en `cream`, que se ve SIEMPRE y
+ * convierte el logo en un objeto pegado sobre el header. Con `bone` el
+ * sticker no está pegado sobre la barra: es la barra la que está troquelada.
  *
- * ⚠️ LA SOMBRA TAMBIÉN TUVO QUE CAMBIAR DE TÉCNICA. `shadow-btn` es un
- * `box-shadow`, y un box-shadow dibuja la sombra de la CAJA: con el disco eso
- * era correcto —la caja era el disco— pero contra un troquel proyectaría un
- * rectángulo detrás de una silueta recortada. Va como `drop-shadow`, que
- * sigue el alfa. Son dos, con los mismos valores que `--shadow-btn`, porque
- * `drop-shadow` no tiene spread y hace falta el par para llegar al mismo peso.
+ * ⚠️ LOS DOS PORCENTAJES NO SON EL MISMO NÚMERO Y NO ES UN DESCUIDO. En el
+ * Figma el lockup mide 302.3 × 322 y la plancha 330.3 × 350: son 14px de
+ * contorno parejo por los cuatro lados. Pero 14px sobre 302 de ancho y 14px
+ * sobre 322 de alto NO son el mismo porcentaje —109.262 % contra 108.696 %—,
+ * y escalar los dos ejes por igual deformaría el troquel. Cada eje lleva el
+ * suyo, y así la silueta entra exacta.
  *
- * ⚠️ EL `url(#...)` ES UNA REFERENCIA AL DOCUMENTO, NO A ESTE ARCHIVO. Se
- * resuelve contra la página, así que el `<svg>` de defs TIENE que estar
- * montado cuando esta clase se aplica: los dos viven en `Header.tsx` y no se
- * separan.
+ * ⚠️ EL 4.6 % DE CONTORNO ES DEL DISEÑO, no un valor que se pueda redondear a
+ * ojo: es lo que hace que la cinta de «EAT. DRINK. PARADISE.» quede envuelta
+ * en una sola pieza en vez de con una isla por letra.
+ *
+ * ⚠️ LA SOMBRA NO VA ACÁ: va en el envoltorio, que es lo único que contiene a
+ * la plancha Y al lockup. Un `drop-shadow` sobre la plancha sola se
+ * calcularía antes de la máscara —el orden del render es filtro, recorte,
+ * máscara— y saldría la sombra del rectángulo.
  * ══════════════════════════════════════════════════════════════════════════
  */
-.troquel {
-  filter: url('#troquel-sm') drop-shadow(0 1px 2px rgba(1, 69, 69, 0.1))
-    drop-shadow(0 2px 4px rgba(1, 69, 69, 0.12));
+.plancha,
+.plancha-filo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  mask-image: url('/brand/logo-plancha.svg');
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
 }
 
-@media (width >= 84rem) {
-  .troquel {
-    filter: url('#troquel-desk') drop-shadow(0 1px 2px rgba(1, 69, 69, 0.1))
-      drop-shadow(0 2px 4px rgba(1, 69, 69, 0.12));
-  }
+.plancha {
+  width: 109.262%;
+  height: 108.696%;
+  background-color: var(--color-bone);
+}
+
+/**
+ * ⚠️ EL FILO: LA MISMA PLANCHA, UN PELO MÁS GRANDE Y EN `fog`. Pedido de
+ * Camila: «¿podés ponerle mejor sombra o un pequeño borde al sticker, para que
+ * tenga contraste?».
+ *
+ * Hace falta porque la plancha es del color del header: contra la barra
+ * desaparece del todo, y eso es correcto abajo —donde cuelga sobre la losa
+ * verde— pero arriba de la página el sticker no existía. El filo es lo único
+ * que lo dibuja ahí.
+ *
+ * ⚠️ VA EN `fog`, QUE ES EL TOKEN DE LOS FILETES DE 1px DEL SITIO, y no en un
+ * gris nuevo: es el mismo valor con el que el header se separa de la página
+ * dos píxeles más abajo. El sticker y la barra quedan dibujados con la misma
+ * línea.
+ *
+ * ⚠️ ES UNA COPIA ESCALADA Y NO UN `border`: un borde CSS sigue la caja, que
+ * acá es el rectángulo del lockup. El contorno tiene que seguir el troquel, y
+ * la única forma es repetir la máscara.
+ *
+ * ⚠️ LOS PORCENTAJES SON LOS DE LA PLANCHA MÁS 3px SOBRE LAS MEDIDAS DE
+ * DESKTOP —75.1 × 80 el lockup—, o sea 1.5px de filo por lado. En mobile el
+ * lockup mide 48.8 × 52 y el mismo porcentaje da 0.98px: el filo se achica
+ * solo y sigue siendo una línea, nunca un anillo.
+ */
+.plancha-filo {
+  width: 113.26%;
+  height: 112.45%;
+  background-color: var(--color-fog);
+}
+
+/**
+ * El envoltorio del sticker: la sombra, y el hover que mueve las dos capas
+ * juntas. Es el `drop-shadow` y no un `box-shadow` porque la caja de este
+ * `<span>` es el rectángulo del lockup, y la sombra tiene que seguir el
+ * troquel. Son dos pasadas: una corta y pegada que dibuja el canto del
+ * papel, y una más abierta que lo despega de la barra. Van juntas porque
+ * `drop-shadow` no tiene spread y una sola pasada da o lo uno o lo otro.
+ * Camila las pidió en dos tiempos: «pequeña sombra sutil» primero, «mejor
+ * sombra para que tenga contraste» después.
+ */
+.sticker {
+  filter: drop-shadow(0 1px 1px rgba(1, 69, 69, 0.14))
+    drop-shadow(0 4px 8px rgba(1, 69, 69, 0.18));
 }
