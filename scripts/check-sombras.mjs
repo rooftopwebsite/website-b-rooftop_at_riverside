@@ -261,8 +261,19 @@ for (const vp of VIEWPORTS) {
       console.error(`  (no carga) ${r}`);
       continue;
     }
-    /* Hay que bajar hasta el pie: las tarjetas entran con reveal y antes de
-       aparecer no tienen sombra que medir. */
+    /*
+     * Hay que bajar hasta el pie: las tarjetas entran con reveal y antes de
+     * aparecer no tienen sombra que medir.
+     *
+     * ⚠️ Y HAY QUE ESPERAR A QUE EL REVEAL TERMINE, no sólo a que dispare. Los
+     * `RevealItem` entran con un `translateY` inline: medido a mitad de
+     * animación, la tarjeta está desplazada hacia abajo y su borde inferior
+     * queda más cerca del borde del contenedor de lo que va a quedar en
+     * reposo. Con 300ms el guard reportaba «faltan 10px» en los tickets del
+     * yard de forma intermitente, y en reposo sobran cuatro.
+     *
+     * 900ms cubre la entrada más larga del sitio (620ms) con margen.
+     */
     await page.evaluate(async () => {
       const paso = Math.round(window.innerHeight * 0.7);
       const dormir = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -271,7 +282,7 @@ for (const vp of VIEWPORTS) {
         await dormir(120);
       }
       window.scrollTo(0, 0);
-      await dormir(300);
+      await dormir(900);
     });
     for (const h of await page.evaluate(SONDA)) hallazgos.push({ vp: vp.name, ruta: r, ...h });
   }

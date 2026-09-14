@@ -100,7 +100,9 @@ const INPUT_BASE =
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" variant="primary" size="lg" disabled={pending} className="w-full sm:w-auto">
+    /* Crema y no naranja: la tarjeta del newsletter es `deeper`, o sea la
+       superficie más oscura del sitio. Ver la nota de `EventsBanner`. */
+    <Button type="submit" variant="onDark" size="lg" disabled={pending} className="w-full sm:w-auto">
       {pending ? 'Adding…' : 'Join'}
     </Button>
   );
@@ -312,12 +314,14 @@ export default function NewsletterSignup() {
                   inputs y el botón: centrar el texto ahí lo centra contra
                   ellos y no contra la mitad de la tarjeta, que es más ancha.
 
-                  Alineado a la izquierda quedaba colgando del borde del primer
-                  campo, y con los campos apilados —que es como van en mobile y
-                  en tablet— esa esquina es el único punto de la columna que no
-                  tiene nada encima.
+                  ⚠️ Y SE CENTRA SÓLO MIENTRAS LOS CAMPOS ESTÉN APILADOS. En
+                  `desk` los tres controles pasan a una fila y la columna deja
+                  de existir: ahí el texto vuelve a la izquierda, alineado con
+                  el borde del primer campo, que es de donde cuelga. Camila:
+                  «en desk el texto este sí va marginado; el centro solo en
+                  mobile y tablet».
                 */}
-                <p className="bajada text-center font-body text-micro">
+                <p className="bajada text-center font-body text-micro desk:text-left">
                   No spam. Unsubscribe any time.
                 </p>
               </form>

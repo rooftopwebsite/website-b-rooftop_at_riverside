@@ -693,7 +693,9 @@ export default function WhatsOn() {
               sistema. Ver el encabezado de `Button.tsx`. */}
           <ButtonLink
             href="/whats-on"
-            variant="primary"
+            /* Crema y no naranja: es un CTA sobre la losa `deep`. El
+               razonamiento y los ratios están en `EventsBanner`. */
+            variant="onDark"
             size="lg"
             className="group transition-all duration-300 ease-brand active:scale-95"
           >
@@ -798,7 +800,7 @@ export default function WhatsOn() {
             caja que RECORTA.
             ══════════════════════════════════════════════════════════════
           */
-          className="-mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto pt-3.5 pb-13 [scrollbar-width:none] max-lg:-mx-borde max-lg:scroll-px-borde max-lg:px-borde [&::-webkit-scrollbar]:hidden"
+          className="-mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto pt-3.5 pb-13 [scrollbar-width:none] -mx-borde scroll-px-borde px-borde [&::-webkit-scrollbar]:hidden"
         >
           {events.map((event) => (
             <EventCard key={event.slug} event={event} isToday={today !== null && event.weekday === today} />

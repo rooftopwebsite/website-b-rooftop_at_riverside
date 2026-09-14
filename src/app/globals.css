@@ -1723,6 +1723,34 @@
   border-bottom: var(--radius-band) solid transparent;
 }
 
+/**
+ * ⚠️ SI EL HERMANO ANTERIOR ES UN CONTENEDOR SIN FONDO, HAY QUE BAJAR HASTA EL
+ * QUE TIENE EL COLOR. Es el caso del FOOTER en las 23 rutas y se escapó en la
+ * primera versión.
+ *
+ * El footer no es hermano de la última sección: es hermano de `<main>`, que las
+ * envuelve a todas y es transparente. Así que la regla de arriba le estiraba el
+ * borde a `<main>` —correcto— y eso no pintaba absolutamente nada: detrás del
+ * arco se seguía viendo el blanco del `<body>`. Camila, dos veces: «las
+ * esquinas siguen blancas, deberían ser crema».
+ *
+ * Acá se le saca el borde a `<main>` y se le da a su último hijo, que es la
+ * última sección de la página y la que sí tiene fondo.
+ *
+ * ⚠️ LOS PARES QUE VIVEN DENTRO DE `<main>` NO PASAN POR ACÁ y no hay que
+ * tocarlos: ahí las dos secciones sí son hermanas y la regla de arriba alcanza.
+ * En la home son tres —Hero→WhatsOn, WhatsOn→HowThisPlaceWorks y
+ * ThreeDoors→EventsBanner— y siempre funcionaron. Es lo que hacía que el
+ * defecto pareciera arreglado mirando la home a mitad de página.
+ */
+main:has(+ .banda-arco) {
+  border-bottom: 0;
+}
+
+main:has(+ .banda-arco) > :last-child {
+  border-bottom: var(--radius-band) solid transparent;
+}
+
 
 /**
  * ══════════════════════════════════════════════════════════════════════════

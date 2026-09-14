@@ -373,7 +373,27 @@ export default function EventsBanner() {
             es el componente, como los otros 60 CTA del sitio: la letra, el
             tamaño, el alto y el radio salen de un solo lugar. Ver el
             encabezado de `Button.tsx`. */}
-        <ButtonLink href="/events/inquire" variant="primary" size="lg" className="mt-7 lg:mt-11">
+        {/*
+          ⚠️ `onDark` (crema) Y NO `primary` (naranja). Pedido de Camila: «los
+          CTA sobre verde quiero que sean o amarillos —como ya tenemos
+          algunos— o una adaptación de este naranja para que tenga más
+          contraste sobre verde, como sucede con el amarillo crema».
+
+          Medido contra la losa `deep`, la silueta del botón da:
+
+              sunset  #F58521  →  4.26:1
+              cream   #FDF0B4  →  9.44:1
+
+          Más del doble. Y el texto de adentro también mejora: `deep` sobre
+          crema da 9.44:1 contra los 6.73:1 de `ink` sobre naranja.
+
+          ⚠️ EL NARANJA NO SE VA DEL SITIO, CAMBIA DE TERRENO: sigue siendo el
+          relleno del CTA sobre las superficies CLARAS, donde da 8.26:1 con
+          texto negro. La regla queda en una línea — naranja sobre claro, crema
+          sobre oscuro— y es la misma que el repo ya aplicaba en el botón del
+          footer y en el de `FindUs`.
+        */}
+        <ButtonLink href="/events/inquire" variant="onDark" size="lg" className="mt-7 lg:mt-11">
           Plan your event
           <ArrowRight className="size-4" />
         </ButtonLink>
