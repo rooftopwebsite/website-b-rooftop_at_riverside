@@ -18,8 +18,16 @@
 
 import type { ReactNode } from 'react';
 
+/*
+ * ⚠️ CADA TONO LLEVA `grano`. El grano del sitio NO es una capa sobre el
+ * viewport: se pinta como `background-image` de la superficie, que es lo que
+ * lo deja debajo del contenido. Camila: «los elementos no deben tener noise
+ * effect, sólo los fondos». Ver la nota de la utilidad en globals.css.
+ *
+ * `none` no lleva: no pinta fondo, hereda el de la página.
+ */
 const TONES = {
-  paper: 'bg-paper text-body',
+  paper: 'bg-paper grano text-body',
   /**
    * ⚠️ `bone` es el tono que da RITMO sin gritar, y se agregó porque faltaba.
    *
@@ -33,10 +41,10 @@ const TONES = {
    * fondo grande. `bone` contra `paper` es un escalón chico y suficiente:
    * medido da **1.08:1**, o sea que el corte se ve sin meter un campo de color.
    */
-  bone: 'bg-bone text-body',
-  cream: 'bg-cream text-body',
+  bone: 'bg-bone grano text-body',
+  cream: 'bg-cream grano text-body',
   /** `on-dark` invierte el anillo de foco a crema. Ver globals.css. */
-  deep: 'bg-deep text-paper on-dark',
+  deep: 'bg-deep grano text-paper on-dark',
   none: '',
 } as const;
 

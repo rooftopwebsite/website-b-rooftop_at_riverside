@@ -293,7 +293,7 @@ export default function Hero() {
        hueso, pero la de las 22 internas sigue siendo el blanco puro. El
        recorte del marco depende de que este color sea exactamente el mismo
        que el del bloque de arriba — ver el bloque del encabezado. */
-    <section className="relative bg-bone pt-9 lg:pt-18">
+    <section className="relative bg-bone grano pt-9 lg:pt-18">
       <div className="caja-ancha">
       {/* ── Titular, primera mitad + pill ─────────────────────────────── */}
       {/*
@@ -547,7 +547,7 @@ export default function Hero() {
             derecha deja de leerse como sobra y pasa a ser el respiro que
             separa la palabra del borde del recorte.
           */
-          className="pointer-events-none absolute top-0 -left-3.5 z-30 m-0 rounded-door bg-bone pr-1.5 pl-3.5 pt-[0.06em] pb-[0.1em] font-display text-titan font-extrabold uppercase text-sunset lg:px-7"
+          className="pointer-events-none absolute top-0 -left-3.5 z-30 m-0 rounded-door bg-bone grano pr-1.5 pl-3.5 pt-[0.06em] pb-[0.1em] font-display text-titan font-extrabold uppercase text-sunset lg:px-7"
         >
           Together
         </p>
@@ -582,15 +582,46 @@ export default function Hero() {
           {/*
             El recorte. `bg-bone` tiene que ser EL MISMO color que el fondo de
             la sección o se ve el rectángulo.
+
+            ⚠️ Y POR ESO TAMBIÉN LLEVA `grano`: desde que el grano se pinta por
+            superficie, «el mismo color» ya no alcanza. El fondo de la sección
+            está granulado y este rectángulo, liso, se recorta contra él por
+            los 3 niveles que el grano le corre a la media. El color y la
+            textura son la misma condición.
           */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute top-0 left-0 z-20 rounded-br-frame bg-bone"
+            className="pointer-events-none absolute top-0 left-0 z-20 rounded-br-frame bg-bone grano"
             style={{
               width: notch ? `${notch.w}px` : '38%',
               height: notch ? `${notch.h}px` : '76px',
             }}
-          />
+          >
+            {/*
+              ⚠️ LAS DOS ESQUINAS INVERSAS. Camila las pasó dibujadas desde
+              Figma con una flecha marcando el ángulo vivo: «aplicá este
+              elemento acá, y en mobile y desk adaptá el tamaño para que se vea
+              correctamente».
+
+              El recorte tiene tres esquinas que dan a la foto. La de abajo a
+              la derecha ya era curva —`rounded-br-frame`, hacia adentro— y las
+              otras dos eran ángulos de 90°: donde el borde derecho del recorte
+              toca el borde de arriba de la foto, y donde el borde de abajo
+              toca el de la izquierda. Ahí el hueso ahora se curva y entra en la
+              foto en vez de cortarse.
+
+              ⚠️ VAN ADENTRO DEL RECORTE Y NO AL LADO, y por eso se posicionan
+              con `top-full` / `left-full`: el recorte se mide en JS y cambia de
+              tamaño con el titular, así que cualquier posición propia habría
+              que volver a medirla. Colgadas de sus bordes se acomodan solas.
+
+              ⚠️ EL TAMAÑO LO PONE `--radius-frame`: el mismo radio que las otras
+              tres esquinas del marco. Ver la nota de `esquina-inversa` en
+              globals.css, que cuenta por qué no es el del Figma.
+            */}
+            <span className="esquina-inversa top-0 left-full" />
+            <span className="esquina-inversa top-full left-0" />
+          </div>
         </div>
       </div>
 

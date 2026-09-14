@@ -37,7 +37,7 @@ export default function Preloader() {
     // directo, sin enterarse de esto.
     <div
       aria-hidden="true"
-      className="rt-preloader pointer-events-none fixed inset-0 z-[120] overflow-hidden bg-deep"
+      className="rt-preloader pointer-events-none fixed inset-0 z-[120] overflow-hidden bg-deep grano"
     >
       <div className="grid h-full place-items-center">
         <Image

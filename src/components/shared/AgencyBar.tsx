@@ -91,7 +91,7 @@ export default function AgencyBar() {
         queda fuera de su alcance. El color no cambió: `chalk` ya
         resuelve a `paper`, que es #FFFFFF.
       */
-      className="relative z-[1] bg-chalk"
+      className="relative z-[1] bg-chalk grano"
     >
       {/* Desktop: la pastilla a la izquierda, el crédito a la derecha. */}
       {/*

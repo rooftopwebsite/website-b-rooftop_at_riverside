@@ -1160,6 +1160,8 @@
   body {
     /* El sitio es blanco y el texto negro. No se negocia. */
     background-color: var(--color-paper);
+    /* El grano del suelo, debajo de todo. Ver la nota de la utilidad. */
+    @apply grano;
     color: var(--color-body);
     font-family: var(--font-body);
     font-size: var(--text-base);
@@ -1754,118 +1756,252 @@ main:has(+ .banda-arco) > :last-child {
 
 /**
  * ══════════════════════════════════════════════════════════════════════════
- * EL GRANO, SOBRE TODO EL SITIO.
+ * EL GRANO: VA EN LOS FONDOS Y SÓLO EN LOS FONDOS.
  *
- * Pedido de Camila: «noise effect en toda la web, en todos los fondos de la
- * web, sin importar color», y después «el noise effect en los fondos claros no
- * se ve».
- *
- * ⚠️ ESTO REEMPLAZA A LA UTILIDAD `grano`, que se aplicaba superficie por
- * superficie. Aquella versión cubría las secciones —que es la mayor parte del
- * sitio— pero dejaba afuera todo lo que no es una sección: la barra del
- * header, el mega-menú, el drawer de mobile, las tarjetas, los campos de color
- * de las tres puertas, la franja de la agencia. Cada una habría necesitado su
- * propia clase, y la siguiente que se agregue nace sin grano.
- *
- * Una capa fija sobre el viewport no se puede olvidar de nada.
+ * Pedidos de Camila, en tres tiempos: «noise effect en toda la web, en todos
+ * los fondos de la web, sin importar color», después «el noise effect en los
+ * fondos claros no se ve», y por último «los elementos no deben tener noise
+ * effect, sólo los fondos».
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ SON DOS CAPAS Y NO UNA, Y ÉSA ES LA CORRECCIÓN. Hubo una versión de una
- * sola capa en `overlay`, que es el modo que la teoría manda para «textura
- * sobre cualquier color»: aclara lo oscuro y oscurece lo claro. En la práctica
- * no funcionó, y se puede medir por qué.
+ * ⚠️ POR QUÉ NO ES UNA CAPA FIJA SOBRE EL VIEWPORT, que es lo que era hasta
+ * acá y lo que primero parece más prolijo. Una capa así se pinta sobre TODO:
+ * las fotos, el logo, los botones, el emblema de la ola. Sobre una foto el
+ * grano no se lee como textura de papel sino como ruido de compresión, y sobre
+ * una pieza troquelada le ensucia el filo. No hay forma de excluir elementos
+ * desde arriba: habría que ir subiendo cada uno por encima del z-index de la
+ * capa, que es una lista que nadie va a mantener.
  *
- * `overlay` sobre un fondo claro es la fórmula del `screen`: el resultado vale
- * 1 - 2(1-Cb)(1-Cs). Sobre `bone`, que es 0.965, el (1-Cb) vale 0.035, así que
- * TODO el ruido —de negro a blanco— sale comprimido en un rango del 7 %, y
- * después el 0.09 de opacidad lo divide otra vez por once. Medido sobre un
- * bloque plano de `bone`: desvío de 0.47 sobre 255. Eso no es sutil, es nada.
+ * ⚠️ LA SOLUCIÓN SALE DE CÓMO PINTA EL NAVEGADOR, no de un truco: el
+ * `background-image` de un elemento se dibuja ENCIMA de su `background-color`
+ * y DEBAJO de su contenido. O sea que un grano puesto ahí cubre la superficie
+ * entera y no toca nada de lo que va arriba. La exclusión es estructural, no
+ * una lista.
  *
- * Y del lado oscuro pasaba lo mismo por el otro extremo: 0.93 de desvío sobre
- * la losa del footer. O sea que el grano no se veía en ningún lado, no sólo en
- * los claros.
+ * ⚠️ Y POR ESO EL BLEND ES `background-blend-mode` Y NO `mix-blend-mode`: el
+ * primero mezcla las capas DE FONDO del propio elemento entre sí; el segundo
+ * mezclaría el elemento entero con lo que tiene detrás.
  *
- * LA SOLUCIÓN ES UNA CAPA POR EXTREMO, cada una en el modo que NO se comprime
- * de ese lado:
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SON DOS RUIDOS Y NO UNO, Y ESO ES LO QUE LO HACE VISIBLE EN CUALQUIER
+ * COLOR. Hubo una versión en `overlay`, que es el modo que la teoría manda
+ * para «textura sobre cualquier fondo»: aclara lo oscuro y oscurece lo claro.
+ * Medido, no funcionaba en ninguno de los dos.
  *
- *   · `multiply` trabaja sobre lo claro. El resultado es Cb·Cs, y con Cb≈1 el
- *     ruido pasa casi entero. Sobre lo oscuro es inerte: Cb≈0.05 lo aplasta.
+ * `overlay` sobre un fondo claro es la fórmula del `screen`: 1-2(1-Cb)(1-Cs).
+ * Sobre `bone`, que vale 0.965, el (1-Cb) es 0.035, así que todo el ruido sale
+ * comprimido en un rango del 7 %. Desvío medido sobre un bloque plano: 0.47
+ * sobre 255. Y del lado oscuro pasaba lo mismo por el otro extremo: 0.93.
+ *
+ * Una capa por extremo, cada una en el modo que NO se comprime de ese lado:
+ *
+ *   · `multiply` trabaja sobre lo claro —el resultado es Cb·Cs y con Cb≈1 el
+ *     ruido pasa casi entero— y es inerte sobre lo oscuro.
  *   · `screen` trabaja sobre lo oscuro, por el motivo simétrico, y es inerte
  *     sobre lo claro.
  *
- * Cada una hace su mitad y no estorba en la otra. Medido: `bone` pasa de 0.47
- * a 2.49 de desvío y la losa `deep` de 0.93 a 3.84.
+ * Medido: `bone` pasa de 0.47 a 2.49 de desvío, y la losa `deep` de 0.93 a
+ * 3.84.
  *
- * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LA OPACIDAD VA EN EL CANAL ALFA DEL TILE Y NO EN UN `opacity`, porque un
+ * `opacity` aplicaría al elemento entero —contenido incluido— y acá justamente
+ * lo que no hay que tocar es el contenido. El `feFuncA` de cada SVG es su
+ * fuerza: 0.03 el de multiply, 0.05 el de screen.
+ *
  * ⚠️ EL `feComponentTransfer` CON `slope: 5` NO ES DECORACIÓN: ES LO QUE HACE
- * QUE EL GRANO NO ENSUCIE LOS COLORES. El problema de `multiply` y `screen` es
- * que además de dar textura corren la MEDIA de la superficie: multiply oscurece
- * el claro, screen aclara el oscuro. Y ese corrimiento depende de la opacidad,
- * mientras que la textura depende de la opacidad Y del contraste del ruido.
- *
- * O sea que estirando el ruido alrededor de 0.5 —eso hace el `slope`, y el
- * `intercept` de -2 es lo que mantiene el centro en su lugar— se consigue el
- * mismo grano con menos opacidad, y por lo tanto con menos corrimiento.
- * Medido, a igual desvío: sin estirar, `bone` se iba 5.8 niveles; con slope 5,
- * 3.1.
+ * QUE EL GRANO NO ENSUCIE LOS COLORES. Estos dos modos, además de dar textura,
+ * corren la MEDIA de la superficie: multiply oscurece el claro, screen aclara
+ * el oscuro. Ese corrimiento depende sólo de la opacidad, mientras que la
+ * textura depende de la opacidad Y del contraste del ruido. Estirando el ruido
+ * alrededor de 0.5 se consigue el mismo grano con menos opacidad, y por lo
+ * tanto con menos corrimiento. Medido, a igual desvío: sin estirar, `bone` se
+ * iba 5.8 niveles; con slope 5, 3.1.
  *
  * ⚠️ LOS VALORES SALEN DE UN BARRIDO CONTRA LOS PARES DE CONTRASTE MÁS
  * AJUSTADOS DEL SITIO, no de probar hasta que se viera lindo. El grano corre
  * los dos colores de cada par y por lo tanto baja el ratio. El par crítico es
  * `muted` sobre `bone`, que ya pasaba AA raspando: 4.96 sin grano, 4.67 con
- * este. Sigue arriba de 4.5. Los otros tres medidos: `muted-dark` sobre `deep`
+ * éste. Sigue arriba de 4.5. Los otros tres medidos: `muted-dark` sobre `deep`
  * 5.95 → 5.56, `paper` sobre `deep` 10.83 → 9.93, `ink` sobre `sunset` 6.73 →
  * 6.31.
  *
- * ⚠️ SUBIR ESTAS OPACIDADES SIN REHACER ESA CUENTA ROMPE LA ACCESIBILIDAD, y
+ * ⚠️ SUBIR ESTOS ALFA SIN REHACER ESA CUENTA ROMPE LA ACCESIBILIDAD, y
  * `npm run check:contrast` NO lo va a avisar: ese guardia lee los tokens
  * declarados, y el grano es una capa que se compone encima. La cuenta hay que
  * hacerla a mano.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ VAN EN EL `<body>` Y SON `fixed`, NO `absolute`. Con `absolute` el tile se
- * repetiría a lo largo de toda la altura del documento —catorce mil píxeles en
- * la home— y el navegador tendría que pintarlo entero. Fijo al viewport es
- * siempre la misma superficie de pantalla, sin importar cuánto mida la página.
+ * ⚠️ DÓNDE SE APLICA: en el `<body>`, en los cuatro tonos de `Section`, y en
+ * las superficies del cromo que no son secciones —la barra del header, el
+ * mega-menú, el drawer de mobile, el footer y la franja de la agencia—. NO va
+ * en botones, tarjetas, píldoras ni sellos: ésos son objetos apoyados sobre
+ * una superficie, no la superficie.
  *
- * ⚠️ `pointer-events: none` NO ES OPCIONAL: sin eso, una capa fija sobre todo
- * el viewport se come cada clic del sitio.
- *
- * ⚠️ EL `z-index` ES ALTÍSIMO A PROPÓSITO (200). Tiene que quedar por encima
- * del header pegado (40), del drawer (110) y del preloader (120): si quedara
- * debajo, esas tres superficies serían las únicas sin textura, que es el
- * problema que este bloque viene a resolver.
+ * ⚠️ NO PONERLO EN UN ELEMENTO QUE YA TENGA `background-image`: se lo pisa.
+ * El único caso del sitio es la capa de nubes del footer, que vive en su
+ * propio div y por eso no se cruzan.
  *
  * ⚠️ EL TILE ES SVG Y NO UN PNG. `feTurbulence` se rasteriza una vez y el
  * navegador repite el mosaico: pesa medio kilobyte contra los ~8 KB de un PNG,
- * y no es un pedido de red. El `stitchTiles='stitch'` es lo que evita que se
- * vea la grilla de 160px en las uniones, y el `saturate 0` lo que evita que el
- * ruido salga de colores: `feTurbulence` genera los cuatro canales por
- * separado, así que sin desaturar el grano es confeti.
+ * y no es un pedido de red. El `stitchTiles='stitch'` evita que se vea la
+ * grilla de 160px en las uniones, y el `saturate 0` que el ruido salga de
+ * colores: `feTurbulence` genera los cuatro canales por separado, así que sin
+ * desaturar el grano es confeti.
  * ══════════════════════════════════════════════════════════════════════════
  */
-body::before,
-body::after {
+@utility grano {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='5' intercept='-2'/%3E%3CfeFuncG type='linear' slope='5' intercept='-2'/%3E%3CfeFuncB type='linear' slope='5' intercept='-2'/%3E%3CfeFuncA type='linear' slope='0' intercept='0.03'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='5' intercept='-2'/%3E%3CfeFuncG type='linear' slope='5' intercept='-2'/%3E%3CfeFuncB type='linear' slope='5' intercept='-2'/%3E%3CfeFuncA type='linear' slope='0' intercept='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat, repeat;
+  background-size: 160px 160px, 160px 160px;
+  background-blend-mode: multiply, screen;
+}
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * EL GRANO, VERSIÓN CAPA: para los fondos que NO pintan con `background`.
+ *
+ * Pedido de Camila: «ojo que las ondas también deben tener noise effect».
+ *
+ * ⚠️ POR QUÉ NO ALCANZA CON `grano`. La utilidad normal mete el ruido como
+ * `background-image`, que es lo que lo deja debajo del contenido. Pero las
+ * cenefas de ola no pintan su color con un `background`: son un `<svg>` con
+ * paths rellenos, o un `<img>`. El color de LLEGADA de la ola —el de la
+ * sección que viene— vive adentro del dibujo, donde un background no llega.
+ *
+ * ⚠️ POR QUÉ ACÁ SÍ SE PUEDE PONER ENCIMA, que es justo lo que la otra
+ * utilidad evita. Estas tiras no tienen contenido: son la transición entre dos
+ * superficies y nada más. No hay texto, no hay foto, no hay pieza troquelada
+ * que se pueda ensuciar. Una capa encima de una tira que es sólo fondo sigue
+ * siendo grano sobre fondo.
+ *
+ * ⚠️ NO USAR ESTO EN NADA QUE TENGA CONTENIDO. Si la tira algún día lleva un
+ * sello o un texto, la capa se lo pinta: ahí hay que volver a `grano` y
+ * resolver el color de la ola de otra forma.
+ *
+ * ⚠️ SON DOS PSEUDOELEMENTOS PORQUE SON DOS MODOS DE MEZCLA, y un elemento
+ * sólo puede tener uno. El reparto es el mismo que en `grano`: `multiply` para
+ * los claros, `screen` para los oscuros. Ver su nota para el detalle de por
+ * qué no puede ser una sola capa en `overlay`.
+ *
+ * ⚠️ ACÁ LA FUERZA VA EN `opacity` Y NO EN EL ALFA DEL TILE, al revés que en
+ * `grano`. Es la diferencia entre las dos técnicas: una capa aparte puede
+ * tener su propia opacidad sin tocar nada más, mientras que un `opacity` sobre
+ * la superficie se llevaría puesto también su contenido. Los valores son los
+ * mismos, 0.03 y 0.05.
+ *
+ * ⚠️ EL TILE LLEVA EL ALFA FIJO EN 1 CON `feFuncA`, Y NO ES REDUNDANTE.
+ * `feTurbulence` genera ruido en los CUATRO canales, alfa incluido: sin
+ * fijarlo, el tile sale además agujereado al azar y el grano queda muy por
+ * debajo de lo medido. Pasó, y Camila lo vio antes que el guardia: la ola del
+ * `PhotoDivider` se seguía viendo lisa con la capa puesta y todo. Acá la
+ * fuerza la pone el `opacity` de la capa, así que el tile tiene que ser
+ * opaco. En `grano` es al revés: ahí el alfa ES la fuerza.
+ *
+ * ⚠️ LA UTILIDAD NO DECLARA `position`, Y ESO ES A PROPÓSITO. La primera
+ * versión ponía `position: relative` para que los pseudoelementos tuvieran de
+ * dónde colgarse, y le pisó el `absolute` a la tira de ola del `PhotoDivider`:
+ * la cenefa se cayó del borde de la foto al flujo normal y quedó una banda
+ * separando la foto de la ola. Camila lo vio enseguida: «no las separes».
+ *
+ * Quien la usa tiene que estar posicionado. Los tres call sites lo están, y
+ * dos de ellos ya lo estaban por su cuenta.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+@utility grano-capa {
+  isolation: auto;
+}
+
+.grano-capa::before,
+.grano-capa::after {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 200;
+  /*
+    ⚠️ EL z-index NO ES DECORATIVO: SIN ÉL LA MITAD DEL GRANO QUEDA DEBAJO
+    DEL DIBUJO. La ola del PhotoDivider es un <img> con transform —lleva una
+    animación— y un elemento transformado se pinta en la MISMA fase que los
+    posicionados. Entre iguales manda el orden del DOM, y ::before viene
+    antes de los hijos: la capa de multiply, que es justo la que trabaja
+    sobre los claros, quedaba tapada por la ola. Sólo llegaba el screen, que
+    sobre crema es inerte. Resultado: la cenefa lisa, y Camila avisando tres
+    veces que las ondas no tenían grano.
+  */
+  z-index: 1;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='5' intercept='-2'/%3E%3CfeFuncG type='linear' slope='5' intercept='-2'/%3E%3CfeFuncB type='linear' slope='5' intercept='-2'/%3E%3CfeFuncA type='discrete' tableValues='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
 }
 
-/** La mitad clara del grano. Inerte sobre las losas oscuras. */
-body::before {
+.grano-capa::before {
   opacity: 0.03;
   mix-blend-mode: multiply;
 }
 
-/** La mitad oscura. Inerte sobre `bone`, `paper` y `cream`. */
-body::after {
+.grano-capa::after {
   opacity: 0.05;
   mix-blend-mode: screen;
 }
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * LA ESQUINA INVERSA: el radio que curva HACIA ADENTRO.
+ *
+ * Camila la pasó dibujada desde Figma —el nodo `Frame 2134282047`, 90×90 con
+ * un cuarto de círculo recortado— marcando con una flecha dónde iba: el ángulo
+ * vivo que queda donde la placa del hero se encuentra con el borde de la foto.
+ *
+ * ⚠️ QUÉ PROBLEMA RESUELVE. El recorte del hero es un rectángulo de `bone`
+ * pegado a la esquina del marco: la placa de «TOGETHER» cae adentro y la foto
+ * arranca donde el rectángulo termina. Eso deja DOS ángulos de 90° —donde el
+ * borde derecho del recorte toca el borde de arriba de la foto, y donde el
+ * borde de abajo toca el de la izquierda— y un ángulo vivo entre dos
+ * superficies delata que una está tapando a la otra. Con el radio invertido el
+ * hueso no termina: se curva y entra en la foto.
+ *
+ * ⚠️ NO ES UN `border-radius`. Un radio redondea hacia adentro de la caja y lo
+ * que se necesita acá es lo contrario: una pieza que RELLENA todo menos un
+ * cuarto de disco. Se hace con una máscara radial, que además es el mismo
+ * recurso con el que están hechos el troquel del logo y las palmeras del
+ * footer.
+ *
+ * ⚠️ EL RADIO ES `--radius-frame`, EL MISMO DEL MARCO DE LA FOTO. Arrancó en
+ * `--radius-band` —88px en desktop, que son los 90 del elemento de Figma— y
+ * Camila lo bajó: «ambos más chico, para que siga el radio de las otras
+ * esquinas». Tiene razón y es lo correcto de sistema: el marco tiene 44px en
+ * las tres esquinas que no dan al recorte, y una cuarta con otro radio no se
+ * lee como la misma pieza. El de Figma era el tamaño del elemento suelto, no
+ * una medida de este lugar.
+ *
+ * Que sea fijo y no un clamp tampoco es un problema: `--radius-frame` es el
+ * radio de ESTE marco en todas las medidas, así que la esquina lo sigue
+ * automáticamente, que es lo que se pidió con «en mobile y desk adaptá el
+ * tamaño».
+ *
+ * ⚠️ LLEVA `grano` COMO CUALQUIER OTRO SUPLENTE DE FONDO: es `bone` sobre una
+ * sección `bone`, y sin la textura se recorta contra ella.
+ *
+ * ⚠️ LAS DOS ESQUINAS SON LA MISMA PIEZA, SIN ROTAR, y eso no es casualidad:
+ * las dos se cuelgan de un borde del recorte de modo que la esquina del
+ * recorte cae en su ángulo SUPERIOR IZQUIERDO. El círculo va siempre en el
+ * opuesto. Hubo una versión con la de abajo rotada y se veía como un mordisco
+ * al revés —la foto metiéndose en el hueso en vez del hueso en la foto—:
+ * Camila la marcó enseguida.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+@utility esquina-inversa {
+  position: absolute;
+  width: var(--radius-frame);
+  height: var(--radius-frame);
+  background-color: var(--color-bone);
+  mask-image: radial-gradient(
+    circle at 100% 100%,
+    transparent calc(var(--radius-frame) - 0.5px),
+    black var(--radius-frame)
+  );
+  @apply grano;
+}
+
 
 
 @utility rodillo {
@@ -2461,10 +2597,17 @@ body::after {
   mask-repeat: no-repeat;
 }
 
+/**
+ * ⚠️ LLEVA `grano` AUNQUE SEA UNA PIEZA Y NO UNA SUPERFICIE, y es por lo mismo
+ * que está en `bone`: su trabajo es desaparecer contra el header. El grano
+ * corre la media de una superficie unos 3 niveles, así que una plancha lisa
+ * sobre una barra granulada deja de ser el mismo color y se ve el disco.
+ */
 .plancha {
   width: 109.262%;
   height: 108.696%;
   background-color: var(--color-bone);
+  @apply grano;
 }
 
 /**
@@ -2498,10 +2641,12 @@ body::after {
 }
 
 /**
- * El envoltorio del sticker: la sombra, y el hover que mueve las dos capas
- * juntas. Es el `drop-shadow` y no un `box-shadow` porque la caja de este
- * `<span>` es el rectángulo del lockup, y la sombra tiene que seguir el
- * troquel. Son dos pasadas: una corta y pegada que dibuja el canto del
+ * LA SOMBRA DE STICKER. La usan el logo del header y el emblema de la ola en
+ * `PhotoDivider`, y es la misma a propósito: las dos piezas son un troquel
+ * apoyado encima de otra cosa, así que se despegan igual.
+ *
+ * Es `drop-shadow` y no `box-shadow` porque la caja de estos elementos es un
+ * rectángulo y la sombra tiene que seguir el troquel. Son dos pasadas: una corta y pegada que dibuja el canto del
  * papel, y una más abierta que lo despega de la barra. Van juntas porque
  * `drop-shadow` no tiene spread y una sola pasada da o lo uno o lo otro.
  * Camila las pidió en dos tiempos: «pequeña sombra sutil» primero, «mejor

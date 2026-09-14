@@ -142,7 +142,7 @@ export default function UtilityBar() {
     });
 
   return (
-    <div className="overflow-hidden bg-deep">
+    <div className="overflow-hidden bg-deep grano">
       <div className="flex h-10 items-center">
         {/*
           ⚠️ `w-max` en la tira y `overflow-hidden` en el padre: sin el ancho

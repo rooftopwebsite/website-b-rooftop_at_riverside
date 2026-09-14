@@ -66,7 +66,7 @@ export default function FindUs() {
     <section
       id="find-us"
       aria-labelledby="find-us-title"
-      className="relative z-[3] banda-arco bg-bone pt-16 pb-cierre lg:pt-32"
+      className="relative z-[3] banda-arco bg-bone grano pt-16 pb-cierre lg:pt-32"
     >
       <div className="caja-ancha">
         {/*

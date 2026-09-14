@@ -216,7 +216,7 @@ export default function Footer() {
 
       El porqué completo está en globals.css.
     */
-    <footer className="relative z-[4] banda-arco bg-deep text-paper on-dark">
+    <footer className="relative z-[4] banda-arco bg-deep grano text-paper on-dark">
       {/*
         ══════════════════════════════════════════════════════════════════
         EL FONDO DEL FOOTER: NUBES + PALMERAS, LAS DOS PIEZAS DEL BRAND BOOK.

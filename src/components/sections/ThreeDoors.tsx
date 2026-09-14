@@ -133,7 +133,7 @@ export default function ThreeDoors() {
   return (
     <section
       aria-labelledby="doors-title"
-      className="relative bg-bone pt-16 pb-cierre lg:pt-30"
+      className="relative bg-bone grano pt-16 pb-cierre lg:pt-30"
     >
       <div className="caja-ancha">
         {/* El encabezado entra como un bloque —titular y bajada juntos— y las

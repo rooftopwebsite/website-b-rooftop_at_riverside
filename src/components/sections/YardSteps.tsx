@@ -230,7 +230,7 @@ export default function YardSteps() {
         son el hueco que le deja debajo. El borde de arriba del bloque es la
         lengüeta, no el troquel.
       */
-      className="relative bg-bone pt-bloque pb-cierre"
+      className="relative bg-bone grano pt-bloque pb-cierre"
     >
       {/*
         ⚠️ Es una LISTA (`ol`) y no tres `article` sueltos, y con el rediseño

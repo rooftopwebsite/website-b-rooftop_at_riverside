@@ -73,8 +73,18 @@ const PHOTOS = [
 ] as const;
 
 export default function PhotoDivider() {
+  /*
+    ⚠️ `z-[1]` EN LA SECCIÓN ES LO QUE DEJA AL EMBLEMA COLGAR SOBRE LA DE
+    ABAJO. Sin él esta sección tiene z-index `auto` igual que `ThreeDoors`, y
+    entre iguales gana la que viene después en el DOM: la mitad de abajo del
+    emblema quedaba tapada por el hueso de la siguiente sección. Era además el
+    motivo por el que el emblema venía recortado.
+
+    1 alcanza, porque `ThreeDoors` no declara z-index. Y queda lejos del
+    header, que vive en 50.
+  */
   return (
-    <section aria-hidden="true" className="relative bg-ink">
+    <section aria-hidden="true" className="relative z-[1] bg-ink">
       {/*
         ⚠️ TODA LA SECCIÓN ES `aria-hidden`, y es correcto: no hay ni un dato
         acá que no esté escrito en otro lado de la página. Doce fotos con su
@@ -262,7 +272,7 @@ export default function PhotoDivider() {
         ⚠️ En `lg` se queda en los 90 de siempre: ahí el arco mide 88 y el
         cálculo daría 96, o sea que el desktop se movería sin motivo.
       */}
-      <div className="pointer-events-none absolute inset-x-0 top-[-1px] z-10 h-[calc(var(--radius-band)+8px)] rounded-b-band bg-bone lg:h-22.5" />
+      <div className="pointer-events-none absolute inset-x-0 top-[-1px] z-10 h-[calc(var(--radius-band)+8px)] rounded-b-band bg-bone grano lg:h-22.5" />
 
       {/*
         La cenefa de olas.
@@ -272,7 +282,9 @@ export default function PhotoDivider() {
         tapando los dos bordes. Los dos números están atados — ver `.rt-wave`
         en globals.css.
       */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-[-1px] z-30 overflow-hidden">
+      {/* `grano-capa`: la ola es un `<img>`, así que el grano no puede ir de
+          fondo. La tira no lleva contenido, el emblema va en su propio div. */}
+      <div className="grano-capa pointer-events-none absolute inset-x-0 bottom-[-1px] z-30 overflow-hidden">
         <Image
           src="/brand/wave-only.svg"
           alt=""
@@ -292,13 +304,85 @@ export default function PhotoDivider() {
         emblema queda en 42px de ancho, que a esa escala es una mancha. Camila:
         «en mobile más grande desde el centro, está muy chico y no se ve».
 
-        Por eso el porcentaje sube en las pantallas chicas: 24 % a 390 son 94px
-        de ancho, que es cuando la figura se vuelve a leer. El centrado no
-        cambia —sigue siendo `left-1/2` con `-translate-x-1/2`— así que crece
-        desde el centro, que es lo que se pidió.
+        ⚠️ Y AHORA BAJA EN LAS CHICAS, QUE ES LO CONTRARIO DE LO QUE HACÍA.
+        Mientras el emblema estaba recortado y apoyado en el borde, agrandarlo
+        en mobile era lo correcto: no tapaba nada. Desde que está entero y
+        montado sobre la ola, la mitad de abajo cae sobre la sección siguiente
+        y se come el titular. Camila: «en tablet y mobile achicá el elemento
+        para que no pise el texto».
+
+        Medido contra el `h2` de «Not a restaurant», que es lo que empezaba a
+        pisar: a 390 el 18 % deja 11px de aire y a 834 el 11 % deja 8. Los
+        porcentajes de arriba —24, 16, 10.83— daban 52 y 85px de solape.
+
+        El centrado no cambia: sigue siendo `left-1/2` con `-translate-x-1/2`.
+
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ LOS PORCENTAJES SUBIERON UN 48.8 % AL CAMBIAR DE ARCHIVO, Y NO ES
+        QUE EL EMBLEMA HAYA CRECIDO. Antes acá iba `emblem-crop.svg`, que es
+        una VENTANA de 170×148 sobre un dibujo de 253×253: le faltaban tres
+        lados. Con la sombra de sticker eso se volvió evidente —Camila: «se ve
+        cortado, acá tenés el elemento completo»— porque un troquel cortado a
+        pico deja de leerse como troquel.
+
+        `emblem.svg` es el dibujo entero. Como es 253 de ancho donde el otro
+        era 170, el mismo porcentaje daría un disco más chico: los tres suben
+        por 253/170 para que el emblema se vea del mismo tamaño que antes.
+
+        ⚠️ Y AHORA SÍ QUEDA CENTRADO DE VERDAD. En el recorte el disco caía al
+        74 % de la caja, así que centrar la caja dejaba el dibujo 38px corrido
+        a la derecha. El archivo completo tiene el disco en su centro.
+        ══════════════════════════════════════════════════════════════════
       */}
-      <div className="pointer-events-none absolute bottom-[-1px] left-1/2 z-30 w-[24%] -translate-x-1/2 md:w-[16%] lg:w-[10.83%]">
-        <Image src="/brand/emblem-crop.svg" alt="" width={160} height={120} className="block w-full" />
+      {/*
+        ⚠️ EL `translate-y` BAJA EL EMBLEMA HASTA QUE SU CENTRO CAE EN LA LÍNEA
+        DE LA OLA. Pedido de Camila: «el elemento más abajo, más o menos la
+        mitad del elemento a la altura de las olas».
+
+        Anclado en `bottom`, el emblema queda entero ARRIBA del borde de la
+        sección, y el borde no es donde está la ola: la cenefa ondula, y su
+        línea pasa —medido en tres anchos— a un 25 % del alto de la tira por
+        encima del borde.
+
+        ⚠️ SON TRES PORCENTAJES DISTINTOS Y NO UNO, Y SALEN DE UNA CUENTA. El
+        corrimiento que hace falta es `alto/2 − 0.25 × tira`, y los dos
+        términos escalan con el ancho de la ventana pero con proporciones
+        distintas: la tira mide siempre el 12.3 % del ancho, y el emblema el
+        16.11 %, 23.8 % o 35.6 % según el breakpoint. Como el `translate` es
+        porcentaje del PROPIO elemento, el número cambia con él:
+
+            desk    0.5 − 0.25 × 12.3/16.11 = 30.9 %
+            md      0.5 − 0.25 × 12.2/11    = 22.3 %
+            mobile  0.5 − 0.25 × 12.3/18    = 32.9 %
+
+        Si cambia el ancho del emblema, estos tres se recalculan con esa
+        fórmula. No son valores a ojo.
+      */}
+      <div className="pointer-events-none absolute bottom-[-1px] left-1/2 z-30 w-[18%] -translate-x-1/2 translate-y-[32.9%] md:w-[11%] md:translate-y-[22.3%] lg:w-[16.11%] lg:translate-y-[30.9%]">
+        {/*
+          ⚠️ VA CON `sticker`, LA MISMA CLASE DEL LOGO DEL HEADER. Pedido de
+          Camila: «hacé acá también lo mismo, sombra a este elemento para que
+          se vea como sticker».
+
+          Es la misma pieza conceptual: un troquel apoyado encima de otra cosa.
+          Acá el troquel ya viene dibujado en el SVG —el borde festoneado es
+          parte del archivo— así que lo único que faltaba era la sombra que lo
+          despega. Comparten la clase a propósito: si la sombra del sticker se
+          retoca, los dos se mueven juntos.
+
+          ⚠️ LA SOMBRA CAE SOBRE DOS SUPERFICIES DISTINTAS Y ESO ESTÁ BIEN: la
+          mitad de arriba del emblema está sobre la foto oscura y la de abajo
+          sobre la ola de hueso. Un `drop-shadow` sigue el alfa del dibujo, así
+          que la sombra cruza el borde de la ola con la figura en vez de
+          cortarse en él.
+        */}
+        <Image
+          src="/brand/emblem.svg"
+          alt=""
+          width={253}
+          height={253}
+          className="sticker block w-full"
+        />
       </div>
     </section>
   );

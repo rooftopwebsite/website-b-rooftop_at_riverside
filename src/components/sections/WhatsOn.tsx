@@ -756,7 +756,7 @@ export default function WhatsOn() {
     <section
       id="whats-on"
       aria-labelledby="whats-on-title"
-      className="banda-arco relative z-[2] bg-deep pt-14 pb-cierre-arco text-bone on-dark lg:pt-[110px]"
+      className="banda-arco relative z-[2] bg-deep grano pt-14 pb-cierre-arco text-bone on-dark lg:pt-[110px]"
     >
       <div className="caja-ancha">
         <h2
@@ -962,7 +962,37 @@ export default function WhatsOn() {
           ══════════════════════════════════════════════════════════════════
         */}
         {maxIndex > 0 ? (
-        <div className="flex items-center justify-center gap-5 pt-6.5">
+        /*
+          ⚠️ EL `gap` ES MÁS CHICO EN MOBILE Y LAS FLECHAS LLEVAN `shrink-0`.
+          Camila: «ojo que esto en mobile debe ser redondo, no deformarse».
+
+          La fila pide más ancho del que hay en un teléfono: dos flechas de
+          52px, seis puntos de 44 y dos huecos de 20 son 408px contra los 342
+          útiles de una pantalla de 390. Lo que sobra sale de donde el flex
+          puede sacarlo, y por defecto puede sacarlo de todos: las flechas se
+          achicaban a lo ancho y quedaban dos óvalos.
+
+          `shrink-0` las deja redondas y manda la compresión a los puntos, que
+          es donde no se ve: el punto es un `span` de 9px adentro de un botón
+          de 44, así que el botón se angosta y el dibujo no se entera. Lo que
+          se pierde es ancho de zona táctil, no forma.
+
+          ⚠️ Y LA COMPRESIÓN NO PODÍA IR A LOS PUNTOS, que fue el primer
+          intento: un `<div>` de puntos con ancho fijo tiene `min-width: auto`
+          igual a su contenido, así que no cede un píxel y el sobrante sale por
+          los costados de la fila. Camila lo vio en el acto: «pero mantené los
+          márgenes».
+
+          La cuenta hay que cerrarla de verdad, no repartirla. En mobile los
+          puntos pasan a 36px de área —siguen arriba del mínimo de WCAG 2.5.8,
+          que son 24— y el hueco de la fila baja a 12: 104 de flechas + 24 de
+          huecos + 208 de puntos = 336, contra los 342 que deja el gutter.
+
+          ⚠️ EL `flex-wrap` ES LA RED, no el mecanismo. Si algún día hay una
+          tarjeta más, la fila se parte en dos renglones en vez de volver a
+          romper el margen.
+        */
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-6.5 sm:gap-5">
           {/*
             ⚠️ Las flechas se DESHABILITAN en los extremos en vez de quedar
             activas sin hacer nada. Un control que responde al hover, se
@@ -974,7 +1004,7 @@ export default function WhatsOn() {
             type="button"
             onClick={() => scrollByCard(-1)}
             disabled={!canPrev}
-            className="grid size-13 place-items-center rounded-pill text-bone ring-1 ring-muted-dark transition-all duration-300 ease-brand hover:bg-bone hover:text-deep active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+            className="grid size-13 shrink-0 place-items-center rounded-pill text-bone ring-1 ring-muted-dark transition-all duration-300 ease-brand hover:bg-bone hover:text-deep active:scale-95 disabled:pointer-events-none disabled:opacity-30"
           >
             <span className="sr-only">Previous events</span>
             <ArrowLeft />
@@ -1011,8 +1041,13 @@ export default function WhatsOn() {
                   ⚠️ El `-mx-1` recorta el aire que suman los cinco botones
                   de 44px, para que la fila de puntos no se separe de las
                   flechas más de lo que el diseño marca.
+
+                  ⚠️ EN MOBILE EL ÁREA BAJA A 36px, y es la única medida donde
+                  la cuenta no cerraba: a 390 el gutter deja 342 y la fila
+                  pedía 384. Sigue arriba del mínimo de WCAG 2.5.8. Ver la nota
+                  de la fila de controles.
                 */
-                className="group -mx-1 grid size-11 place-items-center rounded-pill"
+                className="group -mx-1 grid size-9 place-items-center rounded-pill sm:size-11"
               >
                 <span className="sr-only">{slide}</span>
                 <span
@@ -1030,7 +1065,7 @@ export default function WhatsOn() {
             type="button"
             onClick={() => scrollByCard(1)}
             disabled={!canNext}
-            className="grid size-13 place-items-center rounded-pill text-bone ring-1 ring-muted-dark transition-all duration-300 ease-brand hover:bg-bone hover:text-deep active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+            className="grid size-13 shrink-0 place-items-center rounded-pill text-bone ring-1 ring-muted-dark transition-all duration-300 ease-brand hover:bg-bone hover:text-deep active:scale-95 disabled:pointer-events-none disabled:opacity-30"
           >
             <span className="sr-only">Next events</span>
             <ArrowRight />

@@ -64,7 +64,9 @@ export default function WaveBorder({
   return (
     <div
       aria-hidden="true"
-      className={['w-full overflow-hidden leading-[0]', className].filter(Boolean).join(' ')}
+      /* `grano-capa` y no `grano`: el color de llegada de la ola lo pintan los
+         paths del SVG, donde un `background-image` no llega. Ver su nota. */
+      className={['grano-capa relative w-full overflow-hidden leading-[0]', className].filter(Boolean).join(' ')}
       style={{ backgroundColor: SURFACES[from] }}
     >
       <svg

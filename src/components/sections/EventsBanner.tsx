@@ -229,7 +229,7 @@ export default function EventsBanner() {
         descendientes, y acá adentro hay tres tarjetas con `sombra-card`. Es
         exactamente el defecto que vigila `npm run check:sombras`.
       */
-      className="banda-arco relative z-[3] bg-deep pt-14 pb-cierre-arco text-bone on-dark lg:pt-28"
+      className="banda-arco relative z-[3] bg-deep grano pt-14 pb-cierre-arco text-bone on-dark lg:pt-28"
     >
       <div className="caja-ancha relative">
         {/* ⚠️ El titular, la bajada y el sello entran JUNTOS. La bajada está

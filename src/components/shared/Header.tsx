@@ -200,7 +200,17 @@ export default function Header() {
         que el panel del «More», que es absoluto y se despliega a todo el
         ancho, quede por encima del contenido.
 
-        ⚠️ EL `z-40` TIENE QUE SEGUIR POR DEBAJO DEL DRAWER (`z-[110]`) Y DEL
+        ⚠️ ES `z-50` Y ESTUVO EN 40. Camila: «cuidado que los elementos no pisen
+        o pasen por arriba del header. El header debería ir por delante de
+        todo». El que lo pisaba era el sello de `PhotoDivider`, que también
+        estaba en `z-40`: a igual z-index gana el que viene después en el DOM,
+        y todas las secciones vienen después del header.
+
+        El 50 deja un escalón entero libre por debajo, así que cualquier pieza
+        que se salga de su sección —los sellos, el emblema de la ola, las
+        placas del hero— puede subir hasta 40 sin llegar al header.
+
+        ⚠️ EL `z-50` TIENE QUE SEGUIR POR DEBAJO DEL DRAWER (`z-[110]`) Y DEL
         PRELOADER (`z-[120]`). Son las dos únicas cosas del sitio que tapan al
         header, y las dos son pantallas completas.
 
@@ -220,7 +230,7 @@ export default function Header() {
       */}
       <div
         ref={moreRef}
-        className="sticky top-0 z-40 border-b border-fog bg-bone"
+        className="sticky top-0 z-50 border-b border-fog bg-bone grano"
         onMouseLeave={() => setMoreOpen(false)}
       >
 
@@ -608,7 +618,7 @@ export default function Header() {
         */}
         <div
           className={[
-            'absolute inset-x-0 top-full border-b border-fog bg-bone',
+            'absolute inset-x-0 top-full border-b border-fog bg-bone grano',
             'transition-all duration-200',
             moreOpen
               ? 'visible translate-y-0 opacity-100'
@@ -840,7 +850,7 @@ export default function Header() {
           aria-modal="true"
           aria-label="Site menu"
           className={[
-            'absolute inset-0 flex flex-col bg-bone',
+            'absolute inset-0 flex flex-col bg-bone grano',
             'transition-[opacity,transform] duration-300 ease-brand',
             drawerOpen ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0',
           ].join(' ')}
@@ -937,7 +947,7 @@ export default function Header() {
           </nav>
 
           <div
-            className={`shrink-0 border-t border-ink/12 bg-bone pt-4 pb-[calc(16px+env(safe-area-inset-bottom))] ${GUTTER}`}
+            className={`shrink-0 border-t border-ink/12 bg-bone grano pt-4 pb-[calc(16px+env(safe-area-inset-bottom))] ${GUTTER}`}
           >
             <div className="flex flex-col gap-2.5">
               <ButtonLink

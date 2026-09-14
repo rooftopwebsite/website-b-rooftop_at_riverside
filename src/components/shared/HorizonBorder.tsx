@@ -79,7 +79,9 @@ export default function HorizonBorder({
   return (
     <div
       aria-hidden="true"
-      className={`relative isolate w-full overflow-hidden ${className}`}
+      /* `grano-capa` y no `grano`: el color de llegada lo pintan los paths
+         del SVG. Ver su nota en globals.css. */
+      className={`grano-capa relative isolate w-full overflow-hidden ${className}`}
       style={{ backgroundColor: SUPERFICIES[from] }}
     >
       {/* ── La ola ───────────────────────────────────────────────────────
