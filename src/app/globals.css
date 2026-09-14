@@ -2342,3 +2342,60 @@ body::after {
     scroll-margin-top: calc(var(--spacing-header) + 16px);
   }
 }
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * EL TROQUEL DEL LOGO: el sticker sigue la forma del lockup.
+ *
+ * Pedido de Camila: «de hecho quiero que sea tipo sticker que siga la forma
+ * del logo, no redondo».
+ *
+ * ⚠️ NO ES UN FONDO: ES UNA DILATACIÓN DE LA SILUETA. La versión anterior era
+ * un disco `rounded-pill` en crema detrás del logo, y el problema es que el
+ * lockup NO es un círculo: tiene el arco naranja asomando arriba y la cinta de
+ * «EAT. DRINK. PARADISE.» colgando abajo, los dos fuera del redondel. Adentro
+ * de un disco esas dos piezas quedaban flotando en un campo de crema que no
+ * seguía nada. Un sticker de verdad se corta siguiendo el dibujo.
+ *
+ * ⚠️ LO HACE `feMorphology operator="dilate"`, que es literalmente el troquel:
+ * engorda el canal alfa del dibujo N píxeles en todas las direcciones. Eso da
+ * la silueta agrandada; se la rellena de crema con `feFlood` + `feComposite`,
+ * y el logo original se monta encima con `feMerge`. El filtro vive en el
+ * header, ver el `<svg>` de defs.
+ *
+ * ⚠️ POR QUÉ NO SE HIZO CON `drop-shadow` REPETIDO, que es el truco habitual:
+ * los `drop-shadow` encadenados se aplican cada uno sobre el resultado del
+ * anterior, así que el contorno sale más grueso en las diagonales que en los
+ * ejes y en un dibujo con tanto detalle chico —la cinta de abajo tiene letras
+ * de 4px— eso se ve. `feMorphology` dilata parejo de una sola pasada.
+ *
+ * ⚠️ EL RADIO CAMBIA CON EL TAMAÑO DEL LOGO Y POR ESO HAY DOS FILTROS. El
+ * radio de `feMorphology` está en píxeles del elemento, no en porcentaje, así
+ * que uno solo daría un borde proporcionalmente 1.5 veces más gordo en mobile
+ * —el lockup mide 52px ahí y 80 en desktop—. Medidos: 5px sobre 80 y 3px
+ * sobre 52 son el mismo 6% de borde.
+ *
+ * ⚠️ LA SOMBRA TAMBIÉN TUVO QUE CAMBIAR DE TÉCNICA. `shadow-btn` es un
+ * `box-shadow`, y un box-shadow dibuja la sombra de la CAJA: con el disco eso
+ * era correcto —la caja era el disco— pero contra un troquel proyectaría un
+ * rectángulo detrás de una silueta recortada. Va como `drop-shadow`, que
+ * sigue el alfa. Son dos, con los mismos valores que `--shadow-btn`, porque
+ * `drop-shadow` no tiene spread y hace falta el par para llegar al mismo peso.
+ *
+ * ⚠️ EL `url(#...)` ES UNA REFERENCIA AL DOCUMENTO, NO A ESTE ARCHIVO. Se
+ * resuelve contra la página, así que el `<svg>` de defs TIENE que estar
+ * montado cuando esta clase se aplica: los dos viven en `Header.tsx` y no se
+ * separan.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+.troquel {
+  filter: url('#troquel-sm') drop-shadow(0 1px 2px rgba(1, 69, 69, 0.1))
+    drop-shadow(0 2px 4px rgba(1, 69, 69, 0.12));
+}
+
+@media (width >= 84rem) {
+  .troquel {
+    filter: url('#troquel-desk') drop-shadow(0 1px 2px rgba(1, 69, 69, 0.1))
+      drop-shadow(0 2px 4px rgba(1, 69, 69, 0.12));
+  }
+}

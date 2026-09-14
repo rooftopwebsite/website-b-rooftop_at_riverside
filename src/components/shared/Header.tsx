@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { BRAND } from '@/lib/brand';
+import { BRAND, COLORS } from '@/lib/brand';
 import {
   NAV_CTA,
   NAV_MAIN,
@@ -72,17 +72,18 @@ import TilePattern, { TileMark } from './TilePattern';
  * primera, con el pedido que la define: «le agregaría un fondo al logo y un
  * borde blanco modo sticker».
  *
- * Con el disco blanco el lockup deja de ser un dibujo suelto encima de lo que
- * pasa: tiene fondo propio, así que colgar deja de leerse como invadir y pasa
- * a leerse como estar apoyado. Es lo que hace cualquier sticker sobre una
+ * Con el troquel el lockup deja de ser un dibujo suelto encima de lo que
+ * pasa: tiene contorno propio, así que colgar deja de leerse como invadir y
+ * pasa a leerse como estar apoyado. Es lo que hace cualquier sticker sobre una
  * superficie.
  *
  * ⚠️ Y NO ES EL MEDALLÓN QUE ESTE PROYECTO YA SACÓ. Aquel era un `ring` en
- * `ink` alrededor del logo: un círculo dibujado que repetía por fuera la forma
- * que el lockup ya tiene. Éste no dibuja nada —el disco es blanco sobre hueso,
- * 1.08:1, invisible como color— y lo único que lo despega es la sombra más
- * corta del sistema. La diferencia es que uno agrega un borde y el otro agrega
- * un fondo.
+ * `ink` alrededor del logo: un círculo dibujado que repetía por fuera una
+ * forma que el lockup NO tiene. El troquel hace lo contrario: no impone una
+ * forma, copia la que ya está. Y en `cream` sobre hueso da 1.06:1 —una
+ * diferencia de tono y no de brillo—, así que contra el header no dibuja un
+ * borde: se lee recién cuando el logo cuelga sobre lo que scrollea, que es
+ * donde hace falta.
  * ══════════════════════════════════════════════════════════════════════════
  *
  * ⚠️ EL HEADER ES `bone` Y NO `paper`. Es la misma superficie que arranca el
@@ -222,6 +223,42 @@ export default function Header() {
         className="sticky top-0 z-40 border-b border-fog bg-bone"
         onMouseLeave={() => setMoreOpen(false)}
       >
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ EL TROQUEL DEL STICKER. Cada filtro engorda el alfa del lockup y
+          rellena esa silueta agrandada de crema: es el corte del sticker,
+          siguiendo la forma del dibujo en vez de un disco. El detalle de por
+          qué son dos y por qué `feMorphology` está en `.troquel`, en
+          `globals.css`.
+
+          ⚠️ EL `<svg>` NO DIBUJA NADA Y NO PUEDE OCUPAR LUGAR: mide 0 y va
+          `absolute`, o sea fuera del flujo del flex del header. Un `display:
+          none` acá rompería el filtro en Firefox.
+
+          ⚠️ LA REGIÓN DEL FILTRO ES 150% Y NO LA DE FÁBRICA. El default es
+          -10%/+10%, y el troquel se va 5px para afuera de un dibujo de 80:
+          con el default el borde se cortaría en los cuatro lados.
+          ══════════════════════════════════════════════════════════════════
+        */}
+        <svg aria-hidden="true" focusable="false" className="absolute h-0 w-0">
+          <defs>
+            {[
+              { id: 'troquel-sm', r: 3 },
+              { id: 'troquel-desk', r: 5 },
+            ].map(({ id, r }) => (
+              <filter key={id} id={id} x="-25%" y="-25%" width="150%" height="150%">
+                <feMorphology in="SourceAlpha" operator="dilate" radius={r} result="troquel" />
+                <feFlood floodColor={COLORS.cream} result="crema" />
+                <feComposite in="crema" in2="troquel" operator="in" result="borde" />
+                <feMerge>
+                  <feMergeNode in="borde" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            ))}
+          </defs>
+        </svg>
+
         <header className="caja-ancha relative flex min-h-19.5 items-center gap-6">
           {/*
             ══════════════════════════════════════════════════════════════
@@ -301,30 +338,53 @@ export default function Header() {
             */
             /*
               ══════════════════════════════════════════════════════════════
-              ⚠️ EL LOGO VA MODO STICKER: disco blanco, filo blanco más ancho
-              que el dibujo, y una sombra corta. Pedido de Camila: «le agregaría
-              un fondo al logo y un borde blanco modo sticker».
+              ⚠️ EL LOGO VA MODO STICKER, Y EL STICKER VA TROQUELADO: el borde
+              crema sigue la forma del lockup. Pedido de Camila en dos pasos:
+              primero «le agregaría un fondo al logo y un borde blanco modo
+              sticker», después «de hecho quiero que sea tipo sticker que siga
+              la forma del logo, no redondo».
+
+              ⚠️ HUBO UNA VERSIÓN CON DISCO Y NO SERVÍA, por un motivo que es
+              del dibujo y no del gusto: el lockup NO es un círculo. Tiene el
+              arco naranja asomando arriba y la cinta de «EAT. DRINK.
+              PARADISE.» colgando abajo, las dos fuera del redondel. Dentro de
+              un disco esas piezas flotaban en un campo de crema que no seguía
+              nada, y el conjunto se leía como un logo apoyado sobre una chapa
+              redonda en vez de como un sticker.
+
+              ⚠️ EL TROQUEL NO SE DIBUJA ACÁ: sale de `.troquel` en
+              `globals.css`, que aplica los filtros SVG definidos arriba, en
+              el `<svg>` de defs del envoltorio. Ahí está el detalle de por qué
+              `feMorphology`, por qué hay dos radios y por qué la sombra pasó
+              de `box-shadow` a `drop-shadow`.
+
+              ⚠️ ESTA CAJA YA NO PINTA NADA: quedó como posicionadora. Sigue
+              midiendo 100px en desktop y 64 en mobile porque de ahí sale el
+              centrado del lockup y su cuelgue por debajo del filete; el
+              `bg-cream`, el `rounded-pill` y la `shadow-btn` se fueron con el
+              disco.
 
               ⚠️ Y NO ES SÓLO DECORACIÓN: ES LO QUE PERMITE QUE EL HEADER NO SE
               ACHIQUE. El lockup cuelga 26px por debajo del filete, y con el
               header pegado eso son 26px de dibujo suelto encima de lo que
-              scrollea. Ese era el argumento del compactado que ella acaba de
-              sacar. Con el disco blanco el logo deja de estar suelto: tiene un
-              fondo propio que lo separa de lo que pasa por abajo, que es
+              scrollea. Ese era el argumento del compactado que Camila sacó.
+              Con el troquel el logo deja de estar suelto: tiene un contorno
+              propio que lo separa de lo que pasa por abajo, que es
               exactamente lo que hace un sticker pegado sobre una superficie.
 
-              ⚠️ EL BLANCO ES `paper` Y LA BARRA ES `bone`: 1.08:1 medido, o sea
-              que el disco por sí solo NO se distingue del header. Lo que lo
-              despega es la sombra —`shadow-btn`, la más corta del sistema— y no
-              el color. Subirle el contraste al disco lo convertiría en un
-              medallón, que es justo lo que este proyecto ya sacó una vez.
+              ⚠️ LA CREMA ES `#FDF0B4` Y LA BARRA ES `bone`: 1.06:1 medido. El
+              contorno NO se apoya en el contraste contra el header —ahí la
+              diferencia es de tono y no de brillo, y está bien que así sea:
+              subirla lo convertiría en el medallón que este proyecto ya sacó
+              una vez—. Donde de verdad trabaja es colgando, sobre lo que
+              scrollea: contra la losa `deep` da 9.44:1 y el sticker se recorta
+              limpio.
 
-              ⚠️ EL DISCO MIDE 100px Y EL LOCKUP 80: los 10px de anillo son el
-              «borde» del sticker. En mobile son 64 y 52, la misma proporción.
-              Si el logo cambia de tamaño, el disco cambia con él.
+              ⚠️ EL LOCKUP NO SUFRE: su tinta es `ink`, que sobre `cream` da
+              14.91:1.
               ══════════════════════════════════════════════════════════════
             */
-            className="group z-30 grid size-16 shrink-0 place-items-center rounded-pill bg-paper shadow-btn desk:absolute desk:top-1 desk:left-1/2 desk:size-25 desk:-translate-x-1/2"
+            className="group z-30 grid size-16 shrink-0 place-items-center desk:absolute desk:top-1 desk:left-1/2 desk:size-25 desk:-translate-x-1/2"
           >
             {/*
               ⚠️ 80px EN DESKTOP Y NO 64. Creció un 25 % cuando se fue el
@@ -355,7 +415,7 @@ export default function Header() {
               width={240}
               height={254}
               priority
-              className="h-13 w-auto transition-transform duration-300 ease-brand group-hover:scale-105 desk:h-20"
+              className="troquel h-13 w-auto transition-transform duration-300 ease-brand group-hover:scale-105 desk:h-20"
             />
             <span className="sr-only">{BRAND.name}</span>
           </Link>
