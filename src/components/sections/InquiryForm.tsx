@@ -1,11 +1,20 @@
 'use client';
 
 import { useActionState, useEffect, useId, useRef } from 'react';
+import { useVenue } from '@/components/shared/VenueProvider';
 import { useFormStatus } from 'react-dom';
-import { submitEventInquiry, type ActionState } from '@/app/actions';
+import { submitEventInquiry } from '@/app/actions/event-inquiry';
+import type { ActionState } from '@/app/actions/types';
 import { Button } from '@/components/shared/Button';
 import { Eyebrow, Heading } from '@/components/shared/Type';
-import { EVENT_TYPES, FOOD_TIERS, GUEST_RANGES, REFERRAL_SOURCES } from '@/content/spaces';
+import {
+  AREAS_OF_INTEREST,
+  BUDGET_RANGES,
+  EVENT_SUBTYPES,
+  FOOD_TIERS,
+  GUEST_RANGES,
+  REFERRAL_SOURCES,
+} from '@/content/spaces';
 import { BRAND } from '@/lib/brand';
 
 /**
@@ -40,6 +49,9 @@ const LABELS = {
   endTime: 'End time',
   guests: 'Guest count',
   foodTier: 'Food tier',
+  altDate: 'A second date that works',
+  budget: 'Rough budget',
+  areas: 'What you are interested in',
   comments: 'Anything else',
   referral: 'How did you hear about us?',
 } as const;
@@ -95,6 +107,7 @@ function SubmitButton() {
 }
 
 export default function InquiryForm() {
+  const venue = useVenue();
   const uid = useId();
   const [state, action] = useActionState(submitEventInquiry, INITIAL);
   const summaryRef = useRef<HTMLDivElement | null>(null);
@@ -119,7 +132,11 @@ export default function InquiryForm() {
         </Heading>
         <p className="mt-gap-bajada max-w-[54ch] text-lead text-body/80">{state.message}</p>
         <p className="mt-[16px] max-w-[54ch] text-[16px] leading-[1.65] text-body/75">
-          The events packet comes attached to the reply: spaces, capacities and food tiers.
+          {/* ⚠️ ACÁ SE PROMETÍA UN PDF ADJUNTO EN LA RESPUESTA y hoy nada lo
+              adjunta: el envío real todavía no está enchufado (ver
+              `lib/submissions.ts`). Prometer un archivo que no llega es la
+              clase de detalle por el que alguien deja de contestar. */}
+          Rental rates, food options and the fees are all on this page if you want them now.
         </p>
       </div>
     );
@@ -163,13 +180,49 @@ export default function InquiryForm() {
       {/* ── El evento ─────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[16px]">
         <legend className="eyebrow mb-[6px] text-body/75">The event</legend>
-        <SelectField k="eventType" fid={fid} eid={eid} errors={errors} required options={EVENT_TYPES} placeholder="Choose one" />
+        <SelectField k="eventType" fid={fid} eid={eid} errors={errors} required options={EVENT_SUBTYPES} placeholder="Choose one" />
         <div className="grid gap-[16px] sm:grid-cols-3">
           <Field k="date" fid={fid} eid={eid} errors={errors} required type="date" />
+          <Field k="altDate" fid={fid} eid={eid} errors={errors} type="date" hint="Optional" />
           <Field k="startTime" fid={fid} eid={eid} errors={errors} type="time" />
           <Field k="endTime" fid={fid} eid={eid} errors={errors} type="time" />
         </div>
-        <SelectField k="guests" fid={fid} eid={eid} errors={errors} required options={GUEST_RANGES} placeholder="Choose a range" />
+        <div className="grid gap-[16px] sm:grid-cols-2">
+          <SelectField k="guests" fid={fid} eid={eid} errors={errors} required options={GUEST_RANGES} placeholder="Choose a range" />
+          {/*
+            ⚠️ RANGO Y NO CAMPO ABIERTO, y está discutido en el brief:
+            «Madeline y Tony advirtieron que los campos de presupuesto abierto
+            traen respuestas poco realistas». El corte más bajo sale del piso
+            real: dos horas del segundo piso son $1.500.
+          */}
+          <SelectField k="budget" fid={fid} eid={eid} errors={errors} required options={BUDGET_RANGES} placeholder="Choose a range" />
+        </div>
+
+        {/*
+          ⚠️ CASILLAS Y NO UN SELECT: casi nadie quiere una sola parte del
+          lugar. El servidor las lee con `getAll`, no con `fromEntries`.
+        */}
+        <fieldset className="mt-[8px] flex flex-col gap-[8px]">
+          <legend className="font-body text-[16px] font-bold">{LABELS.areas}</legend>
+          <div className="mt-[6px] grid gap-[10px] sm:grid-cols-2">
+            {AREAS_OF_INTEREST.map((a) => (
+              <label
+                key={a.value}
+                htmlFor={fid(`areas-${a.value}`)}
+                className="flex cursor-pointer items-center gap-[10px] font-body text-[16px]"
+              >
+                <input
+                  id={fid(`areas-${a.value}`)}
+                  type="checkbox"
+                  name="areas"
+                  value={a.value}
+                  className="size-[20px] rounded-[6px] border border-ink/25 accent-sunset"
+                />
+                {a.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
       </fieldset>
 
       {/* ── Comida ────────────────────────────────────────────────────── */}
@@ -245,8 +298,8 @@ export default function InquiryForm() {
         </p>
         <p className="text-[15px] text-body/75">
           Prefer email?{' '}
-          <a href={`mailto:${BRAND.contact.events}`} className="link-texto">
-            {BRAND.contact.events}
+          <a href={`mailto:${venue.emailEvents}`} className="link-texto">
+            {venue.emailEvents}
           </a>
         </p>
       </div>

@@ -150,15 +150,15 @@ las páginas.
 | # | Bloque | Para qué | Dónde se usa |
 |---|---|---|---|
 | **A** | **Encabezado de interna, en tres pesos** | Hoy hay uno solo para las nueve. Quiero **tres**: `mayor` (foto a sangre con el titular encastrado, para Events y Sunset Bar), `medio` (titular con arco de piezas o con la trama de grecas, sin foto grande), `chico` (sólo tipografía y un filete, para Contact y Join Us). | las 9 |
-| **B** | **Texto con imagen abrazada** | El bloque 2 de la referencia. Un párrafo largo con la foto metida adentro, no al costado. | Our Story, Market, The Yard |
+| **B** | **Texto con imagen abrazada** | El bloque 2 de la referencia. Un párrafo largo con la foto metida adentro, no al costado. | Our Story, Market, Game Room |
 | **C** | **Dos columnas de argumento con imágenes chicas** | El bloque 3 de la referencia. | Events, Food Trucks |
 | **D** | **Lista de pasos numerados** | Numeral gigante en display, título, párrafo corto. Sin tarjeta. | Events, Join Us, Market |
 | **E** | **Tabla comparativa sobre losa oscura** | El bloque 7 de la referencia y **el único bloque oscuro de la página**. Entra por el horizonte, sale por la cenefa. | Events (con nosotros contra un salón), Food Trucks (cómo se paga acá contra cómo se paga en un restaurante) |
 | **F** | **Tira de testimonios** | Citas reales con nombre. **Sólo donde haya reseñas reales**; si no hay, el bloque no se usa. | Events, Sunset Bar |
-| **G** | **Marquesina** | De nombres de trucks, de fotos o de logos. | Food Trucks, The Yard, Market, What's On |
+| **G** | **Marquesina** | De nombres de trucks, de fotos o de logos. | Food Trucks, Market, Game Room, What's On |
 | **H** | **Carrusel de fichas** | El cross-sell hacia las otras internas: foto, título, una línea, flecha. | las 9, al final |
-| **I** | **Ficha de menú con precios** | Fila con nombre en display, descripción en cuerpo y precio a la derecha, con filete punteado entre nombre y precio. | Sunset Bar |
-| **J** | **Ficha de dato duro** | Capacidad, horario, superficie, precio desde. Número grande, etiqueta chica. | Events, The Yard, Sunset Bar |
+| **I** | **Ficha de menú con precios** | Fila con nombre en display, descripción en cuerpo y precio a la derecha, con filete punteado entre nombre y precio. | Sunset Bar, Game Room (los paquetes de fiesta) |
+| **J** | **Ficha de dato duro** | Capacidad, horario, superficie, precio desde. Número grande, etiqueta chica. | Events, Sunset Bar, Game Room |
 | **K** | **Bloque de CTA de cierre** | Titular corto, una línea, píldora `sunset` con texto negro. **Obligatorio en las nueve.** | las 9 |
 | **L** | **Bloque de contacto de cierre** | Mail y teléfono grandes y clickeables, dirección, mapa. **Obligatorio en las nueve**, arriba del footer. | las 9 |
 
@@ -303,16 +303,37 @@ panel de control.
 
 Bloques: **A-chico → card destacada → lista / mes → G (marquesina de fotos) → K → L**.
 
-**`/whats-on/[slug]`** es la ficha de un evento: foto, qué es, cuándo, dónde, si
-lleva ticket, y los próximos tres.
+**No hay ficha por evento.** Decisión del 2026-09-15: el calendario expone todo en la
+propia página y el evento con entrada linkea **directo afuera**, a Eventbrite, con
+icono de enlace externo y aviso de que abre en otra pestaña. No existe
+`/whats-on/[slug]`. Con lo cual la card destacada y la fila de lista tienen que decir
+todo lo que hoy diría una ficha: qué es, cuándo, dónde y si lleva ticket.
 
-### 7.5 `/the-yard` — el patio con portón
+### 7.5 `/game-room` — la segunda página con precios
 
-Eyebrow `The ground floor`. H1 **"The Yard is open"**. Bajada: "The open yard where
-the trucks park and the stage goes up. It is being gated for ticketed entry, which
-turns it into the room for a festival, a benefit, or a show you sell seats to."
+⚠️ **Dos datos sin confirmar antes de dibujar nada.** Primero el **nombre**: el sitio
+viejo lo llama "SWFL's First Gaming Truck" en `/game-lounge`, y si es un camión y no
+una sala, cambian la ruta y el titular. Segundo las **cantidades**: el brief dice 4
+PS5, 4 Xbox Series X y 2 Switch 2; la página vieja dice 6 TVs. No coinciden. Hasta que
+el cliente confirme van con `<PendingData>`: ningún número de consolas ni de pantallas
+se publica a ojo.
 
-Bloques: **A-mayor → B → J (capacidad y superficie) → shows con ticket → G → K → L**.
+Lo verificado, que es el esqueleto de la página: **$10 por persona los primeros 30
+min** y $5 cada 15 min adicionales; **paquetes de fiesta de 2 h a $400 lun–jue** (hora
+extra $200) y **$500 vie–dom** (hora extra $250); Game Coach incluido; más de 30
+juegos.
+
+Es la **segunda página con precios** después de Sunset Bar, y la única con políticas:
+hay un waiver legal propio (`/game-zone-waiver`) y otro de bar games
+(`/bar-games-waiver`) que hoy redirigen a `/our-story#experience` y **hay que
+reapuntar acá**.
+
+Bloques: **A-medio → B → J (la tarifa por persona) → I (los paquetes de fiesta) →
+políticas y waiver → G → K → L**.
+
+El bloque **I** se reusa acá a propósito: un paquete de fiesta se lee igual que un
+trago de la carta, nombre en display y precio a la derecha. Que no se convierta en una
+tabla de tarifas.
 
 ### 7.6 `/our-story` — la marca, y las preguntas
 
@@ -333,19 +354,39 @@ Eyebrow `Neighborhood Market`. H1 **"The Neighborhood Market"**. Bajada: "A cura
 set of local makers showing handmade goods, with the trucks cooking and the bar open
 the whole time."
 
+**El formulario de vendors vive acá.** Hoy está duplicado y huérfano en `/blank`, que
+ya redirige a `/market`. Con él van las condiciones, verificadas: **fee de $30**,
+espacio **10×10** salvo aprobación, orden de llegada con aprobación al check-in,
+carpas pop-up permitidas y electricidad a pedido.
+
 Bloques: **A-medio → B → G (marquesina de fotos del mercado) → D (cómo se pide un
-puesto) → K → L**.
+puesto) → formulario de vendor → K → L**.
 
-### 7.8 `/join-us` — trucks, músicos y trabajo
+El formulario no es un anexo, es la conversión de la página: mismo tratamiento que el
+de Events, no una caja gris al final.
 
-Eyebrow `Join us`. H1 **"Bring your truck to the yard"**. Bajada: "Three ways in,
-depending on what you do. All of them start with an email."
+### 7.8 `/join-us` — músicos y trabajo
 
-Tres carriles: traer un truck, tocar acá, trabajar acá. Es la página más corta y la
-única donde las tarjetas están bien: lo que falta es que los tres carriles se
-diferencien entre sí y que el mail no sea la única salida.
+Eyebrow `Join us`. H1 **a reescribir**: el actual, "Bring your truck to the yard", ya
+no corresponde (ver el aviso de abajo). Bajada: "Two ways in, depending on what you
+do. Both of them start with an email."
 
-Bloques: **A-chico → tres carriles → D → K → L**.
+⚠️ **Dos carriles, no tres. Corregido el 2026-09-15.** La página tenía un tercer
+carril, "Food truck owners · Pitch your truck", que **lo inventamos nosotros**: el
+sitio actual no tiene, en ninguna de sus 23 rutas, un formulario de alta de trucks, y
+el cliente nunca lo pidió. Se elimina. Los dos que quedan sí existen hoy:
+
+1. **Músicos.** Es el formulario vivo de `/entertainment`, que migra tal cual: nombre,
+   email, teléfono, band name, link de redes, género, link de video, logo (upload, máx
+   15 MB) y foto.
+2. **Trabajo.** Empleo en el venue.
+
+Es la página más corta y la única donde las tarjetas están bien: lo que falta es que
+los dos carriles se diferencien entre sí y que el mail no sea la única salida. Con dos
+y no tres, la grilla de tres columnas se cae: rehacer la composición, no dejar un
+hueco.
+
+Bloques: **A-chico → dos carriles → D → K → L**.
 
 ### 7.9 `/contact` — tres buzones
 

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getVenue, venueAddressLine } from '@/lib/venue';
 import { ButtonLink } from '@/components/shared/Button';
 import HoursCard from '@/components/shared/HoursCard';
 import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
@@ -61,7 +62,10 @@ const SOCIAL = [
   { label: 'Google', href: BRAND.social.google, Icon: Google },
 ] as const;
 
-export default function FindUs() {
+export default async function FindUs() {
+  const venue = await getVenue();
+  const direccion = venueAddressLine(venue);
+
   return (
     <section
       id="find-us"
@@ -251,16 +255,16 @@ export default function FindUs() {
                 Contact
               </span>
               <a
-                href={BRAND.contact.phoneHref}
+                href={venue.phoneHref}
                 className="block font-body text-dato leading-[1.6] text-paper transition-colors duration-200 hover:text-cream"
               >
-                {BRAND.contact.phone}
+                {venue.phone}
               </a>
               <a
-                href={`mailto:${BRAND.contact.email}`}
+                href={`mailto:${venue.email}`}
                 className="block font-body text-dato leading-[1.6] text-paper transition-colors duration-200 hover:text-cream"
               >
-                {BRAND.contact.email}
+                {venue.email}
               </a>
             </div>
 
@@ -269,7 +273,7 @@ export default function FindUs() {
                 Location
               </span>
               <address className="m-0 font-body text-dato leading-[1.6] text-paper not-italic">
-                {addressLine()}
+                {direccion}
               </address>
             </div>
 
@@ -292,7 +296,7 @@ export default function FindUs() {
                 de paso `external` le pone solo el `target`, el `rel`, el icono
                 de salida y el aviso para lector de pantalla. */}
             <ButtonLink
-              href={mapsUrl()}
+              href={venue.mapsUrl}
               external
               variant="onDark"
               size="lg"
@@ -321,8 +325,8 @@ export default function FindUs() {
           */}
           <RevealItem className="order-1 min-h-80 overflow-hidden rounded-shell border border-fog sombra-card md:col-span-2 lg:order-2 lg:col-span-1 lg:min-h-110">
             <iframe
-              title={`Map showing ${BRAND.name} at ${addressLine()}`}
-              src={`https://maps.google.com/maps?q=${BRAND.address.mapsQuery}&z=15&output=embed`}
+              title={`Map showing ${venue.name} at ${direccion}`}
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(direccion)}&z=15&output=embed`}
               loading="lazy"
               className="block size-full min-h-80 border-0 lg:min-h-110"
             />

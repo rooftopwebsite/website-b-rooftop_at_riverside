@@ -117,42 +117,6 @@ export const COLOR_RULES = {
   displayOnly: ['sunset on deep', 'sunset-deep on paper', 'sunset-deep on bone'],
 } as const;
 
-export interface Hours {
-  readonly day: string;
-  readonly bar: string;
-  readonly trucks: string;
-}
-
-/** Los dos sets. La barra y los food trucks tienen horarios distintos. */
-export const HOURS: readonly Hours[] = [
-  { day: 'Monday', bar: 'Closed', trucks: 'Closed' },
-  { day: 'Tuesday', bar: 'Closed', trucks: 'Closed' },
-  { day: 'Wednesday', bar: '3:00 PM – 8:00 PM', trucks: '4:00 PM – 8:00 PM' },
-  { day: 'Thursday', bar: '3:00 PM – 8:00 PM', trucks: '4:00 PM – 8:00 PM' },
-  { day: 'Friday', bar: '3:00 PM – 12:00 AM', trucks: '4:00 PM – 11:00 PM' },
-  { day: 'Saturday', bar: '11:00 AM – 2:00 AM', trucks: '12:00 PM – 11:00 PM' },
-  { day: 'Sunday', bar: '11:00 AM – 8:00 PM', trucks: '12:00 PM – 8:00 PM' },
-];
-
-/**
- * Horarios en formato ISO 8601 para el JSON-LD (`openingHours`).
- * Sábado cierra a las 2 AM del domingo; schema.org lo acepta como 02:00
- * en la fila del sábado, que es la convención que usa Google.
- */
-export const HOURS_SCHEMA = [
-  'We 15:00-20:00',
-  'Th 15:00-20:00',
-  'Fr 15:00-24:00',
-  'Sa 11:00-02:00',
-  'Su 11:00-20:00',
-] as const;
-
-export const HAPPY_HOUR = {
-  days: 'Wednesday – Friday',
-  time: '3–6 PM',
-  deals: ['$4 drafts', '$5 house wines', '$6 house drinks'],
-} as const;
-
 export const BRAND = {
   name: 'Rooftop at Riverside',
   shortName: 'Rooftop',
@@ -256,4 +220,15 @@ export function addressLine(): string {
 
 export function mapsUrl(): string {
   return `https://www.google.com/maps/search/?api=1&query=${BRAND.address.mapsQuery}`;
+}
+
+/**
+ * El handle de Instagram, derivado de la URL. No se escribe a mano en ningún
+ * componente: si el cliente cambia de cuenta, se cambia `BRAND.social.instagram`
+ * y el arroba de `/contact` lo sigue solo.
+ */
+export function instagramHandle(): string {
+  const u = BRAND.social.instagram;
+  if (!u) return '';
+  return u.replace(/\/+$/, '').split('/').pop() ?? '';
 }

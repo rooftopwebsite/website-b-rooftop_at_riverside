@@ -30,7 +30,7 @@ export const PAGE_SEO = {
     h1: 'Bonita comes together',
     title: 'Rooftop at Riverside | Rooftop Bar & Food Truck Park in Bonita Springs, FL',
     description:
-      "A rooftop bar over four food trucks in downtown Bonita Springs. Live music most nights, happy hour Wednesday to Friday, dogs welcome in the yard. No reservations, just come up.",
+      "A rooftop bar over four food trucks in downtown Bonita Springs. Live music on the calendar, happy hour Wednesday to Friday, dogs welcome in the yard. No reservations, just come up.",
     keywords: ['rooftop bar bonita springs', 'food truck park'],
   },
 
@@ -50,19 +50,11 @@ export const PAGE_SEO = {
     keywords: ['food trucks bonita springs', 'where to eat downtown'],
   },
 
-  '/the-yard': {
-    h1: 'The Yard is open',
-    title: 'The Yard | Outdoor Event & Concert Space, Downtown Bonita Springs',
-    description:
-      'The open yard under the rooftop: a stage, four food trucks and room to move. Free most nights, gated for ticketed shows, and available to rent.',
-    keywords: ['outdoor event space', 'live music bonita springs'],
-  },
-
   '/whats-on': {
     h1: "What's on this week",
     title: 'Events & Live Music | Rooftop at Riverside',
     description:
-      'Live music, Bingo Night and Wooftop Wednesdays in downtown Bonita Springs. See the full calendar by month or by list, and add it to your own.',
+      'Live music, Bingo Night and Wooftop Wednesdays in downtown Bonita Springs. See the calendar by month or by list, filter it, and add it to your own.',
     keywords: ['live music bonita springs tonight', 'things to do'],
   },
 
@@ -99,11 +91,13 @@ export const PAGE_SEO = {
   },
 
   '/join-us': {
-    h1: 'Bring your truck to the yard',
-    title: 'Food Truck & Live Music Opportunities | Rooftop at Riverside',
+    // ⚠️ Cambió el 2026-09-15: el carril de food trucks se eliminó de
+    // `/join-us` porque lo habíamos inventado. Quedan dos, y el H1 lo dice.
+    h1: 'Two ways in',
+    title: 'Jobs & Live Music Bookings | Rooftop at Riverside',
     description:
-      'Four trucks run the yard on revenue share. You keep your own margin and your own register. We also book live music five nights a week.',
-    keywords: ['food truck spots bonita springs'],
+      'Two ways in: we hire through here, and we book live music for the stage in the yard. Both start with a form that a person reads.',
+    keywords: ['bonita springs bar jobs', 'live music booking bonita springs'],
   },
 
 
@@ -112,7 +106,20 @@ export const PAGE_SEO = {
     h1: 'Say hello',
     title: 'Contact | Rooftop at Riverside',
     description:
-      'Three inboxes so your message reaches the person who can answer it: general questions, private events, and working with us.',
+      'The address, the hours and a form that reaches the person who can answer it. Downtown Bonita Springs, across from Riverside Park.',
+    keywords: [],
+  },
+  /**
+   * ⚠️ RUTA NUEVA del 2026-09-15. Reemplaza al `/game-lounge` del sitio viejo,
+   * que redirigía a un ancla dentro de `/our-story`. Es la segunda página con
+   * precios del sitio y se llama `game-truck` porque el copy del cliente dice
+   * «our specially designed truck», no una sala.
+   */
+  '/game-truck': {
+    h1: "Southwest Florida's first gaming truck",
+    title: 'Gaming Truck | Rooftop at Riverside, Bonita Springs',
+    description:
+      'Xbox Series X, PlayStation 5 and Nintendo Switch 2 on six screens with a Game Coach on site. $10 per person for 30 minutes, or a two hour party from $400.',
     keywords: [],
   },
 } as const satisfies Record<string, PageSeo>;

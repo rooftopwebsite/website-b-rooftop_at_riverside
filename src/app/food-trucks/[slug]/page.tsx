@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import TruckCarousel from '@/components/sections/TruckCarousel';
 import { ArrowLink, ButtonLink, ExternalIcon } from '@/components/shared/Button';
 import PageHero from '@/components/shared/PageHero';
 import { PendingBlock, PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
-import { Eyebrow, Heading } from '@/components/shared/Type';
+import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { activeTrucks, truckBySlug } from '@/content/trucks';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
@@ -58,6 +59,9 @@ export default async function TruckPage({ params }: { params: Promise<{ slug: st
 
   // Un truck inactivo nunca llega acá: lo agarra el 301 de next.config.ts.
   if (!truck || !truck.active) notFound();
+
+  // Los otros del roster, para el cross-sell del cierre.
+  const otros = activeTrucks().filter((t) => t.slug !== truck.slug);
 
   return (
     <>
@@ -196,14 +200,44 @@ export default async function TruckPage({ params }: { params: Promise<{ slug: st
         </div>
       </Section>
 
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        EL CROSS-SELL: LOS OTROS TRES.
+
+        ⚠️ Es el patrón de la ficha de la referencia (defoodtruckclub.nl), que
+        cierra cada página con «¿varios trucks?» en vez de con un botón suelto
+        a la grilla. Acá tiene una razón extra: los cuatro trucks están en el
+        MISMO patio la misma noche, así que quien mira uno puede comer en
+        cualquiera sin moverse. Mandarlo de vuelta al índice le hace buscar de
+        nuevo; mostrarle los otros tres le responde antes de preguntar.
+
+        ⚠️ SE EXCLUYE EL QUE SE ESTÁ MIRANDO. Y si el roster quedara en uno
+        solo, la sección no se dibuja en vez de mostrar una grilla vacía.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      {otros.length > 0 ? (
+        <Section band="lg" labelledBy="otros-title">
+          <SectionHead
+            eyebrow="Same yard, same night"
+            eyebrowTone="plum"
+            id="otros-title"
+            title={otros.length === 1 ? 'The other kitchen' : `The other ${otros.length} kitchens`}
+            lead="All of them are parked in the same yard. Nobody at your table has to agree on anything."
+          />
+          <div className="mt-[36px]">
+            <TruckCarousel trucks={otros} />
+          </div>
+        </Section>
+      ) : null}
+
       <Section tone="cream" band="md">
         <div className="flex flex-col items-start gap-[20px] sm:flex-row sm:items-center sm:justify-between">
           <Heading level={2} className="text-d5 lg:text-d4">
             See the rest of the yard
           </Heading>
           <div className="flex flex-wrap gap-[12px]">
-            <ButtonLink href="/food-trucks" variant="secondary">
-              All food trucks
+            <ButtonLink href="/whats-on" variant="secondary">
+              Who is in tonight
             </ButtonLink>
             <ButtonLink href="/sunset-bar" variant="primary">
               Sunset Bar menu

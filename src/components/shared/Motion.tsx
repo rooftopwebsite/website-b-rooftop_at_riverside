@@ -48,6 +48,34 @@ export const REVEAL_OFFSET = dist.text;
 export const STAGGER = stagger;
 export const REVEAL_AMOUNT = 0.2;
 
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ POR QUÉ CADA RAMA DE `reduced` TIENE QUE PISAR EL `style` A MANO.
+ *
+ * Bug encontrado el 2026-09-15, y era grave: con `prefers-reduced-motion`
+ * puesto, 26 elementos de la home y 24 de `/events` quedaban en
+ * `opacity: 0`. O sea que la persona que activa «reducir movimiento» —por
+ * mareo, migraña o vértigo— veía huecos en blanco donde va el contenido.
+ * Justo al revés de lo que la preferencia pide.
+ *
+ * La causa: el SERVIDOR no puede saber la preferencia, así que renderiza
+ * siempre la rama animada y emite `style="opacity:0;transform:translateY(32px)"`
+ * en el HTML. En el cliente `useReducedMotion()` ya devuelve `true` en el
+ * primer render, así que React hidrata un `<li>` plano contra un `<li>` que
+ * en el DOM tiene ese style. **React no borra atributos que están en el DOM
+ * servido y no en el vnode**: los da por buenos y sigue. El style queda pegado
+ * para siempre y nada vuelve a tocarlo, porque ya no hay motor de animación.
+ *
+ * Por eso no alcanza con devolver el tag sin animar: hay que ESCRIBIR el
+ * estado final. Con `style` presente React sí lo aplica y pisa lo que vino
+ * del servidor.
+ *
+ * ⚠️ `clipPath` va incluido porque `ClipReveal` y `ScrollExit` recortan con
+ * `inset()`, y un `inset(0 0 100% 0)` pegado esconde igual que un opacity 0.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const SIN_MOVIMIENTO = { opacity: 1, transform: 'none', clipPath: 'none' } as const;
+
 const revealVariants = {
   hidden: { opacity: 0, y: dist.text },
   visible: { opacity: 1, y: 0, transition: { duration: dur.reveal, ease: ease.out } },
@@ -101,7 +129,7 @@ export function Reveal({ children, as = 'div', className, id, amount = REVEAL_AM
   if (reduced) {
     const Tag = as;
     return (
-      <Tag id={id} className={className} style={style}>
+      <Tag id={id} data-reveal="" className={className} style={{ ...SIN_MOVIMIENTO, ...style }}>
         {children}
       </Tag>
     );
@@ -110,6 +138,7 @@ export function Reveal({ children, as = 'div', className, id, amount = REVEAL_AM
   return (
     <MotionTag
       id={id}
+      data-reveal=""
       className={className}
       style={style}
       initial="hidden"
@@ -144,7 +173,13 @@ export function StaggerGroup({
   if (reduced) {
     const Tag = as;
     return (
-      <Tag id={id} className={className} tabIndex={tabIndex} aria-label={ariaLabel}>
+      <Tag
+        id={id}
+        className={className}
+        style={{ ...SIN_MOVIMIENTO, ...style }}
+        tabIndex={tabIndex}
+        aria-label={ariaLabel}
+      >
         {children}
       </Tag>
     );
@@ -153,6 +188,7 @@ export function StaggerGroup({
   return (
     <MotionTag
       id={id}
+      data-reveal=""
       className={className}
       style={style}
       tabIndex={tabIndex}
@@ -184,13 +220,13 @@ export function RevealItem({
   if (reduced) {
     const Tag = as;
     return (
-      <Tag className={className} style={style}>
+      <Tag data-reveal="" className={className} style={{ ...SIN_MOVIMIENTO, ...style }}>
         {children}
       </Tag>
     );
   }
   return (
-    <MotionTag className={className} style={style} variants={revealVariants}>
+    <MotionTag data-reveal="" className={className} style={style} variants={revealVariants}>
       {children}
     </MotionTag>
   );
@@ -258,7 +294,11 @@ export function RevealMedia({
 
   if (reduced) {
     const Tag = as;
-    return <Tag className={className}>{children}</Tag>;
+    return (
+      <Tag data-reveal="" className={className} style={SIN_MOVIMIENTO}>
+        {children}
+      </Tag>
+    );
   }
 
   const cerrado =
@@ -310,10 +350,11 @@ export function ScaleMedia({
 }) {
   const reduced = useReducedMotion();
 
-  if (reduced) return <div className={className}>{children}</div>;
+  if (reduced) return <div data-reveal="" className={className} style={SIN_MOVIMIENTO}>{children}</div>;
 
   return (
     <motion.div
+      data-reveal=""
       className={className}
       initial={{ scale: 1.04, opacity: 0 }}
       whileInView={{ scale: 1, opacity: 1 }}
@@ -389,7 +430,7 @@ export function MaskedLines({
 
   if (reduced) {
     return (
-      <Tag className={className}>
+      <Tag data-reveal="" className={className} style={SIN_MOVIMIENTO}>
         {lines.map((line, i) => (
           <span key={i} className={['block', tone(i)].filter(Boolean).join(' ')}>
             {withSpace(line, i)}
@@ -441,10 +482,11 @@ export function HeroFadeUp({
   readonly className?: string;
 }) {
   const reduced = useReducedMotion();
-  if (reduced) return <div className={className}>{children}</div>;
+  if (reduced) return <div data-reveal="" className={className} style={SIN_MOVIMIENTO}>{children}</div>;
 
   return (
     <motion.div
+      data-reveal=""
       className={className}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { BRAND } from '@/lib/brand';
+import { CAJA_ALTA_CLS } from '@/lib/flags';
 import AgencyBar from './AgencyBar';
 import { ButtonLink } from './Button';
 import NewsletterSignup from './NewsletterSignup';
@@ -87,7 +88,6 @@ type FooterLink = { label: string; href: string; external?: boolean };
 const LINKS_LUGAR: readonly FooterLink[] = [
   { label: 'Sunset Bar', href: '/sunset-bar' },
   { label: 'Food Trucks', href: '/food-trucks' },
-  { label: 'The Yard', href: '/the-yard' },
   { label: "What's On", href: '/whats-on' },
   { label: 'The Market', href: '/market' },
 ];
@@ -168,7 +168,7 @@ const COLUMNAS = [
  * respiraran. En caja baja separan lo que no hay que separar.
  */
 const LINK_BASE =
-  'block py-1.75 font-body text-base font-bold leading-[1.4] text-paper/70 transition-colors duration-200 hover:text-paper';
+  `block py-1.75 font-body text-base font-bold leading-[1.4] text-paper/70 transition-colors duration-200 hover:text-paper ${CAJA_ALTA_CLS}`;
 
 export default function Footer() {
   return (

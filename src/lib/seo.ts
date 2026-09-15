@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PAGE_SEO, type SeoRoute } from '@/content/seo-pages';
-import { BRAND, HOURS_SCHEMA, addressLine } from './brand';
+import type { Venue } from './venue';
+import { BRAND, addressLine } from './brand';
 
 /**
  * SEO. Desde el primer commit, no al final.
@@ -21,7 +22,7 @@ interface OgImage {
 }
 
 const OG_IMAGE: OgImage = {
-  url: '/images/hero-live-music.jpg',
+  url: '/images/venue/venue-aerial.jpg',
   width: 2400,
   height: 1600,
   alt: 'A band playing to a crowd at dusk at Rooftop at Riverside in Bonita Springs',
@@ -86,14 +87,43 @@ export function pageMeta(
   };
 }
 
-const postalAddress = {
-  '@type': 'PostalAddress',
-  streetAddress: BRAND.address.street,
-  addressLocality: BRAND.address.locality,
-  addressRegion: BRAND.address.region,
-  postalCode: BRAND.address.postalCode,
-  addressCountry: BRAND.address.country,
-} as const;
+/**
+ * ⚠️ LA DIRECCIÓN DEL SCHEMA SALE DEL LOCAL RESUELTO, no de `brand.ts`. Un
+ * JSON-LD con un teléfono viejo es peor que no tenerlo: Google lo cruza con el
+ * perfil de negocio y la discrepancia perjudica.
+ */
+const postalAddress = (v: Venue) =>
+  ({
+    '@type': 'PostalAddress',
+    streetAddress: v.street,
+    addressLocality: v.locality,
+    addressRegion: v.region,
+    postalCode: v.postalCode,
+    addressCountry: BRAND.address.country,
+  }) as const;
+
+/** Los horarios del local en formato ISO 8601, para `openingHours`. */
+const schemaHours = (v: Venue): readonly string[] => {
+  const ABREV = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const ORDEN = [1, 2, 3, 4, 5, 6, 0];
+  const a24 = (t: string) => {
+    const m = t.trim().match(/^(d{1,2}):(d{2})s*(AM|PM)$/i);
+    if (!m) return null;
+    let h = Number(m[1]) % 12;
+    if (/pm/i.test(m[3])) h += 12;
+    return `${String(h).padStart(2, '0')}:${m[2]}`;
+  };
+  return v.hours.flatMap((fila, i) => {
+    if (/closed/i.test(fila.bar)) return [];
+    const [abre, cierra] = fila.bar.split('–').map((x) => x.trim());
+    const a = a24(abre ?? '');
+    let b = a24(cierra ?? '');
+    // Medianoche cierra el día: schema.org la escribe 24:00, no 00:00.
+    if (b === '00:00') b = '24:00';
+    if (!a || !b) return [];
+    return [`${ABREV[ORDEN[i]]} ${a}-${b}`];
+  });
+};
 
 const sameAs = [BRAND.social.instagram, BRAND.social.facebook].filter(Boolean);
 
@@ -108,17 +138,17 @@ const sameAs = [BRAND.social.instagram, BRAND.social.facebook].filter(Boolean);
  * negocio que este schema describe. El de los trucks es de cuatro negocios
  * distintos y no corresponde declararlo acá; vive en el HTML del footer.
  */
-export function venueJsonLd() {
-  const geo = BRAND.address.geo
-    ? { geo: { '@type': 'GeoCoordinates', latitude: BRAND.address.geo.lat, longitude: BRAND.address.geo.lng } }
+export function venueJsonLd(v: Venue) {
+  const geo = v.geo
+    ? { geo: { '@type': 'GeoCoordinates', latitude: v.geo.lat, longitude: v.geo.lng } }
     : {};
 
   const base = {
-    name: BRAND.name,
+    name: v.name,
     url: SITE_URL,
-    telephone: BRAND.contact.phone,
-    email: BRAND.contact.email,
-    address: postalAddress,
+    telephone: v.phone,
+    email: v.email,
+    address: postalAddress(v),
     sameAs,
     image: `${SITE_URL}${OG_IMAGE.url}`,
     logo: `${SITE_URL}/brand/logo-lockup.png`,
@@ -133,7 +163,7 @@ export function venueJsonLd() {
         '@id': `${SITE_URL}/#bar`,
         ...base,
         description: `${BRAND.concept}. Craft cocktails, local drafts and live music, with four independent food trucks in the yard below.`,
-        openingHours: [...HOURS_SCHEMA],
+        openingHours: schemaHours(v),
         servesCuisine: 'Cocktails',
         priceRange: '$$',
         publicAccess: true,

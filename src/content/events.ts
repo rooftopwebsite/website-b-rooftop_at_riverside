@@ -1,4 +1,5 @@
 import raw from './events.json';
+import { getEvents } from '@/lib/restoexp';
 
 /**
  * Los eventos. **La fuente de verdad es el dashboard, no este archivo.**
@@ -132,15 +133,50 @@ const ALT: Readonly<Record<string, string>> = {
     'Event poster reading “La Noche: every Saturday 10 PM to 2 AM, Latin music from DJ David Cast, free dance classes”',
 };
 
+/**
+ * LAS URLS DE ENTRADAS, POR CÓDIGO.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ESTO ESTÁ ACÁ PORQUE LA BASE NO TIENE DÓNDE GUARDARLO. Revisadas las 22
+ * columnas de `location_events` el 2026-09-15: hay `price`, `capacity` y
+ * `requires_reservation`, pero ningún campo para un link de Eventbrite.
+ * Decisión de Camila: mientras no exista la columna, el link va por código.
+ *
+ * ⚠️ Y ES UN PARCHE, con fecha de vencimiento. El costo real: **el cliente no
+ * puede publicar un show con entrada sin que alguien toque el repo y
+ * despliegue.** Carga el evento en el dashboard, aparece en el calendario, y
+ * el botón de comprar no está hasta que se agregue una línea acá.
+ *
+ * ⚠️ ESTE ARCHIVO YA TUVO UN DICCIONARIO ASÍ Y SE SACÓ POR ESTE MOTIVO. Era
+ * `IMAGENES[slug]`, slug → archivo de imagen, y se fue el 2026-09-11 cuando se
+ * descubrió que la tabla SÍ tenía `bannerUrl` y que el sync no lo bajaba. La
+ * diferencia es que ahí el campo existía y acá no: éste no esquiva una columna,
+ * la suple.
+ *
+ * ⚠️ NO INVENTAR URLS. Una clave acá es una promesa de que se puede comprar
+ * una entrada. Hoy el diccionario está VACÍO a propósito: el perfil de
+ * Eventbrite del cliente dice «No upcoming events».
+ *
+ * CÓMO SE USA: la clave es el `slug` del evento, que sale del título.
+ *   'swamp-fest': 'https://www.eventbrite.com/e/…'
+ *
+ * TODO: confirmar con cliente las URLs de Eventbrite de cada show con entrada.
+ * TODO: pedirle a RestoExp la columna `ticket_url` en `location_events` y
+ *       borrar este diccionario.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const TICKETS: Readonly<Record<string, string>> = {};
+
 function adapt(r: RawEvent): VenueEvent {
   const weekday = r.isRecurring ? parseWeekday(r.recurrenceDays) : null;
   const start = hhmm(r.startTime);
   const end = hhmm(r.endTime) || start;
   const paragraphs = r.description.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
   const price = r.price === null ? null : Number(r.price);
+  const slug = slugify(r.title);
 
   return {
-    slug: slugify(r.title),
+    slug,
     title: r.title,
     kind: r.isRecurring ? 'recurring' : 'one-off',
     // La bajada es la primera frase; el cuerpo, todo.
@@ -153,9 +189,7 @@ function adapt(r: RawEvent): VenueEvent {
     // Cierra después de medianoche: 22:00 → 02:00.
     endsNextDay: end < start,
     space: spaceFromTags(r.tags),
-    // Ticketing externo por Eventbrite. Todavía no tenemos la URL del cliente,
-    // así que ningún evento es de entrada paga por ahora.
-    ticketUrl: null,
+    ticketUrl: TICKETS[slug] ?? null,
     price: price !== null && Number.isFinite(price) && price > 0 ? price : null,
     /*
      * ⚠️ LA IMAGEN SALE DEL DASHBOARD, no de un mapa nuestro. Acá vivía
@@ -175,9 +209,34 @@ function adapt(r: RawEvent): VenueEvent {
   };
 }
 
-export const EVENTS: readonly VenueEvent[] = (raw as readonly RawEvent[]).map(adapt);
+/**
+ * LOS EVENTOS, EN VIVO DESDE LA BASE.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ES ASYNC Y ANTES ERA UNA CONSTANTE. El cambio es del 2026-09-15 y el
+ * motivo está en `lib/restoexp.ts`: la tabla `location_events` se lee con la
+ * anon key, así que ya no hace falta bajar los eventos con un script y
+ * versionar el JSON. El cliente carga un evento en el dashboard y aparece.
+ *
+ * ⚠️ `events.json` QUEDA COMO RESPALDO, no como fuente. Si la base no
+ * contesta, el calendario se sirve con el último volcado en vez de quedar
+ * vacío. Un calendario desactualizado es malo; uno en blanco es peor.
+ *
+ * ⚠️ `npm run sync:events` YA NO ES NECESARIO para publicar. Sirve sólo para
+ * refrescar el respaldo, que conviene hacer de vez en cuando.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export async function getVenueEvents(): Promise<readonly VenueEvent[]> {
+  const deLaBase = await getEvents();
+  const filas = deLaBase ?? (raw as readonly RawEvent[]);
+  return filas.map(adapt);
+}
 
-export const recurringEvents = () => EVENTS.filter((e) => e.kind === 'recurring');
+/** El respaldo, sincrónico. Sólo para el sitemap y para cuando no se puede await. */
+export const EVENTS_FALLBACK: readonly VenueEvent[] = (raw as readonly RawEvent[]).map(adapt);
+
+export const recurringEvents = async () =>
+  (await getVenueEvents()).filter((e) => e.kind === 'recurring');
 
 /**
  * El evento DESTACADO del calendario: el que abre `/whats-on` con una card
@@ -192,8 +251,11 @@ export const recurringEvents = () => EVENTS.filter((e) => e.kind === 'recurring'
  * cambiar el destacado sin tocar el código. Hoy lo lleva el evento de los
  * domingos de fútbol, que antes era la página `/nfc-north-hq`.
  */
-export const featuredEvent = () => EVENTS.find((e) => e.tags.includes('featured')) ?? null;
-export const eventBySlug = (slug: string) => EVENTS.find((e) => e.slug === slug);
+export const featuredEvent = async () =>
+  (await getVenueEvents()).find((e) => e.tags.includes('featured')) ?? null;
+
+export const eventBySlug = async (slug: string) =>
+  (await getVenueEvents()).find((e) => e.slug === slug);
 
 const WEEKDAY_LABEL = [
   'Sunday',
@@ -238,6 +300,54 @@ export function whenLabel(e: VenueEvent): string {
 }
 
 /** Los eventos recurrentes que caen en un día de la semana dado. */
-export function eventsOnWeekday(day: Weekday): readonly VenueEvent[] {
-  return EVENTS.filter((e) => e.kind === 'recurring' && e.weekday === day);
+export async function eventsOnWeekday(day: Weekday): Promise<readonly VenueEvent[]> {
+  return (await getVenueEvents()).filter((e) => e.kind === 'recurring' && e.weekday === day);
 }
+
+/* ==========================================================================
+   LOS FILTROS DEL CALENDARIO
+
+   ⚠️ SALEN DE LOS TAGS DE LA BASE, no de una lista escrita a mano. El cliente
+   etiqueta el evento en el dashboard y cae en el filtro que corresponde. Si
+   agrega un tag nuevo que no está mapeado, el evento sigue apareciendo en
+   «Everything»: nunca desaparece por falta de etiqueta.
+
+   ⚠️ UN FILTRO QUE NO TIENE NINGÚN EVENTO NO SE DIBUJA. Un filtro que al
+   apretarlo da cero resultados es una promesa incumplida.
+   ========================================================================== */
+
+export interface EventFilter {
+  readonly id: string;
+  readonly label: string;
+  /** Tags de la base que caen en este filtro. */
+  readonly tags: readonly string[];
+}
+
+export const EVENT_FILTERS: readonly EventFilter[] = [
+  { id: 'music', label: 'Live music', tags: ['live-music', 'dj', 'music'] },
+  { id: 'sports', label: 'Sports', tags: ['sports'] },
+  { id: 'themed', label: 'Themed nights', tags: ['bingo', 'themed', 'trivia', 'karaoke'] },
+  { id: 'festival', label: 'Festivals', tags: ['festival'] },
+  { id: 'family', label: 'Family and dogs', tags: ['dog-friendly', 'family', 'kids'] },
+];
+
+export const matchesFilter = (e: VenueEvent, id: string | null): boolean => {
+  if (!id) return true;
+  const f = EVENT_FILTERS.find((x) => x.id === id);
+  if (!f) return true;
+  return e.tags.some((t) => f.tags.includes(t)) || (id === 'festival' && e.kind === 'festival');
+};
+
+/** Sólo los filtros que hoy tienen al menos un evento. */
+export const activeFilters = (events: readonly VenueEvent[]): readonly EventFilter[] =>
+  EVENT_FILTERS.filter((f) => events.some((e) => matchesFilter(e, f.id)));
+
+/**
+ * ¿Este evento lleva entrada?
+ *
+ * ⚠️ NO alcanza con que tenga precio: el `price` de la base es informativo (un
+ * bingo puede tener premio y no entrada). Lo que define que se venda entrada
+ * es tener `ticketUrl`. Sin URL, el calendario dice «free entry» y no muestra
+ * ningún botón de compra, que es lo honesto.
+ */
+export const isTicketed = (e: VenueEvent): boolean => e.ticketUrl !== null;

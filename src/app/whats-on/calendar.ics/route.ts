@@ -1,4 +1,5 @@
 import { buildICal } from '@/lib/calendar';
+import { getVenue } from '@/lib/venue';
 
 /**
  * `/whats-on/calendar.ics` — el calendario suscribible.
@@ -8,7 +9,8 @@ import { buildICal } from '@/lib/calendar';
  * Google Calendar y Apple los muestran como serie, no como cientos de sueltos.
  */
 export async function GET() {
-  return new Response(buildICal(), {
+  const venue = await getVenue();
+  return new Response(buildICal(venue), {
     headers: {
       'Content-Type': 'text/calendar; charset=utf-8',
       'Content-Disposition': 'attachment; filename="rooftop-at-riverside.ics"',

@@ -80,7 +80,7 @@ const nextConfig: NextConfig = {
       { source: '/neighborhood-market', destination: '/market', statusCode: 301 },
       // /entertainment NO es programación: es reclutamiento de músicos.
       { source: '/entertainment', destination: '/join-us', statusCode: 301 },
-      { source: '/game-lounge', destination: '/our-story#experience', statusCode: 301 },
+      { source: '/game-lounge', destination: '/game-truck', statusCode: 301 },
       { source: '/find-us', destination: '/contact#visit', statusCode: 301 },
       { source: '/parking', destination: '/contact#parking', statusCode: 301 },
 
@@ -116,8 +116,8 @@ const nextConfig: NextConfig = {
        */
       { source: '/giveback', destination: '/our-story', statusCode: 301 },
       { source: '/tnt-sign-ups', destination: '/whats-on', statusCode: 301 },
-      { source: '/bar-games-waiver', destination: '/our-story#experience', statusCode: 301 },
-      { source: '/game-zone-waiver', destination: '/our-story#experience', statusCode: 301 },
+      { source: '/bar-games-waiver', destination: '/game-truck#policies', statusCode: 301 },
+      { source: '/game-zone-waiver', destination: '/game-truck#policies', statusCode: 301 },
       { source: '/blank', destination: '/market', statusCode: 301 },
       { source: '/blank-1', destination: '/', statusCode: 301 },
       { source: '/inquiry-services-page', destination: '/events#inquire', statusCode: 301 },
@@ -145,8 +145,8 @@ const nextConfig: NextConfig = {
        * Están anotados en cada archivo.
        * ══════════════════════════════════════════════════════════════════
        */
-      { source: '/the-experience', destination: '/our-story#experience', statusCode: 301 },
-      { source: '/faq', destination: '/our-story#faq', statusCode: 301 },
+      { source: '/the-experience', destination: '/our-story', statusCode: 301 },
+      { source: '/faq', destination: '/our-story', statusCode: 301 },
       { source: '/visit', destination: '/contact#visit', statusCode: 301 },
       /*
        * ⚠️ EL FÚTBOL NO VA A UN ANCLA, VA AL CALENDARIO. `/nfc-north-hq` no se
@@ -159,7 +159,7 @@ const nextConfig: NextConfig = {
       { source: '/nfc-north-hq', destination: '/whats-on', statusCode: 301 },
       { source: '/events/inquire', destination: '/events#inquire', statusCode: 301 },
       { source: '/events/spaces', destination: '/events#spaces', statusCode: 301 },
-      { source: '/events/game-truck', destination: '/events#game-truck', statusCode: 301 },
+      { source: '/events/game-truck', destination: '/game-truck', statusCode: 301 },
       { source: '/events/corporate', destination: '/events#corporate', statusCode: 301 },
       { source: '/events/celebrations', destination: '/events#celebrations', statusCode: 301 },
       { source: '/events/fundraisers', destination: '/events#fundraisers', statusCode: 301 },

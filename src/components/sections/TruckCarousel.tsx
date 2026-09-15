@@ -50,8 +50,8 @@ export default function TruckCarousel({ trucks }: { readonly trucks: readonly Tr
             title="Sunset Bar"
             body="Cocktails, local drafts and wine. The one tab that’s ours, upstairs on the roof."
             cta="See the menu"
-            photo="/images/venue-rooftop.jpg"
-            photoAlt="The Sunset Bar rooftop at Rooftop at Riverside"
+            photo="/images/venue/wall-bartender.jpg"
+            photoAlt="A bartender making a drink behind the bar at Rooftop at Riverside"
             badge="Ours"
             sizes="330px"
           />

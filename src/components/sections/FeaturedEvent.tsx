@@ -36,8 +36,8 @@ import { featuredEvent, timeRange, weekdayLabel } from '@/content/events';
  * peor que no tener bloque.
  * ══════════════════════════════════════════════════════════════════════════
  */
-export default function FeaturedEvent() {
-  const event = featuredEvent();
+export default async function FeaturedEvent() {
+  const event = await featuredEvent();
   if (!event) return null;
 
   const cuando =

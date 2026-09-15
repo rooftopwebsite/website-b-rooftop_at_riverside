@@ -90,7 +90,6 @@ export const NAV_PRIMARY: readonly NavLink[] = [
   { label: 'Food Trucks', href: '/food-trucks' },
   { label: "What's On", href: '/whats-on', side: true },
   { label: 'Events', href: '/events' },
-  { label: 'The Yard', href: '/the-yard' },
 ];
 
 /**
@@ -142,6 +141,11 @@ export const NAV_MORE_GROUPS: readonly NavGroup[] = [
   {
     label: 'While you’re here',
     links: [
+      {
+        label: 'Gaming Truck',
+        href: '/game-truck',
+        hint: 'Three consoles, six screens and a Game Coach. Parties too.',
+      },
       { label: 'Market', href: '/market', hint: 'Local vendors and handmade goods in the yard.' },
       {
         label: 'Gift Cards',
@@ -219,8 +223,6 @@ export const ALL_ROUTES: readonly string[] = [
   '/',
   '/sunset-bar',
   '/food-trucks',
-  '/the-yard',
-  '/the-experience',
   '/whats-on',
   '/events',
   '/events/spaces',
@@ -231,10 +233,10 @@ export const ALL_ROUTES: readonly string[] = [
   '/events/game-truck',
   '/events/inquire',
   '/nfc-north-hq',
+  '/game-truck',
   '/market',
   '/our-story',
   '/join-us',
-  '/faq',
   '/visit',
   '/contact',
 ];

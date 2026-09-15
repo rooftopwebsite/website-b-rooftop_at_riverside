@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { BRAND } from '@/lib/brand';
+import { CAJA_ALTA_CLS } from '@/lib/flags';
 import {
   NAV_CTA,
   NAV_MAIN,
@@ -150,6 +151,8 @@ import TilePattern, { TileMark } from './TilePattern';
  */
 const NAV_ITEM = [
   'font-body text-nav font-bold',
+  /* Prueba de caja alta — ver `CAJA_ALTA` en `lib/flags.ts`. */
+  CAJA_ALTA_CLS,
   'whitespace-nowrap transition-colors duration-200',
 ].join(' ');
 

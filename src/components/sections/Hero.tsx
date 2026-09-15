@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useVenue } from '@/components/shared/VenueProvider';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
 import { ArrowUpRight, Martini, Moon, MusicNote, SunHorizon } from '@/components/shared/Icon';
@@ -102,12 +103,13 @@ const NOTCH_PAD_Y = 14;
  */
 const STATUS_MS = 4600;
 
-export default function Hero() {
+export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) {
   const frameRef = useRef<HTMLDivElement | null>(null);
   const plateRef = useRef<HTMLParagraphElement | null>(null);
   const [notch, setNotch] = useState<{ w: number; h: number } | null>(null);
 
   const [statusIdx, setStatusIdx] = useState(0);
+  const venue = useVenue();
   const [status, setStatus] = useState<ReturnType<typeof venueStatus>>(null);
 
   /* ── El recorte ──────────────────────────────────────────────────────── */
@@ -158,7 +160,7 @@ export default function Hero() {
   /* ── El pill de estado ───────────────────────────────────────────────── */
 
   useEffect(() => {
-    setStatus(venueStatus('bar'));
+    setStatus(venueStatus(venue.hours, 'bar'));
   }, []);
 
   useEffect(() => {
@@ -254,7 +256,14 @@ export default function Hero() {
    * ══════════════════════════════════════════════════════════════════════
    */
   const HAPPY = { text: 'Happy hour Wed – Fri', Icon: Martini, medalla: 'bg-cream text-ink' };
-  const MUSIC = { text: 'Live music five nights', Icon: MusicNote, medalla: 'bg-river text-ink' };
+  /*
+   * ⚠️ EL TEXTO VIENE POR PROPS Y ANTES ESTABA ESCRITO ACÁ. El cliente pidió
+   * el 2026-09-15 no dar por definitivo «five nights a week» hasta
+   * confirmarlo con los event coordinators, y los datos del dashboard dicen
+   * DOS noches con música, no cinco. Ahora la frase la cuenta
+   * `content/entertainment.ts` sobre el calendario real.
+   */
+  const MUSIC = { text: fraseMusica, Icon: MusicNote, medalla: 'bg-river text-ink' };
 
   const messages = status
     ? status.isOpen
@@ -570,6 +579,29 @@ export default function Hero() {
               below» sobre una aérea de una clase de yoga, o sea que era falso
               para quien usa lector de pantalla. La regla está en `docs/media.md`.
           */}
+          {/*
+            ══════════════════════════════════════════════════════════════
+            ⚠️ ACÁ ESTUVO UN VIDEO DURANTE UNAS HORAS Y SE FUE. Conviene
+            dejarlo escrito para que no vuelva por el mismo camino.
+
+            El cliente preguntó si podíamos usar el video horizontal de su
+            propia página `/hostanevent`. Se bajó, se cortó para sacar los
+            tramos donde los televisores mostraban Tokio 2020 y playoffs de la
+            Stanley Cup —o sea 2021, contra una apertura de enero de 2024— y
+            se dejó en dos tramos limpios a 1,45× de velocidad: 15 segundos,
+            1,5 MB.
+
+            Camila lo bajó igual, 2026-09-15: «en la home mejor dejemos la
+            foto que estaba antes, olvidemos este video, no lo usemos en
+            ningún lado». La portada vuelve a ser la foto y el clip no se
+            reubica en otra sección.
+
+            ⚠️ SE FUE TAMBIÉN EL `useReducedMotion` DE ESTE ARCHIVO. Existía
+            sólo para cambiar el video por la foto; sin video, el hero no
+            tiene nada que respetar acá. Si algún día vuelve a haber
+            movimiento en la portada, el hook vuelve con él.
+            ══════════════════════════════════════════════════════════════
+          */}
           <Image
             src="/images/venue/hero-truck-window.jpg"
             alt="Two guests ordering at a lit food truck window at night"
@@ -681,12 +713,17 @@ export default function Hero() {
             <ArrowUpRight className="size-4" />
           </ButtonLink>
           <ButtonLink
-            href="/the-yard"
+            href="/events"
             variant="outline"
             size="lg"
             className="ring-ink hover:bg-ink hover:text-bone hover:ring-ink"
           >
-            See the yard
+            {/* ⚠️ Decía «See the yard» y apuntaba a `/the-yard`, que se eliminó
+                el 2026-09-15. El destino es ahora `/events`, donde el patio se
+                alquila, así que la etiqueta tiene que decir eso: un botón que
+                promete ver el patio y abre una página de alquiler es un engaño
+                chico pero es un engaño. */}
+            Rent the place
           </ButtonLink>
           </div>
         </div>

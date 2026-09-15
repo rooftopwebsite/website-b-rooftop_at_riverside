@@ -6,6 +6,8 @@ import { HowThisPlaceWorks } from '@/components/sections/HomeSections';
 import PhotoDivider from '@/components/sections/PhotoDivider';
 import ThreeDoors from '@/components/sections/ThreeDoors';
 import WhatsOn from '@/components/sections/WhatsOn';
+import { recurringEvents } from '@/content/events';
+import { fraseCorta, fraseEntretenimiento } from '@/content/entertainment';
 import YardSteps from '@/components/sections/YardSteps';
 import { pageMeta } from '@/lib/seo';
 
@@ -80,13 +82,20 @@ export const metadata: Metadata = pageMeta({
  * ⚠️ Sin módulo de reviews. `ReviewsMarquee` existe en HomeSections.tsx pero
  * no se importa: los ratings del cliente no están confirmados.
  */
-export default function HomePage() {
+export default async function HomePage() {
+  // ⚠️ Los eventos se leen ACÁ, en el servidor, y bajan por props: WhatsOn es
+  // un componente cliente y un cliente no puede ser async.
+  const week = await recurringEvents();
+  // Ver `content/entertainment.ts`: el número de noches no está confirmado.
+  const musicaCorta = await fraseCorta();
+  const musicaLarga = await fraseEntretenimiento();
+
   return (
     <>
-      <Hero />
-      <WhatsOn />
+      <Hero fraseMusica={musicaCorta} />
+      <WhatsOn week={week} musicaLarga={musicaLarga} />
       <HowThisPlaceWorks />
-      <YardSteps />
+      <YardSteps fraseMusica={musicaLarga} />
       <PhotoDivider />
       <ThreeDoors />
       <EventsBanner />

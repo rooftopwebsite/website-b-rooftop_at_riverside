@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { HOURS } from '@/lib/brand';
+import { useVenue } from './VenueProvider';
+import type { Hours } from '@/types/content';
 import { venueStatus } from '@/lib/hours';
 import { CaretDown } from './Icon';
 
@@ -87,10 +88,12 @@ const FILA = 'flex items-center justify-between gap-x-4 py-3';
  */
 const BORDE = 'border-b border-muted-dark/30';
 
-export default function HoursCard() {
+export default function HoursCard({ hours }: { readonly hours?: readonly Hours[] } = {}) {
+  const venue = useVenue();
+  const filas = hours ?? venue.hours;
   const [status, setStatus] = useState<ReturnType<typeof venueStatus>>(null);
 
-  useEffect(() => setStatus(venueStatus('bar')), []);
+  useEffect(() => setStatus(venueStatus(filas, 'bar')), [filas]);
 
   const todayIdx = status?.dayIndex ?? -1;
 
@@ -107,7 +110,7 @@ export default function HoursCard() {
         tabla despareja. Acá el renglón es uno solo.
       */}
       <div className="m-0">
-        {HOURS.map((row, i) => {
+        {filas.map((row, i) => {
           const isToday = i === todayIdx;
           /*
             ⚠️ «Cerrado» se decide por el BAR y no por los camiones. El bar es

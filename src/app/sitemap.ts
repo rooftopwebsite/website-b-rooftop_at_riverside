@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { EVENTS } from '@/content/events';
+import { EVENTS_FALLBACK } from '@/content/events';
 import { activeTrucks } from '@/content/trucks';
 import { ALL_ROUTES } from '@/lib/nav';
 import { SITE_URL } from '@/lib/seo';
@@ -35,7 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  const eventRoutes = EVENTS.map((e) => ({
+  const eventRoutes = EVENTS_FALLBACK.map((e) => ({
     url: `${SITE_URL}/whats-on/${e.slug}`,
     lastModified: now,
     changeFrequency: 'weekly' as const,

@@ -1,10 +1,9 @@
 'use client';
-
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { type Step } from '@/components/shared/StepStair';
-import { HAPPY_HOUR } from '@/lib/brand';
+
 
 /**
  * Los tres pasos del yard, como TICKETS.
@@ -95,7 +94,7 @@ interface TicketStep extends Step {
   readonly kicker: string;
 }
 
-const STEPS: readonly TicketStep[] = [
+const steps = (fraseMusica: string): readonly TicketStep[] => [
   {
     n: '01',
     kicker: 'The yard',
@@ -116,7 +115,6 @@ const STEPS: readonly TicketStep[] = [
     tags: [
       'Cocktails made daily',
       'Local drafts',
-      `Happy hour ${HAPPY_HOUR.days}, ${HAPPY_HOUR.time}`,
       'The one tab we run',
     ],
   },
@@ -124,12 +122,15 @@ const STEPS: readonly TicketStep[] = [
     n: '03',
     kicker: 'What’s on',
     title: 'Stay for whoever’s playing',
-    body: 'Live music five nights a week, Bingo on Wednesdays, DJ sets late on Saturdays. Almost all of it is free and none of it needs a ticket.',
-    tags: ['Live music five nights', 'Bingo Wednesdays', 'DJ sets Saturdays', 'No ticket, no cover'],
+    // ⚠️ La frase de música viene por props: el número de noches no está
+    // confirmado. Ver `content/entertainment.ts`.
+    body: `${fraseMusica}, Bingo on Wednesdays, DJ sets late on Saturdays. Almost all of it is free and none of it needs a ticket.`,
+    tags: [fraseMusica, 'Bingo Wednesdays', 'DJ sets Saturdays', 'No ticket, no cover'],
   },
 ];
 
-export default function YardSteps() {
+export default function YardSteps({ fraseMusica }: { readonly fraseMusica: string }) {
+  const STEPS = steps(fraseMusica);
   /*
    * ⚠️ EL REF VA EN UN ENVOLTORIO Y NO EN EL TRACK. El track es un
    * `StaggerGroup`, que no reenvía `ref` —su firma sólo acepta `as`,
@@ -362,12 +363,60 @@ export default function YardSteps() {
             */
             className={`relative flex shrink-0 snap-start pt-9.5 [filter:drop-shadow(0_1px_2px_rgba(10,31,30,0.10))_drop-shadow(0_8px_16px_rgba(10,31,30,0.16))] ${ANCHO}`}
           >
-            <span className="lengueta absolute top-0 left-1/2 z-30 flex w-15.5 -translate-x-1/2 flex-col items-center gap-0.5 bg-cream pt-2.5 pb-4">
-              <span className="font-body text-[8px] font-medium uppercase tracking-[0.18em] text-muted">
-                Step
-              </span>
-              <span className="font-display text-d5 font-extrabold leading-none text-ink">
-                {step.n}
+            {/*
+              ══════════════════════════════════════════════════════════════
+              ⚠️ ERA UNA LENGÜETA Y AHORA ES UN STICKER REDONDO. Pedido de
+              Camila: «los 01/02/03 deberían ser stickers más parecidos al
+              logo».
+
+              La lengüeta —la pestaña de crema que asomaba arriba del ticket—
+              era del vocabulario del TICKET: la pestaña de un talonario. El
+              sticker es del vocabulario de la MARCA, y en esta página el
+              sticker ya existe: el logo del header está armado exactamente
+              así, y lo dice `.plancha` en globals.css.
+
+              ⚠️ ES LA MISMA CONSTRUCCIÓN DEL LOGO, EN TRES CAPAS Y EN ESTE
+              ORDEN, que es lo que lo hace leer como pariente y no como un
+              círculo cualquiera:
+
+                  troquel   el filo blanco de 4px que despega la pieza
+                  aro       la banda naranja, que en el logo lleva el
+                            «EAT. DRINK. PARADISE.»
+                  campo     el disco crema donde va el dato
+
+              ⚠️ EL NÚMERO VA EN `deep` Y NO EN `ink`: en el logo el bloque
+              central es teal sobre crema, no negro. Da 9.44:1, el mismo ratio
+              que el lockup del header contra su plancha.
+
+              ⚠️ SÍ LLEVA `.sticker`, Y ES LO QUE LO HACE LEER COMO PEGADO.
+              Primero se probó sin la clase, razonando que el `drop-shadow` del
+              `<li>` de afuera ya cubría toda la silueta. Es cierto y no
+              alcanza: ese filtro dibuja la sombra del CONTORNO de la unión, o
+              sea que la mitad del disco que apoya ENCIMA del ticket no proyecta
+              nada. Sin esa sombra interior el disco se lee como un agujero
+              pintado en la tarjeta, no como un papel apoyado arriba.
+
+              Camila: «esto no parece un sticker, ponele sombra como al logo del
+              header para dar esa sensación». Es literalmente la misma clase que
+              usa el logo, y por el mismo motivo: las dos son un troquel apoyado
+              encima de otra cosa.
+
+              ⚠️ LA GEOMETRÍA NO SE TOCA: el `pt-9.5` del `<li>` son 38px y el
+              disco mide 68, así que asoma 38 por arriba del troquel y apoya
+              los 30 restantes encima. Es la mitad justa, que es como se pega
+              un sticker sobre un borde.
+              ══════════════════════════════════════════════════════════════
+            */}
+            <span className="sticker absolute top-0 left-1/2 z-30 grid size-17 -translate-x-1/2 place-items-center rounded-pill bg-paper p-1">
+              <span className="grid size-full place-items-center rounded-pill bg-sunset p-1.25">
+                <span className="grid size-full place-items-center content-center rounded-pill bg-cream">
+                  <span className="font-body text-[8px] font-bold uppercase tracking-[0.14em] text-sunset-deep">
+                    Step
+                  </span>
+                  <span className="font-display text-d5 font-extrabold leading-none text-deep">
+                    {step.n}
+                  </span>
+                </span>
               </span>
             </span>
 

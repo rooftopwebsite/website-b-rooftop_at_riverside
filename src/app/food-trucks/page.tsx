@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import CompareSlab from '@/components/shared/CompareSlab';
+import Marquee from '@/components/shared/Marquee';
 import TruckCarousel from '@/components/sections/TruckCarousel';
 import PageHero from '@/components/shared/PageHero';
 import Section from '@/components/shared/Section';
@@ -41,6 +44,33 @@ export default function FoodTrucksPage() {
         crumbs={[{ name: 'Food Trucks', path: '/food-trucks' }]}
       />
 
+      {/*
+        BLOQUE G: la marquesina con los nombres del roster.
+
+        ⚠️ LOS NOMBRES NO ESTÁN ESCRITOS ACÁ. Salen de `activeTrucks()`, que es
+        el roster vigente. Es el dato que más cambia de todo el sitio: el sitio
+        viejo tiene tres fichas de trucks que ya no están y ninguna de los dos
+        que sí. Transcribir cuatro nombres a un componente es garantizar que en
+        dos meses la marquesina nombre un camión que se fue.
+
+        ⚠️ Es CSS puro y se detiene con `prefers-reduced-motion` y al pasar el
+        puntero. Ver `components/shared/Marquee.tsx`.
+      */}
+      <Marquee
+        label={`Tonight in the yard: ${trucks.map((t) => t.name).join(', ')}`}
+        className="border-y border-ink/12 bg-bone py-[18px]"
+        duracion={38}
+      >
+        {trucks.map((t) => (
+          <span key={t.slug} className="flex shrink-0 items-center gap-[48px]">
+            <span className="font-display text-d5 uppercase leading-none whitespace-nowrap lg:text-d4">
+              {t.name}
+            </span>
+            <span aria-hidden="true" className="size-[8px] shrink-0 rounded-pill bg-sunset" />
+          </span>
+        ))}
+      </Marquee>
+
       <Section band="lg" labelledBy="roster-title">
         <SectionHead
           eyebrow="In the yard now"
@@ -53,25 +83,93 @@ export default function FoodTrucksPage() {
         <TruckCarousel trucks={trucks} />
       </Section>
 
-      {/* ── Cómo funciona el pago ──────────────────────────────────────── */}
-      <Section tone="cream" band="md" labelledBy="how-pay">
-        <div className="grid gap-[32px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-[64px]">
-          <Heading level={2} id="how-pay" className="text-d5 lg:text-d4">
-            One yard, five registers
-          </Heading>
-          <div className="flex flex-col gap-[14px] text-[16px] leading-[1.7] text-body/80">
-            <p>
-              Every truck runs its own business. You order at the window you want and you pay that
-              truck: separate line, separate card, separate receipt.
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        BLOQUE E: la losa oscura, y acá es la pieza más importante de la
+        página.
+
+        ⚠️ ES *LA* CONFUSIÓN DEL NEGOCIO. La gente llega creyendo que esto es
+        un restaurante con varias cocinas, y entonces espera una cuenta, un
+        mozo y un menú. Nada de eso existe. Ponerlo en una comparación lado a
+        lado es la forma más rápida de que se entienda, y por eso se gana la
+        única superficie oscura de la página.
+
+        ⚠️ LA COLUMNA DE LA DERECHA NO DICE QUE UN RESTAURANTE SEA PEOR. Dice
+        en qué se diferencia. El argumento se sostiene solo.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <CompareSlab
+        id="how-pay"
+        eyebrow="How this works"
+        title="One yard, five registers"
+        lead="It reads like a restaurant with several kitchens. It is not, and the difference shows up when you go to pay."
+        ours={{
+          label: 'Here',
+          rows: [
+            'You order at whichever window you want',
+            'Each truck is its own business, with its own register and its own receipt',
+            'Four parties at one table can each eat something different',
+            'Drinks come from the Sunset Bar upstairs, and that tab is ours',
+            'No waiting for a table: find a seat and go up to the window',
+          ],
+        }}
+        theirs={{
+          label: 'A restaurant',
+          rows: [
+            'One kitchen, one menu, one check',
+            'A server takes the order and brings it over',
+            'Everyone eats from the same list',
+            'Food and drinks land on the same bill',
+            'A host seats you when a table opens',
+          ],
+        }}
+      />
+
+      {/*
+        BLOQUE C: dos columnas de argumento.
+
+        ⚠️ ACÁ ARRIBA HABÍA UN PÁRRAFO QUE DECÍA «No delivery, no takeout, no
+        online ordering» y se sacó el 2026-09-15. Ninguna de las tres cosas
+        está en ninguna fuente: el brief lista «Delivery» y «Takeout» como
+        opciones del modelo de servicio, deja el cuadro de plataformas VACÍO y
+        anota al lado «confirmar contra el contrato firmado si este servicio
+        realmente aplica».
+        TODO: confirmar con cliente si hay delivery y takeout.
+      */}
+      <Section band="lg" labelledBy="rota-title">
+        <SectionHead
+          eyebrow="The roster"
+          eyebrowTone="plum"
+          id="rota-title"
+          title="Four kitchens, and they rotate"
+        />
+        <div className="mt-[36px] grid gap-[32px] lg:grid-cols-2 lg:gap-[64px]">
+          <div>
+            <Heading level={3} role="card">
+              Who is in tonight
+            </Heading>
+            <p className="mt-[10px] max-w-[46ch] text-[16px] leading-[1.7] text-body/80">
+              The roster changes. Four trucks run the yard on a revenue share, each one
+              independently owned, and which ones are in on a given night is on the calendar.
             </p>
-            <p>
-              Drinks are the exception: those come from the Sunset Bar upstairs, and that one is
-              ours. It&rsquo;s also the only menu on this site with prices, because it&rsquo;s the
-              only one we set.
+            <p className="mt-[16px]">
+              <Link href="/whats-on" className="link-texto font-bold">
+                See the calendar
+              </Link>
             </p>
-            <p>
-              No delivery, no takeout, no online ordering. Walk in, find a table, order at the
-              window.
+          </div>
+          <div>
+            <Heading level={3} role="card">
+              Where the menus are
+            </Heading>
+            <p className="mt-[10px] max-w-[46ch] text-[16px] leading-[1.7] text-body/80">
+              At the trucks. Menus and prices belong to each owner and change often, so we do not
+              publish them. The bar menu is on this site because the bar is ours.
+            </p>
+            <p className="mt-[16px]">
+              <Link href="/sunset-bar" className="link-texto font-bold">
+                See the bar menu
+              </Link>
             </p>
           </div>
         </div>

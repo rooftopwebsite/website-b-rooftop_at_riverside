@@ -1,4 +1,4 @@
-import { HOURS } from './brand';
+import type { Hours } from '@/types/content';
 
 /**
  * ¿Está abierto AHORA?
@@ -76,6 +76,16 @@ export interface VenueStatus {
    * está abierto.
    */
   readonly reopensOn: string | null;
+  /**
+   * A qué hora abre ese día, en formato corto («3 PM»). `null` si está
+   * abierto.
+   *
+   * ⚠️ SE AGREGÓ EL 2026-09-15 por pedido del cliente: quería que los días
+   * cerrados se comunicaran por cuándo ABRE y no por que está cerrado. Con el
+   * día solo —«Open Wednesday»— falta la mitad del dato: alguien puede venir
+   * el miércoles a la una y encontrarlo cerrado igual.
+   */
+  readonly reopensAt: string | null;
 }
 
 /** `20:00` → `8 PM`. Sin `:00` cuando la hora es redonda, que es como se lee. */
@@ -96,11 +106,19 @@ function shortTime(minutes: number): string {
  * mientras los camiones cierran a las 11 PM. El default es `bar` porque es lo
  * que define si «el lugar» está abierto.
  */
-export function venueStatus(which: 'bar' | 'trucks' = 'bar'): VenueStatus | null {
+/**
+ * ⚠️ RECIBE LOS HORARIOS, ya no los importa. Antes leía `HOURS` del módulo, o
+ * sea el respaldo local, así que el «abierto ahora» del sitio podía contradecir
+ * a la base. Ahora se los pasa quien ya los resolvió: en cliente, `useVenue()`.
+ */
+export function venueStatus(
+  hours: readonly Hours[],
+  which: 'bar' | 'trucks' = 'bar',
+): VenueStatus | null {
   const { dayIndex, minutes } = nowInVenueTz();
   if (dayIndex < 0) return null;
 
-  const pick = (i: number) => (which === 'bar' ? HOURS[i].bar : HOURS[i].trucks);
+  const pick = (i: number) => (which === 'bar' ? hours[i].bar : hours[i].trucks);
 
   const today = pick(dayIndex);
   const parsed = parseRange(today);
@@ -115,6 +133,7 @@ export function venueStatus(which: 'bar' | 'trucks' = 'bar'): VenueStatus | null
   const isOpen = openNow || stillOpenFromYesterday;
 
   let reopensOn: string | null = null;
+  let reopensAt: string | null = null;
   if (!isOpen) {
     // Se busca hacia adelante el primer día con un rango parseable. El bucle
     // arranca en HOY porque puede estar cerrado por la hora y no por el día:
@@ -124,7 +143,8 @@ export function venueStatus(which: 'bar' | 'trucks' = 'bar'): VenueStatus | null
       const r = parseRange(pick(i));
       if (!r) continue;
       if (step === 0 && minutes >= r.open) continue;
-      reopensOn = step === 0 ? 'today' : HOURS[i].day;
+      reopensOn = step === 0 ? 'today' : hours[i].day;
+      reopensAt = shortTime(r.open);
       break;
     }
   }
@@ -135,5 +155,6 @@ export function venueStatus(which: 'bar' | 'trucks' = 'bar'): VenueStatus | null
     dayIndex,
     closesAt: isOpen && parsed ? shortTime(parsed.close) : null,
     reopensOn,
+    reopensAt,
   };
 }

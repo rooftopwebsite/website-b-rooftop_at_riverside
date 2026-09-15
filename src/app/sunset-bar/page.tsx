@@ -5,25 +5,24 @@ import WaveBorder from '@/components/shared/WaveBorder';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import {
-  BEER_SECTIONS,
+  CARTAS_FALLBACK,
   MENU_LEGAL,
-  SIGNATURE_COCKTAILS,
-  SPECIALS,
-  WINE_SECTIONS,
+  cartasFromGroups,
   formatPrice,
   type MenuItem,
   type MenuSection,
 } from '@/content/bar-menu';
-import { HAPPY_HOUR } from '@/lib/brand';
+import { getMenu } from '@/lib/restoexp';
+import { HAPPY_HOUR } from '@/content/happy-hour';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
   route: "/sunset-bar",
   image: {
-    url: '/images/venue-rooftop.jpg',
-    width: 2000,
-    height: 1333,
-    alt: 'The Sunset Bar rooftop at Rooftop at Riverside',
+    url: '/images/venue/wall-cocktails-rooftop.jpg',
+    width: 540,
+    height: 720,
+    alt: 'Drinks on a table on the rooftop at Rooftop at Riverside',
   },
 });
 
@@ -39,7 +38,20 @@ export const metadata: Metadata = pageMeta({
  * oscura `deep`. Se usa en la banda de happy hour, no en toda la página: el
  * sitio sigue siendo blanco.
  */
-export default function SunsetBarPage() {
+export default async function SunsetBarPage() {
+  /*
+   * ⚠️ LA CARTA SALE DE LA BASE. El menú «Sunset Bar» está cargado entero en
+   * el dashboard de RestoExp: nueve categorías, 50 ítems con precio y
+   * descripción. Descubierto el 2026-09-15; hasta entonces estaba transcrito
+   * a mano en `content/bar-menu.ts` porque el sitio viejo lo publica como dos
+   * JPG y nadie había mirado la base.
+   *
+   * ⚠️ `CARTAS_FALLBACK` es el respaldo. Si la base no contesta se sirve la
+   * transcripción: una carta desactualizada es mala, una carta vacía es peor.
+   */
+  const grupos = await getMenu();
+  const cartas = grupos ? cartasFromGroups(grupos) : CARTAS_FALLBACK;
+
   return (
     <>
       <script
@@ -53,8 +65,8 @@ export default function SunsetBarPage() {
         eyebrow="The rooftop"
         title={"Bonita's only rooftop"}
         lead="Our bar, and the only thing here we actually cook up ourselves. Cocktails made daily, drafts from down the road, and the best west-facing seat in Bonita Springs."
-        image="/images/venue-rooftop.jpg"
-        imageAlt="The rooftop bar at Rooftop at Riverside with seating overlooking the river"
+        image={null}
+        imageBrief="La terraza al atardecer, mirando al oeste sobre el río, con la barra y las mesas en cuadro. Horizontal."
         crumbs={[{ name: 'Sunset Bar', path: '/sunset-bar' }]}
       />
 
@@ -79,67 +91,51 @@ export default function SunsetBarPage() {
       </Section>
 
       {/* ── Cócteles ───────────────────────────────────────────────────── */}
-      <Section band="lg" labelledBy="cocktails-title">
-        <SectionHead
-          eyebrow="Made daily"
-          eyebrowTone="magenta"
-          id="cocktails-title"
-          title={SIGNATURE_COCKTAILS.title}
-          lead="Fresh juice, house syrups, and a margarita we squeeze every morning."
-        />
-        <div className="mt-bloque grid gap-x-[56px] gap-y-[4px] lg:grid-cols-2">
-          {SIGNATURE_COCKTAILS.items.map((item) => (
-            <MenuRow key={item.name} item={item} detailed />
-          ))}
-        </div>
-      </Section>
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        LAS CARTAS. Bloque I del kit: nombre en display, descripción en
+        cuerpo, precio a la derecha y filete punteado en el medio.
 
-      {/* ── Specials ───────────────────────────────────────────────────── */}
-      <Section tone="cream" band="md" labelledBy="specials-title">
-        <SectionHead
-          eyebrow="Ask about these"
-          eyebrowTone="deep"
-          id="specials-title"
-          title={SPECIALS.title}
-        />
-        <div className="mt-[32px] grid gap-x-[56px] gap-y-[4px] lg:grid-cols-2">
-          {SPECIALS.items.map((item) => (
-            <MenuRow key={item.name} item={item} detailed />
-          ))}
-        </div>
-      </Section>
+        ⚠️ ALTERNAN `paper` Y `cream`, y ninguna es `deep`. La única
+        superficie oscura de la página es la banda de happy hour de arriba:
+        cuatro listas de precios sobre verde serían la mitad de la página en
+        oscuro, y la regla es 70–75 % claro.
 
-      {/* ── Cerveza ────────────────────────────────────────────────────── */}
-      <Section band="lg" labelledBy="beer-title">
-        <SectionHead
-          eyebrow="On tap and in the cooler"
-          eyebrowTone="terra"
-          id="beer-title"
-          title="Beer & Seltzers"
-          lead="Ankrolab and Riptide are both brewed within twenty minutes of here."
-        />
-        <div className="mt-bloque grid gap-[40px] md:grid-cols-3 md:gap-[40px]">
-          {BEER_SECTIONS.map((s) => (
-            <MenuColumn key={s.id} section={s} />
-          ))}
-        </div>
-      </Section>
+        ⚠️ EL NÚMERO DE CARTAS NO ESTÁ ESCRITO ACÁ. Si el cliente agrega una
+        categoría en el dashboard, aparece una columna más. Si desactiva
+        todos los ítems de una, la carta no se renderiza vacía.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      {cartas.map((carta, n) => (
+        <Section
+          key={carta.id}
+          tone={n % 2 === 0 ? 'paper' : 'cream'}
+          band="lg"
+          labelledBy={`carta-${carta.id}`}
+        >
+          <SectionHead
+            eyebrow={carta.eyebrow}
+            eyebrowTone={n % 2 === 0 ? 'deep' : 'plum'}
+            id={`carta-${carta.id}`}
+            title={carta.title}
+            {...(carta.lead ? { lead: carta.lead } : {})}
+          />
 
-      {/* ── Vino ───────────────────────────────────────────────────────── */}
-      <Section tone="cream" band="lg" labelledBy="wine-title">
-        <SectionHead
-          eyebrow="By the glass"
-          eyebrowTone="plum"
-          id="wine-title"
-          title="Wine & Bubbles"
-          lead="Anything marked house is what happy hour runs on."
-        />
-        <div className="mt-bloque grid gap-[40px] sm:grid-cols-2 lg:grid-cols-4">
-          {WINE_SECTIONS.map((s) => (
-            <MenuColumn key={s.id} section={s} />
-          ))}
-        </div>
-      </Section>
+          {carta.columnas.length === 1 ? (
+            <div className="mt-[36px] max-w-[760px]">
+              {carta.columnas[0].items.map((item) => (
+                <MenuRow key={item.name} item={item} detailed />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-[36px] grid gap-[40px] md:grid-cols-2 lg:gap-[56px]">
+              {carta.columnas.map((col) => (
+                <MenuColumn key={col.id} section={col} />
+              ))}
+            </div>
+          )}
+        </Section>
+      ))}
 
       {/* ── Pie legal + cierre ─────────────────────────────────────────── */}
       <Section band="md">
@@ -154,9 +150,16 @@ export default function SunsetBarPage() {
             </ButtonLink>
           </div>
         </div>
+        {/*
+          ⚠️ ACÁ DECÍA «we don't have a kitchen» y se sacó el 2026-09-15: el
+          PDF «Events Packages» del propio cliente ofrece «specialty menus
+          provided by in house catering». Lo que sí está verificado es que los
+          trucks cobran aparte, que es el dato que la gente necesita.
+          TODO: confirmar con cliente qué es el catering in house.
+        */}
         <p className="mt-[20px] max-w-[60ch] text-[15px] leading-[1.6] text-body/75">
           Food comes from the trucks in the yard, and each one takes its own orders and its own
-          payment. We don&rsquo;t have a kitchen. What we have is the bar.
+          payment. This list is the one tab that is ours.
         </p>
       </Section>
     </>

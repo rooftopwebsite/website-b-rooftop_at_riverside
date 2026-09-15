@@ -138,7 +138,15 @@ export function PhotoPending({
   className = '',
   tone = 'light',
 }: {
-  /** Qué toma va acá. Concreto: «El truck abierto, de noche, con gente en la ventanilla». */
+  /**
+   * Qué toma va acá, EN ESPAÑOL y concreto: «El truck abierto, de noche, con
+   * gente en la ventanilla».
+   *
+   * ⚠️ EL BRIEF VA EN ESPAÑOL aunque el copy del sitio sea en inglés. Pedido
+   * de Camila el 2026-09-15: este cartel no es contenido, es un recado para
+   * ella, que es quien sale a buscar la foto. Desaparece en cuanto la foto
+   * llega, así que nunca lo va a leer un visitante.
+   */
   readonly brief: string;
   readonly ratio?: string;
   readonly className?: string;
@@ -150,7 +158,7 @@ export function PhotoPending({
   return (
     <div
       role="img"
-      aria-label={`Image placeholder: ${brief}`}
+      aria-label={`Foto pendiente: ${brief}`}
       className={[
         ratio,
         'relative flex flex-col items-center justify-center gap-3 overflow-hidden',
@@ -179,7 +187,7 @@ export function PhotoPending({
         />
       </svg>
 
-      <p className={`eyebrow ${t.rotulo}`}>Image missing</p>
+      <p className={`eyebrow ${t.rotulo}`}>Falta la foto</p>
 
       {/* El brief de la toma. Es lo único que hace útil a este placeholder.
           Los colores de los dos tonos —y sus ratios medidos— están en

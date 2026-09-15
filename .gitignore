@@ -40,3 +40,10 @@ design-audit/specimen.html
 # interno, vive acá y no entra a git jamás.
 # ─────────────────────────────────────────────────────────────────────────
 /_interno/
+
+# Volcado crudo del sitio Wix vigente. Material de referencia, NO se publica
+# ni se versiona: es el ORIGINAL, y adentro van precios de eventos del cliente
+# y un mail interno (ver _interno/LEEME.md y docs/INVARIANTES.md §5b). Lo que
+# se versiona es el derivado: el dato transcrito en content/*.ts.
+# Se regenera con design-audit/tmp/scrape-wix.mjs
+src/content/_source/

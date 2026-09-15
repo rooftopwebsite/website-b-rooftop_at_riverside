@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/cn';
+import { CAJA_ALTA_CLS } from '@/lib/flags';
 
 /**
  * Botones y CTAs.
@@ -125,6 +126,9 @@ const BASE = [
     Si algún día se quiere unificar, se cambia `NAV_ITEM` en el mismo commit.
   */
   'font-body font-semibold',
+  /* La prueba de caja alta. Vive entera en `CAJA_ALTA` (`lib/flags.ts`), que
+     explica qué revierte y cómo se apaga. Acá es una clase más. */
+  CAJA_ALTA_CLS,
   /*
     ⚠️ PÍLDORA, y sólo acá. Camila lo pidió en el boceto: «CTAs redondos».
 
@@ -361,7 +365,7 @@ export function ArrowLink({
     </>
   );
 
-  const cls = ['group inline-flex items-center gap-2.25 font-body text-base font-medium', className]
+  const cls = ['group inline-flex items-center gap-2.25 font-body text-base font-medium', CAJA_ALTA_CLS, className]
     .filter(Boolean)
     .join(' ');
 

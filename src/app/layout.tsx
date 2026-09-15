@@ -8,6 +8,8 @@ import Preloader from '@/components/shared/Preloader';
 import SmoothScroll from '@/components/shared/SmoothScroll';
 import UtilityBar from '@/components/shared/UtilityBar';
 import { BRAND } from '@/lib/brand';
+import VenueProvider from '@/components/shared/VenueProvider';
+import { getVenue } from '@/lib/venue';
 import { SITE_URL, jsonLdScript, venueJsonLd } from '@/lib/seo';
 import './globals.css';
 
@@ -94,17 +96,25 @@ export const viewport: Viewport = {
   colorScheme: 'light',
 };
 
-export default function RootLayout({ children }: { readonly children: React.ReactNode }) {
+/**
+ * ⚠️ ES ASYNC PORQUE LEE LA BASE. `getVenue()` resuelve el local UNA vez por
+ * render y lo baja a todo el árbol: los componentes de servidor lo vuelven a
+ * pedir (y `fetch` dedupea), y los de cliente lo leen del proveedor.
+ */
+export default async function RootLayout({ children }: { readonly children: React.ReactNode }) {
+  const venue = await getVenue();
+
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body>
+        <VenueProvider venue={venue}>
         {/*
           JSON-LD del venue: BarOrPub + EventVenue. Nunca Restaurant.
           Va en el layout raíz para que esté en todas las páginas.
         */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: jsonLdScript(venueJsonLd()) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdScript(venueJsonLd(venue)) }}
         />
 
         {/*
@@ -173,6 +183,7 @@ export default function RootLayout({ children }: { readonly children: React.Reac
           no contenido de la página, igual que el footer.
         */}
         <Footer />
+        </VenueProvider>
       </body>
     </html>
   );

@@ -62,14 +62,56 @@ import Image from 'next/image';
  * en un orden propio (día/noche alternado), y `WALL` está ordenada para otra
  * cosa. Compartir el array ataría dos criterios de orden que no tienen nada
  * que ver.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LAS SEIS CRECEN UN 45 % DE `md` PARA ARRIBA, y es un pedido con motivo
+ * puesto: «la galería necesita fotos más grandes porque como que no me muestra
+ * el sitio bien».
+ *
+ * Tenía razón medida, y el problema no eran las fotos sino la PROPORCIÓN. La
+ * banda mide 820px de alto en escritorio y la foto más alta medía 360: el
+ * marquee ocupaba el 44 % de su propia sección y el 56 % restante era fondo
+ * verde. Una pared de fotos que se ve más fondo que foto no muestra el lugar,
+ * lo insinúa.
+ *
+ * Ahora la más alta mide 520 y con el `py-13` del riel el bloque llega a 624,
+ * o sea el 76 % de la banda. Las seis suben el mismo factor, así que el
+ * desparejo de arriba se conserva entero: siguen siendo un tendal y no una
+ * grilla.
+ *
+ * ⚠️ EL SALTO ES EN `md` Y NO EN LA MEDIDA BASE. Por debajo la banda mide
+ * 608px y la foto más alta ya llegaría a 520 + 104 de riel = 624: se saldría
+ * de su propia sección. En teléfono las medidas quedan como estaban, que ahí
+ * ya daban 464 de 608 y la proporción nunca fue el problema.
+ *
+ * ⚠️ LA BANDA CRECIÓ CON ELLAS, Y ESA ES LA SEGUNDA MITAD DEL ARREGLO.
+ * Camila, apenas vio las fotos nuevas: «bien el nuevo tamaño, pero agrandá con
+ * ellas el espacio que las contiene de alto, para que no queden pegadas al
+ * contenido de abajo ni con poco espacio arriba y abajo».
+ *
+ * Y tenía que ser el ALTO DE LA BANDA y no el `py` del riel, que era el primer
+ * reflejo: el riel está centrado vertical, así que agrandarle el padding agranda
+ * el bloque y le come el mismo espacio al hueco de arriba y de abajo. El aire
+ * que se ve no cambia un píxel. El `py-13` existe para que la sombra de las
+ * tarjetas no se recorte y se queda donde está.
+ *
+ * La cuenta, medida a 1440: el bloque son 520 de la foto más alta + 104 de riel
+ * = 624. La banda pasa de 820 a 950, así que sobran 163 arriba y abajo. De esos
+ * 163 se descuentan los 90 del remate claro arriba y los ~60 de la ola abajo:
+ * quedan 73 y 103 de verde limpio, que es lo que faltaba.
+ *
+ * ⚠️ EL `min-h` DE `lg` NO SOBRA. El alto es `66vw`, y en una pantalla de 1024
+ * eso da 676: menos que el bloque de 624 más su aire. El mínimo de 56rem es lo
+ * que evita que la banda se apriete justo donde el salto de `md` ya no rige.
+ * ══════════════════════════════════════════════════════════════════════════
  */
 const PHOTOS = [
-  { src: '/images/venue/wall-cocktails-rooftop.jpg', alt: 'The rooftop bar at sunset', w: 'w-85', h: 'h-65' },
-  { src: '/images/venue/wall-guests-yard-day.jpg', alt: 'Guests in the yard', w: 'w-70', h: 'h-90' },
-  { src: '/images/venue/wall-bartender.jpg', alt: 'Cocktails at the Sunset Bar', w: 'w-105', h: 'h-60' },
-  { src: '/images/venue/wall-truck-window-day.jpg', alt: 'A truck window in the yard', w: 'w-75', h: 'h-82.5' },
-  { src: '/images/venue/wall-live-music-tent.jpg', alt: 'Live music in the yard', w: 'w-95', h: 'h-67.5' },
-  { src: '/images/venue/wall-yard-night-table.jpg', alt: 'A table in the yard at night', w: 'w-65', h: 'h-85' },
+  { src: '/images/venue/wall-cocktails-rooftop.jpg', alt: 'The rooftop bar at sunset', w: 'w-85 md:w-122.5', h: 'h-65 md:h-95' },
+  { src: '/images/venue/wall-guests-yard-day.jpg', alt: 'Guests in the yard', w: 'w-70 md:w-100', h: 'h-90 md:h-130' },
+  { src: '/images/venue/wall-bartender.jpg', alt: 'Cocktails at the Sunset Bar', w: 'w-105 md:w-150', h: 'h-60 md:h-87.5' },
+  { src: '/images/venue/wall-truck-window-day.jpg', alt: 'A truck window in the yard', w: 'w-75 md:w-107.5', h: 'h-82.5 md:h-120' },
+  { src: '/images/venue/wall-live-music-tent.jpg', alt: 'Live music in the yard', w: 'w-95 md:w-137.5', h: 'h-67.5 md:h-97.5' },
+  { src: '/images/venue/wall-yard-night-table.jpg', alt: 'A table in the yard at night', w: 'w-65 md:w-92.5', h: 'h-85 md:h-122.5' },
 ] as const;
 
 export default function PhotoDivider() {
@@ -137,7 +179,7 @@ export default function PhotoDivider() {
 
         Desktop no cambia: sigue en `56vw` con su tope de 205.
       */}
-      <div className="relative h-[38rem] w-full md:h-[44rem] lg:h-[56vw] lg:max-h-205">
+      <div className="relative h-[42rem] w-full md:h-[56rem] lg:h-[66vw] lg:max-h-[60rem] lg:min-h-[56rem]">
         {/*
           ⚠️ ES UNA TEXTURA Y NO UNA ESCENA, y ése es el cambio respecto de la
           versión anterior. Antes iba `wall-yard-night-crowd.jpg` —el patio de

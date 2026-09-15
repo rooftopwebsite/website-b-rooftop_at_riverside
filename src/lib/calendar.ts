@@ -1,4 +1,5 @@
-import { EVENTS, type VenueEvent, type Weekday } from '@/content/events';
+import { EVENTS_FALLBACK, type VenueEvent, type Weekday } from '@/content/events';
+import { venueAddressLine, type Venue } from './venue';
 import { BRAND } from './brand';
 import { SITE_URL } from './seo';
 
@@ -62,7 +63,7 @@ export function occurrencesInMonth(year: number, month: number): readonly Occurr
     const date = iso(year, month, day);
     const weekday = new Date(`${date}T12:00:00Z`).getUTCDay() as Weekday;
 
-    for (const event of EVENTS) {
+    for (const event of EVENTS_FALLBACK) {
       if (event.kind === 'recurring' && event.weekday === weekday) {
         out.push({ event, date });
       } else if (event.date === date) {
@@ -148,7 +149,7 @@ const RRULE_DAY = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'] as const;
  * cientos de ocurrencias sueltas. Es lo que hace que el archivo pese 3 KB y no
  * 300, y que Google Calendar los muestre como serie.
  */
-export function buildICal(): string {
+export function buildICal(venue: Venue): string {
   const now = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
   const lines: string[] = [
     'BEGIN:VCALENDAR',
@@ -157,10 +158,10 @@ export function buildICal(): string {
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     `X-WR-CALNAME:${esc(BRAND.name)}`,
-    `X-WR-TIMEZONE:${BRAND.address.timezone}`,
+    `X-WR-TIMEZONE:${venue.timezone}`,
   ];
 
-  for (const e of EVENTS) {
+  for (const e of EVENTS_FALLBACK) {
     // Para los recurrentes hace falta una fecha de arranque: se usa la primera
     // ocurrencia a partir de hoy que caiga en su día de la semana.
     let startDate = e.date;
@@ -180,11 +181,11 @@ export function buildICal(): string {
       'BEGIN:VEVENT',
       `UID:${e.slug}@rooftopatriverside.com`,
       `DTSTAMP:${now}`,
-      `DTSTART;TZID=${BRAND.address.timezone}:${dt(startDate, e.startTime)}`,
-      `DTEND;TZID=${BRAND.address.timezone}:${dt(endDay, e.endTime)}`,
+      `DTSTART;TZID=${venue.timezone}:${dt(startDate, e.startTime)}`,
+      `DTEND;TZID=${venue.timezone}:${dt(endDay, e.endTime)}`,
       fold(`SUMMARY:${esc(e.title)}`),
       fold(`DESCRIPTION:${esc(e.summary)}`),
-      fold(`LOCATION:${esc(`${e.space}, ${BRAND.name}, ${BRAND.address.street}, ${BRAND.address.locality}, ${BRAND.address.region} ${BRAND.address.postalCode}`)}`),
+      fold(`LOCATION:${esc(`${e.space}, ${venue.name}, ${venueAddressLine(venue)}`)}`),
       fold(`URL:${SITE_URL}/whats-on/${e.slug}`),
     );
 

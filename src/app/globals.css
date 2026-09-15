@@ -122,7 +122,7 @@
   --color-river: #0eb6b8; /* isotipo, iconografía, patrón. NUNCA como texto: 2.50:1 sobre paper */
   --color-cream: #fdf0b4; /* el amarillo del brand book. Píldoras y botones. NO fondos grandes */
   --color-mint: #c4f2ec;
-  --color-deep: #014545; /* la banda de Events + el footer. Y NADA MÁS en la home */
+  --color-deep: #014545; /* las BANDAS oscuras y el footer. Ver la nota de ThreeDoors */
   --color-deeper: #013434; /* un peldaño más para capas dentro de una losa */
   --color-teal600: #028382;
   --color-tomato: #eb452c;
@@ -1435,17 +1435,6 @@
 }
 
 /**
- * La lengüeta numerada que asoma arriba de cada ticket.
- *
- * El radio es elíptico y asimétrico —esquinas de arriba casi rectas, las de
- * abajo muy redondeadas— porque es lo que la hace leer como una lengüeta
- * pegada y no como una píldora suelta apoyada encima.
- */
-@utility lengueta {
-  border-radius: 6px 6px 40% 40% / 6px 6px 26% 26%;
-}
-
-/**
  * Eyebrow. La geométrica en caja alta, 12px y 0.12em, siempre.
  *
  * El color lo pone quien lo usa: sobre superficie clara tiene que ser uno de
@@ -2655,4 +2644,119 @@ main:has(+ .banda-arco) > :last-child {
 .sticker {
   filter: drop-shadow(0 1px 1px rgba(1, 69, 69, 0.14))
     drop-shadow(0 4px 8px rgba(1, 69, 69, 0.18));
+}
+
+/* ==========================================================================
+   MOVIMIENTO REDUCIDO — la red de seguridad
+
+   ⚠️ ESTO ARREGLA UN BUG QUE DEJABA CONTENIDO INVISIBLE. Con
+   `prefers-reduced-motion: reduce`, 26 elementos de la home y 24 de `/events`
+   quedaban en `opacity: 0`: la persona que activa «reducir movimiento» veía
+   huecos en blanco donde va el contenido. Exactamente al revés de lo que la
+   preferencia pide.
+
+   La causa está explicada entera en `components/shared/Motion.tsx`, arriba de
+   `SIN_MOVIMIENTO`. En dos palabras: el servidor no puede conocer la
+   preferencia, así que emite `style="opacity:0;transform:translateY(32px)"` en
+   el HTML, y cuando React hidrata la rama sin animación NO borra ese atributo.
+
+   Por qué la regla va acá y no sólo en el componente: un `style` en línea le
+   gana a cualquier clase, así que desde React no hay forma de pisarlo con
+   seguridad. `!important` dentro de la media query sí, y no depende de cómo
+   hidrate React ni de en qué orden corran los efectos.
+
+   ⚠️ VA DENTRO DE LA MEDIA QUERY. Sin la preferencia puesta no aplica a nada y
+   las animaciones funcionan igual que siempre.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+}
+
+/* ==========================================================================
+   LA MARQUESINA — bloque G del kit
+
+   El bucle va en CSS y no en JavaScript: un loop infinito en JS corre un
+   callback por frame para siempre, incluso cuando nadie lo mira. Ver
+   `components/shared/Marquee.tsx`.
+
+   ⚠️ SE DETIENE CON `prefers-reduced-motion`. Una tira de texto desplazándose
+   sin parar es justamente lo que marea a quien activa esa preferencia. Con la
+   preferencia puesta la animación se pausa en su posición inicial, así que la
+   tira queda quieta y LEGIBLE: no desaparece.
+
+   ⚠️ SE DETIENE TAMBIÉN AL PASAR EL PUNTERO. Si la tira lleva nombres que
+   alguien quiere leer, tiene que poder leerlos.
+   ========================================================================== */
+
+@keyframes marquesina-corre {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.marquesina {
+  animation-name: marquesina-corre;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+[role='group']:hover .marquesina,
+[role='group']:focus-within .marquesina {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquesina {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   LA TIRA DE HORARIOS DEL PRE-HEADER
+
+   ⚠️ NO USA `.rt-marquee` y por eso existe. Esa clase la comparten el muro del
+   hero y otras piezas, y acá hace falta algo que esa no hace: en TELÉFONO la
+   tira tiene que quedarse quieta y desplazarse a dedo, no correr sola.
+
+   El motivo es de lectura. A 390px, una tira animada muestra un día y medio
+   moviéndose: no se puede leer. Y esconderla —que fue el primer intento—
+   deja al teléfono sin los horarios, que es justo el dato que la barra tiene
+   que dar. Quieta y desplazable están los siete días completos.
+
+   De `sm` para arriba sí corre: ahí entra la semana entera y el movimiento es
+   lo que hace notar que hay más a la derecha.
+
+   ⚠️ SE DETIENE CON `prefers-reduced-motion`, y al detenerse queda en su
+   posición inicial, o sea legible desde el primer día. No desaparece.
+   ========================================================================== */
+
+.tira-horarios {
+  will-change: transform;
+}
+
+@media (min-width: 40rem) {
+  .tira-horarios {
+    animation: rt-marquee var(--marquee-duration, 38s) linear infinite;
+  }
+
+  .tira-horarios:hover,
+  .tira-horarios:focus-within {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tira-horarios {
+    animation: none;
+  }
 }

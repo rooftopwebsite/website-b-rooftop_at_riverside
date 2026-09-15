@@ -15,7 +15,6 @@ import {
   weekdayLabel,
   whenLabel,
 } from '@/content/events';
-import { HAPPY_HOUR } from '@/lib/brand';
 
 /**
  * «What's on» — la primera banda oscura de la home.
@@ -83,6 +82,13 @@ const MAX_CARDS = 8;
 /** El aire entre tarjetas, en px. Lo necesita el cálculo del scroll. */
 const CARD_GAP = 24;
 
+/**
+ * El `px-8` del track, en px. Es el aire que se le deja a la sombra de las
+ * tarjetas y NO cuenta como ventana: lo usa `medirDentro` para decidir qué
+ * tarjeta entra entera. Si cambia la clase, cambia este número.
+ */
+const BORDE_TRACK = 32;
+
 /*
  * ══════════════════════════════════════════════════════════════════════════
  * ⚠️ EL ANCHO DE TARJETA ES UNA FRACCIÓN DEL CONTENEDOR, y antes era `30vw`.
@@ -135,15 +141,21 @@ function EventCard({
   readonly fuera: boolean;
 }) {
   /*
-   * ⚠️ A DÓNDE VA LA TARJETA. La entrada si el evento la tiene, la página del
-   * evento si no. Hoy los cuatro recurrentes traen `ticketUrl` en `null` —el
-   * dashboard tiene el campo y está vacío—, así que en la práctica todas caen
-   * en `/whats-on/{slug}`. El día que carguen una entrada, la tarjeta cambia
-   * de destino y de etiqueta sola.
+   * ⚠️ A DÓNDE VA LA TARJETA: a la entrada si el evento la tiene, al
+   * calendario si no. Hoy los cuatro recurrentes traen `ticketUrl` en `null`
+   * —el campo existe en el dashboard y está vacío—, así que caen todas en
+   * `/whats-on`. El día que carguen una entrada, la tarjeta cambia de destino
+   * y de etiqueta sola.
+   *
+   * ⚠️ SIN ENTRADA VA AL CALENDARIO, no a una ficha por evento. Apuntaba a
+   * `/whats-on/{slug}` y esa ruta se eliminó el 2026-09-15 por decisión de
+   * Camila —el calendario muestra todo y el evento con entrada deriva a
+   * Eventbrite—, así que las cuatro tarjetas recurrentes estaban linkeando a
+   * un 404.
    */
   const entradas = event.ticketUrl;
-  const href = entradas ?? `/whats-on/${event.slug}`;
-  const cta = entradas ? 'Get tickets' : 'See this night';
+  const href = entradas ?? '/whats-on';
+  const cta = entradas ? 'Get tickets' : 'See the calendar';
 
   const contenido = (
     <>
@@ -208,7 +220,7 @@ function EventCard({
              quedaba centrado en los 500px y la mitad de abajo caía detrás del
              plate. Con el padding, se centra en la franja que SÍ se ve. */
           <PhotoPending
-            brief={`${event.title} at ${event.space}, at night, with people`}
+            brief={`${event.title} en ${event.space}, de noche, con gente.`}
             ratio=""
             tone="dark"
             className="absolute inset-0 h-full rounded-none border-0 border-dashed pb-[42%]"
@@ -257,166 +269,114 @@ function EventCard({
         blanco da 2.54:1.
         ══════════════════════════════════════════════════════════════════
       */}
-      <div className="absolute inset-x-0 bottom-0 z-10 bg-deeper px-6 pt-5.5 pb-6.5 transition-[transform,background-color] duration-300 ease-brand group-hover:translate-y-13 group-hover:bg-sunset">
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        EL PLATE. TODO SE VE EN REPOSO, Y ANTES NO.
+
+        ⚠️ ACÁ HABÍA UN MECANISMO DE INTERCAMBIO y se fue el 2026-09-15.
+        Funcionaba así: el cajón medía 96px fijos, adentro había dos capas
+        superpuestas —la bajada y la línea de CTA—, y el hover DESPLAZABA el
+        plate 52px hacia abajo para que la bajada saliera de cuadro y el CTA
+        entrara. De paso el fondo pasaba de `deeper` a `sunset` entero.
+
+        Camila lo bajó con dos notas que son la misma: «el hover de estas
+        cards es muy violento, el cambio es muy brusco» y «el cuerpo de la
+        card no necesita achicarse en el status unhovered».
+
+        El arreglo es el mismo para las dos: si el CTA se ve SIN hover, no hay
+        nada que intercambiar. Se cae el cajón de alto fijo, se cae el
+        desplazamiento, se caen los 52px calculados y se cae la capa en
+        `opacity-0`. La tarjeta dice todo lo que tiene que decir desde el
+        primer momento.
+
+        ⚠️ Y ADEMÁS ARREGLA ALGO QUE NO ERA DE GUSTO: en un teléfono no hay
+        hover, así que el CTA no aparecía NUNCA. Estaba en el árbol de
+        accesibilidad —por eso el lector de pantalla lo anunciaba— pero quien
+        miraba la tarjeta en un celular no veía a dónde llevaba.
+
+        ⚠️ EL HOVER AHORA ES UN ACENTO, no una transformación. Cambia el color
+        del CTA, corre la flecha y levanta la tarjeta un pelo. El fondo NO se
+        pinta de naranja entero: eso era la mayor parte de lo que se sentía
+        brusco.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <div className="absolute inset-x-0 bottom-0 z-10 bg-deeper px-7 pt-6.5 pb-7">
         {/*
-          ══════════════════════════════════════════════════════════════════
-          ⚠️ EL RÓTULO DICE DÍA + HORA, y antes decía sólo el día. Faltaba
-          justamente lo que alguien necesita para decidir si viene: a qué
-          hora empieza.
+          El DÍA en `cream` y la HORA en una píldora sólida. Es la jerarquía
+          que pidió Camila —«resaltar horario en cards events, pasa muy
+          desapercibido el día y hora y es de lo más importante»— y se queda
+          tal cual: la píldora es el único bloque de color macizo de la
+          tarjeta en reposo, así que es lo primero que agarra el ojo.
 
-          El dato estaba en la base desde siempre (`startTime`/`endTime`) y
-          la función que lo formatea —`timeRange`— ya existía en
-          `content/events.ts`. Sencillamente no se estaba mostrando.
+          Ratios medidos: `cream` sobre `deeper` 11.87:1 y `deep` sobre
+          `cream` 9.44:1.
 
-          ══════════════════════════════════════════════════════════════════
-          ⚠️ SEGUNDA VUELTA: EL HORARIO PASÓ A SER LO SEGUNDO QUE SE LEE DE LA
-          TARJETA, DESPUÉS DEL TÍTULO. Camila: «resaltar horario en cards
-          events, pasa muy desapercibido el día y hora y es de lo más
-          importante».
-
-          Tenía razón por composición, no por tamaño: el rótulo iba en
-          `text-caption` (13px), en `muted-dark` —que es el gris de las bajadas,
-          o sea el tono de lo SECUNDARIO— y en el mismo renglón corrido que el
-          día. Era un pie de foto arriba de un titular de 36px. En una tarjeta
-          de evento, la hora es la mitad del dato: quien mira esto está
-          decidiendo si puede venir.
-
-          Ahora son dos piezas con dos jerarquías, y el contraste entre ellas es
-          lo que hace el trabajo:
-
-            · el DÍA en `cream`, negrita, caja alta. Sube de 13 a 15px y deja
-              de ser gris: pasa a ser el mismo color que la marca usa para
-              destacar sobre oscuro.
-            · la HORA en una PÍLDORA de `cream` sólido con texto `deep`. Es el
-              único bloque de color macizo de la tarjeta en reposo, y por eso
-              es lo que el ojo agarra primero.
-
-          ⚠️ LA PÍLDORA ES SÓLIDA Y NO UN TINTE. Con `bg-cream/15` se lee como
-          un chip apagado —el mismo problema que tenían los tags del yard— y
-          además se desarma en el hover, cuando el fondo pasa de `deeper` a
-          `sunset` y un 15 % de crema sobre naranja no es ningún color. Sólida
-          funciona sobre los dos.
-
-          ⚠️ EN EL HOVER SE INVIERTE. El cajón pasa a `sunset` y el texto a
-          `ink`; si la píldora se quedara en crema, quedaría amarillo sobre
-          naranja (1.71:1). Pasa a `ink` con la hora en `cream`: 14.91:1, y de
-          paso sigue siendo el elemento más marcado de la tarjeta.
-
-          Ratios medidos: `cream` sobre `deeper` 11.87:1 · `deep` sobre `cream`
-          9.44:1 · `cream` sobre `ink` 14.91:1.
-
-          ⚠️ SE FUE EL PUNTO MEDIO SEPARADOR. Existía para partir «Thursday ·
-          6 – 8 PM» dentro de un renglón corrido; con la hora en su propia
-          píldora, la separación la hace la forma y un punto en el medio sería
-          ruido.
-          ══════════════════════════════════════════════════════════════════
+          ⚠️ YA NO NECESITAN INVERTIRSE EN EL HOVER. Existía un juego de
+          colores para cuando el plate se volvía naranja; sin esa vuelta, la
+          píldora se queda en crema sobre verde, que es su mejor ratio.
         */}
         <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-          <span className="font-body text-dato font-bold uppercase tracking-eyebrow text-cream transition-colors duration-300 ease-brand group-hover:text-ink">
+          <span className="font-body text-dato font-bold uppercase tracking-eyebrow text-cream">
             {event.weekday !== null ? weekdayLabel(event.weekday) : whenLabel(event)}
           </span>
-          <span className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-caption font-bold whitespace-nowrap text-deep transition-colors duration-300 ease-brand group-hover:bg-ink group-hover:text-cream">
+          <span className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-caption font-bold whitespace-nowrap text-deep">
             {timeRange(event)}
           </span>
         </span>
 
-        <h3 className="m-0 mt-2.5 font-display text-d4 font-bold uppercase leading-none text-paper transition-colors duration-300 ease-brand group-hover:text-ink">
+        <h3 className="m-0 mt-3.5 font-display text-d4 font-bold uppercase leading-none text-paper">
           {event.title}
         </h3>
 
         {/*
+          ⚠️ `line-clamp-2` SE QUEDA aunque el cajón ya no tenga alto fijo. El
+          motivo cambió: antes era para que la bajada no se desbordara sobre
+          el CTA; ahora es para que una bajada larga no empuje el plate hacia
+          arriba y le coma el afiche. Hoy ninguna de las cuatro llega a dos
+          renglones a 400px de ancho, así que no se pierde texto.
+        */}
+        <p className="m-0 mt-3 line-clamp-2 font-body text-base font-light text-paper/92">
+          {event.summary}
+        </p>
+
+        {/*
           ══════════════════════════════════════════════════════════════════
-          ⚠️ EL CAJÓN QUE SE INTERCAMBIA. Alto FIJO de 96px, y de eso depende
-          todo el mecanismo: es lo que permite que el plate se DESPLACE en vez
-          de crecer. Adentro hay dos capas superpuestas en la misma esquina:
+          ⚠️ EL CTA TIENE SU PROPIO RENGLÓN, Y COMPARTÍA EL ÚLTIMO CON EL
+          ESPACIO. Pedido de Camila: «me gusta el cambio, pero no me gusta
+          dónde está el CTA; quizá podría estar debajo, en otra línea».
 
-              arriba (44px)   la línea de CTA          ← la que queda
-              todo el alto    la bajada + el espacio   ← la que se va
+          Compartir renglón lo ponía a la derecha, alineado a la derecha, en un
+          bloque donde TODO LO DEMÁS arranca a la izquierda: el día, el título,
+          la bajada y el espacio. Era el único elemento de la tarjeta que había
+          que ir a buscar a otro lado, y además quedaba a 4px del borde
+          derecho, que es donde la tarjeta se corta.
 
-          Al bajar el plate 52px (96 − 44), lo único que sobrevive del cajón
-          es esa primera franja. Los 44px son la línea de texto más el aire
-          que hace de pie de la tarjeta: sin ellos el CTA quedaría pegado al
-          borde de abajo.
+          Ahora los dos empiezan en el mismo eje: el espacio es el rótulo y el
+          CTA la acción, uno debajo del otro.
 
-          ⚠️ 96 Y NO 120, que fue el primer número. 120 daba lugar a tres
-          renglones de bajada, y las bajadas reales miden uno o dos: en las
-          tarjetas de «Bring the dog.» quedaban 56px de verde vacío abajo,
-          que se leía como un error de maquetación. Con 96 el sobrante de la
-          bajada más corta son 31px, que pasa por aire.
+          ⚠️ LLEVA EL FILETE DE 2px EN `sunset`, que es el mismo tratamiento
+          que tienen los CTA de texto de `ThreeDoors` y de `FindUs`. Sin él, un
+          CTA suelto a la izquierda y sin subrayado se lee como un tercer
+          renglón de texto: el filete es lo que dice que se puede tocar.
 
-          ⚠️ La bajada va con `line-clamp-2`. El cajón es de alto fijo, así
-          que una bajada larga se desbordaría sobre el CTA; el recorte es el
-          seguro. Hoy ninguna de las cuatro llega a los dos renglones a 400px
-          de ancho, o sea que no se pierde texto.
+          ⚠️ LA OPCIÓN DE PONERLO SOBRE EL AFICHE SE MIRÓ Y NO SE TOMÓ. Camila
+          la propuso como alternativa —«o que aparezca sobre la imagen,
+          oscureciéndola con un efecto»— y el problema es que los afiches son
+          material del cliente con texto propio: los cuatro tienen el nombre
+          del evento y la fecha impresos. Una capa oscura con un CTA encima
+          taparía justo eso, y en dos de las cuatro el CTA caería sobre una
+          cara. Queda anotado por si más adelante hay afiches con zona limpia.
           ══════════════════════════════════════════════════════════════════
         */}
-        <div className="relative mt-2.5 h-24">
-          {/*
-            ══════════════════════════════════════════════════════════════
-            ⚠️ ES UNA COLUMNA CON `inset-0` Y NO UN BLOQUE CON `top-0`, Y ESO
-            ES LO QUE ALINEA EL ESPACIO. Pedido de Camila: «alineá siempre
-            abajo el nombre del espacio donde se realiza».
+        <span className="mt-4.5 block font-body text-micro uppercase tracking-cta text-muted-dark">
+          {event.space}
+        </span>
 
-            Antes el rótulo del espacio colgaba de la bajada con un `mt-3.5`,
-            así que su altura la decidía el largo del texto de arriba: «Bring
-            the dog.» ocupa un renglón y «Live music on the rooftop every
-            Thursday evening…» dos, y los tres rótulos quedaban en tres
-            alturas distintas dentro de una fila de tarjetas iguales.
-
-            Con el bloque estirado a todo el cajón (`inset-0`) y el rótulo en
-            `mt-auto`, el espacio se apoya SIEMPRE en el piso del cajón, que
-            mide 96px fijos en las cuatro tarjetas. Da igual cuántos renglones
-            tenga la bajada.
-
-            ⚠️ EL `mt-auto` NECESITA QUE EL PADRE SEA `flex-col` Y TENGA ALTO.
-            Los dos vienen de acá: `inset-0` le da el alto del cajón —que es
-            el `h-24` de afuera— y `flex-col` el eje. Volver a `top-0` deja el
-            bloque midiendo su contenido y el `mt-auto` no tiene de dónde
-            sacar el sobrante.
-            ══════════════════════════════════════════════════════════════
-          */}
-          <div className="absolute inset-0 flex flex-col transition-opacity duration-300 ease-brand group-hover:opacity-0">
-            <p className="m-0 line-clamp-2 font-body text-base font-light text-paper/92">
-              {event.summary}
-            </p>
-
-            {/*
-              ⚠️ SE FUE LA PÍLDORA DE «EVERY WEEK». Pedido de Camila: «sacá el
-              tag de every week».
-
-              Estaba para contestar «¿vuelve a pasar?» a quien no podía venir
-              ese día, y el argumento no era malo; lo que lo vuelve
-              innecesario es el rótulo de arriba, que dice el DÍA DE LA SEMANA
-              —«Wednesday», «Thursday»— y no una fecha. Un día de la semana ya
-              se lee como algo que se repite: la píldora estaba diciendo dos
-              veces lo mismo, y encima con la forma de un control.
-
-              El dato completo de recurrencia sigue estando en la página del
-              evento y en el calendario de `/whats-on`.
-
-              ⚠️ `event.kind` SIGUE EXISTIENDO y lo usan el calendario y la
-              página de cada evento. Lo que se fue es este render, no el campo.
-            */}
-            <span className="mt-auto font-body text-micro uppercase tracking-cta text-muted-dark">
-              {event.space}
-            </span>
-          </div>
-
-          {/*
-            La línea de CTA. `aria-hidden` NO: es texto real y forma parte del
-            nombre accesible del link, que es lo que hace que en un lector de
-            pantalla la tarjeta se anuncie como «Ross Brown … See this night»
-            en vez de terminar en la bajada. Que en reposo esté en `opacity-0`
-            no la saca del árbol de accesibilidad, y eso acá es lo correcto:
-            en un teléfono no hay hover y el destino tiene que anunciarse
-            igual.
-          */}
-          <span className="absolute inset-x-0 top-0 flex h-11 items-start gap-2 font-body text-base font-semibold text-ink opacity-0 transition-opacity duration-300 ease-brand group-hover:opacity-100">
-            {cta}
-            <ArrowRight className="size-4 shrink-0 translate-y-1 transition-transform duration-300 ease-brand group-hover:translate-x-1" />
-            {entradas ? <span className="sr-only">(opens in a new tab)</span> : null}
-          </span>
-        </div>
+        <span className="mt-3 inline-flex w-fit items-center gap-2.25 border-b-2 border-sunset pb-0.75 font-body text-base font-semibold text-cream transition-colors duration-300 ease-brand group-hover:text-sunset">
+          {cta}
+          <ArrowRight className="size-4 shrink-0 transition-transform duration-300 ease-brand group-hover:translate-x-1" />
+          {entradas ? <span className="sr-only">(opens in a new tab)</span> : null}
+        </span>
       </div>
     </>
   );
@@ -432,7 +392,7 @@ function EventCard({
    * toque navega igual.
    */
   const clases =
-    `group relative block aspect-[4/5] shrink-0 snap-start overflow-hidden rounded-shell bg-deeper sombra-card transition-[transform,opacity] duration-300 ease-brand hover:-translate-y-1.5 ${ANCHO} ${
+    `group relative block aspect-[7/10] shrink-0 snap-start overflow-hidden rounded-shell bg-deeper sombra-card transition-[transform,opacity] duration-300 ease-brand hover:-translate-y-1.5 ${ANCHO} ${
       fuera ? 'pointer-events-none opacity-0' : ''
     }`;
 
@@ -465,7 +425,13 @@ function EventCard({
  * prohibido en todo el sitio — es el error que más veces estuvo a punto de
  * colarse.
  */
-function CalendarCard({ fuera }: { readonly fuera: boolean }) {
+function CalendarCard({
+  fuera,
+  musicaLarga,
+}: {
+  readonly fuera: boolean;
+  readonly musicaLarga: string;
+}) {
   return (
     <Link
       href="/whats-on"
@@ -494,7 +460,7 @@ function CalendarCard({ fuera }: { readonly fuera: boolean }) {
           See the whole calendar
         </span>
         <span className="mt-4 block max-w-[26ch] font-body text-base font-light">
-          Live music five nights a week, Bingo on Wednesdays and DJ sets late on Saturdays. Almost
+          {musicaLarga}, Bingo on Wednesdays and DJ sets late on Saturdays. Almost
           all of it is free.
         </span>
       </span>
@@ -506,7 +472,13 @@ function CalendarCard({ fuera }: { readonly fuera: boolean }) {
   );
 }
 
-export default function WhatsOn() {
+export default function WhatsOn({
+  week,
+  musicaLarga,
+}: {
+  readonly week: readonly VenueEvent[];
+  readonly musicaLarga: string;
+}) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [today, setToday] = useState<Weekday | null>(null);
   const [index, setIndex] = useState(0);
@@ -532,7 +504,6 @@ export default function WhatsOn() {
     return () => mqs.forEach((v) => v.m.removeEventListener('change', aplicar));
   }, []);
 
-  const week = recurringEvents();
 
   /*
    * El orden: hoy primero, después el resto en su orden natural. Antes de
@@ -638,19 +609,9 @@ export default function WhatsOn() {
    * después que pueda asomar, así que el padding puede valer los 32px que la
    * sombra necesita y las visibles la muestran entera.
    *
-   * ⚠️ SE MIDE CON `IntersectionObserver` Y NO CON EL ÍNDICE. El índice sólo
-   * cambia al cruzar un punto de anclaje, así que durante un arrastre lento la
-   * tarjeta entrante se quedaría invisible hasta el salto. El observer
-   * responde de forma continua.
-   *
-   * ⚠️ EL `rootMargin` NEGATIVO ES EL PADDING DEL TRACK. El root de un observer
-   * es el PADDING box, así que sin restarlo una tarjeta metida en el aire de
-   * la sombra contaría como visible. Restados los 32px de cada lado, el root
-   * es exactamente el área donde caben las tres.
-   *
-   * ⚠️ EL UMBRAL ES 0.98 Y NO 1. Los anchos de tarjeta salen de un `calc` con
-   * decimales, así que una tarjeta perfectamente encuadrada devuelve 0.999 y
-   * con el umbral en 1 parpadearía apagada.
+   * ⚠️ SE MIDE EN CADA SCROLL Y NO SÓLO AL CRUZAR UN PUNTO DE ANCLAJE. El
+   * índice sólo cambia en los saltos, así que durante un arrastre lento la
+   * tarjeta entrante se quedaría invisible hasta el salto. Ver `medirDentro`.
    *
    * ⚠️ `pointer-events-none` + `inert` VAN CON EL `opacity-0`. Una tarjeta
    * invisible que igual recibe clics es una trampa, y `opacity: 0` NO saca del
@@ -662,34 +623,61 @@ export default function WhatsOn() {
    * ⚠️ El teclado igual las alcanza: el track tiene `tabIndex={0}`, así que se
    * scrollea con las flechas y las tarjetas dejan de ser inert al entrar.
    *
-   * ⚠️ MIENTRAS EL ARRAY ESTÉ VACÍO NO SE APAGA NADA. Es el primer pintado,
-   * antes de que el observer haya corrido: si el default fuera «apagada», el
-   * carrusel abriría en blanco.
+   * ⚠️ MIENTRAS EL ARRAY ESTÉ VACÍO NO SE APAGA NADA. Es el primer pintado del
+   * servidor, antes de que se haya podido medir: si el default fuera «apagada»,
+   * el carrusel abriría en blanco y el HTML llegaría con las seis invisibles.
    * ══════════════════════════════════════════════════════════════════════
    */
   const [dentro, setDentro] = useState<readonly boolean[]>([]);
 
-  useEffect(() => {
+  /**
+   * Recalcula qué tarjetas entran ENTERAS en la ventana del carrusel.
+   *
+   * ⚠️ MIDE GEOMETRÍA Y YA NO USA `IntersectionObserver`. El observer
+   * funcionaba, pero tenía una forma de romperse que Camila encontró en
+   * pantalla: «volviste a romper el carrusel este, habíamos quedado que sólo
+   * se verían 3 cards y las demás se ocultarían con opacidad 0».
+   *
+   * La causa: el observer guardaba `[...track.children]` UNA VEZ, al montar, y
+   * después traducía cada entrada a un índice con `cards.indexOf(e.target)`.
+   * Ese array se queda viejo en cuanto los hijos cambian, y cambian en dos
+   * momentos reales:
+   *
+   *   · cuando `today` se resuelve y la lista se REORDENA para poner el evento
+   *     de hoy adelante — los nodos son los mismos pero la posición no, así que
+   *     `dentro[i]` pasa a describir otra tarjeta;
+   *   · en cada Fast Refresh mientras se trabaja, donde React reemplaza los
+   *     nodos y el observer se queda mirando elementos que ya no están en el
+   *     documento. Ahí `dentro` nunca se llena, `fuera` da `false` para todas y
+   *     se ven las seis. Es exactamente lo que se ve en la captura.
+   *
+   * Midiendo no hay nada que se pueda desincronizar: se leen los hijos que hay
+   * AHORA, se comparan contra el rectángulo del track y se devuelve un array
+   * del largo correcto. No hay estado intermedio, no hay array capturado y no
+   * hace falta volver a suscribir nada cuando la lista cambia.
+   *
+   * ⚠️ LOS 32px SON EL `px-8` DEL TRACK. El track se estira 32px más allá de la
+   * caja de cada lado —ver la nota del `margin-inline` negativo— justamente para
+   * que la sombra de las tarjetas no se recorte. Esos 32px NO son ventana: una
+   * tarjeta que asoma ahí adentro está afuera. Si cambia el padding, cambia
+   * este número.
+   *
+   * ⚠️ LA TOLERANCIA DE 1px ES POR LOS DPR FRACCIONALES de Windows (1,25 y
+   * 1,5), que son la mitad del tráfico de escritorio de este sitio. Sin ella
+   * una tarjeta perfectamente encuadrada mide 0,5px de más y se apaga sola.
+   */
+  const medirDentro = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
-    const cards = [...track.children];
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        setDentro((prev) => {
-          const next = [...prev];
-          for (const e of entries) {
-            const i = cards.indexOf(e.target);
-            if (i >= 0) next[i] = e.intersectionRatio > 0.98;
-          }
-          return next;
-        });
-      },
-      { root: track, rootMargin: '0px -32px', threshold: [0, 0.98, 1] },
+    const caja = track.getBoundingClientRect();
+    const izq = caja.left + BORDE_TRACK - 1;
+    const der = caja.right - BORDE_TRACK + 1;
+    setDentro(
+      [...track.children].map((hijo) => {
+        const r = hijo.getBoundingClientRect();
+        return r.left >= izq && r.right <= der;
+      }),
     );
-
-    cards.forEach((c) => io.observe(c));
-    return () => io.disconnect();
   }, []);
 
   const onScroll = useCallback(() => {
@@ -701,7 +689,8 @@ export default function WhatsOn() {
     setIndex(Math.min(maxIndexRef.current, Math.round(el.scrollLeft / step())));
     setCanPrev(el.scrollLeft > 1);
     setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 1);
-  }, []);
+    medirDentro();
+  }, [medirDentro]);
 
   /* Al montar y en cada resize hay que recalcular: el ancho de tarjeta es
      fluido, así que un carrusel que desbordaba a 1440 puede entrar a 1920. */
@@ -940,7 +929,7 @@ export default function WhatsOn() {
           ))}
 
           {/* La última: el CTA al calendario. Ver `CalendarCard`. */}
-          <CalendarCard fuera={dentro.length > 0 && !dentro[events.length]} />
+          <CalendarCard musicaLarga={musicaLarga} fuera={dentro.length > 0 && !dentro[events.length]} />
         </div>
 
         {/*
@@ -999,12 +988,28 @@ export default function WhatsOn() {
             aprieta y no pasa nada se lee como que el carrusel está roto;
             apagado se lee como que no hay más. `disabled` además lo saca del
             recorrido del tabulador y lo anuncia como no disponible.
+
+            ══════════════════════════════════════════════════════════════
+            ⚠️ VAN RELLENAS DE CREMA Y ANTES ERAN UN ARO DE 1px. Camila:
+            «también están mal las flechas del carrusel, no puedo navegarlo».
+
+            El aro no distinguía el estado activo del apagado. Habilitada era
+            un círculo de `muted-dark` a 1px con la flecha en `bone`;
+            deshabilitada, el mismo círculo al 30 % de opacidad. Sobre la losa
+            verde esos dos dibujos se parecen demasiado, así que la flecha
+            buena parecía apagada y nadie la aprieta.
+
+            Ahora el estado es un CAMBIO DE MATERIAL y no de opacidad: activa
+            es un disco macizo de crema con la flecha en `deep` —9,44:1, el
+            mismo par que el botón `onDark` del sistema—, y apagada vuelve a
+            ser el aro vacío. Lleno contra vacío se distingue de lejos.
+            ══════════════════════════════════════════════════════════════
           */}
           <button
             type="button"
             onClick={() => scrollByCard(-1)}
             disabled={!canPrev}
-            className="grid size-13 shrink-0 place-items-center rounded-pill text-bone ring-1 ring-muted-dark transition-all duration-300 ease-brand hover:bg-bone hover:text-deep active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+            className="grid size-13 shrink-0 place-items-center rounded-pill bg-cream text-deep transition-all duration-300 ease-brand hover:bg-paper active:scale-95 disabled:pointer-events-none disabled:bg-transparent disabled:text-muted-dark disabled:ring-1 disabled:ring-muted-dark/50"
           >
             <span className="sr-only">Previous events</span>
             <ArrowLeft />
@@ -1065,7 +1070,7 @@ export default function WhatsOn() {
             type="button"
             onClick={() => scrollByCard(1)}
             disabled={!canNext}
-            className="grid size-13 shrink-0 place-items-center rounded-pill text-bone ring-1 ring-muted-dark transition-all duration-300 ease-brand hover:bg-bone hover:text-deep active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+            className="grid size-13 shrink-0 place-items-center rounded-pill bg-cream text-deep transition-all duration-300 ease-brand hover:bg-paper active:scale-95 disabled:pointer-events-none disabled:bg-transparent disabled:text-muted-dark disabled:ring-1 disabled:ring-muted-dark/50"
           >
             <span className="sr-only">Next events</span>
             <ArrowRight />
@@ -1102,10 +1107,6 @@ export default function WhatsOn() {
         <p className="mt-4.5 max-w-[62ch] font-body text-lead font-light text-paper">
           {trucks.map((t) => t.name).join(' · ')}. The roster rotates, and each truck takes its own
           orders and its own payment.
-        </p>
-        <p className="mt-3.5 font-body text-base text-cream lg:text-dato">
-          <strong className="font-semibold">Happy hour</strong> {HAPPY_HOUR.days},{' '}
-          {HAPPY_HOUR.time}: {HAPPY_HOUR.deals.join(' · ')}
         </p>
       </div>
     </section>

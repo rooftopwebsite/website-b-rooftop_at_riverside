@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useVenue } from './VenueProvider';
 import { venueStatus } from '@/lib/hours';
 
 /**
@@ -23,14 +24,15 @@ export default function OpenStatus({
   readonly which?: 'bar' | 'trucks';
   readonly className?: string;
 }) {
+  const venue = useVenue();
   const [state, setState] = useState<{ today: string; isOpen: boolean } | null>(null);
 
   useEffect(() => {
     // ⚠️ El parser se mudó a `lib/hours.ts`: lo comparten este componente, el
     // pill del hero y el badge en vivo de `FindUs`. Ver la nota de ese archivo.
-    const status = venueStatus(which);
+    const status = venueStatus(venue.hours, which);
     if (status) setState({ today: status.today, isOpen: status.isOpen });
-  }, [which]);
+  }, [which, venue.hours]);
 
   const label = which === 'bar' ? 'Bar' : 'Food trucks';
 

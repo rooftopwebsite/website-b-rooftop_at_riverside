@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { PhotoPending } from './PendingData';
 import { GUTTER } from './Section';
 import { Eyebrow, Heading } from './Type';
 import { TileMark } from './TilePattern';
@@ -24,6 +25,7 @@ export default function PageHero({
   lead,
   image,
   imageAlt,
+  imageBrief,
   crumbs,
   children,
 }: {
@@ -32,16 +34,30 @@ export default function PageHero({
   readonly lead?: ReactNode;
   readonly image?: string | null;
   readonly imageAlt?: string | null;
+  /**
+   * El brief EN ESPAÑOL de la foto que falta. Con `image` en `null` y esto con
+   * texto, el hero reserva la MISMA caja y pinta el marcador gris en vez de
+   * colapsar a un encabezado sin foto.
+   *
+   * ⚠️ Existe porque cuatro heroes traían fotos de STOCK. Entraron el
+   * 2026-09-08, dos días antes de que el cliente entregara las suyas, y
+   * dejarlas puestas era peor que mostrar el hueco: una foto de un camión que
+   * no es el del cliente le miente al visitante y encima disimula que falta.
+   */
+  readonly imageBrief?: string | null;
   readonly crumbs?: readonly Crumb[];
   readonly children?: ReactNode;
 }) {
   const hasImage = Boolean(image);
+  const hasHueco = !hasImage && Boolean(imageBrief);
+  /** Si hay foto o hay hueco, el hero va a dos columnas igual. */
+  const dosColumnas = hasImage || hasHueco;
 
   return (
     <section aria-labelledby="page-title" className="relative">
       <div
         className={
-          hasImage
+          dosColumnas
             ? 'desk:grid desk:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] desk:items-stretch'
             : ''
         }
@@ -59,7 +75,11 @@ export default function PageHero({
              hero. Ver la nota grande de `Header.tsx`. */
           className={`${GUTTER} flex flex-col justify-center pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]`}
         >
-          <div className={hasImage ? 'mx-auto w-full max-w-[640px] desk:mr-[56px] desk:ml-auto' : 'caja'}>
+          <div
+            className={
+              dosColumnas ? 'mx-auto w-full max-w-[640px] desk:mr-[56px] desk:ml-auto' : 'caja'
+            }
+          >
             {crumbs && crumbs.length > 0 ? (
               <nav aria-label="Breadcrumb" className="mb-[20px]">
                 <ol className="flex flex-wrap items-center gap-x-[8px] gap-y-[2px] text-[13px] text-body/75">
@@ -112,6 +132,16 @@ export default function PageHero({
               priority
               sizes="(max-width: 1343px) 100vw, 46vw"
               className="object-cover"
+            />
+          </div>
+        ) : null}
+
+        {hasHueco ? (
+          <div className="flex items-stretch px-gutter pb-[32px] md:px-gutter-lg desk:min-h-[440px] desk:px-0 desk:pb-0">
+            <PhotoPending
+              brief={imageBrief as string}
+              ratio="min-h-[260px] w-full desk:min-h-full"
+              className="rounded-none"
             />
           </div>
         ) : null}

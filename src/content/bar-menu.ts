@@ -225,3 +225,89 @@ export function formatPrice(price: number): { whole: string; cents: string | nul
   const cents = Math.round((price - whole) * 100);
   return { whole: String(whole), cents: cents ? String(cents).padStart(2, '0') : null };
 }
+
+/* ==========================================================================
+   EL PUENTE A LA BASE
+
+   ⚠️ TODO LO DE ARRIBA ES AHORA EL RESPALDO, no la fuente. El menú «Sunset
+   Bar» está cargado entero en la base de RestoExp —las mismas nueve
+   categorías, 50 ítems con precio y descripción— y se descubrió el
+   2026-09-15. La transcripción a mano se había hecho porque el sitio viejo
+   publica el menú como dos JPG.
+
+   Ahora el cliente cambia un precio en el dashboard y el sitio lo sigue. Estas
+   constantes quedan para cuando la base no contesta: una carta desactualizada
+   es mala, una carta vacía es peor.
+   ========================================================================== */
+
+/**
+ * Las cuatro cartas que muestra `/sunset-bar`, agrupadas desde la base.
+ *
+ * ⚠️ LA BASE TIENE NUEVE CATEGORÍAS Y LA PÁGINA MUESTRA CUATRO BLOQUES. No es
+ * una pérdida de información: los cuatro vinos van juntos bajo «Wine», y las
+ * tres de cerveza bajo «Beer and seltzers», que es exactamente cómo está
+ * impreso el menú de papel. El agrupador respeta el nombre que puso el cliente
+ * en cada categoría como subtítulo de columna.
+ */
+export interface MenuCarta {
+  readonly id: string;
+  readonly title: string;
+  readonly eyebrow: string;
+  readonly lead: string | null;
+  readonly columnas: readonly MenuSection[];
+}
+
+const CARTA_DE = (title: string): string =>
+  /wine|bubbles|blush/i.test(title) ? 'wine'
+  : /beer|seltzer/i.test(title) ? 'beer'
+  : /special/i.test(title) ? 'specials'
+  : 'cocktails';
+
+export function cartasFromGroups(
+  grupos: readonly { title: string; note: string | null; items: readonly { name: string; description: string | null; base_price: number | null }[] }[],
+): readonly MenuCarta[] {
+  const META: Record<string, { title: string; eyebrow: string; lead: string | null }> = {
+    cocktails: {
+      title: 'Signature cocktails',
+      eyebrow: 'The list',
+      lead: 'Made daily with fresh juice and house syrups, upstairs, by us.',
+    },
+    specials: { title: 'Specials', eyebrow: 'Right now', lead: null },
+    beer: {
+      title: 'Beer and seltzers',
+      eyebrow: 'On tap and in the can',
+      lead: 'Drafts from breweries down the road, and the cans everybody actually orders.',
+    },
+    wine: { title: 'Wine', eyebrow: 'By the glass', lead: 'House pours are the ones in the happy hour.' },
+  };
+
+  const orden = ['cocktails', 'specials', 'beer', 'wine'];
+  return orden
+    .map((id) => {
+      const columnas = grupos
+        .filter((g) => CARTA_DE(g.title) === id)
+        .map((g) => ({
+          id: g.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          title: g.title,
+          ...(g.note ? { subtitle: g.note } : {}),
+          items: g.items
+            .filter((i) => i.base_price !== null)
+            .map((i) => ({
+              name: i.name,
+              price: i.base_price as number,
+              ...(i.description ? { description: i.description } : {}),
+            })),
+        }))
+        .filter((c) => c.items.length > 0);
+      return { id, ...META[id], columnas };
+    })
+    .filter((c) => c.columnas.length > 0);
+}
+
+/** El respaldo, con la misma forma que devuelve el agrupador. */
+export const CARTAS_FALLBACK: readonly MenuCarta[] = [
+  { id: 'cocktails', title: 'Signature cocktails', eyebrow: 'The list', lead: 'Made daily with fresh juice and house syrups, upstairs, by us.', columnas: [SIGNATURE_COCKTAILS] },
+  { id: 'specials', title: 'Specials', eyebrow: 'Right now', lead: null, columnas: [SPECIALS] },
+  { id: 'beer', title: 'Beer and seltzers', eyebrow: 'On tap and in the can', lead: 'Drafts from breweries down the road, and the cans everybody actually orders.', columnas: [...BEER_SECTIONS] },
+  { id: 'wine', title: 'Wine', eyebrow: 'By the glass', lead: 'House pours are the ones in the happy hour.', columnas: [...WINE_SECTIONS] },
+];

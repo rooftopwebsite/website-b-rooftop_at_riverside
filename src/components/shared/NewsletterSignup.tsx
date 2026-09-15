@@ -2,7 +2,8 @@
 
 import { useActionState, useId } from 'react';
 import { useFormStatus } from 'react-dom';
-import { subscribeToNewsletter, type ActionState } from '@/app/actions';
+import { subscribeToNewsletter } from '@/app/actions/newsletter';
+import type { ActionState } from '@/app/actions/types';
 import { Button } from './Button';
 import { Heading } from './Type';
 

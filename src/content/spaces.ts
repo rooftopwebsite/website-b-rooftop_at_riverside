@@ -42,9 +42,10 @@ export const SPACES: readonly Space[] = [
     seated: null,
     minimum: null,
     bestFor: ['Cocktail receptions', 'Corporate mixers', 'Milestone birthdays'],
-    photo: '/images/venue-rooftop.jpg',
-    photoAlt: 'The rooftop bar at Rooftop at Riverside with seating and string lights',
-    photoBrief: "The rooftop at golden hour, looking west over the river, bar and seating in frame.",
+    photo: null,
+    photoAlt: null,
+    photoBrief:
+      "La terraza al atardecer, mirando al oeste sobre el río, con la barra y las mesas en cuadro.",
     status: 'available',
   },
   {
@@ -57,9 +58,10 @@ export const SPACES: readonly Space[] = [
     seated: null,
     minimum: null,
     bestFor: ['Live music', 'Fundraisers', 'Brand activations', 'Festivals'],
-    photo: '/images/venue-truck-line.jpg',
-    photoAlt: 'Food trucks lined up in the yard at Rooftop at Riverside',
-    photoBrief: "The yard from above with all four trucks parked and the stage set, shot from the rooftop.",
+    photo: null,
+    photoAlt: null,
+    photoBrief:
+      "El patio desde arriba con los cuatro trucks estacionados y el escenario armado, tomada desde la terraza.",
     status: 'available',
   },
   {
@@ -74,7 +76,8 @@ export const SPACES: readonly Space[] = [
     bestFor: ['Smaller gatherings', 'Breakout space for larger events'],
     photo: null,
     photoAlt: null,
-    photoBrief: "The patio once the renovation is done. Wide shot showing how it links the yard to the bar.",
+    photoBrief:
+      "El patio cubierto una vez terminada la reforma. Plano general que muestre cómo conecta el patio con la barra.",
     status: 'renovating',
   },
   {
@@ -87,9 +90,10 @@ export const SPACES: readonly Space[] = [
     seated: null,
     minimum: null,
     bestFor: ['Holiday parties', 'Weddings and rehearsals', 'Company-wide events'],
-    photo: '/images/venue-guests.jpg',
-    photoAlt: 'Guests gathered at Rooftop at Riverside during a private event',
-    photoBrief: "A private event in progress: rooftop and yard both busy, shot from the street side.",
+    photo: null,
+    photoAlt: null,
+    photoBrief:
+      "Un evento privado en curso, con la terraza y el patio llenos los dos, tomada desde la vereda.",
     status: 'available',
   },
 ];
@@ -146,4 +150,89 @@ export const REFERRAL_SOURCES = [
   'Walked by',
   'Google search',
   'Other',
+] as const;
+
+/* ==========================================================================
+   LAS TRES FAMILIAS DE EVENTO
+
+   ⚠️ REEMPLAZAN LA LISTA PLANA DE OCHO TIPOS de `EVENT_TYPES`, que sigue
+   existiendo porque la lee el formulario viejo. Ocho opciones sin agrupar
+   obligan a leerlas todas; tres familias con subtipo se eligen de un vistazo.
+
+   ⚠️ LAS TRES SON LAS QUE PIDIÓ CAMILA el 2026-09-15: social, corporativo y
+   entretenimiento. Los subtipos son los que ella enumeró, más «Full buyout»,
+   que es un producto real del PDF del cliente y no encaja en ninguna de las
+   tres: se alquila el lugar entero, sea para lo que sea.
+   ========================================================================== */
+
+export interface EventFamily {
+  readonly id: string;
+  readonly label: string;
+  /** Lo que se muestra en la página. */
+  readonly title: string;
+  readonly lead: string;
+  readonly subtypes: readonly string[];
+}
+
+export const EVENT_FAMILIES: readonly EventFamily[] = [
+  {
+    id: 'social',
+    label: 'Social',
+    title: 'Birthdays, showers and the ones that come with a toast',
+    lead: 'The rooftop faces west, so the light does the work for you around seven. Kids and dogs are fine in the yard, and nobody has to find a sitter.',
+    subtypes: ['Birthday or milestone', 'Celebration', 'Class reunion', 'Wedding or shower'],
+  },
+  {
+    id: 'corporate',
+    label: 'Corporate',
+    title: 'Meetings, mixers and the fundraiser you have to fill',
+    lead: 'Four kitchens means nobody argues about the catering, and one point of contact means you are not chasing five vendors. The yard can be gated, so a ticketed door works.',
+    subtypes: [
+      'Corporate event',
+      'Networking',
+      'Fundraiser or benefit',
+      'School gala',
+      'Holiday party',
+    ],
+  },
+  {
+    id: 'entertainment',
+    label: 'Entertainment',
+    title: 'Shows, game days and parties with a stage',
+    lead: 'There is a stage in the yard with sound already on it, and screens upstairs. Live music, a watch party or a full production all work without renting equipment in.',
+    subtypes: ['Live music', 'Sports viewing', 'Party or activation', 'Full buyout'],
+  },
+];
+
+/** Todos los subtipos, planos, para validar el desplegable en el servidor. */
+export const EVENT_SUBTYPES = EVENT_FAMILIES.flatMap((f) =>
+  f.subtypes.map((s) => `${f.label}: ${s}`),
+) as [string, ...string[]];
+
+/**
+ * Rangos de presupuesto.
+ *
+ * ⚠️ SON RANGOS Y NO UN CAMPO ABIERTO, y está discutido en el brief: Chris
+ * propuso un dropdown por cabeza, y «Madeline y Tony advirtieron que los
+ * campos de presupuesto abierto traen respuestas poco realistas». Los cortes
+ * salen del piso real: el segundo piso arranca en $1.500 (dos horas a $750).
+ */
+export const BUDGET_RANGES = [
+  'Under $1,500',
+  '$1,500 – $3,000',
+  '$3,000 – $6,000',
+  '$6,000 – $12,000',
+  'Over $12,000',
+  'Not sure yet',
+] as const;
+
+/** Qué parte del lugar le interesa. Casillas, porque suelen ser varias. */
+export const AREAS_OF_INTEREST = [
+  { value: 'rooftop', label: 'The rooftop bar' },
+  { value: 'patio', label: 'The rooftop patio' },
+  { value: 'yard', label: 'The Yard, gated' },
+  { value: 'stage', label: 'The stage and sound' },
+  { value: 'trucks', label: 'The food trucks' },
+  { value: 'game-truck', label: 'The gaming truck' },
+  { value: 'buyout', label: 'The whole place' },
 ] as const;

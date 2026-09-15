@@ -185,7 +185,7 @@ export function HowThisPlaceWorks() {
             margen fijo encima pelearía con él.
           */}
           <Link
-            href="/the-yard"
+            href="/events"
             className="group inline-flex w-fit items-center gap-2.5 border-b-2 border-sunset pb-1 font-body text-dato font-medium text-ink transition-colors duration-200 hover:border-ink"
           >
             See how the yard is laid out

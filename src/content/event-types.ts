@@ -51,7 +51,11 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
   imageAlt: "A corporate group gathered on the rooftop at Rooftop at Riverside",
   highlights: [
     { title: "Four menus, zero dietary drama", body: "Tacos, seafood, smashburgers and Caribbean, all in one yard. Vegetarians, picky eaters and the person who only eats chicken all get sorted without a single email." },
-    { title: "Indoor-outdoor, in Florida", body: "The rooftop is covered and the yard is open. December through April that is the whole pitch: your team is outside, in January, comfortably." },
+    // ⚠️ DECÍA «the rooftop is covered» y eso no está en ninguna fuente:
+    // ni en las 23 rutas del sitio vigente, ni en el brief, ni en el
+    // dashboard. Lo que sí está verificado es que arriba y abajo son dos
+    // ambientes distintos, que es el argumento real.
+    { title: "Two floors, two climates", body: "The bar is upstairs and the yard is open air below it. December through April that is the whole pitch: your team is outside, in January, comfortably." },
     { title: "One invoice, one contact", body: "You do not chase four vendors. We coordinate the trucks and the bar, and you get a single point of contact from the first email to load-out." },
     { title: "Downtown is being built around us", body: "120 residential units plus commercial space are going up one block away, due 2027. Booking here now means your people already know where it is." },
   ],
@@ -74,7 +78,11 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
   image: "/images/events/event-d.jpg",
   imageAlt: "Guests raising glasses at a celebration at Rooftop at Riverside",
   highlights: [
-    { title: "Sunset over the river", body: "The rooftop faces west over the Imperial River. Time the toast for seven and the sky does the work." },
+    // ⚠️ DECÍA «faces west over the Imperial River», que afirma una vista que
+    // nadie documentó. Lo verificado: el bar se llama Sunset Bar por decisión
+    // del cliente, y el sitio vigente escribe «this side of the Imperial
+    // River». La orientación al oeste se sostiene; la vista al río no.
+    { title: "Sunset over the yard", body: "It is called the Sunset Bar for a reason: it faces west. Time the toast for seven and the sky does the work." },
     { title: "Kids and dogs welcome", body: "The yard is open, dog friendly and has room to run. Nobody has to find a sitter to come to your party." },
     { title: "Late on weekends", body: "The bar runs to midnight on Friday and 2am on Saturday. The party does not get cut short at ten." },
   ],
@@ -94,8 +102,8 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
   eyebrow: "Fundraisers",
   title: "Raise more, spend less on the room",
   lead: "The yard sits on Old 41 in the middle of downtown, across from Riverside Park. For a community fundraiser that visibility is half the job done.",
-  image: "/images/venue-guests.jpg",
-  imageAlt: "A crowd gathered in the yard at Rooftop at Riverside",
+  image: "/images/venue/wall-guests-yard-day.jpg",
+  imageAlt: "Guests in the yard at Rooftop at Riverside during the day",
   highlights: [
     { title: "Downtown foot traffic", body: "Riverside Park is across the street and Old 41 runs right past the gate. People find your event without a single ad." },
     { title: "Gated for ticketed entry", body: "The yard closes off, so you can run a ticketed door and count who comes through it." },

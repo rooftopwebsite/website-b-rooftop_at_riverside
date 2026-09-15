@@ -65,23 +65,60 @@ import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
  * antes de llegar acá. Tres fotos que se parecen entre sí no distinguen tres
  * negocios: los funden.
  *
- * Tres campos de color planos y distintos hacen el trabajo contrario. Y el
- * color no es arbitrario, es el de cada unidad:
- *
- *     yard    `mint`    el verde claro del patio, de día
- *     bar     `cream`   el amarillo del atardecer — se llama Sunset Bar
- *     events  `river`   el teal de marca, el más saturado, para lo que más
- *                       factura
- *
- * ⚠️ Y ADEMÁS es lo que permite que los tres iconos se lean a 104px. Un
- * icono de línea sobre una foto necesita una capa oscura encima para tener
- * contraste; sobre un campo plano no necesita nada.
+ * Tres campos de color planos y distintos hacen el trabajo contrario.
  * ══════════════════════════════════════════════════════════════════════════
  *
- * ⚠️ LOS TRES CAMPOS LLEVAN EL ICONO EN `ink` Y NUNCA EN BLANCO. Los ratios
- * están medidos: negro sobre `mint` da 15.8:1, sobre `cream` 18.3:1 y sobre
- * `river` 8.4:1. Blanco sobre `river` daría 2.50:1 — `river` es tono medio y
- * está prohibido como color de texto. La regla vive en `COLOR_RULES`.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EL CAMPO ERA UN PASTEL CON UN ICONO DE 104px EN EL MEDIO, Y ESO SE FUE.
+ * Pedido de Camila, 2026-09-15: «si vemos esta sección así aislada, en serio
+ * parece que le faltaría algo, y se ve como estilo bebé, quizá por los colores
+ * no sé; me gusta el botón circular superpuesto, pero quizá si incluís el
+ * título dentro del cuadrado... hagamos algo diferente acá».
+ *
+ * El diagnóstico es correcto y tiene dos causas, no una:
+ *
+ *   1. LOS TRES PASTELES TIENEN EL MISMO VALOR. `mint`, `cream` y `river`
+ *      miden 91 %, 93 % y 68 % de luminosidad: tres campos claros, saturados y
+ *      planos, uno al lado del otro. Esa combinación —color saturado, valor
+ *      alto, sin sombra ni textura— es literalmente la paleta de una ficha de
+ *      jardín de infantes, y no es un juicio de gusto: es lo que hace que el
+ *      bloque no se parezca a NINGUNA otra sección de la home, que se apoya
+ *      toda en `bone`, `deep` e `ink`.
+ *
+ *   2. EL CAMPO NO DICE NADA. Ocupaba la mitad de la tarjeta y llevaba un solo
+ *      dibujo de línea centrado. Todo el contenido real —título, párrafo,
+ *      link— vivía DEBAJO, en una pila plana. De ahí el «parece que le
+ *      faltaría algo»: la mitad de la tarjeta era decoración.
+ *
+ * Lo que se hace, en tres movimientos:
+ *
+ *   · LA PALETA PASA A SER LA DEL LOGO. `deep`, `sunset` y `cream` son los
+ *     tres colores del sticker que está arriba de todo en esta misma página.
+ *     Además de ser de marca, resuelven el problema técnico: tienen valores
+ *     SEPARADOS (12 %, 62 %, 93 %), así que las tres puertas se distinguen por
+ *     claro/oscuro y no sólo por matiz. El pastel distinguía por matiz nomás, y
+ *     por eso las tres se leían como el mismo material.
+ *
+ *   · EL TÍTULO SE MUDA ADENTRO DEL CAMPO. Es la sugerencia textual de Camila
+ *     y es lo que convierte el campo en la tarjeta: deja de ser una ilustración
+ *     con texto abajo y pasa a ser una placa con nombre. Abajo queda lo que de
+ *     verdad va abajo: la explicación y el link.
+ *
+ *   · EL ICONO SE VA ARRIBA A LA IZQUIERDA Y BAJA A 44px. Deja de ser el
+ *     sujeto del campo y pasa a ser lo que siempre fue: una marca de qué unidad
+ *     es. Arriba el icono, abajo el nombre, es la composición de cualquier
+ *     placa — y el hueco del medio lo ocupa el color, que ahora sí tiene
+ *     suficiente valor para sostenerse solo.
+ *
+ * ⚠️ EL BOTÓN CIRCULAR SUPERPUESTO SE QUEDA TAL CUAL. Camila lo nombró como lo
+ * que le gusta, y además es el recurso que ata esta sección con el troquel del
+ * logo y con el mordisco del resto del sitio. Lo único que cambia es el color
+ * del hover: ver la nota del `<span>`.
+ *
+ * ⚠️ NO SE INVENTÓ UNA SOLA PALABRA. Los tres títulos, los tres párrafos y los
+ * tres links son los mismos de antes, letra por letra. El cambio es de
+ * composición y de paleta.
+ * ══════════════════════════════════════════════════════════════════════════
  *
  * ⚠️ LA TARJETA ENTERA ES UN SOLO LINK. En el prototipo el `<article>` tenía
  * el campo de color, el título, el párrafo y ABAJO un link de texto: cuatro
@@ -89,7 +126,7 @@ import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
  * la derecha que parecía otro botón y no lo era. Acá el `<Link>` envuelve
  * todo, la flecha del campo es parte del mismo destino, y el texto de abajo
  * sigue existiendo como AFFORDANCE —dice adónde va— pero ya no es un segundo
- * target. Un solo destino, un solo tab stop, área de clic de 260px de alto.
+ * target. Un solo destino, un solo tab stop.
  */
 
 interface Door {
@@ -99,6 +136,22 @@ interface Door {
   readonly href: string;
   /** El campo de color. Es una clase y no un hex: la paleta vive en el tema. */
   readonly field: string;
+  /**
+   * La tinta de ADENTRO del campo: título e icono.
+   *
+   * ⚠️ VA POR PUERTA Y NO ES UNA SOLA CLASE PARA LAS TRES, porque los tres
+   * campos tienen valores distintos a propósito. Los ratios, medidos:
+   *
+   *     paper sobre deep     12.42:1
+   *     ink   sobre sunset    8.26:1
+   *     ink   sobre cream    15.83:1
+   *
+   * Los tres pasan AAA. Es la ventaja de haber elegido colores con valores
+   * separados: no hay ninguno que obligue a un tamaño mínimo.
+   */
+  readonly tinta: string;
+  /** El icono, un escalón más suave que el título. Nunca una opacidad: ver la nota. */
+  readonly tintaIcono: string;
   readonly Icon: ComponentType<SVGProps<SVGSVGElement>>;
 }
 
@@ -108,7 +161,9 @@ const DOORS: readonly Door[] = [
     body: 'Four independent kitchens under the rooftop, each one its own business. You order at the truck. The bar upstairs is ours.',
     link: 'Meet the trucks',
     href: '/food-trucks',
-    field: 'bg-mint',
+    field: 'bg-deep',
+    tinta: 'text-paper',
+    tintaIcono: 'text-cream',
     Icon: Truck,
   },
   {
@@ -116,7 +171,9 @@ const DOORS: readonly Door[] = [
     body: 'Craft cocktails made daily, local drafts, and the best west-facing seat in Bonita Springs.',
     link: 'See the bar',
     href: '/sunset-bar',
-    field: 'bg-cream',
+    field: 'bg-sunset',
+    tinta: 'text-ink',
+    tintaIcono: 'text-ink',
     Icon: Martini,
   },
   {
@@ -124,7 +181,9 @@ const DOORS: readonly Door[] = [
     body: 'The rooftop, the yard, the patio, or the entire venue with the gates shut, and one person coordinating all of it.',
     link: 'Plan an event',
     href: '/events',
-    field: 'bg-river',
+    field: 'bg-cream',
+    tinta: 'text-ink',
+    tintaIcono: 'text-deep',
     Icon: Balloons,
   },
 ];
@@ -167,7 +226,7 @@ export default function ThreeDoors() {
           tarjeta de abajo.
         */}
         <StaggerGroup as="ul" className="mt-bloque grid list-none grid-cols-1 gap-12 p-0 md:grid-cols-3 md:gap-6">
-          {DOORS.map(({ title, body, link, href, field, Icon }) => (
+          {DOORS.map(({ title, body, link, href, field, tinta, tintaIcono, Icon }) => (
             /*
               ══════════════════════════════════════════════════════════════
               ⚠️ `h-full` EN EL `<li>` Y EN EL `<a>`, Y `mt-auto` EN EL CTA. Es
@@ -206,16 +265,51 @@ export default function ThreeDoors() {
                   de referencia del `absolute`.
                   ══════════════════════════════════════════════════════════
                 */}
-                <div className="relative mb-2.5 h-50 lg:h-65">
+                <div className="relative mb-2.5 h-64 lg:h-80">
+                  {/*
+                    ⚠️ EL CAMPO ES AHORA UNA PLACA CON NOMBRE: icono arriba,
+                    título abajo, `justify-between` entre los dos. Ver la nota
+                    larga del encabezado del archivo.
+
+                    ⚠️ EL `pr` DEL TÍTULO NO ES ARBITRARIO: el mordisco saca un
+                    círculo de 62px de radio efectivo en la esquina inferior
+                    derecha, así que el último renglón del título tiene que
+                    frenar antes. Son 56px + el padding, que deja el filo del
+                    hueco libre en las tres puertas.
+                  */}
                   <div
-                    className={`mordisco grid size-full place-items-center overflow-hidden rounded-door ${field}`}
+                    className={`mordisco flex size-full flex-col justify-between overflow-hidden rounded-door p-6 lg:p-7 ${field}`}
                   >
                     {/* ⚠️ El icono crece un 6 % en el hover y NADA MÁS se mueve.
                         El campo de color es la mitad de la tarjeta: escalarlo
                         entero movería el título y el párrafo de abajo, y una
                         tarjeta que se reacomoda al pasar el mouse se lee como
                         inestable. Sólo respira el dibujo. */}
-                    <Icon className="size-18 text-ink transition-transform duration-300 ease-brand group-hover:scale-106 lg:size-26" />
+                    <Icon
+                      className={`size-11 shrink-0 origin-top-left transition-transform duration-300 ease-brand group-hover:scale-106 lg:size-13 ${tintaIcono}`}
+                    />
+
+                    {/*
+                      ⚠️ `text-balance` — pedido de Camila junto con la
+                      alineación de los CTA. Reparte las palabras entre los
+                      renglones en vez de llenar el primero y dejar la última
+                      palabra sola abajo.
+
+                      ⚠️ EL `max-w-[13ch]` ES LO QUE FUERZA LOS DOS O TRES
+                      RENGLONES EN LAS TRES PUERTAS, y hereda el motivo del
+                      `max-w-[15ch]` que el título tenía cuando vivía afuera:
+                      «The bar over the river» entra en un renglón y los otros
+                      dos no, así que sin tope la fila quedaba con un título de
+                      una línea entre dos de dos. Acá adentro importa más
+                      todavía, porque el título apoya en el piso del campo: un
+                      título de una línea deja el campo medio vacío al lado de
+                      dos que llegan hasta el medio.
+                    */}
+                    <h3
+                      className={`m-0 mt-5 max-w-[13ch] text-balance pr-14 font-display text-d4 font-bold uppercase leading-[0.92] lg:text-d3 ${tinta}`}
+                    >
+                      {title}
+                    </h3>
                   </div>
 
                   {/*
@@ -241,63 +335,39 @@ export default function ThreeDoors() {
                     los dos, y esa línea de fondo es la que hace legible el
                     corte.
 
-                    ⚠️ EL HOVER YA NO LEVANTA LA FLECHA, Y SE FUE A PROPÓSITO.
-                    Tenía `-translate-y-1`: con el círculo apoyado encima del
-                    campo eso se leía como que la chapita flotaba, pero ahora
-                    el círculo vive en un hueco troquelado a su medida y
-                    moverlo lo saca del molde — se ve el borde del mordisco
-                    asomando de un lado. El hover pasa al COLOR, que se queda
-                    quieto: `bone` → `sunset`, que es el mismo cambio que ya
-                    hacen los círculos de redes de `FindUs`. La flecha sigue en
-                    `ink`, que sobre naranja da 6.73:1.
+                    ══════════════════════════════════════════════════════════
+                    ⚠️ EL `ring-1 ring-ink/12` ES POR LA PUERTA DE CREMA Y POR
+                    NINGUNA OTRA. `cream` contra `bone` da 1.08:1 —el mismo par que
+                    separa `bone` de `paper` en el resto del sitio— así que el círculo
+                    troquelado de la tercera puerta se apoyaba sobre una página
+                    prácticamente del mismo valor y el recurso desaparecía. El filete
+                    le dibuja el canto. Sobre `deep` y sobre `sunset` un 12 % de negro
+                    no se ve, y por eso puede ir en las tres sin una excepción.
+
+                    ⚠️ EL HOVER PASÓ DE `sunset` A `ink`, Y ES CONSECUENCIA DE
+                    LA PALETA NUEVA. Con los pasteles, pintar el círculo de
+                    naranja era el único acento fuerte de la sección. Ahora la
+                    puerta del medio YA es naranja: su círculo pasaba de
+                    naranja a naranja, o sea que el hover no hacía nada en una
+                    de las tres.
+
+                    `ink` funciona en las tres porque es el valor más oscuro de
+                    la paleta y ninguno de los tres campos lo es: sobre `deep`
+                    da 2.35:1 de campo contra círculo —que alcanza y sobra para
+                    un cambio de estado, que no es texto— y la flecha va en
+                    `paper`, 17.11:1 contra el círculo. El acento naranja de la
+                    sección se conserva donde siempre estuvo: el filete del CTA
+                    de abajo.
+                    ══════════════════════════════════════════════════════════
                   */}
                   <span
                     aria-hidden="true"
-                    className={`absolute right-1 bottom-1 grid size-13.25 place-items-center rounded-pill text-ink transition-colors duration-300 ease-brand group-hover:bg-sunset ${field}`}
+                    className={`absolute right-1 bottom-1 grid size-13.25 place-items-center rounded-pill ring-1 ring-ink/12 transition-colors duration-300 ease-brand group-hover:bg-ink group-hover:text-paper ${field} ${tintaIcono}`}
                   >
                     <ArrowUpRight />
                   </span>
                 </div>
 
-                {/*
-                  ⚠️ `text-balance` — pedido de Camila junto con la alineación
-                  de los CTA. Reparte las palabras entre los renglones en vez
-                  de llenar el primero y dejar la última palabra sola abajo:
-                  «The whole place, closed» pasaba de «THE WHOLE PLACE,» +
-                  «CLOSED» a dos renglones parejos.
-
-                  ⚠️ Va sólo en estos tres titulares y no en todos los del
-                  sitio. `text-wrap: balance` obliga al navegador a componer el
-                  bloque varias veces para encontrar el reparto, y el propio
-                  estándar lo limita a unas pocas líneas: es para titulares
-                  cortos, no para párrafos.
-
-                  ══════════════════════════════════════════════════════════
-                  ⚠️ EL `max-w-[15ch]` ES LO QUE FUERZA LOS DOS RENGLONES, y es
-                  un pedido: «hacé que la card 2 tenga dos renglones de
-                  título».
-
-                  El problema no era la card 2 sola, era la FILA. «Four
-                  kitchens in the yard» y «The whole place, closed» caen en dos
-                  renglones por largo; «The bar over the river» entra justo en
-                  uno. Resultado: dos titulares de dos líneas con uno de una
-                  línea en el medio, y el párrafo de esa card arrancando 40px
-                  más arriba que los otros dos. La fila se leía desalineada
-                  aunque los CTA estuvieran al ras.
-
-                  15ch es el número que parte los TRES en dos renglones: 22, 24
-                  y 23 caracteres contra un ancho de 15 obliga al corte en los
-                  tres casos, y `text-balance` reparte las palabras para que
-                  las dos líneas queden parejas.
-
-                  ⚠️ VA DE `lg` PARA ARRIBA. Por debajo la columna es más
-                  angosta que 15ch y los tres se parten solos: clavar el ancho
-                  ahí los llevaría a tres o cuatro renglones.
-                  ══════════════════════════════════════════════════════════
-                */}
-                <h3 className="m-0 text-balance font-display text-d4 font-bold uppercase leading-[0.95] text-ink lg:max-w-[15ch] lg:text-d3">
-                  {title}
-                </h3>
                 <p className="m-0 font-body text-dato font-light text-ink">{body}</p>
 
                 {/* El `mt-auto` es la otra mitad de la alineación: empuja el

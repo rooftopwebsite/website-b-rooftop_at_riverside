@@ -94,7 +94,7 @@ export default function Card({
           ) : null}
         </div>
       ) : (
-        <PhotoPending brief={photoBrief ?? 'Photo needed.'} ratio={ratio} className="rounded-none border-0" />
+        <PhotoPending brief={photoBrief ?? 'Falta definir qué foto va acá.'} ratio={ratio} className="rounded-none border-0" />
       )}
 
       <div className="flex flex-1 flex-col p-5">
