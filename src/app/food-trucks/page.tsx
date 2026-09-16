@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
+import { ButtonLink } from '@/components/shared/Button';
 import CompareSlab from '@/components/shared/CompareSlab';
 import TruckCards from '@/components/sections/TruckCards';
 import PageHeroWave from '@/components/shared/PageHeroWave';
 import Section from '@/components/shared/Section';
 import { Heading, SectionHead } from '@/components/shared/Type';
 import { activeTrucks } from '@/content/trucks';
+import { BRAND } from '@/lib/brand';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
@@ -75,13 +78,17 @@ export default function FoodTrucksPage() {
       <CompareSlab
         id="how-pay"
         eyebrow="How this works"
-        title="One yard, five registers"
+        accent="One yard,"
+        title="five registers"
         lead="It reads like a restaurant with several kitchens. It is not, and the difference shows up when you go to pay."
         ours={{
           label: 'Here',
           rows: [
-            'You order at whichever window you want',
-            'Each truck is its own business, with its own register and its own receipt',
+            /* ⚠️ ERAN DOS RENGLONES Y AHORA SON UNO. Camila: «unifiquemos los dos
+               primeros puntos, que dicen más o menos lo mismo». Decían la misma
+               idea en dos tiempos —dónde pedís y a quién le pagás— y separados
+               hacían que la columna arrancara con una repetición. */
+            'You order at whichever window you want, and you pay that truck: its own register, its own receipt',
             'Four parties at one table can each eat something different',
             'Drinks come from the Sunset Bar upstairs, and that tab is ours',
             'No waiting for a table: find a seat and go up to the window',
@@ -90,9 +97,14 @@ export default function FoodTrucksPage() {
         theirs={{
           label: 'A restaurant',
           rows: [
-            'One kitchen, one menu, one check',
+            /* ⚠️ ACÁ TAMBIÉN SE UNIERON DOS, y es lo que hace que las dos columnas
+               queden con la misma cantidad. El pedido decía «así tenemos misma
+               cantidad de ítem de cada lado», pero los dos lados tenían CINCO:
+               unir sólo los nuestros dejaba 4 contra 5. «One kitchen, one menu,
+               one check» y «Everyone eats from the same list» son la misma idea
+               —una sola carta para todos— así que van juntos y quedan 4 y 4. */
+            'One kitchen and one menu: everyone eats from the same list, on one check',
             'A server takes the order and brings it over',
-            'Everyone eats from the same list',
             'Food and drinks land on the same bill',
             'A host seats you when a table opens',
           ],
@@ -100,51 +112,128 @@ export default function FoodTrucksPage() {
       />
 
       {/*
-        BLOQUE C: dos columnas de argumento.
+        ══════════════════════════════════════════════════════════════════
+        EL BANNER DE LA ROTACIÓN.
 
-        ⚠️ ACÁ ARRIBA HABÍA UN PÁRRAFO QUE DECÍA «No delivery, no takeout, no
-        online ordering» y se sacó el 2026-09-15. Ninguna de las tres cosas
-        está en ninguna fuente: el brief lista «Delivery» y «Takeout» como
-        opciones del modelo de servicio, deja el cuadro de plataformas VACÍO y
-        anota al lado «confirmar contra el contrato firmado si este servicio
-        realmente aplica».
-        TODO: confirmar con cliente si hay delivery y takeout.
+        ⚠️ ACÁ HABÍA UNA SECCIÓN DE DOS COLUMNAS Y SE FUE EL 2026-09-16.
+        Llevaba un titular de display, «Who is in tonight» y «Where are the
+        menus», con un párrafo cada uno y dos links. Camila: «saquemos esta
+        parte, reemplacémosla por una sección más chica y simple que sólo diga
+        que los camiones rotan».
+
+        Tenía razón por dónde caía: era el CIERRE de la página, después de las
+        tarjetas y de la comparación, y repetía dos cosas que ya estaban
+        dichas. «Dónde están los menús» dejó de tener sentido en cuanto cada
+        tarjeta pasó a tener su propio botón de carta, y «quién está de guardia»
+        ya lo dice la bajada del hero: «the trucks rotate».
+
+        Lo único que no estaba dicho en ningún otro lado es lo que la rotación
+        SIGNIFICA para quien viene, y eso es todo lo que dice el banner.
+
+        ⚠️ EL COPY NO AFIRMA UNA FRECUENCIA. No sabemos cada cuánto rota el
+        roster, así que el banner habla de que cambia y no de cada cuánto. El
+        dato concreto —quién está esta noche— sigue viviendo en el calendario.
+
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ LA FORMA SALE DE LA TARJETA DE MENÚ DE defoodtruckclub.nl, que
+        Camila pasó con «como esta parte puede ser el banner». Son tres cosas y
+        las tres están acá:
+
+          · un panel de color con esquinas muy redondeadas;
+          · un FILETE PUNTEADO POR DENTRO, separado del borde, que es lo que
+            hace que el panel se lea como una etiqueta troquelada y no como una
+            caja;
+          · y el SELLO DE LA MARCA montado sobre el borde de abajo, pisando el
+            filo.
+
+        El recurso ya existe en este repo: el filete punteado interior es el
+        mismo de los huecos de foto de `WhatsOn`, y el sello con su sombra es
+        el emblema que remata la ola de `PhotoDivider`, con la clase `.sticker`
+        que comparte con el logo del header.
+
+        ⚠️ EL PANEL VA EN `cream` Y NO EN `deep`. La página ya cierra con la
+        losa oscura de la comparación justo arriba: dos oscuras seguidas dejan
+        el pie de la página en un solo bloque negro. Crema sobre el `paper` de
+        la sección da el corte sin sumar otra banda, y es el fondo con el que
+        el emblema naranja fue dibujado.
+        ══════════════════════════════════════════════════════════════════
       */}
-      <Section band="lg" labelledBy="rota-title">
-        <SectionHead
-          eyebrow="The roster"
-          eyebrowTone="plum"
-          id="rota-title"
-          title="Four kitchens, and they rotate"
-        />
-        <div className="mt-[36px] grid gap-[32px] lg:grid-cols-2 lg:gap-[64px]">
-          <div>
-            <Heading level={3} role="card">
-              Who is in tonight
+      <Section band="md" labelledBy="rota-title">
+        <div className="relative rounded-frame bg-cream grano px-7 pt-14 pb-20 text-center sm:px-16 sm:pt-16 sm:pb-16 lg:px-24">
+          {/* El filete punteado, separado del borde. `inset-3.5` son los 14px
+              que lo despegan, igual que en los huecos de foto de `WhatsOn`. */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
+          />
+
+          {/*
+            ══════════════════════════════════════════════════════════════
+            LOS DOS SELLOS, EN LAS ESQUINAS.
+
+            ⚠️ EL EMBLEMA SE MUDÓ DE ABAJO AL CENTRO A ARRIBA A LA IZQUIERDA, y
+            hay dos motivos, los dos de Camila: «para que no se parezca tanto al
+            original» y «ocupar los espacios laterales».
+
+            El segundo es el que manda. El banner es ancho y bajo, y el texto
+            vive centrado en el tercio del medio: los dos tercios de los
+            costados quedaban vacíos. Con un sello en cada esquina el bloque se
+            ocupa entero y el texto sigue centrado.
+
+            ⚠️ EL DE ABAJO A LA DERECHA ES EL ISOTIPO DEL CAMIÓN, y no otro
+            emblema: es la página de los food trucks, así que de todo el juego
+            de marca es el único que además dice de qué habla la sección.
+
+            ⚠️ EN TELÉFONO VUELVEN A UNO SOLO, ABAJO Y AL CENTRO, que es como
+            estaba. Pedido explícito: «en mobile sí pongámoslo como ahora». Y
+            tiene su razón: a 390px el panel mide 342 de ancho y no hay tercios
+            laterales que llenar; dos sellos en las esquinas se comerían el
+            texto. El de la esquina inferior derecha directamente no se
+            renderiza abajo de `sm`.
+            ══════════════════════════════════════════════════════════════
+          */}
+          <Image
+            src="/brand/emblem.svg"
+            alt=""
+            aria-hidden="true"
+            width={253}
+            height={253}
+            className="sticker absolute bottom-0 left-1/2 w-24 -translate-x-1/2 translate-y-1/2 sm:bottom-auto sm:left-0 sm:top-0 sm:w-28 sm:-translate-x-1/3 sm:-translate-y-1/3 lg:w-33"
+          />
+
+          <Image
+            src="/brand/isotype-truck.svg"
+            alt=""
+            aria-hidden="true"
+            width={552}
+            height={390}
+            className="pointer-events-none absolute right-6 bottom-6 hidden w-24 opacity-30 sm:block lg:right-9 lg:bottom-8 lg:w-32"
+          />
+
+          <div className="relative">
+            <Heading level={2} id="rota-title" className="mx-auto max-w-[18ch] text-d4 lg:text-d3">
+              You never eat the same week twice
             </Heading>
-            <p className="mt-[10px] max-w-[46ch] text-[16px] leading-[1.7] text-body/80">
-              The roster changes. Four trucks run the yard on a revenue share, each one
-              independently owned, and which ones are in on a given night is on the calendar.
+            {/*
+              ⚠️ EL COPY MANDA A INSTAGRAM Y NO AL CALENDARIO, y antes hacía lo
+              contrario. Camila, 2026-09-16: «en la web no mostraremos cuándo
+              cambian y qué va a haber, así que la idea sería decir que van
+              rotando y para enterarse de las nuevas propuestas y desde cuándo
+              están, que nos sigan en las redes».
+
+              O sea que el calendario NO tiene el dato: publica los eventos, no
+              las altas y bajas de trucks. Mandar ahí a alguien que quiere saber
+              qué camión nuevo hay era mandarlo a una página que no lo dice.
+            */}
+            <p className="mx-auto mt-5 max-w-[52ch] font-body text-lead font-light leading-[1.5] text-ink">
+              The lineup changes. We announce which kitchens are coming, and from when, on
+              Instagram.
             </p>
-            <p className="mt-[16px]">
-              <Link href="/whats-on" className="link-texto font-bold">
-                See the calendar
-              </Link>
-            </p>
-          </div>
-          <div>
-            <Heading level={3} role="card">
-              Where the menus are
-            </Heading>
-            <p className="mt-[10px] max-w-[46ch] text-[16px] leading-[1.7] text-body/80">
-              At the trucks. Menus and prices belong to each owner and change often, so we do not
-              publish them. The bar menu is on this site because the bar is ours.
-            </p>
-            <p className="mt-[16px]">
-              <Link href="/sunset-bar" className="link-texto font-bold">
-                See the bar menu
-              </Link>
-            </p>
+            <div className="mt-8 flex justify-center">
+              <ButtonLink href={BRAND.social.instagram} variant="dark" external>
+                Follow for the new trucks
+              </ButtonLink>
+            </div>
           </div>
         </div>
       </Section>
