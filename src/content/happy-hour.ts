@@ -22,6 +22,10 @@ import type { HappyHour } from '@/types/content';
 export const HAPPY_HOUR: HappyHour = {
   days: 'Wednesday – Friday',
   time: '3–6 PM',
-  deals: ['$4 drafts', '$5 house wines', '$6 house drinks'],
+  deals: [
+    { price: '$4', what: 'Drafts' },
+    { price: '$5', what: 'House wines' },
+    { price: '$6', what: 'House drinks' },
+  ],
   note: null,
 };

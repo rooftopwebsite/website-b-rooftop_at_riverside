@@ -24,8 +24,19 @@ export interface HappyHour {
   readonly days: string;
   /** Rango horario. En dash. */
   readonly time: string;
-  /** Cada oferta, tal cual la publica el cliente. */
-  readonly deals: readonly string[];
+  /**
+   * Cada oferta, con el PRECIO y el QUÉ separados.
+   *
+   * ⚠️ ERAN UN SOLO STRING —«$4 drafts»— y se partieron en dos el 2026-09-16.
+   * El motivo es de diseño y está en `/sunset-bar`: el precio va en display
+   * grande y en color, y el nombre en cuerpo chico al lado. Con la frase
+   * entera en un string eso sólo se puede hacer parseando, que es adivinar
+   * dónde termina el número.
+   *
+   * ⚠️ El dato del cliente NO cambia: sigue siendo «$4 Drafts | $5 House Wines
+   * | $6 House Drinks», sólo que ahora el sitio sabe cuál es cada mitad.
+   */
+  readonly deals: readonly { readonly price: string; readonly what: string }[];
   /** Aclaración opcional. `null` cuando no hay. */
   readonly note: string | null;
 }

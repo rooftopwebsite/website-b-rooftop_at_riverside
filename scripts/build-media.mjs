@@ -154,6 +154,58 @@ const FOTOS = [
     q: 76,
   },
 
+  /* ── El hero de /sunset-bar: 21:9 ───────────────────────────────────────
+     ⚠️ ESTA FOTO YA ESTABA EN EL SITIO, RECORTADA AL REVÉS. `_RCZ4830` son
+     los cuatro tragos en la mesa del rooftop a contraluz, y se servía como
+     `wall-cocktails-rooftop.jpg` —540×720, vertical— en el muro de la home.
+     Por eso en la lista de derivadas no aparecía nada para un hero ancho, y
+     el hero de `/sunset-bar` estuvo con el hueco marcado hasta que Camila
+     preguntó: «estoy muy segura que tenemos foto de tragos o del bar».
+     Estaba: el que faltaba era este recorte.
+
+     ⚠️ EL ORIGINAL ES VERTICAL (3799×4749) Y ACÁ SE USA EN 21:9, así que la
+     franja se queda con un tercio del cuadro. Eso hace que el `foco` sea LA
+     decisión de esta entrada y no un ajuste fino.
+
+     ⚠️ EL `foco` BAJÓ TRES VECES Y EL ÚLTIMO CAMBIO NO ES DE ENCUADRE, ES DE
+     ALTURA. Medido sobre el original, los cuatro recortes:
+
+         0.62 · 21:9 → franja 2130..3758   los vasos enteros, con sus bases
+         0.52 · 21:9 → franja 1655..3283   «recortada desde más arriba, que se
+                                           vea menos la base de los vasos»
+         0.44 · 21:9 → franja 1276..2904   «recórtala mejor, más desde arriba»
+         0.40 · 17:9 → franja  894..2906   ← ésta
+
+     ⚠️ LA ÚLTIMA MANTIENE EL BORDE DE ABAJO Y CRECE SÓLO HACIA ARRIBA, y eso
+     es a propósito. El pedido nuevo no era de encuadre: «que no asomen las
+     olas al comienzo, que deba hacer scroll para verlas; haz que la imagen sea
+     algo más alta». Una franja más alta con el mismo `foco` habría bajado el
+     borde inferior y devuelto las bases que se habían sacado en los dos pasos
+     anteriores. Con 0.40 el corte de abajo queda en 2906 —dos píxeles del
+     anterior— y los 380 que gana la franja entran todos arriba, en el fondo
+     desenfocado, que es justo donde la placa del titular apoya.
+
+     ⚠️ 2576×1364 ES 17:9 AL DOBLE. El marco de `PlateHero` topea en 1288 de
+     ancho, así que el archivo va al 2× para las pantallas retina, igual que
+     la portada de la home. La proporción está calculada para que el pie de la
+     foto caiga DEBAJO del pliegue en una pantalla de 1000px de alto: con 21:9
+     terminaba en 833 de 950 y la cenefa asomaba.
+
+     ⚠️ HUBO TRES CANDIDATAS MÁS —la barra entera (`_RCZ8192`), el bartender
+     (`_RCZ4397 (1)`) y la mesa de atardecer (`_RCZ4760`)—, montadas en una
+     ruta de muestras para elegir sobre la página. Ganó ésta y las otras tres
+     se borraron con su ruta: son las únicas fotos de barra que tiene la
+     entrega, así que si mañana hace falta otra, están ahí y el recorte se
+     rehace en una corrida. */
+  {
+    src: '_RCZ4830.jpg',
+    out: 'public/images/venue/bar-cocktails-wide.jpg',
+    w: 2576,
+    h: 1364,
+    foco: 0.4,
+    q: 78,
+  },
+
   /* ── La foto del hueco de la escalera: 4:5 ──────────────────────────────
      ⚠️ `_RCZ5847` es la ventanilla del truck de noche con gente pidiendo. Es
      literalmente lo que dice el paso 01 —«order at whichever window you

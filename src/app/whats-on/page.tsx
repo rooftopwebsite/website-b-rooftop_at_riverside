@@ -335,12 +335,17 @@ export default async function WhatsOnPage({
               </Heading>
             </div>
             <ul className="flex list-none flex-wrap gap-[8px]">
+              {/* ⚠️ ACÁ LOS DOS PEDAZOS VAN JUNTOS, y es a propósito: en
+                  `/sunset-bar` el precio se separa del nombre porque ese
+                  bloque es la oferta entera; esto es una píldora de resumen
+                  dentro del calendario, donde «$4 Drafts» es UN dato. Lo que
+                  cambió es de dónde sale la frase, no la frase. */}
               {HAPPY_HOUR.deals.map((d) => (
                 <li
-                  key={d}
+                  key={d.price}
                   className="rounded-pill bg-cream px-[14px] py-[6px] font-display text-d7 uppercase tabular-nums text-ink"
                 >
-                  {d}
+                  {d.price} {d.what}
                 </li>
               ))}
             </ul>
