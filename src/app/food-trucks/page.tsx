@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import CompareSlab from '@/components/shared/CompareSlab';
-import Marquee from '@/components/shared/Marquee';
 import TruckCards from '@/components/sections/TruckCards';
-import PageHero from '@/components/shared/PageHero';
-import { NombreSinConfirmar } from '@/components/shared/PendingData';
+import PageHeroWave from '@/components/shared/PageHeroWave';
 import Section from '@/components/shared/Section';
 import { Heading, SectionHead } from '@/components/shared/Type';
 import { activeTrucks } from '@/content/trucks';
@@ -38,42 +36,26 @@ export default function FoodTrucksPage() {
         }}
       />
 
-      <PageHero
+      <PageHeroWave
         eyebrow="The yard"
         title="Four kitchens. One yard."
         lead="The trucks rotate. Each one is independently owned, sets its own menu and takes its own payment. We just give them the yard and the crowd."
-        crumbs={[{ name: 'Food Trucks', path: '/food-trucks' }]}
+        from="paper"
+        to="bone"
       />
 
       {/*
-        BLOQUE G: la marquesina con los nombres del roster.
+        ⚠️ ACÁ HABÍA UNA MARQUESINA CON LOS CUATRO NOMBRES y se fue el
+        2026-09-16, tachada por Camila en la captura junto con las migas.
 
-        ⚠️ LOS NOMBRES NO ESTÁN ESCRITOS ACÁ. Salen de `activeTrucks()`, que es
-        el roster vigente. Es el dato que más cambia de todo el sitio: el sitio
-        viejo tiene tres fichas de trucks que ya no están y ninguna de los dos
-        que sí. Transcribir cuatro nombres a un componente es garantizar que en
-        dos meses la marquesina nombre un camión que se fue.
-
-        ⚠️ Es CSS puro y se detiene con `prefers-reduced-motion` y al pasar el
-        puntero. Ver `components/shared/Marquee.tsx`.
+        Tenía sentido cuando la página abría con un hero de foto y las tarjetas
+        estaban más abajo: la tira era lo primero que nombraba el roster. Con el
+        encabezado centrado que termina en onda, lo que sigue a la portada son
+        las tarjetas, y ahí los cuatro nombres están en 40px con su foto al
+        lado. La tira los decía otra vez cuatro renglones antes.
       */}
-      <Marquee
-        label={`Tonight in the yard: ${trucks.map((t) => t.name).join(', ')}`}
-        className="border-y border-ink/12 bg-bone py-[18px]"
-        duracion={38}
-      >
-        {trucks.map((t) => (
-          <span key={t.slug} className="flex shrink-0 items-center gap-[48px]">
-            <span className="font-display text-d5 uppercase leading-none whitespace-nowrap lg:text-d4">
-              {t.name}
-              <NombreSinConfirmar truck={t} className="ml-2.5" />
-            </span>
-            <span aria-hidden="true" className="size-[8px] shrink-0 rounded-pill bg-sunset" />
-          </span>
-        ))}
-      </Marquee>
 
-      <TruckCards />
+      <TruckCards tone="bone" head={false} />
 
       {/*
         ══════════════════════════════════════════════════════════════════

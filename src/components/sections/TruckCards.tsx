@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import { ArrowUpRight } from '@/components/shared/Icon';
-import { NombreSinConfirmar, PhotoPending } from '@/components/shared/PendingData';
+import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { SectionHead } from '@/components/shared/Type';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
-import { activeTrucks } from '@/content/trucks';
+import { activeTrucks, nombreVisible } from '@/content/trucks';
 import { HOURS } from '@/content/hours';
 
 /**
@@ -36,9 +36,11 @@ import { HOURS } from '@/content/hours';
  * teléfono y se hace zoom con dos dedos; el día que el cliente mande PDF se
  * cambia la ruta en `trucks.ts` y esta sección no se entera.
  *
- * ⚠️ LOS QUE NO TIENEN CARTA NO TIENEN BOTÓN. Prime Carvery y el jamaiquino no
- * la dieron, y un botón que no lleva a ningún lado es peor que ninguno: en su
- * lugar va una línea de texto que dice que falta. Así el hueco se ve y se pide.
+ * ⚠️ NO HAY CTA A INSTAGRAM, aunque de El Chilango lo tengamos. Pedido de
+ * Camila: la tarjeta cierra con una sola acción. Dos links juntos al pie —uno
+ * relleno y uno de texto— hacen que el ojo tenga que elegir justo donde la
+ * tarjeta debería empujar a una sola cosa. El dato queda en `trucks.ts` para
+ * cuando haga falta.
  */
 /**
  * Agrupa días seguidos con el mismo horario de trucks: «Wednesday to Thursday».
@@ -61,19 +63,47 @@ function tramosDeTrucks() {
   return out;
 }
 
-export default function TruckCards({ id = 'roster-title' }: { readonly id?: string }) {
+export default function TruckCards({
+  id = 'roster-title',
+  tone = 'paper',
+  head = true,
+}: {
+  readonly id?: string;
+  /** La superficie. La manda la onda del encabezado: ver `PageHeroWave`. */
+  readonly tone?: 'paper' | 'bone';
+  /**
+   * ¿Lleva encabezado propio?
+   *
+   * ⚠️ EN `/food-trucks` VA EN `false`, y es por adyacencia. Desde que la
+   * página abre con el hero centrado que termina en onda, las tarjetas quedan
+   * INMEDIATAMENTE debajo de él: el hero dice «Four kitchens. One yard.» y el
+   * encabezado de la sección decía «The four kitchens» cuatro renglones más
+   * abajo, con una bajada que repetía la misma idea con otras palabras. Dos
+   * titulares seguidos diciendo lo mismo se leen como un error de armado.
+   *
+   * El `<h2>` no desaparece: queda para lectores de pantalla, porque la sección
+   * igual necesita nombre.
+   */
+  readonly head?: boolean;
+}) {
   const trucks = activeTrucks();
   const tramos = tramosDeTrucks();
 
   return (
-    <Section band="lg" labelledBy={id}>
-      <SectionHead
-        eyebrow="In the yard"
-        eyebrowTone="plum"
-        id={id}
-        title="The four kitchens"
-        lead="Each one is its own business. You order at the window and you pay that truck: separate line, separate card, separate receipt."
-      />
+    <Section tone={tone} band="lg" labelledBy={id}>
+      {head ? (
+        <SectionHead
+          eyebrow="In the yard"
+          eyebrowTone="plum"
+          id={id}
+          title="The four kitchens"
+          lead="Each one is its own business. You order at the window and you pay that truck: separate line, separate card, separate receipt."
+        />
+      ) : (
+        <h2 id={id} className="sr-only">
+          The four kitchens
+        </h2>
+      )}
 
       {/*
         ⚠️ DOS COLUMNAS Y NO CUATRO. Con cuatro, cada tarjeta mide 274px en
@@ -84,12 +114,17 @@ export default function TruckCards({ id = 'roster-title' }: { readonly id?: stri
       */}
       <StaggerGroup
         as="ul"
-        className="mt-bloque grid list-none grid-cols-1 gap-8 p-0 md:grid-cols-2"
+        className={`grid list-none grid-cols-1 gap-8 p-0 md:grid-cols-2 ${head ? 'mt-bloque' : ''}`}
       >
         {trucks.map((t) => (
           <RevealItem as="li" key={t.slug} className="h-full">
             <article className="flex h-full flex-col overflow-hidden rounded-shell bg-paper sombra-card">
-              <div className="relative aspect-[16/10] bg-fog">
+              {/* ⚠️ EL `bg-fog` VA SÓLO DETRÁS DE UNA FOTO REAL, donde tapa el hueco
+                  mientras carga. Debajo del placeholder NO: el relleno del
+                  placeholder es `ink` al 6 %, o sea que se compone sobre lo que
+                  tenga atrás, y sobre `fog` daba #d1cdbd. Ahí su propio rótulo
+                  caía a 4.38:1 y axe lo marcó. */}
+              <div className={`relative aspect-[16/10] ${t.photo ? 'bg-fog' : ''}`}>
                 {t.photo ? (
                   <Image
                     src={t.photo}
@@ -108,9 +143,8 @@ export default function TruckCards({ id = 'roster-title' }: { readonly id?: stri
                   {t.cuisine}
                 </p>
 
-                <h3 className="m-0 mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 font-display text-d4 font-bold uppercase leading-none text-ink">
-                  {t.name}
-                  <NombreSinConfirmar truck={t} />
+                <h3 className="m-0 mt-2 font-display text-d4 font-bold uppercase leading-none text-ink">
+                  {nombreVisible(t)}
                 </h3>
 
                 {/*
@@ -127,35 +161,53 @@ export default function TruckCards({ id = 'roster-title' }: { readonly id?: stri
 
                 {/* El `mt-auto` apoya la línea de acción en el piso de la
                     tarjeta, que es lo que las alinea entre sí. */}
-                <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-7">
+                <div className="mt-auto pt-7">
+                  {/*
+                    ══════════════════════════════════════════════════════════
+                    ⚠️ EL BOTÓN VA EN LAS CUATRO TARJETAS, Y ANTES IBA SÓLO EN
+                    LAS DOS QUE TIENEN CARTA. Camila, 2026-09-16: «en todas poné
+                    el see the menu; en las que aún no lo tengamos, no linkees
+                    nada».
+
+                    Las otras dos tenían en su lugar una línea roja que decía
+                    «Menu not on file yet», y eso hacía que las cuatro tarjetas
+                    no cerraran iguales: dos terminaban en un botón y dos en un
+                    renglón de texto.
+
+                    ⚠️ ES UN `<button disabled>` Y NO UN `<a>` SIN `href`. Un
+                    botón que se ve vivo, responde al hover y no hace nada al
+                    apretarlo se lee como que la página está rota — es
+                    exactamente el argumento que este proyecto ya escribió para
+                    las flechas del carrusel de `WhatsOn`. `disabled` lo saca
+                    del tabulador, lo anuncia como no disponible y le da el
+                    tratamiento apagado que el resto de los botones del sitio ya
+                    usan (`disabled:opacity-50` en `Button.tsx`).
+
+                    Así la forma es la misma en las cuatro y el estado se
+                    distingue igual.
+                    ══════════════════════════════════════════════════════════
+                  */}
                   {t.menuImage ? (
                     <a
                       href={t.menuImage}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2.25 rounded-pill bg-sunset px-5.5 py-2.5 font-body text-base font-semibold uppercase tracking-cta text-ink transition-colors duration-200 hover:bg-sunset-hover"
+                      className="inline-flex items-center gap-2.25 rounded-pill bg-sunset px-5.5 py-2.5 font-body text-base font-semibold uppercase tracking-cta text-ink transition-colors duration-200 hover:bg-sunset-hover"
                     >
                       See the menu
                       <ArrowUpRight className="size-4 shrink-0" />
                       <span className="sr-only">(opens in a new tab)</span>
                     </a>
                   ) : (
-                    <p className="m-0 font-body text-dato font-medium text-terra">
-                      Menu not on file yet
-                    </p>
-                  )}
-
-                  {t.instagram ? (
-                    <a
-                      href={t.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="link-texto font-body text-base font-medium text-ink"
+                    <button
+                      type="button"
+                      disabled
+                      className="inline-flex items-center gap-2.25 rounded-pill bg-sunset px-5.5 py-2.5 font-body text-base font-semibold uppercase tracking-cta text-ink opacity-50"
                     >
-                      Instagram
-                      <span className="sr-only"> (opens in a new tab)</span>
-                    </a>
-                  ) : null}
+                      See the menu
+                      <ArrowUpRight className="size-4 shrink-0" />
+                    </button>
+                  )}
                 </div>
               </div>
             </article>

@@ -1,4 +1,3 @@
-import type { Truck } from '@/content/trucks';
 /**
  * Marcadores de dato o asset que TODAVÍA NO TENEMOS.
  *
@@ -238,53 +237,5 @@ export function PhotoPending({
           `TONOS_HUECO`, arriba. */}
       <p className={`max-w-[34ch] font-body text-micro leading-[1.5] ${t.brief}`}>{brief}</p>
     </div>
-  );
-}
-
-/**
- * El marcador de «este nombre todavía no está confirmado».
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ EXISTE POR EL CUARTO TRUCK. Camila, 2026-09-16: «cuarto truck de comida
- * jamaiquina, posiblemente Reggae Kitchen, pero el nombre aún no está
- * confirmado».
- *
- * Es un caso que los otros marcadores del sitio no cubren. `PendingBlock` y
- * `PhotoPending` reemplazan un hueco: se usan donde NO hay dato. Acá sí hay
- * dato —hay un nombre, y es la mejor suposición que tenemos— pero no está
- * verificado, y en este proyecto eso no se publica como si lo estuviera.
- *
- * Así que no reemplaza nada: se pone AL LADO del nombre y avisa. El truck
- * existe, está en el patio y tiene su página; lo único en duda es cómo se
- * llama.
- *
- * ⚠️ VA EN `terra` SOBRE CLARO Y EN `tomato-soft` SOBRE OSCURO, que son los dos
- * tokens de «esto hay que leerlo» del tema, los mismos que usan los errores de
- * formulario. 7.43:1 y 5.60:1.
- *
- * ⚠️ NO ES `aria-hidden`. Quien usa un lector de pantalla tiene el mismo
- * derecho a saber que el nombre está sin confirmar que quien mira la pantalla.
- * ══════════════════════════════════════════════════════════════════════════
- */
-export function NombreSinConfirmar({
-  truck,
-  tone = 'light',
-  className = '',
-}: {
-  readonly truck: Truck;
-  readonly tone?: 'light' | 'dark';
-  readonly className?: string;
-}) {
-  if (truck.nameConfirmed) return null;
-
-  const tinta = tone === 'dark' ? 'text-tomato-soft ring-tomato-soft/45' : 'text-terra ring-terra/45';
-
-  return (
-    <span
-      title="El cliente todavía no confirmó cómo se llama este truck."
-      className={`inline-flex items-center rounded-pill px-2 py-0.75 align-middle font-body text-micro font-bold uppercase tracking-cta ring-1 ${tinta} ${className}`}
-    >
-      Name unconfirmed
-    </span>
   );
 }

@@ -202,7 +202,8 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
             </span>
           </div>
 
-          <div className="relative aspect-[4/3] bg-fog">
+          {/* El `bg-fog` sólo detrás de foto real: ver la nota de `TruckCards`. */}
+          <div className={`relative aspect-[4/3] ${area.photo ? 'bg-fog' : ''}`}>
             {area.photo ? (
               <Image
                 key={area.slug}

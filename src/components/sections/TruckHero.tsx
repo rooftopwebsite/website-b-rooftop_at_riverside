@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Crumb } from '@/components/shared/PageHero';
-import { NombreSinConfirmar, PhotoPending } from '@/components/shared/PendingData';
+import { PhotoPending } from '@/components/shared/PendingData';
 import { Reveal } from '@/components/shared/Motion';
 import { Eyebrow } from '@/components/shared/Type';
 
@@ -148,9 +148,6 @@ export default function TruckHero({
               {name}
             </h1>
 
-            {/* Si el nombre no está confirmado, se dice acá y no en una nota al
-                pie: es el dato más grande de la página. */}
-            <NombreSinConfirmar truck={truck} tone="light" className="mt-4" />
 
             {/*
               LA FOTO. `max-w` en rem y no al ancho de la caja: la referencia

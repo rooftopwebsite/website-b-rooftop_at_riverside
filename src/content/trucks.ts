@@ -272,6 +272,32 @@ export const TRUCKS: readonly Truck[] = [
 
 export const activeTrucks = (): readonly Truck[] => TRUCKS.filter((t) => t.active);
 
+/**
+ * El nombre que se PUBLICA. No siempre es `truck.name`.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SI EL NOMBRE NO ESTÁ CONFIRMADO, NO SE PUBLICA: se publica que falta.
+ * Camila, 2026-09-16: «quitá lo de name unconfirmed, a lo sumo ponelo en el
+ * nombre; en lugar de Reggae Kitchen poné name unconfirmed».
+ *
+ * Antes el nombre salía igual y al lado iba una chapita roja que avisaba. Esto
+ * es más honesto y además más limpio: si no sabemos cómo se llama, escribir
+ * «Reggae Kitchen» en grande y desmentirlo en chico al lado es publicar el dato
+ * y taparlo con una nota al pie. Así el hueco ES el título.
+ *
+ * ⚠️ EL NOMBRE SUPUESTO NO SE BORRA DEL ARCHIVO. `truck.name` sigue diciendo
+ * «Reggae Kitchen», que es la mejor pista que tenemos y la que hay que
+ * confirmar. Lo único que cambia es que no se muestra hasta que alguien diga
+ * que sí.
+ *
+ * ⚠️ USARLO EN TODOS LADOS, no sólo en la tarjeta. Hoy son tres: la tarjeta, la
+ * marquesina de `/food-trucks` y `TruckHero`. Si aparece un cuarto lugar que
+ * imprima `truck.name` directo, el aviso se pierde ahí.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export const nombreVisible = (t: Truck): string =>
+  t.nameConfirmed ? t.name : 'Name unconfirmed';
+
 export const truckBySlug = (slug: string): Truck | undefined =>
   TRUCKS.find((t) => t.slug === slug);
 
