@@ -1,6 +1,4 @@
 import type { MetadataRoute } from 'next';
-import { EVENTS_FALLBACK } from '@/content/events';
-import { activeTrucks } from '@/content/trucks';
 import { ALL_ROUTES } from '@/lib/nav';
 import { SITE_URL } from '@/lib/seo';
 
@@ -28,19 +26,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: priority(path),
   }));
 
-  const truckRoutes = activeTrucks().map((t) => ({
-    url: `${SITE_URL}/food-trucks/${t.slug}`,
-    lastModified: now,
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-  }));
-
-  const eventRoutes = EVENTS_FALLBACK.map((e) => ({
-    url: `${SITE_URL}/whats-on/${e.slug}`,
-    lastModified: now,
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }));
-
-  return [...staticRoutes, ...truckRoutes, ...eventRoutes];
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ NO HAY RUTAS POR TRUCK NI POR EVENTO, Y LAS HABÍA. Las dos listas se
+   * fueron el 2026-09-16 porque las dos apuntaban a páginas que ya no existen:
+   *
+   *   · `/food-trucks/[slug]` se sacó cuando los cuatro trucks pasaron a ser
+   *     tarjetas de una sola página. Los cuatro slugs ahora dan 301.
+   *   · `/whats-on/[slug]` se había sacado unos días antes, y estas URLs
+   *     quedaron en el sitemap apuntando a 404.
+   *
+   * ⚠️ UN SITEMAP QUE LISTA REDIRECCIONES Y 404 ES PEOR QUE UNO CORTO. Google
+   * lo trata como señal de calidad del sitio: cada URL del sitemap es una
+   * afirmación de que ahí hay algo que vale la pena indexar.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  return staticRoutes;
 }

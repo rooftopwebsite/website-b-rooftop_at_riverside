@@ -105,9 +105,25 @@ import Image from 'next/image';
  * que evita que la banda se apriete justo donde el salto de `md` ya no rige.
  * ══════════════════════════════════════════════════════════════════════════
  */
+/*
+ * ⚠️ EL SLOT 2 ERA `wall-guests-yard-day.jpg` Y SE FUE EL 2026-09-16. NO ES
+ * UN CAMBIO DE GUSTO: esa derivada sale de `_RCZ8185`, que ese día pasó a ser
+ * la foto del hero. Este muro está en la home, así que la misma escena —la
+ * gente pidiendo en la ventanilla— aparecía dos veces en la misma página, una
+ * arriba de todo a 1288px y otra acá abajo en un tile.
+ *
+ * Entró `wall-food-platter.jpg` y no otra por dos motivos. Es la única comida
+ * de los seis tiles, así que rompe la seguidilla de cocktails y bartender que
+ * la rodea; y es un plano claro, que es lo que este muro necesita porque la
+ * sección corre sobre `bg-ink`.
+ *
+ * ⚠️ `wall-guests-yard-day.jpg` NO SE BORRA: la siguen usando `/contact`,
+ * `event-types.ts` y `wall-slots.ts`, y ahí no hay choque porque ninguna de
+ * las tres renderiza en la home.
+ */
 const PHOTOS = [
   { src: '/images/venue/wall-cocktails-rooftop.jpg', alt: 'The rooftop bar at sunset', w: 'w-85 md:w-122.5', h: 'h-65 md:h-95' },
-  { src: '/images/venue/wall-guests-yard-day.jpg', alt: 'Guests in the yard', w: 'w-70 md:w-100', h: 'h-90 md:h-130' },
+  { src: '/images/venue/wall-food-platter.jpg', alt: 'A plate from one of the kitchens', w: 'w-70 md:w-100', h: 'h-90 md:h-130' },
   { src: '/images/venue/wall-bartender.jpg', alt: 'Cocktails at the Sunset Bar', w: 'w-105 md:w-150', h: 'h-60 md:h-87.5' },
   { src: '/images/venue/wall-truck-window-day.jpg', alt: 'A truck window in the yard', w: 'w-75 md:w-107.5', h: 'h-82.5 md:h-120' },
   { src: '/images/venue/wall-live-music-tent.jpg', alt: 'Live music in the yard', w: 'w-95 md:w-137.5', h: 'h-67.5 md:h-97.5' },

@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import CompareSlab from '@/components/shared/CompareSlab';
 import Marquee from '@/components/shared/Marquee';
-import TruckCarousel from '@/components/sections/TruckCarousel';
+import TruckCards from '@/components/sections/TruckCards';
 import PageHero from '@/components/shared/PageHero';
+import { NombreSinConfirmar } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { Heading, SectionHead } from '@/components/shared/Type';
 import { activeTrucks } from '@/content/trucks';
@@ -65,23 +66,14 @@ export default function FoodTrucksPage() {
           <span key={t.slug} className="flex shrink-0 items-center gap-[48px]">
             <span className="font-display text-d5 uppercase leading-none whitespace-nowrap lg:text-d4">
               {t.name}
+              <NombreSinConfirmar truck={t} className="ml-2.5" />
             </span>
             <span aria-hidden="true" className="size-[8px] shrink-0 rounded-pill bg-sunset" />
           </span>
         ))}
       </Marquee>
 
-      <Section band="lg" labelledBy="roster-title">
-        <SectionHead
-          eyebrow="In the yard now"
-          eyebrowTone="terra"
-          id="roster-title"
-          title="Tonight's roster"
-          lead="Which trucks are in on a given night is on the calendar."
-        />
-
-        <TruckCarousel trucks={trucks} />
-      </Section>
+      <TruckCards />
 
       {/*
         ══════════════════════════════════════════════════════════════════

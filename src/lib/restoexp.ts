@@ -246,6 +246,138 @@ export async function getMenu(): Promise<readonly MenuGroup[] | null> {
 }
 
 /* ==========================================================================
+   EL MENÚ DE CADA TRUCK
+
+   ══════════════════════════════════════════════════════════════════════════
+   ⚠️ HOY NO HAY NINGUNO CARGADO, Y EL CÓDIGO ESTÁ IGUAL. Verificado el
+   2026-09-16: el restaurante tiene UN solo `menus`, el «Sunset Bar».
+
+   Se escribe ahora porque la estructura de la base ya lo permite sin cambiar
+   una línea: un menú por truck es una fila más en `menus`, con el NOMBRE DEL
+   TRUCK. El cliente carga «El Chilango» en el dashboard, le arma sus
+   categorías y sus platos, y la página del truck se llena sola en la próxima
+   revalidación. Sin deploy y sin que nadie toque este archivo.
+
+   Pedido de Camila, 2026-09-16: «armalo con lo que tenemos hoy contemplando
+   que en cada uno tendremos el menú digital».
+
+   ⚠️ EL MATCH ES POR NOMBRE Y NO POR UN ID GUARDADO EN `trucks.ts`. Un id
+   obliga a que alguien lo copie del dashboard al repo y lo mantenga; el nombre
+   ya existe en los dos lados y es lo que el cliente va a escribir igual. Se
+   compara normalizado —sin mayúsculas, sin acentos, sin puntuación— para que
+   «OCN Seafood Co.» encuentre a «OCN Seafood Co» y a «ocn seafood co.».
+
+   ⚠️ SI NO HAY MENÚ DEVUELVE `null` Y NO UN ARRAY VACÍO. La página tiene que
+   poder distinguir «este truck todavía no cargó su carta» de «cargó una carta
+   y está vacía»: lo primero se muestra como dato pendiente, lo segundo es un
+   error del dashboard y no se muestra.
+   ========================================================================== */
+
+/**
+ * Un plato, con TODOS los campos que la plataforma sabe guardar.
+ *
+ * ⚠️ ES LA MISMA FORMA QUE USAN LAS OTRAS CASAS —pretty-hens y santa-maría
+ * leen esta tabla con estos mismos nombres— y por eso se copian los nombres de
+ * columna tal cual en vez de renombrarlos a algo más lindo. El día que el
+ * dashboard agregue un campo, acá se agrega una línea y no un adaptador.
+ */
+export interface Dish {
+  readonly name: string;
+  readonly description: string | null;
+  readonly base_price: number | null;
+  readonly base_price_max: number | null;
+  readonly base_is_price_range: boolean;
+  readonly price_variants: readonly { name?: string | null; price?: number | string | null }[] | null;
+  readonly discount_percent: number | null;
+  readonly show_currency: boolean;
+  readonly image_url: string | null;
+  readonly image_alt: string | null;
+  readonly spice_level: number | null;
+  readonly calories: number | null;
+  readonly cooking_time_minutes: number | null;
+  readonly allergens: readonly string[] | null;
+  readonly tags: readonly string[] | null;
+  readonly notes: string | null;
+  readonly is_new: boolean;
+  readonly is_suggested: boolean;
+  readonly is_vegan: boolean;
+  readonly is_vegetarian: boolean;
+  readonly is_gluten_free: boolean;
+  readonly is_dairy_free: boolean;
+  readonly is_nut_free: boolean;
+  readonly is_halal: boolean;
+  readonly is_keto: boolean;
+  readonly is_organic: boolean;
+  readonly contains_alcohol: boolean;
+  readonly is_active: boolean;
+  readonly sort_order: number | null;
+}
+
+export interface DishGroup {
+  readonly title: string;
+  readonly note: string | null;
+  readonly items: readonly Dish[];
+}
+
+/** Las columnas que se piden. Se escriben una vez y se usan en las dos lecturas. */
+const CAMPOS_PLATO =
+  'name,description,base_price,base_price_max,base_is_price_range,price_variants,' +
+  'discount_percent,show_currency,image_url,image_alt,spice_level,calories,' +
+  'cooking_time_minutes,allergens,tags,notes,is_new,is_suggested,is_vegan,' +
+  'is_vegetarian,is_gluten_free,is_dairy_free,is_nut_free,is_halal,is_keto,' +
+  'is_organic,contains_alcohol,is_active,sort_order';
+
+/** Sin mayúsculas, sin acentos y sin nada que no sea letra o número. */
+function normalizar(t: string): string {
+  return t
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+}
+
+/**
+ * La carta de un truck, buscada por su nombre. `null` si todavía no existe.
+ */
+export async function getTruckMenu(nombreTruck: string): Promise<readonly DishGroup[] | null> {
+  const menus = await query<{ id: string; name: string }>(
+    `menus?restaurant_id=eq.${RESTAURANT_ID}&select=id,name`,
+  );
+
+  const buscado = normalizar(nombreTruck);
+  const menu = menus.find((m) => normalizar(m.name) === buscado);
+  if (!menu) return null;
+
+  const cats = await query<{ id: string; name: string; description: string | null }>(
+    `menu_categories?menu_id=eq.${menu.id}&select=id,name,description&order=sort_order`,
+  );
+  if (cats.length === 0) return null;
+
+  const grupos = await Promise.all(
+    cats.map(async (c) => {
+      const items = await query<Dish>(
+        `menu_items?category_id=eq.${c.id}&select=${CAMPOS_PLATO}&order=sort_order`,
+      );
+      return {
+        title: sinEmDash(c.name) ?? c.name,
+        note: sinEmDash(c.description),
+        items: items
+          .filter((i) => i.is_active)
+          .map((i) => ({
+            ...i,
+            name: sinEmDash(i.name) ?? i.name,
+            description: sinEmDash(i.description),
+            notes: sinEmDash(i.notes),
+          })),
+      };
+    }),
+  );
+
+  const conPlatos = grupos.filter((g) => g.items.length > 0);
+  return conPlatos.length > 0 ? conPlatos : null;
+}
+
+/* ==========================================================================
    LOS EVENTOS
 
    ⚠️ SE LEEN EN VIVO Y YA NO POR SCRIPT. Hasta el 2026-09-15 los bajaba

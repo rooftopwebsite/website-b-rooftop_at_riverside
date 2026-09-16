@@ -568,7 +568,14 @@ export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) 
           {/*
             ⚠️ LA FOTO SE ELIGIÓ Y SE RECORTÓ EN `scripts/build-media.mjs`, y el
             encabezado de esa entrada explica el porqué de la medida, de la
-            proporción y del foco. Acá sólo importan tres cosas:
+            proporción y del foco.
+
+            ⚠️ Y EXPLICA TAMBIÉN POR QUÉ LA PORTADA ES DE DÍA DESDE EL
+            2026-09-16. Era la misma ventanilla de noche y el cliente la vio
+            demasiado oscura contra el resto del sitio; medida, era la foto más
+            oscura de las 39 de la entrega. La escena no cambió, sólo la hora.
+
+            Acá sólo importan tres cosas:
 
             · El archivo YA VIENE en 2576×1200, que es exactamente 2× el ancho
               tope del marco y su misma proporción. `object-cover` no recorta
@@ -604,7 +611,7 @@ export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) 
           */}
           <Image
             src="/images/venue/hero-truck-window.jpg"
-            alt="Two guests ordering at a lit food truck window at night"
+            alt="A guest reaching up to the counter of a food truck window in daylight, with two more waiting their turn"
             fill
             priority
             sizes="(min-width: 1400px) 1288px, 100vw"

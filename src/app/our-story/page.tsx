@@ -1,16 +1,17 @@
 import type { Metadata } from 'next';
 import { getVenue, venueAddressLine } from '@/lib/venue';
 import Image from 'next/image';
-import Link from 'next/link';
-import StoryHero from '@/components/sections/StoryHero';
+import AboutHero from '@/components/sections/AboutHero';
+import AboutStory from '@/components/sections/AboutStory';
+import HowToOrder from '@/components/sections/HowToOrder';
 import { ButtonLink } from '@/components/shared/Button';
 import MapEmbed from '@/components/shared/MapEmbed';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { PendingBlock, PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
-import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
+import { Heading, SectionHead } from '@/components/shared/Type';
 import { PEOPLE } from '@/content/people';
-import { VENUE_AREAS } from '@/content/venue-areas';
+import VenueTabs from '@/components/sections/VenueTabs';
 import { BRAND, addressLine } from '@/lib/brand';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
@@ -34,9 +35,14 @@ export const metadata: Metadata = pageMeta({
  * septiembre de 2026. Las bios y los retratos NO existen en ninguna fuente y
  * por eso salen como pendiente visible.
  *
- * ⚠️ RITMO DE SUPERFICIE. Cinco secciones, UNA sola oscura y es la última:
- * bone (hero) → paper → bone → paper → deep. Es la proporción de la home
- * (70–75 % claro) y la regla de que `deep` es puntuación, no fondo.
+ * ⚠️ RITMO DE SUPERFICIE. Siete secciones y DOS oscuras, y antes eran cinco
+ * con una sola: bone (hero) → paper (el relato) → paper (los espacios) → deep
+ * (el equipo) → paper (cómo se pide) → paper (el mapa) → deep (el cierre).
+ *
+ * Las dos oscuras no quedan pegadas, que era el riesgo, y la proporción sigue
+ * en el 70 % claro de la home. Lo que cambió es que la banda del equipo ahora
+ * es oscura: viene del calco de `/over-ons`, donde «meet the team» es la única
+ * banda oscura de la página.
  *
  * ⚠️ NO HAY SECCIÓN DE PREGUNTAS FRECUENTES. Decisión de Camila del
  * 2026-09-15: «mejor no pongamos preguntas frecuentes». Los datos siguen en
@@ -47,9 +53,6 @@ export const metadata: Metadata = pageMeta({
  * resto de la página usa `StaggerGroup`/`RevealItem`, que son los reveals del
  * sistema y ya cortocircuitan con `prefers-reduced-motion`.
  */
-
-/** Los dos pisos, en el orden en que se recorren. */
-const FLOORS = ['Second floor', 'Ground floor'] as const;
 
 export default async function OurStoryPage() {
   const venue = await getVenue();
@@ -63,172 +66,153 @@ export default async function OurStoryPage() {
         }}
       />
 
-      <StoryHero />
+      <AboutHero />
+
+      {/* ══ 2. El relato ══════════════════════════════════════════════════ */}
+
+      <AboutStory />
 
       {/* ══ 2. De qué está hecho ══════════════════════════════════════════ */}
 
-      <Section band="lg" labelledBy="place-title">
-        <SectionHead
-          eyebrow="The place"
-          eyebrowTone="plum"
-          id="place-title"
-          title="Two floors, five places to be"
-          lead="One property, built in layers. The bar went on the roof because that is where the sunset is, and everything else grew underneath it."
-        />
-
-        {FLOORS.map((floor) => {
-          const areas = VENUE_AREAS.filter((a) => a.floor === floor);
-          if (areas.length === 0) return null;
-          const fid = `floor-${floor.replace(/\s+/g, '-').toLowerCase()}`;
-
-          return (
-            <div key={floor} className="mt-[56px] first:mt-[48px]">
-              <div className="flex items-baseline gap-[16px]">
-                <Heading level={3} id={fid} role="label">
-                  {floor}
-                </Heading>
-                <span aria-hidden="true" className="h-[2px] flex-1 bg-ink/12" />
-              </div>
-
-              <StaggerGroup
-                as="ul"
-                className="mt-[28px] flex list-none flex-col gap-[40px] lg:gap-[56px]"
-                aria-label={`${floor}: ${areas.map((a) => a.name).join(', ')}`}
-              >
-                {areas.map((area, i) => (
-                  <RevealItem as="li" key={area.slug}>
-                    <article
-                      className={[
-                        'grid items-center gap-[20px] lg:grid-cols-2 lg:gap-[48px]',
-                        // Alterna el lado de la foto. En mobile siempre arriba.
-                        i % 2 === 1 ? 'lg:[&>figure]:order-2' : '',
-                      ].join(' ')}
-                    >
-                      <figure className="relative m-0 aspect-[4/3] w-full overflow-hidden">
-                        {area.photo ? (
-                          <Image
-                            src={area.photo}
-                            alt={area.photoAlt ?? area.name}
-                            fill
-                            sizes="(min-width: 1024px) 50vw, 100vw"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <PhotoPending brief={area.photoBrief} ratio="aspect-[4/3]" />
-                        )}
-                      </figure>
-
-                      <div>
-                        <Heading level={4}>{area.name}</Heading>
-                        <p className="mt-[12px] max-w-[46ch] text-[16px] leading-[1.7] text-body/80">
-                          {area.body}
-                        </p>
-                        {area.href ? (
-                          <p className="mt-[16px]">
-                            <Link href={area.href} className="link-texto font-bold">
-                              {area.name === 'The stage'
-                                ? 'See what is on'
-                                : `More about ${area.name}`}
-                            </Link>
-                          </p>
-                        ) : null}
-                      </div>
-                    </article>
-                  </RevealItem>
-                ))}
-              </StaggerGroup>
-            </div>
-          );
-        })}
-      </Section>
-
+      {/*
+        ⚠️ ERA UNA GRILLA AGRUPADA POR PISO Y AHORA SON PESTAÑAS. La estructura
+        la eligió Camila, 2026-09-16, y el porqué de cada decisión está arriba de
+        `VenueTabs`. Los cinco textos y las cinco fotos son los mismos.
+      */}
+      <VenueTabs />
       {/* ══ 3. La gente ═══════════════════════════════════════════════════ */}
 
-      <Section tone="bone" band="lg" labelledBy="people-title">
-        <SectionHead
-          eyebrow="The people"
-          eyebrowTone="deep"
-          id="people-title"
-          title="Two of them run it"
-          lead="A family from Bonita Springs and the person who opens the place. Both of their inboxes are below, and both of them read them."
-        />
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ ES «MEET THE TEAM» DE defoodtruckclub.nl/over-ons, CALCADO DE LA
+        CAPTURA QUE MANDÓ CAMILA. Pedido literal, 2026-09-16: «para la parte de
+        Meet the team copiá esta parte que te dejo en foto tal cual».
+
+        La anatomía de la captura, elemento por elemento:
+
+            banda oscura
+            titular centrado, display, caja alta
+            renglón de conteo debajo, centrado, en el color de acento
+            fila de retratos en blanco y negro, esquinas redondeadas
+            el nombre debajo de cada uno, centrado y en caja alta
+
+        ⚠️ EL RENGLÓN DE CONTEO NO PUEDE DECIR UN NÚMERO INVENTADO. Allá dice
+        «90 gepassioneerde foodtruckers». Acá el único número verdadero es dos:
+        son las dos personas que el cliente publica con nombre y cargo en
+        `/this-is-us`. Dice eso y nada más.
+
+        ⚠️ VA EN `cream` Y NO EN `sunset`, aunque el acento de la captura sea el
+        rosa de su marca. Medido: `sunset` sobre `deep` da 4.26:1 y este renglón
+        es texto normal de 22px, que necesita 4.5. `cream` da 11.87:1 y es el
+        acento que el sitio ya usa sobre losa oscura.
+
+        ⚠️ SIN FLECHA DE CARRUSEL. En la captura la fila sigue más allá del
+        borde derecho y hay un botón redondo para avanzar. Con DOS personas no
+        hay nada a lo que avanzar: una flecha que no lleva a ningún lado es el
+        control roto que este proyecto ya sacó de otros lados.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <Section tone="deep" band="lg" labelledBy="people-title">
+        <div className="text-center">
+          <Heading level={2} id="people-title" className="text-d3 lg:text-d2">
+            Meet the team
+          </Heading>
+          <p className="m-0 mt-4 font-body text-lead font-light text-cream">
+            Two of them run the place
+          </p>
+        </div>
 
         {/*
-          ⚠️ TRATAMIENTO EDITORIAL, NO DOS TARJETAS IGUALES. El fundador tiene
-          una cita publicada y el gerente no, así que darles la misma caja
-          sería inventarle una voz al segundo o desperdiciar la del primero.
-          Chris va en ancho de artículo con la cita como pieza tipográfica;
-          Anthony va en una entrada más corta al costado.
+          ⚠️ LA FILA TIENE ANCHO TOPE Y VA CENTRADA. En la captura son nueve
+          retratos y la fila llena la banda; con dos, sueltos al ancho de la
+          caja cada uno mediría 572px y la sección se leería como dos fotos
+          enormes de dos desconocidos. El tope los deja en ~340px, que es la
+          medida a la que un retrato 3:4 funciona.
         */}
-        <div className="mt-[48px] grid gap-[48px] lg:grid-cols-[1.35fr_1fr] lg:gap-[64px]">
-          {PEOPLE.map((p, i) => (
-            <article key={p.name} className={i === 0 ? '' : 'lg:pt-[56px]'}>
-              <div className="flex items-start gap-[20px]">
-                <div className="w-[104px] shrink-0 lg:w-[132px]">
-                  {p.photo ? (
+        <StaggerGroup
+          as="ul"
+          className="mx-auto mt-bloque grid max-w-[46rem] list-none grid-cols-1 gap-10 p-0 sm:grid-cols-2 sm:gap-8"
+        >
+          {PEOPLE.map((p) => (
+            <RevealItem as="li" key={p.name}>
+              <article className="text-center">
+                {p.photo ? (
+                  /*
+                    ⚠️ `grayscale` ESTÁ PUESTO Y HOY NO SE VE, porque ninguno de
+                    los dos tiene retrato. Va igual: es parte de lo que se pidió
+                    copiar tal cual, y dejarlo escrito ahora significa que el día
+                    que lleguen las fotos la sección ya se ve como la referencia
+                    en vez de descubrirse en ese momento que faltaba.
+
+                    Si con las fotos delante el blanco y negro no funciona, se
+                    saca una clase.
+                  */
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-shell bg-deeper sombra-card">
                     <Image
                       src={p.photo}
                       alt={p.photoAlt ?? p.name}
-                      width={132}
-                      height={176}
-                      sizes="132px"
-                      className="aspect-[3/4] w-full object-cover"
+                      fill
+                      sizes="(min-width: 640px) 340px, 90vw"
+                      className="object-cover grayscale"
                     />
-                  ) : (
-                    <PhotoPending
-                      brief={`Retrato de ${p.name}, vertical, en el local.`}
-                      ratio="aspect-[3/4]"
-                      tone="light"
-                    />
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <PhotoPending
+                    brief={`Retrato de ${p.name}, vertical 3:4, en el local. Va en blanco y negro.`}
+                    ratio="aspect-[3/4]"
+                    tone="dark"
+                  />
+                )}
 
-                <div className="min-w-0">
-                  <Heading level={3} className={i === 0 ? 'text-d5 lg:text-d4' : 'text-d6 lg:text-d5'}>
-                    {p.name}
-                  </Heading>
-                  <Eyebrow tone="plum" className="mt-[8px]">
-                    {p.role}
-                  </Eyebrow>
-                  {p.email ? (
-                    <p className="mt-[10px] text-[16px]">
-                      <a href={`mailto:${p.email}`} className="link-texto break-all">
-                        {p.email}
-                      </a>
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-
-              {p.bio ? (
-                <p className="mt-[20px] max-w-[52ch] text-[16px] leading-[1.7] text-body/80">
-                  {p.bio}
+                {/* El nombre debajo del retrato, centrado y en caja alta, como
+                    la captura. El cargo va un escalón abajo: la referencia no
+                    lo muestra, pero sin él «Anthony Hayes» no dice nada. */}
+                <Heading level={3} className="mt-6 text-d5">
+                  {p.name}
+                </Heading>
+                <p className="m-0 mt-2 font-body text-caption font-bold uppercase tracking-eyebrow text-muted-dark">
+                  {p.role}
                 </p>
-              ) : (
-                <div className="mt-[20px] max-w-[52ch]">
-                  <PendingBlock title={`Short bio for ${p.name}`}>
-                    Two or three sentences in their own words. Nothing here is written by AI, so
-                    this stays empty until they send it.
-                  </PendingBlock>
-                </div>
-              )}
+                {p.email ? (
+                  <p className="m-0 mt-3.5 font-body text-base">
+                    <a href={`mailto:${p.email}`} className="link-texto break-all text-cream">
+                      {p.email}
+                    </a>
+                  </p>
+                ) : null}
 
-              {p.quote ? (
-                <figure className="mt-[28px] border-l-2 border-sunset pl-[20px] lg:pl-[28px]">
-                  <blockquote>
-                    <p className="font-display text-d5 uppercase leading-[1.15] lg:text-d4">
-                      {p.quote}
-                    </p>
-                  </blockquote>
-                  <figcaption className="mt-[14px] eyebrow text-body/75">
-                    {p.name}, {p.role}
-                  </figcaption>
-                </figure>
-              ) : null}
-            </article>
+                {p.bio ? (
+                  <p className="m-0 mt-5 font-body text-base font-light leading-[1.65] text-paper/90">
+                    {p.bio}
+                  </p>
+                ) : (
+                  <div className="mt-6 text-left">
+                    <PendingBlock tone="dark" title={`Short bio for ${p.name}`}>
+                      Faltan dos o tres frases en sus propias palabras. Nada de este sitio lo
+                      escribe una máquina, así que esto queda vacío hasta que las manden.
+                    </PendingBlock>
+                  </div>
+                )}
+              </article>
+            </RevealItem>
           ))}
-        </div>
+        </StaggerGroup>
       </Section>
+
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ EL BLOQUE DE DOS TARJETAS ENFRENTADAS, que en la referencia es
+        «ventajas de trabajar con nosotros» y acá es «cómo se pide». El
+        reemplazo lo decidió Camila el 2026-09-16 y el porqué entero está
+        arriba de `HowToOrder`.
+
+        ⚠️ ES EL MISMO COMPONENTE QUE USAN LAS CUATRO FICHAS DE TRUCK, a
+        propósito: la referencia también repite su comparativo en las dos
+        páginas. Y en este caso la repetición trabaja, porque lo que explica es
+        el malentendido de raíz del negocio.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <HowToOrder />
 
       {/* ══ 4. Dónde queda ════════════════════════════════════════════════ */}
 

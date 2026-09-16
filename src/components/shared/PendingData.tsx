@@ -1,3 +1,4 @@
+import type { Truck } from '@/content/trucks';
 /**
  * Marcadores de dato o asset que TODAVÍA NO TENEMOS.
  *
@@ -38,19 +39,62 @@ export function PendingData({
  * Un bloque entero pendiente: una sección de la que todavía no tenemos el
  * contenido. Explica QUÉ falta y de quién depende.
  */
+/**
+ * El recuadro de un dato que falta y que tiene que venir del cliente.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ TIENE DOS TONOS Y ANTES TENÍA UNO. El único que había estaba calibrado
+ * para superficie CLARA —filo `terra`, relleno `terra` al 4 % y texto
+ * `body/75`— y se rompió el 2026-09-16, cuando la banda del equipo de
+ * `/our-story` pasó a `deep` por el calco de `/over-ons`.
+ *
+ * Sobre verde oscuro ese recuadro quedaba prácticamente invisible: `terra`
+ * (#A62000) es un rojo OSCURO, pensado para leerse contra blanco, y el texto en
+ * `body/75` es tinta negra al 75 % sobre un fondo casi negro. Se veía el filo
+ * punteado y adentro no se leía nada.
+ *
+ * ⚠️ NO LO MARCÓ `npm run a11y`, y conviene saber por qué para no confiar de
+ * más en la herramienta: axe no puede calcular el contraste cuando el fondo del
+ * elemento es un color con alfa sobre otro fondo, así que saltea el nodo en vez
+ * de fallarlo. El defecto se vio mirando la captura.
+ *
+ * El par oscuro usa los tokens que el sitio ya tiene para eso:
+ *
+ *     claro   filo y rótulo `terra`         7.43:1 sobre paper
+ *     oscuro  filo y rótulo `tomato-soft`   5.60:1 sobre deep
+ *
+ * `tomato-soft` (#FF8F7A) es exactamente «el rojo de error PARA SUPERFICIE
+ * OSCURA» del tema, y es el mismo que ya usan los errores del formulario de
+ * newsletter, que vive en el footer.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const TONOS_PENDIENTE = {
+  light: {
+    caja: 'border-terra/50 bg-terra/[0.04]',
+    rotulo: 'text-terra',
+    cuerpo: 'text-body/75',
+  },
+  dark: {
+    caja: 'border-tomato-soft/45 bg-paper/[0.06]',
+    rotulo: 'text-tomato-soft',
+    cuerpo: 'text-paper/85',
+  },
+} as const;
+
 export function PendingBlock({
   title,
+  tone = 'light',
   children,
 }: {
   readonly title: string;
+  readonly tone?: keyof typeof TONOS_PENDIENTE;
   readonly children: ReactNode;
 }) {
+  const t = TONOS_PENDIENTE[tone];
   return (
-    <div className="rounded-card border border-dashed border-terra/50 bg-terra/[0.04] p-6">
-      <p className="eyebrow text-terra">Pending · {title}</p>
-      <div className="mt-2.5 max-w-[60ch] text-base text-body/75">
-        {children}
-      </div>
+    <div className={`rounded-card border border-dashed p-6 ${t.caja}`}>
+      <p className={`eyebrow ${t.rotulo}`}>Pending · {title}</p>
+      <div className={`mt-2.5 max-w-[60ch] text-base ${t.cuerpo}`}>{children}</div>
     </div>
   );
 }
@@ -194,5 +238,53 @@ export function PhotoPending({
           `TONOS_HUECO`, arriba. */}
       <p className={`max-w-[34ch] font-body text-micro leading-[1.5] ${t.brief}`}>{brief}</p>
     </div>
+  );
+}
+
+/**
+ * El marcador de «este nombre todavía no está confirmado».
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EXISTE POR EL CUARTO TRUCK. Camila, 2026-09-16: «cuarto truck de comida
+ * jamaiquina, posiblemente Reggae Kitchen, pero el nombre aún no está
+ * confirmado».
+ *
+ * Es un caso que los otros marcadores del sitio no cubren. `PendingBlock` y
+ * `PhotoPending` reemplazan un hueco: se usan donde NO hay dato. Acá sí hay
+ * dato —hay un nombre, y es la mejor suposición que tenemos— pero no está
+ * verificado, y en este proyecto eso no se publica como si lo estuviera.
+ *
+ * Así que no reemplaza nada: se pone AL LADO del nombre y avisa. El truck
+ * existe, está en el patio y tiene su página; lo único en duda es cómo se
+ * llama.
+ *
+ * ⚠️ VA EN `terra` SOBRE CLARO Y EN `tomato-soft` SOBRE OSCURO, que son los dos
+ * tokens de «esto hay que leerlo» del tema, los mismos que usan los errores de
+ * formulario. 7.43:1 y 5.60:1.
+ *
+ * ⚠️ NO ES `aria-hidden`. Quien usa un lector de pantalla tiene el mismo
+ * derecho a saber que el nombre está sin confirmar que quien mira la pantalla.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export function NombreSinConfirmar({
+  truck,
+  tone = 'light',
+  className = '',
+}: {
+  readonly truck: Truck;
+  readonly tone?: 'light' | 'dark';
+  readonly className?: string;
+}) {
+  if (truck.nameConfirmed) return null;
+
+  const tinta = tone === 'dark' ? 'text-tomato-soft ring-tomato-soft/45' : 'text-terra ring-terra/45';
+
+  return (
+    <span
+      title="El cliente todavía no confirmó cómo se llama este truck."
+      className={`inline-flex items-center rounded-pill px-2 py-0.75 align-middle font-body text-micro font-bold uppercase tracking-cta ring-1 ${tinta} ${className}`}
+    >
+      Name unconfirmed
+    </span>
   );
 }

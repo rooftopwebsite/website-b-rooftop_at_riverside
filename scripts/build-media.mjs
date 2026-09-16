@@ -92,30 +92,65 @@ const FOTOS = [
      Si se cambia por un valor «redondo» tipo 2080×970, el `fit:'cover'` del
      componente recorta unos píxeles y la banda deja de ser la que se eligió.
 
-     ⚠️ EL `foco` 0,4586 NO ES CENTRADO Y ESTÁ ELEGIDO SOBRE LA PÁGINA. La foto
-     es vertical de 3465×5198 y la banda mide 1614 de alto, así que sobran 3584
-     px: el recorte decide qué foto es. Con el centro en 0,4586 la banda entra
-     en la guirnalda de luces, agarra la ventanilla encendida con la cocinera
-     adentro, las dos personas pidiendo, y llega justo al cartel de Birria Tacos
-     de la derecha.
+     ══════════════════════════════════════════════════════════════════════
+     ⚠️ LA PORTADA PASÓ DE NOCHE A DÍA EL 2026-09-16, Y EL MOTIVO ES MEDIBLE.
 
-     Los dos vecinos se probaron y se cayeron: más arriba (~0,36) entra el techo
-     del truck y las dos personas quedan cortadas al pecho; más abajo (~0,54)
-     aparece la cabeza suelta que hay en el borde inferior izquierdo, que es un
-     tercero de espaldas fuera de foco y lee como error de encuadre.
+     Hasta esa fecha acá iba `_RCZ5847`, la misma ventanilla de noche. El
+     cliente la vio «muy oscura para lo que es el resto de la web» y pidió algo
+     más claro que no cortara tanto contra la página, que corre sobre `bone`.
 
-     ⚠️ Y LA PLACA NARANJA DEPENDE DE ESTO. «Together» se apoya en el notch, o
-     sea al lado de la foto y no encima, así que el contraste de la placa no
-     cambia; pero el naranja SÍ compite con lo que tenga al lado. Las otras
-     finalistas eran fotos cálidas de atardecer, y ahí el filo de la placa se
-     despinta contra los ámbar. Sobre el azul de esta, la placa es lo más
-     saturado de la primera pantalla, que es donde tiene que estar. */
+     Tenía razón, y por más de lo que se ve a ojo. Midiendo la luz media de 0 a
+     255 sobre los 39 archivos de `public/multimedia/`:
+
+         _RCZ5847 (la vieja portada)   37   ← la más oscura de la entrega
+         el resto de las nocturnas     86 a 104
+         las diurnas candidatas        90 a 130
+         _RCZ8185 (esta)              116
+
+     O sea que NO era un problema de noche contra día: era esa foto en
+     particular, que es un caso aparte incluso entre las nocturnas. Por eso el
+     reemplazo no cambia lo que la portada cuenta, sólo cuándo pasa.
+
+     ⚠️ ES LA MISMA ESCENA QUE LA ANTERIOR, A PROPÓSITO. `_RCZ8185` es gente
+     pidiendo en la ventanilla, igual que `_RCZ5847`: sigue diciendo
+     literalmente lo que dice el paso 01 —«order at whichever window you
+     want»—. Lo que cambia es la luz, no el argumento.
+     ══════════════════════════════════════════════════════════════════════
+
+     ⚠️ EL `foco` 0,38 NO ES CENTRADO Y ESTÁ ELEGIDO SOBRE LA PÁGINA. La foto
+     es vertical de 4000×6000 y la banda mide 1863 de alto, así que sobran 4137
+     px: el recorte decide qué foto es. Con el centro en 0,38 la banda agarra
+     la mujer estirando la mano al mostrador, los dos que esperan el turno, el
+     seto verde y las carpas blancas, y llega justo al cielo con nubes de la
+     esquina superior derecha.
+
+     Los dos vecinos se probaron y se cayeron: más arriba (~0,28) la banda se
+     va al toldo y a las tres personas les entra sólo la gorra; más abajo
+     (~0,50) se pierde el cielo, que es lo que le da el aire y la mitad de la
+     luz al cuadro.
+
+     ⚠️ EL LATERAL NEGRO DEL TRUCK EN EL TERCIO IZQUIERDO NO ES UN DEFECTO, ES
+     DONDE VA EL RECORTE. El notch y la placa de «Together» caen exactamente
+     ahí, y crema sobre un plano negro y liso es el contraste más limpio que
+     tuvo la placa en las diez candidatas que se montaron. Si algún día se
+     mueve el `foco`, hay que volver a mirar ESO antes que el centro del cuadro.
+
+     ⚠️ Y LA PLACA NARANJA SIGUE DEPENDIENDO DEL RECORTE. «Together» se apoya
+     en el notch, o sea al lado de la foto y no encima, así que el contraste de
+     la placa no cambia; pero el naranja SÍ compite con lo que tenga al lado.
+     Las finalistas cálidas de atardecer se cayeron por eso: contra los ámbar
+     el filo de la placa se despinta. Acá tiene negro y cielo, que no compiten.
+
+     ⚠️ Y HUBO QUE TOCAR `PhotoDivider`. `_RCZ8185` ya se servía como
+     `wall-guests-yard-day.jpg` y ese tile estaba en el muro de la home, o sea
+     que la misma escena habría aparecido dos veces en la misma página. El slot
+     pasó a `wall-food-platter.jpg`. Ver la nota de `PHOTOS` en ese archivo. */
   {
-    src: '_RCZ5847.JPG',
+    src: '_RCZ8185.jpg',
     out: 'public/images/venue/hero-truck-window.jpg',
     w: 2576,
     h: 1200,
-    foco: 0.4586,
+    foco: 0.38,
     q: 76,
   },
 
@@ -125,12 +160,15 @@ const FOTOS = [
      want»—, así que reemplaza a `venue-truck-line.jpg`, que era una fila de
      camiones vacía.
 
-     ⚠️ SALE DEL MISMO ORIGINAL QUE EL HERO, y por eso hoy NO SE USA en ningún
-     lado. Se conserva porque el recorte es otro —4:5 vertical contra la banda
-     apaisada— y la sección para la que se hizo puede volver a querer una foto.
-     Pero antes de colgarla en algún lado hay que mirar la home: puesta en
-     cualquier sección, la misma escena aparecería dos veces en la misma
-     página, que es exactamente lo que se evitó al elegir esta para el hero. */
+     ⚠️ SIGUE SIN USARSE EN NINGÚN LADO, PERO YA NO POR EL MOTIVO DE ANTES.
+     Hasta el 2026-09-16 `_RCZ5847` era el hero, así que colgar esta derivada
+     en cualquier sección repetía la escena en la misma página. La portada pasó
+     a `_RCZ8185` de día, así que ese bloqueo se cayó: hoy es material libre, y
+     de hecho es la única foto nocturna de la ventanilla que queda a mano.
+
+     Lo único que hay que mirar antes de colgarla es si la sección que la pida
+     tolera una foto de luz 37, que es la más oscura de la entrega. Ver la nota
+     de la portada, más arriba. */
   { src: '_RCZ5847.JPG', out: 'public/images/venue/truck-window-night.jpg', w: 900, h: 1125, q: 78 },
 
   /* ── What's on ──────────────────────────────────────────────────────────
