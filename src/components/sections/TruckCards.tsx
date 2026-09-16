@@ -144,7 +144,7 @@ export default function TruckCards({
                   placeholder es `ink` al 6 %, o sea que se compone sobre lo que
                   tenga atrás, y sobre `fog` daba #d1cdbd. Ahí su propio rótulo
                   caía a 4.38:1 y axe lo marcó. */}
-              <div className={`relative aspect-[4/5] ${t.photo ? 'bg-fog' : ''}`}>
+              <div className={`relative aspect-[3/2] ${t.photo ? 'bg-fog' : ''}`}>
                 {t.photo ? (
                   <Image
                     src={t.photo}
@@ -154,7 +154,7 @@ export default function TruckCards({
                     className="object-cover"
                   />
                 ) : (
-                  <PhotoPending brief={t.photoBrief} ratio="aspect-[4/5]" className="h-full" />
+                  <PhotoPending brief={t.photoBrief} ratio="aspect-[3/2]" className="h-full" />
                 )}
               </div>
 
@@ -167,9 +167,19 @@ export default function TruckCards({
                   {nombreVisible(t)}
                 </h3>
 
-                {t.story ? (
-                  <p className="m-0 mt-3 line-clamp-3 font-body text-dato font-light leading-[1.5] text-body">
-                    {t.story}
+                {/*
+                  ⚠️ SE USA `blurb` Y NO `story`, y ya no hay `line-clamp`. La
+                  historia completa del cliente mide hasta 290 caracteres y a
+                  266px de ancho el recorte entraba siempre: la tarjeta
+                  terminaba en puntos suspensivos en las cuatro. El porqué del
+                  campo está arriba de `blurb` en `trucks.ts`.
+
+                  El respaldo a `story` queda para un truck que todavía no tenga
+                  bajada propia: es mejor una frase cortada que ninguna.
+                */}
+                {t.blurb ?? t.story ? (
+                  <p className="m-0 mt-3 font-body text-dato font-light leading-[1.5] text-body">
+                    {t.blurb ?? t.story}
                   </p>
                 ) : null}
 

@@ -50,6 +50,28 @@ export interface Truck {
   readonly specialty: string;
   /** Historia corta. 2 o 3 frases, del propio truck. Nunca generada. */
   readonly story: string | null;
+
+  /**
+   * La bajada de la tarjeta. Una sola frase.
+   *
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ EXISTE PARA QUE LA TARJETA NO TERMINE EN PUNTOS SUSPENSIVOS. Camila,
+   * 2026-09-16: «acortá las descripciones para no necesitar los …».
+   *
+   * A cuatro columnas la tarjeta mide 266px y entran unos 30 caracteres por
+   * renglón. Las historias del cliente miden entre 135 y 290, así que el
+   * `line-clamp` las cortaba SIEMPRE, y una tarjeta que corta a mitad de frase
+   * hace pensar que falta algo. El tope es 70 caracteres: tres renglones
+   * completos sin recorte.
+   *
+   * ⚠️ NO ES TEXTO NUEVO, ES LA FRASE DEL PROPIO TRUCK RECORTADA. Cada bajada
+   * sale de su `story`, quedándose con la oración que dice qué cocinan y
+   * tirando la que repite el nombre y la ciudad. No se agrega un solo hecho.
+   *
+   * `null` cae de vuelta en `story`, que es lo que hacía antes.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  readonly blurb: string | null;
   /**
    * Cuándo está en el park.
    *
@@ -117,6 +139,7 @@ export const TRUCKS: readonly Truck[] = [
     cuisine: 'Seafood',
     specialty: 'Gulf catch, poke bowls and seafood boils',
     story: null,
+    blurb: null,
     schedule: null,
     instagram: null,
     photo: null,
@@ -134,6 +157,7 @@ export const TRUCKS: readonly Truck[] = [
     cuisine: 'American',
     specialty: 'Smashburgers and American kitchen classics',
     story: null,
+    blurb: null,
     schedule: null,
     instagram: null,
     photo: null,
@@ -156,6 +180,8 @@ export const TRUCKS: readonly Truck[] = [
     // Texto del cliente, tomado de /el-chilango. No generado.
     story:
       'El Chilango brings the vibrant flavors of Mexico to Rooftop at Riverside. Authentic street tacos, fresh salsas and traditional Mexican favorites, right in the heart of Bonita Springs.',
+    blurb:
+      'Authentic street tacos, fresh salsas and traditional Mexican plates.',
     schedule: null,
     // Está impreso en su propia carta, junto con el teléfono (239) 595-5713.
     instagram: 'https://www.instagram.com/el_chilango_mx/',
@@ -199,6 +225,8 @@ export const TRUCKS: readonly Truck[] = [
     // Se reemplaza en cuanto el truck mande su descripción.
     story:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+    blurb:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     schedule: null,
     instagram: null,
     photo: null,
@@ -224,6 +252,8 @@ export const TRUCKS: readonly Truck[] = [
     // sólo el primero.
     story:
       'Prime Carvery American Kitchen redefines American classics with a focus on quality and flavor. Known for their high-quality offerings, they take pride in crafting dishes that leave taste buds rejoicing. Every dish reflects a commitment to elevating classic American comfort food to new heights.',
+    blurb:
+      'American classics, made with a focus on quality and flavor.',
     schedule: null,
     instagram: null,
     photo: '/images/trucks/prime-carvery-1.jpg',
@@ -241,6 +271,8 @@ export const TRUCKS: readonly Truck[] = [
     specialty: 'Shrimp, ceviche and seafood boils',
     story:
       "Sea Me on Wheels crafts a menu blending traditional recipes with innovative twists, inspired by the flavors of Florida's coastal cuisine.",
+    blurb:
+      'Traditional recipes with a twist, from the Florida coast.',
     schedule: null,
     instagram: null,
     photo: '/images/trucks/seafood-1.jpg',
@@ -258,6 +290,7 @@ export const TRUCKS: readonly Truck[] = [
     cuisine: 'Fusion',
     specialty: 'Tropical fusion plates',
     story: null,
+    blurb: null,
     schedule: null,
     instagram: null,
     photo: '/images/trucks/tropical-1.jpg',
