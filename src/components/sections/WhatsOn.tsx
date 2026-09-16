@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
+import { TAG } from '@/lib/tag';
 import { activeTrucks } from '@/content/trucks';
 import {
   type VenueEvent,
@@ -27,7 +28,9 @@ import {
  * el Yard y Esta semana, ¿no debería ser toda una?». `TonightAtTheYard` y
  * `ThisWeek` leían la misma lista de recurrentes y la mostraban dos veces. Lo
  * que se conserva de la fusión es la inmediatez: la card de hoy va primera y
- * con el tag «Tonight».
+ * marcada. La marca fue el tag «Tonight» sobre el afiche hasta el 2026-09-16 y
+ * hoy es la palabra «Today» en el renglón del día; el porqué del cambio está
+ * abajo, en `EventCard`.
  *
  * ⚠️ Client component, y no por gusto: necesita saber qué día es en Bonita
  * Springs. El servidor no puede — una página cacheada mostraría el jueves un
@@ -195,52 +198,130 @@ function EventCard({
         ══════════════════════════════════════════════════════════════════
       */}
       {/*
-        ⚠️ LA CAJA DE LA IMAGEN SE ANCLA ARRIBA Y TIENE SU PROPIO 4:5; NO
-        HEREDA EL ALTO DE LA TARJETA. Parece redundante —la tarjeta ya es
-        `aspect-[4/5]`— y no lo es: las tarjetas viven en una fila flex, y
-        una fila flex ESTIRA a sus hijos al alto del más alto. El más alto
-        es la tarjeta naranja del final, que tiene un titular de cuatro
-        renglones; en mobile eso lleva la tarjeta de 325px a 464, o sea a una
-        proporción de 0.56, y con `inset-0` el recorte se comía los costados
-        del afiche: «LIVE» quedaba en «VE».
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ SON DOS CAJAS Y CADA UNA TIENE SU TRABAJO: la VENTANA fija lo que
+        se ve y la CAJA DE RECORTE fija qué parte del afiche entra. Antes
+        había una sola y por eso las tarjetas salían disparejas.
 
-        Con la caja anclada arriba y su proporción propia, el recorte es el
-        mismo a cualquier alto. Lo que sobra por abajo cuando la fila estira
-        queda detrás del plate, que es del MISMO color que la tarjeta, así
-        que no se ve ni un borde.
+        Cómo era: la caja de recorte 4:5 se anclaba arriba de la tarjeta y el
+        plate verde le tapaba el pie. O sea que EL ALTO VISIBLE DE LA FOTO
+        ERA EL RESTO DE UNA CUENTA —alto de la tarjeta menos alto del
+        plate—, y el plate mide distinto en cada tarjeta según cuántos
+        renglones ocupen el título y la bajada. Camila lo vio en la home:
+        «necesito que estas cards sean parejas, muestren la imagen al mismo
+        tamaño, no algunas más grandes». Con «Bring the dog.» en un renglón
+        y las otras dos en dos, la primera mostraba 30px más de foto.
+
+        Cómo es: la ventana mide 7:5 SIEMPRE, arriba de todo y fuera del
+        flujo del plate, así que la foto ya no depende de lo que diga el
+        texto de abajo. La tarjeta dejó de tener proporción fija y ahora
+        crece con su contenido; la fila flex las estira a todas al alto de
+        la más alta y el sobrante cae en el plate, que es de un solo color.
+
+        ⚠️ LOS 7:5 NO SON UN NÚMERO NUEVO: son los que ya se veían. Con el
+        recorte 4:5 asomando por una ventana de 7:5, lo que entra es el 57 %
+        de arriba de la caja, que es casi exactamente lo que dejaba el plate
+        en la tarjeta de un renglón.
+
+        ⚠️ Y LA CAJA DE RECORTE SIGUE SIENDO 4:5, no la ventana. El motivo
+        está arriba: los afiches vienen en 1920×1080 con el vertical pegado
+        en el medio, y sólo una caja vertical los devuelve. Poner la foto en
+        la ventana con `object-cover` recortaría por los costados y «LIVE»
+        volvería a quedar en «VE».
+        ══════════════════════════════════════════════════════════════════
       */}
-      <div className="absolute inset-x-0 top-0 aspect-[4/5] overflow-hidden">
-        {event.image === null ? (
-          /* ⚠️ El brief va en INGLÉS. Es texto VISIBLE, no un comentario: el
-             hueco se publica marcado a propósito para que no pase callado. El
-             borde punteado es lo que distingue «acá va algo» de «esto falló».
+      <div className="relative aspect-[7/5] w-full shrink-0 overflow-hidden">
+        <div className="absolute inset-x-0 top-0 aspect-[4/5] overflow-hidden">
+          {event.image === null ? (
+            /* ⚠️ El brief va en INGLÉS. Es texto VISIBLE, no un comentario: el
+               hueco se publica marcado a propósito para que no pase callado. El
+               borde punteado es lo que distingue «acá va algo» de «esto falló».
 
-             ⚠️ El `pb-[42%]` no es aire: es el alto del plate. El hueco ocupa
-             la caja entera y centra su texto, así que sin esto el brief
-             quedaba centrado en los 500px y la mitad de abajo caía detrás del
-             plate. Con el padding, se centra en la franja que SÍ se ve. */
-          <PhotoPending
-            brief={`${event.title} en ${event.space}, de noche, con gente.`}
-            ratio=""
-            tone="dark"
-            className="absolute inset-0 h-full rounded-none border-0 border-dashed pb-[42%]"
-          />
-        ) : (
-          <Image
-            src={event.image}
-            alt={event.imageAlt ?? ''}
-            fill
-            sizes="(min-width: 1024px) 400px, 260px"
-            className="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
-          />
-        )}
-      </div>
+               ⚠️ El `pb-[42%]` no es aire: es la parte de la caja que la
+               ventana no muestra. El hueco ocupa la caja entera y centra su
+               texto, así que sin esto el brief quedaba centrado en los 500px y
+               la mitad de abajo caía fuera de cuadro. */
+            <PhotoPending
+              brief={`${event.title} en ${event.space}, de noche, con gente.`}
+              ratio=""
+              tone="dark"
+              className="absolute inset-0 h-full rounded-none border-0 border-dashed pb-[42%]"
+            />
+          ) : (
+            <Image
+              src={event.image}
+              alt={event.imageAlt ?? ''}
+              fill
+              sizes="(min-width: 1024px) 400px, 260px"
+              className="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
+            />
+          )}
+        </div>
 
-      {isToday ? (
-        <span className="absolute top-4 left-4 z-20 rounded-pill bg-sunset px-3.5 py-2 font-body text-caption font-medium uppercase tracking-eyebrow text-ink">
-          Tonight
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ ACÁ ESTABA EL TAG «TONIGHT» Y AHORA ESTÁ EL ESPACIO. Pedido de
+          Camila, 2026-09-16: «donde tenemos el tag de Tonight saquémoslo y
+          pongamos allí The Yard, Sunset Bar o la zona que corresponda».
+
+          ⚠️ EL ESPACIO SE MUDÓ, NO SE DUPLICÓ. Vivía abajo, como rótulo en
+          micro gris encima del CTA. Dejarlo en los dos lugares sería decir
+          «The Yard» dos veces en una tarjeta de 400px.
+
+          Y gana con la mudanza: arriba lo lee todo el mundo antes que el
+          título, que es como funciona —primero dónde, después qué—, mientras
+          que abajo era la línea más chica y más apagada de la tarjeta.
+
+          ⚠️ LA PÍLDORA APARECE EN LAS CUATRO, y el tag anterior sólo en la
+          de hoy. Por eso el naranja acá ya no significa «esto es hoy»: es el
+          color de la etiqueta y nada más. Qué pasó con la marca de hoy está
+          anotado abajo, en el renglón del día.
+
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ Y POR ESO MISMO DEJÓ DE SER NARANJA MACIZA. Camila, 2026-09-16:
+          «estos tags que sean suaves, no naranjas sólidos». Con el tag de
+          hoy, el naranja era una alarma en una tarjeta de cuatro; repetido en
+          las cuatro y diciendo un dato de ubicación, competía con lo único
+          que tiene que gritar en esta sección, que es el horario.
+
+          Ahora es un CRISTAL OSCURO: `deep` al 85 % con desenfoque detrás y
+          un filete de crema al 25. Es el mismo gesto que una etiqueta sobre
+          una foto en cualquier lado —recede, no tapa— y encima funciona mejor
+          que el naranja sobre material que no controlamos.
+
+          ⚠️ EL 85 % NO ES DECORATIVO, es el piso de contraste, y el peor caso
+          es la píldora sobre una zona BLANCA del afiche —que existe: los
+          flyers del local tienen fondos claros—. Medido:
+
+              opacidad    sobre blanco      sobre la tarjeta
+                 85 %       6,16:1              9,84:1
+                 80 %       5,36:1              9,84:1
+                 70 %       4,03:1             10,12:1
+
+          O sea que el número que importa es la columna del medio, y 70 ya no
+          pasa AA. Si alguna vez se toca la opacidad, se toca mirando esa
+          columna y no cómo se ve sobre el verde, que siempre da bien.
+
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ LA LETRA Y EL TAMAÑO NO SON DE ACÁ: SALEN DE `TAG`. Este tag pasó
+          por dos pedidos seguidos el mismo día —primero «dales el tamaño de
+          estos» señalando los chips de `YardSteps`, después «si los tags serán
+          con letra minúscula que lo sean todos, debemos unificar»— y de ahí
+          salió el molde común de `lib/tag.ts`. Lo que quedó acá es lo que sí
+          es de este contexto: el cristal oscuro, el filete y el desenfoque.
+
+          ⚠️ POR ESO YA NO VA EN CAJA ALTA. Era `uppercase tracking-eyebrow`,
+          que en este sitio es el tratamiento de los rótulos de sección y de
+          los CTA: un tag en mayúsculas con tracking se lee como un rótulo o
+          como un botón, y esto no es ninguna de las dos.
+          ══════════════════════════════════════════════════════════════════
+        */}
+        <span
+          className={`absolute top-4 left-4 z-20 rounded-pill bg-deep/85 ${TAG} text-cream ring-1 ring-cream/25 backdrop-blur-[3px]`}
+        >
+          {event.space}
         </span>
-      ) : null}
+      </div>
 
       {/*
         ══════════════════════════════════════════════════════════════════
@@ -300,7 +381,15 @@ function EventCard({
         brusco.
         ══════════════════════════════════════════════════════════════════
       */}
-      <div className="absolute inset-x-0 bottom-0 z-10 bg-deeper px-7 pt-6.5 pb-7">
+      {/*
+        ⚠️ EL PLATE ESTÁ EN EL FLUJO Y YA NO PEGADO AL PIE. Era
+        `absolute inset-x-0 bottom-0` y por eso su alto —que cambia con los
+        renglones del título y de la bajada— le comía a la foto por arriba.
+        Ahora la ventana de la imagen manda y el plate ocupa lo que queda:
+        `flex-1` para que llegue hasta abajo cuando la fila estira las
+        tarjetas al alto de la más alta.
+      */}
+      <div className="relative z-10 flex flex-1 flex-col bg-deeper px-7 pt-6.5 pb-7">
         {/*
           El DÍA en `cream` y la HORA en una píldora sólida. Es la jerarquía
           que pidió Camila —«resaltar horario en cards events, pasa muy
@@ -314,10 +403,32 @@ function EventCard({
           ⚠️ YA NO NECESITAN INVERTIRSE EN EL HOVER. Existía un juego de
           colores para cuando el plate se volvía naranja; sin esa vuelta, la
           píldora se queda en crema sobre verde, que es su mejor ratio.
+
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ «TODAY» EN EL LUGAR DEL DÍA ES LO QUE QUEDA DEL TAG «TONIGHT».
+          Cuando la píldora de arriba pasó a decir el espacio, la tarjeta se
+          quedó sin ninguna marca de cuál de los cuatro eventos es el de hoy
+          —y ese dato es la razón de ser de esta sección: la lista se reordena
+          en el cliente justamente para poner el de hoy adelante—. Sin marca,
+          reordenar no se nota.
+
+          Ocupa el renglón del día porque es un día: reemplaza «WEDNESDAY», no
+          se le suma, así que no entra ni un elemento nuevo ni una segunda
+          píldora de color.
+
+          ⚠️ DICE «TODAY» Y NO «TONIGHT», que es lo que decía el tag. El tag
+          se dibujaba sobre el afiche y podía ser vago; acá está pegado al
+          horario, y «TONIGHT · 12 PM – 8 PM» —el domingo de NFC North HQ— es
+          directamente falso. «Today» es cierto a cualquier hora.
+          ══════════════════════════════════════════════════════════════════
         */}
         <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
           <span className="font-body text-dato font-bold uppercase tracking-eyebrow text-cream">
-            {event.weekday !== null ? weekdayLabel(event.weekday) : whenLabel(event)}
+            {isToday
+              ? 'Today'
+              : event.weekday !== null
+                ? weekdayLabel(event.weekday)
+                : whenLabel(event)}
           </span>
           <span className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-caption font-bold whitespace-nowrap text-deep">
             {timeRange(event)}
@@ -329,13 +440,26 @@ function EventCard({
         </h3>
 
         {/*
-          ⚠️ `line-clamp-2` SE QUEDA aunque el cajón ya no tenga alto fijo. El
-          motivo cambió: antes era para que la bajada no se desbordara sobre
-          el CTA; ahora es para que una bajada larga no empuje el plate hacia
-          arriba y le coma el afiche. Hoy ninguna de las cuatro llega a dos
-          renglones a 400px de ancho, así que no se pierde texto.
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ LA BAJADA OCUPA DOS RENGLONES SIEMPRE, diga lo que diga. El
+          `line-clamp-2` pone el techo y el `min-h-[2lh]` pone el piso: una
+          bajada de un renglón reserva el segundo igual. Pedido de Camila,
+          2026-09-16: «contemplemos como si siempre mostrasen dos líneas de
+          descripción».
+
+          Sin el piso, «Bring the dog.» —un renglón— dejaba la tarjeta de
+          Wooftop Wednesdays 24px más corta que las otras dos, y en una fila
+          que estira eso salía como 24px MÁS de afiche. La ventana de la
+          imagen ya lo resolvía por su lado; esto además alinea el CTA y el
+          renglón del espacio entre tarjetas vecinas.
+
+          ⚠️ `lh` ES LA UNIDAD CORRECTA ACÁ y no un `rem` calculado a mano: es
+          el interlineado REAL de este párrafo, así que si mañana cambia
+          `text-base` el piso lo sigue solo. Donde no exista, la propiedad se
+          ignora y la tarjeta se comporta como antes: se degrada sola.
+          ══════════════════════════════════════════════════════════════════
         */}
-        <p className="m-0 mt-3 line-clamp-2 font-body text-base font-light text-paper/92">
+        <p className="m-0 mt-3 line-clamp-2 min-h-[2lh] font-body text-base font-light text-paper/92">
           {event.summary}
         </p>
 
@@ -351,8 +475,17 @@ function EventCard({
           que ir a buscar a otro lado, y además quedaba a 4px del borde
           derecho, que es donde la tarjeta se corta.
 
-          Ahora los dos empiezan en el mismo eje: el espacio es el rótulo y el
-          CTA la acción, uno debajo del otro.
+          Ahora los dos empiezan en el mismo eje.
+
+          ⚠️ Y EL QUE COMPARTÍA EL RENGLÓN YA NO ESTÁ ACÁ: el rótulo del
+          espacio se mudó a la píldora de arriba, sobre el afiche. Queda el
+          CTA solo cerrando la tarjeta.
+
+          ⚠️ `mt-auto` Y NO UN MARGEN FIJO. Es lo que empuja el CTA al pie del
+          plate, así que en tres tarjetas vecinas los tres CTA caen a la misma
+          altura aunque un título ocupe dos renglones y otro uno. El `pt-4.5`
+          es el aire MÍNIMO contra la bajada, para cuando la tarjeta no estira
+          y no hay sobrante que repartir.
 
           ⚠️ LLEVA EL FILETE DE 2px EN `sunset`, que es el mismo tratamiento
           que tienen los CTA de texto de `ThreeDoors` y de `FindUs`. Sin él, un
@@ -368,11 +501,7 @@ function EventCard({
           cara. Queda anotado por si más adelante hay afiches con zona limpia.
           ══════════════════════════════════════════════════════════════════
         */}
-        <span className="mt-4.5 block font-body text-micro uppercase tracking-cta text-muted-dark">
-          {event.space}
-        </span>
-
-        <span className="mt-3 inline-flex w-fit items-center gap-2.25 border-b-2 border-sunset pb-0.75 font-body text-base font-semibold text-cream transition-colors duration-300 ease-brand group-hover:text-sunset">
+        <span className="mt-auto inline-flex w-fit items-center gap-2.25 border-b-2 border-sunset pt-4.5 pb-0.75 font-body text-base font-semibold text-cream transition-colors duration-300 ease-brand group-hover:text-sunset">
           {cta}
           <ArrowRight className="size-4 shrink-0 transition-transform duration-300 ease-brand group-hover:translate-x-1" />
           {entradas ? <span className="sr-only">(opens in a new tab)</span> : null}
@@ -391,8 +520,20 @@ function EventCard({
    * tendría dónde tocarse. Así, el hover es un adorno de escritorio y el
    * toque navega igual.
    */
+  /*
+   * ⚠️ SE FUE EL `aspect-[7/10]` Y ENTRÓ `flex flex-col`. La tarjeta tenía
+   * proporción fija y sus dos piezas iban en absoluto adentro: la foto pegada
+   * arriba y el plate pegado abajo, pisándose en el medio. Ahora las dos están
+   * en el flujo, una arriba de la otra: la ventana de la imagen mide lo que
+   * tiene que medir y el plate se estira con `flex-1`.
+   *
+   * ⚠️ EL ALTO AHORA LO DECIDE LA FILA, no esta clase. Las tarjetas son hijas
+   * de un flex row sin `items-*`, o sea `stretch`: todas terminan con el alto
+   * de la más alta, que es la que tiene el título más largo. Es exactamente lo
+   * que se busca —parejas— y por eso no hace falta ni alto fijo ni proporción.
+   */
   const clases =
-    `group relative block aspect-[7/10] shrink-0 snap-start overflow-hidden rounded-shell bg-deeper sombra-card transition-[transform,opacity] duration-300 ease-brand hover:-translate-y-1.5 ${ANCHO} ${
+    `group relative flex flex-col shrink-0 snap-start overflow-hidden rounded-shell bg-deeper sombra-card transition-[transform,opacity] duration-300 ease-brand hover:-translate-y-1.5 ${ANCHO} ${
       fuera ? 'pointer-events-none opacity-0' : ''
     }`;
 

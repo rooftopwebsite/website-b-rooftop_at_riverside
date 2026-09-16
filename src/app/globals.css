@@ -638,23 +638,31 @@
    */
   --text-pastilla: 26px;
   /*
-   * ⚠️ 17px Y NO 19, Y EL NÚMERO BAJÓ PORQUE LA LETRA CAMBIÓ. La nav estaba en
-   * la CONDENSADA en caja alta, que a 19px ocupa poquísimo ancho; ahora está en
-   * la del cuerpo, en caja baja y en negrita, que es bastante más ancha por
+   * ⚠️ 16px Y NO 19, Y EL NÚMERO BAJÓ DOS VECES POR DOS MOTIVOS DISTINTOS.
+   *
+   * La primera, de 19 a 17, fue porque LA LETRA CAMBIÓ: la nav estaba en la
+   * CONDENSADA en caja alta, que a 19px ocupa poquísimo ancho; ahora está en la
+   * del cuerpo, en caja baja y en negrita, que es bastante más ancha por
    * carácter. Medido en el `desk` más chico (1344px), con los cuatro items más
    * «More», el aire que queda entre el final de la nav y el logo:
    *
    *     16px → 113px      18px →  72px
    *     17px →  93px      19px →  52px
    *
-   * A 19 la barra volvía a quedar peor que antes del rediseño de la nav (62px),
-   * o sea que se desharía el trabajo de correr «What's On» a la derecha. 17 es
-   * el escalón más grande que deja la barra holgada, y en pantalla se lee MÁS
-   * GRANDE que los 19 de antes igual: la de cuerpo tiene mucha más altura de x
-   * que la condensada, y va en 700 contra el 700 de una condensada, que mancha
-   * menos.
+   * ⚠️ LA SEGUNDA, DE 17 A 16, ES UN PEDIDO Y NO UNA MEDICIÓN: Camila,
+   * 2026-09-16, «necesito que tenga más espacio entre esto y el logo». La
+   * tabla de arriba ya decía cuánto costaba: 20px de aire por cada escalón.
+   *
+   * ⚠️ Y ANTES DE TOCAR ESTO SE PROBÓ LO OTRO: acortar el rótulo. «Calendar»
+   * en vez de «What's On» mide 101px contra 110, o sea que compra NUEVE. El
+   * tamaño de letra compra treinta. El largo de los rótulos no es la palanca.
+   *
+   * ⚠️ NO BAJAR MÁS. A 15px la nav empieza a leerse como texto secundario al
+   * lado de un CTA de 15px en caja alta, y el problema pasa a ser otro: la
+   * barra deja de tener una jerarquía clara. Si hace falta más aire todavía,
+   * la palanca que queda es sacar un destino a «More», no achicar la letra.
    */
-  --text-nav: 17px;
+  --text-nav: 16px;
   --text-titan: 144px;
   --text-titan--line-height: 0.85;
   --text-banda: 112px;
@@ -1040,15 +1048,19 @@
    * elementos en la barra. A tamaño fijo y grande el último CTA se sale; con
    * `vw` entra chica y crece recién cuando la pantalla lo permite.
    *
-   *     nav  1.35vw → 1259px: 17px (tope)
+   *     nav  1.35vw → 1185px: 16px (tope)
    *
-   * ⚠️ CON EL TOPE EN 17 EL CLAMP YA NO MODULA NADA en las pantallas donde
+   * ⚠️ CON EL TOPE EN 16 EL CLAMP YA NO MODULA NADA en las pantallas donde
    * esto se ve: la nav horizontal arranca en 1344, y ahí 1.35vw ya son 18,1px,
    * o sea que siempre está clavada en el tope. Se deja igual porque el piso es
    * la red de seguridad del día que el `desk` baje o la barra sume un item: si
    * eso pasa, la nav se achica sola en vez de romperse.
+   *
+   * ⚠️ EL TOPE BAJÓ DE 17 A 16 junto con el token fijo de arriba, y el porqué
+   * —el pedido de aire contra el logo y la tabla de cuánto compra cada
+   * escalón— está anotado allá. Los dos números tienen que moverse juntos.
    */
-  --text-nav: clamp(15px, 1.35vw, 17px);
+  --text-nav: clamp(15px, 1.35vw, 16px);
   /*
    * ⚠️ El pill TIENE que ser fluido o se rompe en mobile. A 390px la pastilla
    * mide todo el ancho menos el círculo de 80 y el padding, o sea 215px de

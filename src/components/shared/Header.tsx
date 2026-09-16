@@ -13,7 +13,6 @@ import {
   NAV_MORE_FEATURED,
   NAV_MORE_GROUPS,
   NAV_PRIMARY,
-  NAV_SIDE,
 } from '@/lib/nav';
 import { ButtonLink } from './Button';
 import { CaretDown } from './Icon';
@@ -459,51 +458,23 @@ export default function Header() {
             </button>
           </nav>
 
-          {/* ── Contacto + CTA ───────────────────────────────────────────
+          {/* ── CTA ──────────────────────────────────────────────────────
               ⚠️ `flex-1` + `justify-end` y no `shrink-0`: con el logo fuera
               del flujo, los dos grupos tienen que repartirse el ancho en
               partes iguales o el eje del medallón deja de coincidir con el
-              centro óptico de la barra. */}
+              centro óptico de la barra.
+
+              ⚠️ ESTE LADO ES SÓLO EL CTA, Y ANTES TENÍA UN LINK DE TEXTO AL
+              LADO. Era «What's On», que se dibujaba acá porque la nav de la
+              izquierda estaba cargada de items; volvió con los demás el
+              2026-09-16, cuando «Events» salió de la barra y liberó el lugar.
+              El porqué está en `nav.ts`, arriba de `NAV_PRIMARY`.
+
+              ⚠️ NO VUELVE A ENTRAR NADA ACÁ SIN MIRAR ESTO PRIMERO: la regla
+              que sobrevive de aquella versión es que al lado del botón naranja
+              va un LINK DE TEXTO y nunca un segundo botón. Con dos cajas
+              compitiendo en el extremo derecho, el CTA real pierde. */}
           <div className="flex min-w-0 flex-1 items-center justify-end gap-3 desk:gap-6 desk:pl-20">
-            {/*
-              ⚠️ ACÁ VA UN LINK DE TEXTO Y NO UN SEGUNDO BOTÓN. Con dos
-              botones —«What's On» en `outline` + «Plan an Event» en relleno—
-              el extremo derecho tenía dos cajas compitiendo y el CTA real
-              perdía. Un link de texto al lado de una píldora naranja tiene una
-              jerarquía que se lee de una: uno es la salida de servicio, el
-              otro es la acción.
-
-              ⚠️ EL QUE OCUPA ESE LUGAR HOY ES «WHAT'S ON», que hasta recién
-              estaba a la izquierda con los otros cuatro, y el que se fue es
-              «Contact». El porqué —la barra estaba cargada de un solo lado y
-              los números de las dos mediciones— está en `nav.ts`, arriba de
-              `NAV_PRIMARY`. Acá sólo se dibuja lo que esa lista decide: el
-              componente NO sabe cuál es el link de la derecha.
-
-              ⚠️ USA `NAV_ITEM`, EL MISMO QUE LOS DE LA IZQUIERDA. Tuvo un
-              estilo propio —cuerpo regular en 15px— mientras la nav estaba en
-              condensada alta: ahí la diferencia servía para que no se leyera
-              como un botón sin fondo al lado de la píldora. Con las dos cosas
-              en la misma letra esa distinción desapareció sola, y mantenerla
-              sería dejar un item de la nav con otro tamaño que los demás por
-              estar del otro lado del logo.
-            */}
-            {NAV_SIDE.map(({ label, href }) => (
-              <Link
-                key={href}
-                href={href}
-                aria-current={isCurrent(href) ? 'page' : undefined}
-                className={[
-                  NAV_ITEM,
-                  'hidden desk:block',
-                  isCurrent(href)
-                    ? 'text-ink underline decoration-sunset decoration-2 underline-offset-[10px]'
-                    : 'text-ink hover:text-terra',
-                ].join(' ')}
-              >
-                {label}
-              </Link>
-            ))}
             <ButtonLink
               href={NAV_CTA.primary.href}
               variant="primary"

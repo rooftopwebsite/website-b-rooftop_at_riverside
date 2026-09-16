@@ -74,6 +74,38 @@ calendario del sitio viejo. Eso deja dos pendientes.
 
 ---
 
+### A.1 ter · El video del hero — 1 decisión, no es un pedido de material (2026-09-16)
+
+La portada de la home es, desde hoy, **el mismo video que el cliente ya tiene en
+el hero de su sitio de Wix**, bajado a `public/videos/hero-home.mp4` y servido
+desde nuestro repo. Pedido de Camila: «sin recortar ni nada, usemos ese tal
+cual», así que va completo: mismo encuadre, mismos 68,8 segundos, misma
+velocidad. Lo único que se le hizo es recodificarlo y sacarle el audio.
+
+| lo que pesa | |
+|---|---|
+| lo que sirve Wix hoy, 1080p | 52 MB |
+| lo que servimos nosotros | **30,5 MB** |
+
+**La decisión que queda abierta: la duración.** 30 MB es mucho para una portada
+que arranca sola, y no hay margen de compresión: es material de dron sobre
+vegetación densa, de lo más caro que existe para comprimir. Medido con VMAF
+sobre el tramo aéreo, bajar de CRF 30 lleva la calidad de 92 a 78 puntos, o sea
+que empieza a verse sucio en pantalla grande. La única palanca real es cortarlo:
+
+| duración | peso aproximado |
+|---|---|
+| 68,8 s — lo que hay hoy | 30,5 MB |
+| ~30 s | ~13 MB |
+| ~20 s | ~9 MB |
+
+Cortarlo contradice el «tal cual» del pedido, así que **no se cortó**. Si el
+cliente o Camila deciden que la home no puede pesar eso, se elige el tramo y se
+recorta en una corrida de `ffmpeg`; el archivo fuente en 1080p está guardado
+fuera de git, en `_interno/video-sitio/`.
+
+---
+
 ### A.2 · Bloquean páginas internas — 4 ítems
 
 | # | qué | dónde cae |

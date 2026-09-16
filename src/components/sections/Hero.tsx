@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useReducedMotion } from 'motion/react';
 import { useVenue } from '@/components/shared/VenueProvider';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
@@ -89,6 +90,21 @@ import { venueStatus } from '@/lib/hours';
 const NOTCH_PAD_X = 26;
 const NOTCH_PAD_Y = 14;
 
+/*
+ * Los tres números del marco medido contra la pantalla. El mecanismo entero
+ * está explicado en `syncMarco`, adentro del componente.
+ */
+/** Desde este ancho el marco se mide contra la pantalla. Abajo, `w-full`. */
+const MARCO_DESKTOP = 1024;
+/** Lo que queda entre el pie del video y el borde de abajo de la pantalla. */
+const MARCO_AIRE = 24;
+/**
+ * El piso. En una pantalla muy baja el video se pasa del pliegue en vez de
+ * quedar en una franja: abajo de 320px de alto, y a 1168 de ancho, el marco
+ * es una proporción de 3,65:1 y deja de leerse como una portada.
+ */
+const MARCO_MIN = 320;
+
 /** Cada cuánto rota el mensaje del pill. */
 /*
  * ⚠️ SUBIÓ DE 3400 A 4600 ms. Pedido de Camila: «que el cambio entre uno y otro
@@ -107,10 +123,82 @@ export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) 
   const frameRef = useRef<HTMLDivElement | null>(null);
   const plateRef = useRef<HTMLParagraphElement | null>(null);
   const [notch, setNotch] = useState<{ w: number; h: number } | null>(null);
+  /** El alto del marco cuando lo decide la pantalla, en px. `null` = mobile. */
+  const [marco, setMarco] = useState<number | null>(null);
+
+  /*
+   * ⚠️ VUELVE `useReducedMotion`, y vuelve con el video. Se había ido de este
+   * archivo cuando la portada volvió a ser una foto fija, con la nota de que
+   * «si algún día vuelve a haber movimiento en la portada, el hook vuelve con
+   * él». Es ese día. Con la preferencia puesta, el marco muestra el póster.
+   */
+  const reducido = useReducedMotion();
 
   const [statusIdx, setStatusIdx] = useState(0);
   const venue = useVenue();
   const [status, setStatus] = useState<ReturnType<typeof venueStatus>>(null);
+
+  /* ── El marco, medido contra la pantalla ─────────────────────────────── */
+
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ EL MARCO SE MIDE CONTRA EL ALTO DE LA PANTALLA, y esto es nuevo:
+   * hasta ahora era `aspect-video w-full`, o sea que su alto salía del ancho
+   * del contenedor y podía terminar abajo del pliegue.
+   *
+   * Camila, 2026-09-16: «haz que el header ocupe el alto de la pantalla,
+   * fíjate que en mi caso el video queda cortado, debo hacer scroll para
+   * verlo entero». Y tenía razón por poco: en 1920×950 el marco medía
+   * 1168×657 y terminaba 46px abajo del borde. En un portátil de 900, 162.
+   *
+   * ⚠️ LO QUE CEDE ES EL VIDEO, NO EL ANCHO DEL MARCO. Hubo una versión de
+   * unas horas en la que el marco se angostaba para mostrar el 16:9 entero,
+   * y dejaba un hueco de hueso a la derecha: 68px en 1920×950 y 313 en
+   * 1440×800. Camila lo bajó el mismo día: «pero que llegue al lateral
+   * aunque se recorte el video, que el video se adapte al espacio».
+   *
+   * Así que el marco mide SIEMPRE el ancho del contenedor —llega al lateral,
+   * alineado con la pastilla de arriba— y lo único que se calcula es el
+   * ALTO. El `object-cover` del video hace el resto: se escala al ancho y lo
+   * que sobra arriba y abajo se va. En 1920×950 el recorte es de 38px sobre
+   * 657, o sea nada; en un portátil de 800 es de 176 y el cuadro se lee como
+   * una banda apaisada, que es lo que el marco era antes de todo esto.
+   *
+   * ⚠️ NO SE PASA DE 16:9 y ése es el tope de arriba: con más alto que el
+   * proporcional, `object-cover` empezaría a recortar por los COSTADOS, que
+   * en una aérea es donde está el lugar. Se recorta arriba y abajo o no se
+   * recorta. Abajo, `MARCO_MIN`: en una pantalla muy baja el video se pasa
+   * del pliegue en vez de quedar en una franja ridícula.
+   *
+   * ⚠️ SE MIDE EL OFFSET DE DOCUMENTO (`rect.top + scrollY`) Y NO `rect.top`
+   * a secas: con la barra pegajosa y la página scrolleada, `rect.top` dice
+   * cualquier cosa, y esto tiene que dar el mismo número siempre.
+   *
+   * ⚠️ NO HAY BUCLE aunque el `ResizeObserver` mire el propio marco: cambiar
+   * su alto no cambia lo que tiene ARRIBA, así que la segunda vuelta calcula
+   * los mismos números y el `setState` con comparación no dispara render.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  const syncMarco = useCallback(() => {
+    const frame = frameRef.current;
+    const caja = frame?.parentElement;
+    if (!frame || !caja) return;
+
+    /* En mobile no se toca: el marco sigue siendo `aspect-video w-full`. Un
+       teléfono no tiene el problema —el hero entra— y recortar el video ahí
+       sería dejarlo en una tira. */
+    if (window.innerWidth < MARCO_DESKTOP) {
+      setMarco(null);
+      return;
+    }
+
+    const anchoCaja = caja.clientWidth;
+    const arriba = frame.getBoundingClientRect().top + window.scrollY;
+    const porPantalla = window.innerHeight - arriba - MARCO_AIRE;
+    const porAncho = (anchoCaja * 9) / 16;
+    const h = Math.round(Math.max(MARCO_MIN, Math.min(porPantalla, porAncho)));
+    setMarco((prev) => (prev === h ? prev : h));
+  }, []);
 
   /* ── El recorte ──────────────────────────────────────────────────────── */
 
@@ -132,22 +220,31 @@ export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) 
    * parpadeo del bloque naranja justo en lo primero que mira el visitante.
    */
   useLayoutEffect(() => {
-    syncNotch();
+    /* ⚠️ EL ORDEN IMPORTA: primero el marco, después el recorte. El recorte se
+       mide CONTRA el marco —su esquina superior izquierda—, así que medirlo
+       antes de que el marco tenga su tamaño final es medir contra una caja que
+       está por cambiar. */
+    const sync = () => {
+      syncMarco();
+      syncNotch();
+    };
 
-    const onResize = () => syncNotch();
+    sync();
+
+    const onResize = () => sync();
     window.addEventListener('resize', onResize, { passive: true });
 
     /* El `ResizeObserver` cubre lo que el `resize` de window no ve: el marco
-       cambia de alto por su propio `clamp(300px,46vw,600px)` y la placa por el
-       reflow del titular. */
-    const ro = new ResizeObserver(syncNotch);
+       cambia de tamaño por su propia medición contra la pantalla y la placa por
+       el reflow del titular. */
+    const ro = new ResizeObserver(sync);
     if (frameRef.current) ro.observe(frameRef.current);
     if (plateRef.current) ro.observe(plateRef.current);
 
     /* ⚠️ El tercero, el que se olvida. Ver el bloque de arriba. */
     let cancelled = false;
     document.fonts?.ready.then(() => {
-      if (!cancelled) syncNotch();
+      if (!cancelled) sync();
     });
 
     return () => {
@@ -155,7 +252,7 @@ export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) 
       window.removeEventListener('resize', onResize);
       ro.disconnect();
     };
-  }, [syncNotch]);
+  }, [syncMarco, syncNotch]);
 
   /* ── El pill de estado ───────────────────────────────────────────────── */
 
@@ -301,8 +398,14 @@ export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) 
        ⚠️ Y va acá y no en el `<body>`: la superficie base de la HOME es el
        hueso, pero la de las 22 internas sigue siendo el blanco puro. El
        recorte del marco depende de que este color sea exactamente el mismo
-       que el del bloque de arriba — ver el bloque del encabezado. */
-    <section className="relative bg-bone grano pt-9 lg:pt-18">
+       que el del bloque de arriba — ver el bloque del encabezado.
+
+       ⚠️ EL AIRE DE ARRIBA BAJÓ DE 72px A 40 EN DESKTOP (`lg:pt-18` →
+       `lg:pt-10`), y no es un cambio de gusto: desde que el marco se mide
+       contra la pantalla, cada píxel de este padding sale del video. Los 32
+       que se ahorran acá son 32 de alto y 57 de ancho que gana la portada en
+       una pantalla baja. En mobile no cambia nada: ahí el marco no se mide. */
+    <section className="relative bg-bone grano pt-9 lg:pt-10">
       <div className="caja-ancha">
       {/* ── Titular, primera mitad + pill ─────────────────────────────── */}
       {/*
@@ -561,62 +664,112 @@ export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) 
           Together
         </p>
 
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ EL MARCO PASÓ DE FRANJA DE ALTO FIJO A 16:9, y el motivo es el
+          video que tiene adentro. Medía `h-75` en mobile y `46vw` con tope de
+          600px en desktop, o sea una banda apaisada de proporción variable
+          que recortaba lo que le pusieran. Camila pidió el clip «sin recortar
+          ni nada, usemos ese tal cual», y el archivo es 1920×1080: la única
+          caja que lo muestra entero es la de su misma proporción.
+
+          ⚠️ EL HERO CRECE EN ALTO Y ESO SE VE. A 1288px de ancho el marco
+          pasa de 600px a 724, así que los dos CTA de abajo quedan más cerca
+          del borde de la primera pantalla. Es el precio de mostrar el cuadro
+          completo; con `object-cover` en la franja de antes se recortaba
+          arriba y abajo, que es justo lo que se pidió no hacer.
+          ══════════════════════════════════════════════════════════════════
+        */}
         <div
           ref={frameRef}
-          className="relative h-75 w-full overflow-hidden rounded-frame bg-fog lg:h-[46vw] lg:max-h-150"
+          /*
+            ⚠️ `aspect-video` ES EL ESTADO SIN MEDIR, no el definitivo. Es lo
+            que vale en mobile y lo que se pinta en el primer cuadro de
+            desktop, antes de que `syncMarco` corra. De ahí en más el ALTO
+            llega por `style` y la proporción deja de mandar: el `w-full` no se
+            toca nunca, así que el marco siempre llega al lateral.
+          */
+          className="relative aspect-video w-full overflow-hidden rounded-frame bg-fog"
+          style={marco ? { height: marco } : undefined}
         >
           {/*
-            ⚠️ LA FOTO SE ELIGIÓ Y SE RECORTÓ EN `scripts/build-media.mjs`, y el
-            encabezado de esa entrada explica el porqué de la medida, de la
-            proporción y del foco.
-
-            ⚠️ Y EXPLICA TAMBIÉN POR QUÉ LA PORTADA ES DE DÍA DESDE EL
-            2026-09-16. Era la misma ventanilla de noche y el cliente la vio
-            demasiado oscura contra el resto del sitio; medida, era la foto más
-            oscura de las 39 de la entrega. La escena no cambió, sólo la hora.
-
-            Acá sólo importan tres cosas:
-
-            · El archivo YA VIENE en 2576×1200, que es exactamente 2× el ancho
-              tope del marco y su misma proporción. `object-cover` no recorta
-              nada: la banda que se ve es la que se eligió.
-            · `priority` porque es el LCP de la home.
-            · El `alt` DESCRIBE LO QUE SE VE y no lo que vende la sección. El
-              anterior decía «The rooftop at sunset, with the food truck yard
-              below» sobre una aérea de una clase de yoga, o sea que era falso
-              para quien usa lector de pantalla. La regla está en `docs/media.md`.
-          */}
-          {/*
             ══════════════════════════════════════════════════════════════
-            ⚠️ ACÁ ESTUVO UN VIDEO DURANTE UNAS HORAS Y SE FUE. Conviene
-            dejarlo escrito para que no vuelva por el mismo camino.
+            ⚠️ LA PORTADA ES EL VIDEO QUE EL CLIENTE YA TIENE EN SU HOME, y
+            es el segundo intento de poner movimiento acá. El primero está
+            anotado abajo y conviene leerlo antes de tocar esto.
 
-            El cliente preguntó si podíamos usar el video horizontal de su
-            propia página `/hostanevent`. Se bajó, se cortó para sacar los
-            tramos donde los televisores mostraban Tokio 2020 y playoffs de la
-            Stanley Cup —o sea 2021, contra una apertura de enero de 2024— y
-            se dejó en dos tramos limpios a 1,45× de velocidad: 15 segundos,
-            1,5 MB.
+            INTENTO 1, 2026-09-15 — el clip de `/hostanevent`: se bajó, se
+            cortó para sacar los tramos donde los televisores mostraban Tokio
+            2020 y playoffs de la Stanley Cup —o sea 2021, contra una apertura
+            de enero de 2024— y quedó en dos tramos a 1,45× de velocidad: 15
+            segundos, 1,5 MB. Camila lo bajó: «en la home mejor dejemos la
+            foto que estaba antes, olvidemos este video».
 
-            Camila lo bajó igual, 2026-09-15: «en la home mejor dejemos la
-            foto que estaba antes, olvidemos este video, no lo usemos en
-            ningún lado». La portada vuelve a ser la foto y el clip no se
-            reubica en otra sección.
+            INTENTO 2, 2026-09-16 — ÉSTE, y no es el mismo archivo. Pedido:
+            «en el hero de la home pondremos el mismo video que tiene hoy en
+            el hero de la home la web actual, sin recortar ni nada, usemos ese
+            tal cual». Son videos distintos: aquél dura 46s y vive en
+            `/hostanevent`; éste dura 69 y es el fondo del primer bloque de
+            `eatdrinkparadise.com`.
 
-            ⚠️ SE FUE TAMBIÉN EL `useReducedMotion` DE ESTE ARCHIVO. Existía
-            sólo para cambiar el video por la foto; sin video, el hero no
-            tiene nada que respetar acá. Si algún día vuelve a haber
-            movimiento en la portada, el hook vuelve con él.
+            ⚠️ «TAL CUAL» SE TOMÓ AL PIE DE LA LETRA: mismo encuadre, mismos
+            69 segundos, misma velocidad. No se cortó un cuadro. Lo único que
+            se le hizo es lo que dice `docs/media.md` que se le hace a todo
+            video del repo —recodificar y sacarle el audio—, y por eso el
+            marco de arriba pasó a 16:9.
+
+            ⚠️ DE DÓNDE SALE EL ARCHIVO. Es el fondo del column-strip de la
+            home de Wix (`video.wixstatic.com`, id `526079_bac239b0…`), que se
+            sirve en cuatro calidades; se bajó la de 1080p, que es el máximo
+            que hay. **No se linkea a Wix**: el sitio nuevo no puede depender
+            del viejo, que se apaga cuando esto salga.
+
+              1920×1080 · 68,8s · 30fps · H.264 · sin audio · faststart
+              52 MB (lo que sirve Wix hoy)  →  30,5 MB
+
+            ⚠️ 30 MB SIGUE SIENDO MUCHO Y NO ES UN DESCUIDO. Es material de
+            dron sobre vegetación densa, que es de lo más caro que hay para
+            comprimir: medido con VMAF sobre el tramo aéreo, bajar de CRF 30
+            pasa de 92 a 78 puntos, o sea que se empieza a ver. El único
+            número que queda para achicarlo de verdad es la DURACIÓN, y ésa la
+            decide el cliente: 20 segundos serían 9 MB. Anotado en
+            `docs/pedido-al-cliente.md`.
+
+            ⚠️ EL PÓSTER ES EL PRIMER CUADRO DEL CLIP, no una foto elegida.
+            Así no hay salto entre lo que se ve mientras baja el video y lo
+            que arranca cuando reproduce. Es además lo que se muestra con
+            `prefers-reduced-motion`, y es el LCP de la home en los dos casos.
+
+            ⚠️ LA FOTO QUE ESTABA —`hero-truck-window.jpg`, la ventanilla de
+            día— QUEDA HUÉRFANA Y NO SE BORRA. Ya no la muestra ninguna
+            sección, pero la sigue generando `scripts/build-media.mjs` con su
+            recorte y su encuadre elegidos, y es la portada a la que volver si
+            el video se cae. El día que se decida que el video se queda, se
+            saca esa entrada del script y ahí sí se va el archivo.
             ══════════════════════════════════════════════════════════════
           */}
-          <Image
-            src="/images/venue/hero-truck-window.jpg"
-            alt="A guest reaching up to the counter of a food truck window in daylight, with two more waiting their turn"
-            fill
-            priority
-            sizes="(min-width: 1400px) 1288px, 100vw"
-            className="object-cover"
-          />
+          {reducido ? (
+            <Image
+              src="/videos/hero-home.jpg"
+              alt="The Rooftop at Riverside sign hanging over the sidewalk on Old 41, with the balcony and the palms behind it"
+              fill
+              priority
+              sizes="(min-width: 1400px) 1288px, 100vw"
+              className="object-cover"
+            />
+          ) : (
+            <video
+              src="/videos/hero-home.mp4"
+              poster="/videos/hero-home.jpg"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-label="Rooftop at Riverside filmed from the sidewalk and from the air: the sign over Old 41, the white building with the yard and its games below, the bar inside with its screens, and the street on an event day"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          )}
 
           {/*
             El recorte. `bg-bone` tiene que ser EL MISMO color que el fondo de
