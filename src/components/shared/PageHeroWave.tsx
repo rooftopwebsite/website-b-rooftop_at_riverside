@@ -42,6 +42,7 @@ import { Eyebrow } from './Type';
 export default function PageHeroWave({
   eyebrow,
   title,
+  accent,
   lead,
   from = 'paper',
   to = 'bone',
@@ -49,6 +50,16 @@ export default function PageHeroWave({
 }: {
   readonly eyebrow?: string;
   readonly title: ReactNode;
+  /**
+   * La parte del titular que va en el acento, antes del resto.
+   *
+   * ⚠️ VA EN `sunset-deep` Y NO EN `sunset`. Sobre `paper` el naranja de marca
+   * da 2.35:1 y ni siquiera pasa el umbral de texto grande, que es 3:1. El tono
+   * diez puntos más oscuro da 3.28:1 sobre `bone` y 3.55:1 sobre `paper`. Es la
+   * misma regla que rige el titular de `ThreeDoors` en la home, y está
+   * argumentada entera ahí.
+   */
+  readonly accent?: string;
   readonly lead?: ReactNode;
   /** La superficie del encabezado. */
   readonly from?: Surface;
@@ -91,6 +102,11 @@ export default function PageHeroWave({
             id="page-title"
             className="m-0 mx-auto mt-4 max-w-[18ch] text-balance font-display text-banda font-extrabold uppercase leading-[0.9] text-ink"
           >
+            {accent ? (
+              <>
+                <span className="text-sunset-deep">{accent}</span>{' '}
+              </>
+            ) : null}
             {title}
           </h1>
 

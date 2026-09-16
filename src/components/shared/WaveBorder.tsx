@@ -93,7 +93,26 @@ export default function WaveBorder({
           estirarse: `preserveAspectRatio` sin `slice` escalaría las olas y en un
           monitor grande se verían el doble de altas que en un portátil.
         */}
-        <rect width="4000" height={OLA.alto} fill={`url(#${id})`} />
+        {/*
+          ⚠️ LAS OLAS SE HAMACAN, Y ANTES ESTABAN QUIETAS. Camila, 2026-09-16:
+          «quedémonos con las ondas verdes pero sin el sticker de la palmera,
+          sólo las ondas, y animémoslas como en el home».
+
+          Es la MISMA animación que la ola de `PhotoDivider`: `.rt-wave`, un
+          vaivén horizontal de 3,5 % en 11 segundos. No se escribe una nueva ni
+          se cambia la duración, porque dos olas del mismo sitio moviéndose a
+          ritmos distintos se notan como dos animaciones y no como el mar.
+
+          ⚠️ SE ANIMA EL `<rect>` Y NO EL CONTENEDOR. El rectángulo ya se pasa
+          del viewBox —mide 4000 contra 1600— justamente para que sobre material
+          al recortar, así que puede correrse un 3,5 % sin que aparezca un borde
+          vacío. Mover el div de afuera obligaría a ensancharlo y a compensar
+          con un margen negativo, que es lo que hace `PhotoDivider` porque allá
+          la ola es un SVG suelto y no un patrón.
+
+          El corte global de `prefers-reduced-motion` la apaga: ver globals.css.
+        */}
+        <rect className="rt-wave" width="4000" height={OLA.alto} fill={`url(#${id})`} />
       </svg>
     </div>
   );

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ButtonLink } from '@/components/shared/Button';
-import CompareSlab from '@/components/shared/CompareSlab';
+import CompareSlab, { PADDING_CRUCE } from '@/components/shared/CompareSlab';
 import TruckCards from '@/components/sections/TruckCards';
 import PageHeroWave from '@/components/shared/PageHeroWave';
 import Section from '@/components/shared/Section';
@@ -41,7 +41,8 @@ export default function FoodTrucksPage() {
 
       <PageHeroWave
         eyebrow="The yard"
-        title="Four kitchens. One yard."
+        accent="Four kitchens."
+        title="One yard."
         lead="The trucks rotate. Each one is independently owned, sets its own menu and takes its own payment. We just give them the yard and the crowd."
         from="paper"
         to="bone"
@@ -158,7 +159,7 @@ export default function FoodTrucksPage() {
         el emblema naranja fue dibujado.
         ══════════════════════════════════════════════════════════════════
       */}
-      <Section band="md" labelledBy="rota-title">
+      <Section band="md" bandTop="none" labelledBy="rota-title" innerClassName={PADDING_CRUCE}>
         <div className="relative rounded-frame bg-cream grano px-7 pt-14 pb-20 text-center sm:px-16 sm:pt-16 sm:pb-16 lg:px-24">
           {/* El filete punteado, separado del borde. `inset-3.5` son los 14px
               que lo despegan, igual que en los huecos de foto de `WhatsOn`. */}
@@ -168,39 +169,11 @@ export default function FoodTrucksPage() {
           />
 
           {/*
-            ══════════════════════════════════════════════════════════════
-            LOS DOS SELLOS, EN LAS ESQUINAS.
-
-            ⚠️ EL EMBLEMA SE MUDÓ DE ABAJO AL CENTRO A ARRIBA A LA IZQUIERDA, y
-            hay dos motivos, los dos de Camila: «para que no se parezca tanto al
-            original» y «ocupar los espacios laterales».
-
-            El segundo es el que manda. El banner es ancho y bajo, y el texto
-            vive centrado en el tercio del medio: los dos tercios de los
-            costados quedaban vacíos. Con un sello en cada esquina el bloque se
-            ocupa entero y el texto sigue centrado.
-
-            ⚠️ EL DE ABAJO A LA DERECHA ES EL ISOTIPO DEL CAMIÓN, y no otro
-            emblema: es la página de los food trucks, así que de todo el juego
-            de marca es el único que además dice de qué habla la sección.
-
-            ⚠️ EN TELÉFONO VUELVEN A UNO SOLO, ABAJO Y AL CENTRO, que es como
-            estaba. Pedido explícito: «en mobile sí pongámoslo como ahora». Y
-            tiene su razón: a 390px el panel mide 342 de ancho y no hay tercios
-            laterales que llenar; dos sellos en las esquinas se comerían el
-            texto. El de la esquina inferior derecha directamente no se
-            renderiza abajo de `sm`.
-            ══════════════════════════════════════════════════════════════
+            ⚠️ ACÁ HABÍA UN EMBLEMA DE PALMERA Y SE FUE. Camila, 2026-09-16:
+            «sin el sticker de la palmera, sólo las ondas». Queda el isotipo del
+            camión en la esquina de abajo, que es el que dice de qué habla la
+            página; el emblema sólo ocupaba lugar.
           */}
-          <Image
-            src="/brand/emblem.svg"
-            alt=""
-            aria-hidden="true"
-            width={253}
-            height={253}
-            className="sticker absolute bottom-0 left-1/2 w-24 -translate-x-1/2 translate-y-1/2 sm:bottom-auto sm:left-0 sm:top-0 sm:w-28 sm:-translate-x-1/3 sm:-translate-y-1/3 lg:w-33"
-          />
-
           <Image
             src="/brand/isotype-truck.svg"
             alt=""

@@ -1,4 +1,4 @@
-import HorizonBorder from './HorizonBorder';
+import WaveBorder, { type Surface } from './WaveBorder';
 import Image from 'next/image';
 import Section from './Section';
 import { Eyebrow, Heading } from './Type';
@@ -30,6 +30,23 @@ export interface CompareColumn {
   readonly rows: readonly string[];
 }
 
+/**
+ * El hueco que la sección SIGUIENTE tiene que dejar arriba para que las
+ * tarjetas puedan sobresalir: los 128px que sobresalen (`-mb-32`) más 80 de
+ * aire.
+ *
+ * ⚠️ SE EXPORTA PARA QUE EL NÚMERO EXISTA UNA SOLA VEZ. Si el margen negativo
+ * cambia y este no, las tarjetas se montan sobre el contenido de abajo.
+ *
+ * ⚠️ VA EN EL `innerClassName` DE LA SECCIÓN, NO EN EL `className`, y la
+ * sección de abajo tiene que llevar además `bandTop="none"`. Puesto en el
+ * `className` conviven dos utilidades `padding-top` en el mismo elemento y cuál
+ * gana lo decide el ORDEN DEL CSS EMITIDO, no el orden en que se escriben: el
+ * hueco salía distinto según qué clase compilara Tailwind primero. Con el
+ * padding adentro y la banda en cero, hay un solo `pt` y es el que se ve.
+ */
+export const PADDING_CRUCE = 'pt-52';
+
 export default function CompareSlab({
   eyebrow,
   title,
@@ -39,6 +56,7 @@ export default function CompareSlab({
   id,
   ours,
   theirs,
+  from = 'bone',
 }: {
   readonly eyebrow: string;
   readonly title: string;
@@ -47,11 +65,37 @@ export default function CompareSlab({
   readonly id: string;
   readonly ours: CompareColumn;
   readonly theirs: CompareColumn;
+  /** La superficie de la sección de ARRIBA. De ahí sale la onda. */
+  readonly from?: Surface;
 }) {
   return (
     <>
-      <HorizonBorder from="paper" to="deep" />
-      <Section tone="deep" band="lg" labelledBy={id}>
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ ERA UN `HorizonBorder` Y AHORA ES LA ONDA. Camila, 2026-09-16:
+        «quedémonos con las ondas verdes pero sin el sticker de la palmera,
+        sólo las ondas, y animémoslas como en el home».
+
+        El horizonte es una curva suave con el sol y la palmera montados
+        encima; la onda es la cenefa festoneada, sin pieza. Dos cosas distintas
+        y la que se pidió es la segunda.
+
+        ⚠️ Y ADEMÁS ARREGLA UNA COSTURA QUE ESTABA MAL. El horizonte venía con
+        `from="paper"` escrito a mano, pero en `/food-trucks` la sección de
+        arriba es `bone`: la curva salía del color equivocado y se veía un
+        escalón de 1.08:1 justo antes del corte. Ahora el color de partida es
+        una prop y lo pasa quien usa el componente.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <WaveBorder from={from} to="deep" />
+      {/*
+        ⚠️ `bandBottom="none"` NO ES UN DESCUIDO: es lo que deja que las
+        tarjetas crucen. El `-mb-32` del grid tira 128px hacia abajo, pero el
+        `pb` de la banda los sumaba de vuelta, así que las tarjetas terminaban
+        justo AL RAS del borde verde en vez de pisarlo. Sin `pb`, el margen
+        negativo es lo único que decide cuánto sobresalen.
+      */}
+      <Section tone="deep" band="lg" bandBottom="none" labelledBy={id}>
         {/*
           ══════════════════════════════════════════════════════════════════
           ⚠️ EL ENCABEZADO VA CENTRADO Y ANTES IBA A LA IZQUIERDA. Camila,
@@ -96,14 +140,30 @@ export default function CompareSlab({
           el par deja de leerse como un par. La nuestra lleva además el CTA
           abajo, así que sin esto siempre sería la más alta.
         */}
-        <div className="mt-bloque grid items-stretch gap-8 lg:grid-cols-2 lg:gap-10">
+        {/*
+          ⚠️ LAS DOS TARJETAS PISAN EL CAMBIO DE FONDO. Camila: «que las dos
+          cards pisen el cambio de fondo verde al blanco».
+
+          El margen negativo las saca de la losa oscura y las apoya sobre lo que
+          viene abajo. Es el mismo recurso con el que el sticker pisa el borde de
+          la tarjeta, una escala más arriba: la pieza cruza la costura en vez de
+          respetarla, y eso ata las dos superficies.
+
+          ⚠️ EL `z-10` NO SOBRA. Sin él la sección siguiente, que viene después
+          en el DOM, pinta su fondo encima de la mitad que sobresale.
+
+          ⚠️ Y LA SECCIÓN DE ABAJO TIENE QUE DEJARLES LUGAR. Lo hace
+          `PADDING_CRUCE`, que se exporta de acá para que el número viva en un
+          solo archivo: si cambia el margen negativo, cambia el hueco.
+        */}
+        <div className="relative z-10 mt-bloque -mb-32 grid items-stretch gap-8 lg:grid-cols-2 lg:gap-10">
           {[
             { col: ours, nuestro: true },
             { col: theirs, nuestro: false },
           ].map(({ col, nuestro }) => (
             <div
               key={col.label}
-              className="relative flex flex-col rounded-frame bg-bone grano px-6 pt-10 pb-10 text-center sm:px-10"
+              className="relative flex flex-col rounded-frame bg-bone grano px-6 pt-14 pb-10 text-center sm:px-10 sm:pt-16"
             >
               {/*
                 EL FILETE PUNTEADO INTERIOR. El color es el que dice de qué
@@ -121,49 +181,58 @@ export default function CompareSlab({
                 ].join(' ')}
               />
 
-              <div className="relative flex flex-1 flex-col">
-                {/*
-                  ══════════════════════════════════════════════════════════
-                  ⚠️ EL RÓTULO ES UNA MARCA VISUAL Y NO UN TÍTULO DE TEXTO.
-                  Camila, 2026-09-16: «cambiá el "aquí" y "un restaurante", poné
-                  algo más visual, quizá el logo de Rooftop pero sólo el camión,
-                  y del otro lado algo que represente un restaurante común, o
-                  creemos un sticker que diga "restaurante común"».
+              {/*
+                ══════════════════════════════════════════════════════════
+                ⚠️ LA MARCA ES UN STICKER QUE PISA EL BORDE DE ARRIBA, mitad
+                adentro y mitad afuera. Camila, 2026-09-16: «los stickers del
+                logo y el "a regular restaurant" pongámoslos literalmente como
+                sticker, como en el header o los 3 pasos de la home, que pisen
+                mitad card mitad no».
 
-                  De un lado va el isotipo del camión, que es el logo del
-                  cliente reducido a la pieza que corresponde acá. Del otro, un
-                  sello: píldora de filo punteado en rojo, en caja alta y con
-                  una inclinación de 4 grados, que es el idioma de un sello de
-                  goma. No existe un icono de «restaurante común» y dibujar uno
-                  sería inventarle un símbolo a algo que no es una marca.
+                Es la misma construcción que el sticker de los pasos 01/02/03
+                de la home: `absolute` sobre el borde, centrado, con
+                `-translate-y-1/2` que lo parte exactamente en el filo, y la
+                clase `.sticker` que le da la sombra de dos pasadas.
 
-                  ⚠️ EL `<h3>` NO DESAPARECE, SE VUELVE INVISIBLE. La columna
-                  necesita nombre en el árbol de encabezados: sin él, quien
-                  navega por títulos encuentra un `<h2>` y después cinco
-                  renglones sueltos sin saber de qué lado están. El dibujo es
-                  para el ojo; el `<h3>` es para todo lo demás.
-                  ══════════════════════════════════════════════════════════
-                */}
-                <Heading level={3} className="sr-only">
-                  {col.label}
-                </Heading>
+                ⚠️ LA SOMBRA ES LO QUE LO HACE LEER COMO PEGADO, y es la razón
+                por la que hay una plancha `bone` detrás de cada uno. Sin
+                relleno propio, `drop-shadow` sigue el alfa del dibujo y la
+                sombra sale por dentro de las letras en vez de por el contorno
+                de la pieza. El logo del header hace lo mismo con `.plancha`.
 
-                <div aria-hidden="true" className="flex h-16 items-center justify-center">
-                  {nuestro ? (
+                ⚠️ EL `pt` DE LA TARJETA SUBIÓ A 56/64px. El sticker ocupa la
+                mitad de su alto dentro de la tarjeta, así que sin ese aire el
+                primer renglón de la lista le quedaba debajo.
+                ══════════════════════════════════════════════════════════
+              */}
+              <Heading level={3} className="sr-only">
+                {col.label}
+              </Heading>
+
+              <span
+                aria-hidden="true"
+                className="sticker absolute -top-px left-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
+              >
+                {nuestro ? (
+                  <span className="block rounded-pill bg-bone px-5 py-3">
                     <Image
                       src="/brand/isotype-truck.svg"
                       alt=""
                       width={552}
                       height={390}
-                      className="h-13 w-auto"
+                      className="h-10 w-auto"
                     />
-                  ) : (
-                    <span className="-rotate-4 rounded-pill border-2 border-dashed border-terra/65 px-5 py-1.5 font-display text-d6 font-bold uppercase leading-none text-terra">
+                  </span>
+                ) : (
+                  <span className="-rotate-4 block rounded-pill bg-bone px-5 py-2.5 ring-2 ring-terra/65 ring-inset">
+                    <span className="block font-display text-d6 font-bold uppercase leading-none whitespace-nowrap text-terra">
                       A regular restaurant
                     </span>
-                  )}
-                </div>
+                  </span>
+                )}
+              </span>
 
+              <div className="relative flex flex-1 flex-col">
                 <ul className="mt-8 flex list-none flex-col gap-6 p-0">
                   {col.rows.map((r) => (
                     <li key={r} className="flex flex-col items-center gap-2.5">
