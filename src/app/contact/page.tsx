@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import ContactForm from '@/components/sections/ContactForm';
+import ContactHero from '@/components/sections/ContactHero';
 import { ButtonLink } from '@/components/shared/Button';
 import HoursCard from '@/components/shared/HoursCard';
-import { ArrowSquareOut, Instagram } from '@/components/shared/Icon';
+import { ArrowSquareOut } from '@/components/shared/Icon';
 import MapEmbed from '@/components/shared/MapEmbed';
-import PageHero from '@/components/shared/PageHero';
 import Section from '@/components/shared/Section';
-import { Heading, SectionHead } from '@/components/shared/Type';
+import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { BRAND, instagramHandle } from '@/lib/brand';
 import { getVenue, venueAddressLine } from '@/lib/venue';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta, venueJsonLd } from '@/lib/seo';
@@ -22,11 +22,36 @@ export const metadata: Metadata = pageMeta({
 });
 
 /**
- * `/contact` — dirección, horarios, formulario y gift cards.
+ * `/contact` — los tres buzones, el formulario, los horarios y el mapa.
  *
- * ⚠️ EL ENCABEZADO ES EL PESO CHICO: sólo tipografía y un filete, sin foto
- * grande. Es la página a la que se llega buscando un dato, no una que haya que
- * vender, y una foto a sangre arriba empuja el teléfono abajo del pliegue.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LA PÁGINA ESTÁ ARMADA SOBRE `defoodtruckclub.nl/contact`. Pedido de
+ * Camila, 2026-09-16: copiar su estructura y traer de nuestras otras secciones
+ * los layouts que hagan falta para todo lo que va acá.
+ *
+ * La referencia tiene TRES bloques y nada más:
+ *
+ *   1. un encabezado COLLAGE, donde el mail y el teléfono son piezas del
+ *      tamaño de las letras del titular;
+ *   2. una losa de formulario a dos columnas: a la izquierda un texto corto y
+ *      los datos de la empresa, a la derecha una caja de radio grande con
+ *      filete punteado por dentro y el formulario escrito como una FRASE;
+ *   3. el footer.
+ *
+ * No tiene horarios, no tiene mapa y no tiene foto.
+ *
+ * ⚠️ NOSOTROS SÍ LOS TENEMOS, y no por inercia: la spec de internas
+ * (`docs/prompt-claude-design-internas.md` §7.9) los pone como el contenido
+ * principal de esta página, porque los dos sets de horario son la confusión
+ * número uno del negocio. Van DEBAJO del formulario, en su propia banda y
+ * sobre otra superficie, para que la estructura de arriba siga siendo la de la
+ * referencia y no se lean como continuación de la losa.
+ *
+ * Los bloques nuestros salen de piezas que ya existen: la onda del encabezado
+ * es la de `/food-trucks`, la tarjeta de horarios y el mapa diferido son los
+ * mismos de siempre, y la banda oscura de cierre es la que cierra las nueve
+ * internas.
+ * ══════════════════════════════════════════════════════════════════════════
  *
  * ⚠️ EL MAPA ES LA ÚNICA COSA PESADA DE LA PÁGINA Y NO SE CARGA SOLO. Ver
  * `components/shared/MapEmbed.tsx`: la dirección, el teléfono y el link a
@@ -66,11 +91,31 @@ export const metadata: Metadata = pageMeta({
 export default async function ContactPage() {
   const venue = await getVenue();
 
-  // El mail general sale de la base; los otros dos no tienen columna propia.
-  const emails = [
-    { label: 'General', address: venue.email },
-    { label: 'Private events', address: venue.emailEvents },
-    { label: 'Working here', address: venue.emailHiring },
+  /*
+   * ⚠️ CADA BUZÓN LLEVA PARA QUÉ ES, y esa línea es medio bloque.
+   *
+   * Tres direcciones sin explicación obligan a adivinar, y quien adivina mal
+   * escribe a la general: el buzón de eventos existe justamente para que una
+   * consulta de $20.000 no caiga en el mismo lugar que una pregunta sobre el
+   * horario. Por el mismo motivo `events@` NO va en el footer (ver
+   * `docs/layout-motion.md`): vive sólo acá y en el hub de eventos.
+   */
+  const buzones = [
+    {
+      label: 'General',
+      address: venue.email,
+      what: 'Hours, the yard, a jacket someone left on a bench, anything that does not fit below.',
+    },
+    {
+      label: 'Private events',
+      address: venue.emailEvents,
+      what: 'Buyouts and private parties. It lands with the person who prices them.',
+    },
+    {
+      label: 'Working here',
+      address: venue.emailHiring,
+      what: 'Bar and venue jobs. The trucks are separate businesses and hire their own crews.',
+    },
   ];
 
   return (
@@ -86,37 +131,77 @@ export default async function ContactPage() {
         }}
       />
 
-      <PageHero
+      {/* ══ 1. El encabezado collage ══════════════════════════════════════ */}
+
+      <ContactHero
         eyebrow="Contact"
-        title="Say hello"
-        lead="The address, the hours and a form that goes to a person. If it is urgent, the phone is faster than all of it."
-        crumbs={[{ name: 'Contact', path: '/contact' }]}
+        title={['Say', 'hello']}
+        lead="Three inboxes, so your message lands with the person who can answer it instead of a shared one. If it is urgent, the phone is faster than all of it."
+        phone={venue.phone}
+        phoneHref={venue.phoneHref}
+        instagram={BRAND.social.instagram}
+        handle={'@' + instagramHandle()}
+        from="bone"
+        to="paper"
       />
 
-      {/* ══ Formulario + datos ════════════════════════════════════════════ */}
+      {/* ══ 2. La losa del formulario, con los buzones al costado ═════════ */}
 
-      <Section bandTop="md" band="lg" labelledBy="write-title">
-        <div className="grid gap-[48px] lg:grid-cols-[1.15fr_1fr] lg:gap-[72px]">
+      <Section band="lg" labelledBy="write-title">
+        {/*
+          ⚠️ `items-start` NO ES COSMÉTICO. Sin él las dos columnas son igual
+          de altas, y como la izquierda es más larga, la losa del formulario se
+          estiraba hasta su altura: quedaban 250px de fondo `bone` vacíos
+          debajo del botón de enviar, con el filete punteado corriendo por el
+          costado de la nada. La caja tiene que terminar donde termina el
+          formulario, como en la referencia.
+        */}
+        <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
+          {/*
+            ── La columna de datos ────────────────────────────────────────
+            Es la que en la referencia lleva la razón social, el KVK y el
+            número de IVA: texto corto, un filete y los datos duros. Lo nuestro
+            en ese lugar son los tres buzones y la dirección.
+          */}
           <div>
             <SectionHead
               eyebrow="Write to us"
               eyebrowTone="deep"
               id="write-title"
-              title="Send a note"
-              lead="Tell us what it is about and it goes to whoever can answer it."
+              title="Three inboxes"
+              lead="Pick the one that fits. The form does the same thing if you would rather type than open your mail app."
             />
-            <div className="mt-[36px]">
-              <ContactForm />
-            </div>
-          </div>
 
-          {/* ── La columna de datos duros ──────────────────────────────── */}
-          <div className="flex flex-col gap-[36px]">
-            <div>
+            <div className="filete mt-9" />
+
+            <ul className="mt-9 flex list-none flex-col gap-7">
+              {buzones.map((b) => (
+                <li key={b.address}>
+                  <Heading level={2} role="label">
+                    {b.label}
+                  </Heading>
+                  <p className="mt-[10px]">
+                    <a
+                      href={'mailto:' + b.address}
+                      className="link-texto break-all font-display text-d5 font-semibold uppercase leading-none text-ink"
+                    >
+                      {b.address}
+                    </a>
+                  </p>
+                  <p className="mt-[10px] max-w-[46ch] text-[16px] leading-[1.65] text-body/80">
+                    {b.what}
+                  </p>
+                </li>
+              ))}
+            </ul>
+
+            <div className="filete mt-9" />
+
+            <div className="mt-9">
               <Heading level={2} role="label">
                 Come by
               </Heading>
-              <address className="mt-[14px] not-italic">
+              <address className="mt-[12px] not-italic">
                 <p className="text-lead leading-[1.5]">
                   {venue.street}
                   <br />
@@ -124,61 +209,23 @@ export default async function ContactPage() {
                 </p>
                 <p className="mt-[10px] text-[16px] text-body/80">{venue.neighborhood}</p>
               </address>
-            </div>
-
-            <div>
-              <Heading level={2} role="label">
-                Call
-              </Heading>
-              <p className="mt-[14px]">
-                <a
-                  href={venue.phoneHref}
-                  className="link-texto font-display text-d5 uppercase leading-none lg:text-d4"
-                >
-                  {venue.phone}
-                </a>
-              </p>
-            </div>
-
-            <div>
-              <Heading level={2} role="label">
-                Email
-              </Heading>
-              <ul className="mt-[14px] flex list-none flex-col gap-[10px]">
-                {emails.map((e) => (
-                  <li key={e.address} className="text-[16px]">
-                    <span className="text-body/70">{e.label}: </span>
-                    <a href={`mailto:${e.address}`} className="link-texto break-all font-bold">
-                      {e.address}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <Heading level={2} role="label">
-                Follow
-              </Heading>
-              <p className="mt-[14px]">
+              <p className="mt-[14px] text-[15px] leading-[1.6] text-body/75">
+                Cancellations and weather calls go up on{' '}
                 <a
                   href={BRAND.social.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link-texto inline-flex items-center gap-[8px] font-bold"
+                  className="link-texto font-bold"
                 >
-                  <Instagram className="size-5" aria-hidden="true" />
                   @{instagramHandle()}
                   <span className="sr-only">(opens in a new tab)</span>
-                </a>
-              </p>
-              <p className="mt-[8px] text-[15px] text-body/70">
-                Cancellations and weather calls go up there first.
+                </a>{' '}
+                first.
               </p>
             </div>
 
             {/* ── Gift cards, 1 de 2 ─────────────────────────────────────── */}
-            <div className="rounded-card border border-ink/15 bg-bone p-[24px]">
+            <div className="mt-9 rounded-card border border-ink/15 bg-bone p-[24px]">
               <Heading level={2} role="card">
                 Gift cards
               </Heading>
@@ -193,10 +240,29 @@ export default async function ContactPage() {
               </div>
             </div>
           </div>
+
+          {/*
+            ── La losa ────────────────────────────────────────────────────
+            ⚠️ SON DOS CAJAS, UNA ADENTRO DE LA OTRA, y así está hecha la de la
+            referencia: la de afuera pone el color y el radio grande, la de
+            adentro pone el filete punteado y el aire. Con una sola caja, un
+            borde punteado sobre el radio de 44px queda pegado al contenido en
+            las esquinas, que es donde la curva se come el padding.
+
+            ⚠️ LA LOSA VA EN `bone` SOBRE SECCIÓN `paper`, y no al revés. Los
+            campos son blancos: si la caja también fuera blanca, la píldora de
+            cada campo quedaría sostenida sólo por su borde de 1px. Con la caja
+            un escalón más oscura, los cinco campos se leen a distancia.
+          */}
+          <div className="rounded-frame bg-bone p-3 sm:p-4">
+            <div className="rounded-shell border-2 border-dashed border-ink/20 px-6 py-10 sm:px-10 lg:px-12 lg:py-12">
+              <ContactForm />
+            </div>
+          </div>
         </div>
       </Section>
 
-      {/* ══ Horarios + mapa ═══════════════════════════════════════════════ */}
+      {/* ══ 3. Horarios y mapa ════════════════════════════════════════════ */}
 
       <Section tone="bone" band="lg" labelledBy="find-title">
         <SectionHead
@@ -221,12 +287,17 @@ export default async function ContactPage() {
         </div>
       </Section>
 
-      {/* ══ Cierre: gift cards, 2 de 2 ════════════════════════════════════ */}
+      {/* ══ 4. Cierre: gift cards, 2 de 2 ═════════════════════════════════ */}
 
       <Section tone="deep" band="md" labelledBy="gift-title">
         <div className="flex flex-col items-start gap-[24px] lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <Heading level={2} id="gift-title" className="max-w-[18ch] text-d4 lg:text-d3">
+            <Eyebrow tone="cream">Gift cards</Eyebrow>
+            <Heading
+              level={2}
+              id="gift-title"
+              className="mt-gap-kicker max-w-[18ch] text-d4 lg:text-d3"
+            >
               Someone else&rsquo;s round, on you
             </Heading>
             <p className="mt-[12px] max-w-[46ch] text-[16px] leading-[1.7] text-paper/80">

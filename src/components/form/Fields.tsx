@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useFormStatus } from 'react-dom';
+import { CaretDown } from '@/components/shared/Icon';
 import type { ActionState } from '@/app/actions/types';
 
 /*
@@ -492,5 +493,188 @@ export function FormShell({
         </div>
       </form>
     </Ctx.Provider>
+  );
+}
+
+/* ── Los campos EN FRASE, que hoy usa sólo `/contact` ────────────────────── */
+
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ POR QUÉ HAY UNA SEGUNDA FORMA DE DIBUJAR UN CAMPO.
+ *
+ * El formulario de `/contact` está calcado del de `defoodtruckclub.nl/contact`,
+ * donde los campos NO llevan etiqueta encima: están metidos dentro de una
+ * frase. Allá se lee «Mijn naam is [       ] van [       ]», o sea que la
+ * etiqueta es el texto que viene antes del campo y la línea entera se lee como
+ * una oración que la persona completa.
+ *
+ * ⚠️ NO ES UN PLACEHOLDER HACIENDO DE ETIQUETA, que es la regla que rige el
+ * resto del archivo. Cada campo sigue teniendo su `<label>` real, asociado con
+ * `htmlFor`: lo único que cambia es que la etiqueta se pinta EN LÍNEA con el
+ * campo en vez de arriba. Un lector de pantalla anuncia «My name is, edit
+ * text» igual que antes. Y por eso mismo estos campos van SIN placeholder: con
+ * la frase delante, un placeholder repetiría la etiqueta.
+ *
+ * ⚠️ LOS ESTILOS DEL CONTROL SON LOS MISMOS: `INPUT_BASE`, `OK` y `BAD` salen
+ * de arriba de este archivo. No hay una segunda píldora ni un segundo alto.
+ * Lo único propio es que el input CRECE para llenar el renglón, que es lo que
+ * hace que la frase se lea como una frase y no como una lista de controles.
+ *
+ * ⚠️ EL ERROR VA EN SU PROPIO RENGLÓN (`basis-full`). Metido entre medio,
+ * partiría la oración en dos y empujaría los campos siguientes a otra línea
+ * cada vez que aparece.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+
+/** El cuerpo de la frase: liviano y con interlínea grande, para que respire. */
+const FRASE = 'font-body text-lead font-light leading-[2] text-body';
+
+/** El renglón de la frase. Envuelve texto y campos en la misma línea de base. */
+export function SentenceRow({ children }: { readonly children: ReactNode }) {
+  return <div className={['flex flex-wrap items-center gap-x-3 gap-y-3', FRASE].join(' ')}>{children}</div>;
+}
+
+function InlineLabel({
+  htmlFor,
+  children,
+  required,
+}: {
+  readonly htmlFor: string;
+  readonly children: ReactNode;
+  readonly required?: boolean;
+}) {
+  return (
+    <label htmlFor={htmlFor} className="shrink-0">
+      {children}
+      {required ? (
+        <span className="ml-[4px] text-terra" aria-hidden="true">
+          *
+        </span>
+      ) : null}
+    </label>
+  );
+}
+
+export function InlineField({
+  type = 'text',
+  ancho = 'crece',
+  ...p
+}: BaseFieldProps & {
+  readonly type?: 'text' | 'email' | 'tel';
+  /** `crece` llena lo que queda del renglón; `corto` se queda en 16 caracteres. */
+  readonly ancho?: 'crece' | 'corto';
+}) {
+  const { fid, eid, err, aria } = useField(p.name);
+  return (
+    <>
+      <InlineLabel htmlFor={fid} required={p.required}>
+        {p.label}
+      </InlineLabel>
+      <input
+        id={fid}
+        name={p.name}
+        type={type}
+        required={p.required}
+        autoComplete={p.autoComplete}
+        {...aria}
+        className={[
+          INPUT_BASE,
+          ancho === 'crece' ? 'min-w-[16ch] flex-1' : 'w-[16ch] shrink-0',
+          err ? BAD : OK,
+        ].join(' ')}
+      />
+      {p.hint ? <span className="shrink-0 text-[15px] text-body/70">{p.hint}</span> : null}
+      {err ? (
+        <div className="basis-full">
+          <ErrorText id={eid}>{err}</ErrorText>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * ⚠️ ESTE SELECT SÍ DIBUJA SU CARET y el de arriba no.
+ *
+ * `SelectField` lleva `appearance-none` y reserva 44px a la derecha, pero no
+ * pinta nada ahí: se ve igual que un campo de texto. Adentro de una frase eso
+ * es peor todavía, porque nada indica que esa píldora despliega opciones. Acá
+ * el caret va en un `<span aria-hidden>` encima del control.
+ * TODO: llevar el caret a `SelectField` y revisar los otros cuatro formularios.
+ */
+export function InlineSelect({
+  options,
+  placeholder,
+  onValueChange,
+  ...p
+}: BaseFieldProps & {
+  readonly options: readonly Option[];
+  readonly placeholder?: string;
+  readonly onValueChange?: (v: string) => void;
+}) {
+  const { fid, eid, err, aria } = useField(p.name);
+  return (
+    <>
+      <InlineLabel htmlFor={fid} required={p.required}>
+        {p.label}
+      </InlineLabel>
+      <span className="relative inline-flex min-w-[22ch] flex-1">
+        <select
+          id={fid}
+          name={p.name}
+          required={p.required}
+          defaultValue=""
+          onChange={onValueChange ? (e) => onValueChange(e.target.value) : undefined}
+          {...aria}
+          className={[INPUT_BASE, 'appearance-none pr-[44px]', err ? BAD : OK].join(' ')}
+        >
+          {placeholder ? (
+            <option value="" disabled>
+              {placeholder}
+            </option>
+          ) : null}
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+        <CaretDown
+          className="pointer-events-none absolute right-[18px] top-1/2 size-4 -translate-y-1/2"
+          aria-hidden="true"
+        />
+      </span>
+      {err ? (
+        <div className="basis-full">
+          <ErrorText id={eid}>{err}</ErrorText>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * El mensaje: la etiqueta sigue siendo parte de la frase, pero la caja va
+ * abajo y a todo el ancho. Un `<textarea>` no entra en un renglón de texto.
+ */
+export function SentenceArea(p: BaseFieldProps & { readonly rows?: number }) {
+  const { fid, eid, err, aria } = useField(p.name);
+  return (
+    <div className="flex flex-col gap-[12px]">
+      <span className={FRASE}>
+        <InlineLabel htmlFor={fid} required={p.required}>
+          {p.label}
+        </InlineLabel>
+      </span>
+      <textarea
+        id={fid}
+        name={p.name}
+        rows={p.rows ?? 6}
+        required={p.required}
+        {...aria}
+        className={[BOX_BASE, err ? BAD : OK].join(' ')}
+      />
+      {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
+    </div>
   );
 }

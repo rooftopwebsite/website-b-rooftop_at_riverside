@@ -19,7 +19,10 @@ import { HOURS } from '@/content/hours';
  * Así que `/food-trucks/[slug]` deja de existir y las cuatro URLs redirigen acá
  * con 301. El template que tenían —hero del disco, ficha en banda oscura, carta
  * en tarjetas de plato— NO se borró: Camila lo pidió expresamente para
- * `/game-truck`. Vive en `TruckHero`, `TruckFacts` y `TruckMenu`.
+ * `/game-truck`, y desde el 2026-09-16 esa página lo usa. El hero es
+ * `shared/DiscHero` y la ficha oscura es `sections/SpecSlab`; los dos se
+ * mudaron ahí, ya sin nada que sepa de trucks. `TruckMenu` sigue esperando: es
+ * la carta de platos desde la base, y un gaming truck no tiene.
  *
  * ⚠️ Y TIENE SENTIDO MÁS ALLÁ DEL PEDIDO. Una ficha por truck necesita ocho
  * fotos, una historia larga, una carta y un horario propio POR truck. De los
