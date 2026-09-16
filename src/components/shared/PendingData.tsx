@@ -15,17 +15,41 @@ import type { ReactNode } from 'react';
 /**
  * Un dato puntual que falta: una capacidad, un mínimo, un horario.
  * Se renderiza en línea, donde iría el número.
+ *
+ * ⚠️ TIENE DOS TONOS DESDE EL 2026-09-16, Y ES EL MISMO DEFECTO QUE YA SE
+ * ARREGLÓ DOS VECES EN ESTE ARCHIVO, primero en `PendingBlock` y después en
+ * `PhotoPending`: el único juego de colores que había estaba calibrado para
+ * superficie clara, y en cuanto un marcador cayó en una banda `deep` dejó de
+ * verse.
+ *
+ * Pasó con la ficha técnica de `/game-truck`: el `TBD` de las unidades por
+ * consola es `terra` (#A62000, un rojo oscuro) con relleno al 5 % sobre verde
+ * casi negro. El filo punteado se adivinaba y la palabra no se leía.
+ *
+ * El par oscuro usa los mismos tokens que eligió `PendingBlock`, así que los
+ * tres marcadores de pendiente hablan el mismo idioma en las dos superficies:
+ *
+ *     claro   filo y texto `terra`         7.43:1 sobre paper
+ *     oscuro  filo y texto `tomato-soft`   5.60:1 sobre deep
  */
+const TONOS_DATO = {
+  light: 'border-terra/60 bg-terra/5 text-terra',
+  dark: 'border-tomato-soft/50 bg-paper/[0.06] text-tomato-soft',
+} as const;
+
 export function PendingData({
   label = 'TBD',
   detail,
+  tone = 'light',
 }: {
   readonly label?: string;
   readonly detail?: string;
+  /** La superficie sobre la que cae. Ver `TONOS_DATO`. */
+  readonly tone?: keyof typeof TONOS_DATO;
 }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-btn border border-dashed border-terra/60 bg-terra/5 px-2 py-0.5 align-middle font-body text-caption font-bold uppercase tracking-eyebrow text-terra"
+      className={`inline-flex items-center gap-1.5 rounded-btn border border-dashed px-2 py-0.5 align-middle font-body text-caption font-bold uppercase tracking-eyebrow ${TONOS_DATO[tone]}`}
       {...(detail ? { title: detail } : {})}
     >
       {label}
@@ -143,35 +167,56 @@ const TONOS_HUECO = {
     brief: 'text-ink/70',
   },
   /*
-   * ⚠️ EL TONO OSCURO ES CÁLIDO Y NO GRIS, y es un cambio pedido: «ponele a
-   * las fotos que no están otro color así se ven sobre el verde».
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ EL CAMPO ES CÁLIDO Y LO QUE VA ENCIMA ES GRIS. Son dos decisiones
+   * distintas, tomadas en dos momentos distintos, y conviene no mezclarlas.
    *
-   * Era `paper/[0.07]`, o sea blanco al 7% sobre la tarjeta: un gris apenas
-   * más claro que el verde de abajo —1.06:1— que a simple vista no se
-   * distinguía de una foto oscura. El componente existe para que un hueco NO
-   * pase callado, así que casi-invisible es el peor resultado posible.
+   * EL CAMPO, y por qué no es gris: era `paper/[0.07]`, blanco al 7 % sobre
+   * la tarjeta, o sea un gris apenas más claro que el verde de abajo —1.06:1—
+   * que a simple vista no se distinguía de una foto oscura. El componente
+   * existe para que un hueco NO pase callado, así que casi-invisible es el
+   * peor resultado posible. Camila: «ponele a las fotos que no están otro
+   * color así se ven sobre el verde». Con `sunset` al 18 % el campo sube a
+   * #2D4331 —un marrón oliva— y da 1.27:1 contra la tarjeta: se lee como un
+   * campo aparte y no como una foto que salió oscura.
    *
-   * ⚠️ EL COLOR ES `sunset` Y NO SE ELIGIÓ A DEDO. Los otros dos marcadores de
-   * pendiente del archivo —`PendingData` y `PendingBlock`— van en `terra`, y
-   * `terra` sobre oscuro es ilegible (#A62000 sobre `deeper` da 1.9:1). El
-   * repo ya tiene escrita cuál es su contraparte: `BRAND.headlineAccent` mapea
-   * `onLight: 'terra'` → `onDark: 'sunset'`. Así que los tres marcadores de
-   * pendiente hablan el mismo idioma en las dos superficies.
+   * ⚠️ SIGUE ESCRITO `sunset` Y NO ES NARANJA. Al 18 % sobre verde oscuro lo
+   * que se ve es ese marrón, y no hay token de marrón en la paleta: diluir el
+   * naranja es la única forma de llegar a este color sin inventar uno. Lo que
+   * se ve es lo que manda, y lo que se ve es marrón.
    *
-   * ⚠️ EL RÓTULO PASA A `cream` Y NO QUEDA EN `sunset`. Con el relleno al 18%
-   * el campo sube a #2D4331 y ahí `sunset` da 4.22:1 — por debajo del 4.5 que
-   * pide un texto de 13px. `cream` da 9.34:1 y `muted-dark` 5.89:1. El naranja
-   * se queda en el ícono, que es `aria-hidden` y no le debe contraste a nadie.
+   * ⚠️ LO QUE VA ENCIMA PASÓ A GRIS NEUTRO el 2026-09-16, y antes era el
+   * ícono en `sunset`, el rótulo en `cream` y el brief en `muted-dark`.
+   * Camila: «el placeholder de la foto pongámoslo sin color, que sea gris
+   * sobre marrón, no quiero que tenga naranja ni amarillo». Tenía razón de
+   * fondo: un marcador de pendiente no debería tener paleta propia, y tres
+   * tintas de marca adentro de un hueco lo hacían parecer una pieza
+   * terminada. Ahora es blanco a tres opacidades, que sobre el marrón da
+   * gris.
    *
-   * Medido sobre la tarjeta `deeper` (#013434), que es la única superficie
-   * donde hoy cae este tono: el relleno da 1.27:1 contra la tarjeta, o sea que
-   * se ve como un campo aparte y no como una foto que salió oscura.
+   * ⚠️ LAS TRES OPACIDADES SON DE CONTRASTE, no de gusto. Medidas sobre el
+   * campo #2D4331:
+   *
+   *     rótulo   `paper/80`   7.52:1
+   *     brief    `paper/60`   5.04:1   ← 13px, el mínimo es 4.5
+   *     ícono    `paper/50`   4.01:1   ← `aria-hidden`, no le debe nada a nadie
+   *
+   * Bajar el brief a 50 lo deja en 4.01 y ya no pasa. Ése es el número que
+   * no se toca.
+   *
+   * ⚠️ ESTE TONO YA NO HABLA EL IDIOMA DE LOS OTROS DOS MARCADORES del
+   * archivo —`PendingData` y `PendingBlock` van en `terra` sobre claro y en
+   * `tomato-soft` sobre oscuro—, y es a propósito: aquellos dos son texto
+   * suelto en medio de contenido y necesitan el filo de color para que se
+   * lean como una alarma. Éste es un rectángulo de 400px con borde punteado;
+   * la forma ya dice que falta algo.
+   * ══════════════════════════════════════════════════════════════════════
    */
   dark: {
-    caja: 'border-sunset/50 bg-sunset/[0.18]',
-    icono: 'text-sunset',
-    rotulo: 'text-cream',
-    brief: 'text-muted-dark',
+    caja: 'border-paper/30 bg-sunset/[0.18]',
+    icono: 'text-paper/50',
+    rotulo: 'text-paper/80',
+    brief: 'text-paper/60',
   },
 } as const;
 

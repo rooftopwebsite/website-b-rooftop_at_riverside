@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { PhotoPending } from './PendingData';
 import { Eyebrow, Heading } from './Type';
+import { TAG } from '@/lib/tag';
 
 /**
  * La tarjeta con enlace: trucks, espacios y eventos usan ésta.
@@ -88,7 +89,10 @@ export default function Card({
             className="object-cover transition-transform duration-500 ease-brand group-hover:scale-[1.03]"
           />
           {badge ? (
-            <span className="absolute top-3 left-3 rounded-btn bg-sunset px-2.5 py-1.25 text-caption font-bold uppercase tracking-eyebrow text-ink">
+            /* El badge de la tarjeta es un tag: letra y acolchado de `TAG`.
+               Era bold en caja alta con tracking, que lo hacía leer como un
+               botón naranja pegado a la foto. Ver `lib/tag.ts`. */
+            <span className={`absolute top-3 left-3 rounded-btn bg-sunset ${TAG} text-ink`}>
               {badge}
             </span>
           ) : null}

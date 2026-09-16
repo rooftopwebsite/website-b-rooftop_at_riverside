@@ -2,6 +2,7 @@ import Image from 'next/image';
 import type { Dish } from '@/lib/restoexp';
 import { formatPrice } from '@/content/bar-menu';
 import { Dot } from './Icon';
+import { TAG } from '@/lib/tag';
 
 /**
  * La tarjeta de un plato. La usan las cartas de los food trucks.
@@ -196,29 +197,34 @@ export default function DishCard({ dish }: { readonly dish: Dish }) {
           </p>
         ) : null}
 
-        {/* 3. Chips: dietario, tags libres y picante. Mismo material, un solo bloque. */}
+        {/*
+          3. Chips: dietario, tags libres y picante. Mismo material, un solo
+          bloque.
+
+          ⚠️ LOS CUATRO SALEN DE `TAG` desde el 2026-09-16, y antes eran tres
+          tratamientos distintos en la misma fila: «New» y el picante en
+          negrita y caja alta con tracking, los dietarios en medium caja baja,
+          y todos a 13px. Pedido de Camila: «si los tags serán con letra
+          minúscula que lo sean todos, debemos unificar; en color pueden ser
+          distintos pero que sean de la misma familia al menos en tipografía y
+          tamaño». Así que lo único que distingue a un chip de otro acá es el
+          COLOR, que es lo que el pedido deja libre. Ver `lib/tag.ts`.
+        */}
         {chips.length + tags.length > 0 || picante > 0 || dish.is_new || dish.is_suggested ? (
           <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
             {dish.is_new ? (
-              <li className="rounded-pill bg-sunset px-2.5 py-0.75 font-body text-micro font-bold uppercase tracking-cta text-ink">
-                New
-              </li>
+              <li className={`rounded-pill bg-sunset ${TAG} text-ink`}>New</li>
             ) : null}
             {dish.is_suggested ? (
-              <li className="rounded-pill bg-deep px-2.5 py-0.75 font-body text-micro font-bold uppercase tracking-cta text-cream">
-                Chef&rsquo;s pick
-              </li>
+              <li className={`rounded-pill bg-deep ${TAG} text-cream`}>Chef&rsquo;s pick</li>
             ) : null}
             {[...chips, ...tags].map((etiqueta) => (
-              <li
-                key={etiqueta}
-                className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-micro font-medium text-deep"
-              >
+              <li key={etiqueta} className={`rounded-pill bg-cream ${TAG} text-deep`}>
                 {etiqueta}
               </li>
             ))}
             {picante > 0 ? (
-              <li className="rounded-pill bg-sunset px-2.5 py-0.75 font-body text-micro font-bold text-ink">
+              <li className={`rounded-pill bg-sunset ${TAG} text-ink`}>
                 {PICANTE[picante] ?? 'Spicy'}
               </li>
             ) : null}
@@ -234,14 +240,19 @@ export default function DishCard({ dish }: { readonly dish: Dish }) {
         ) : null}
 
         {/* 5. Datos duros. Relleno `bone`, que es la otra superficie clara del
-               sitio: los distingue de los chips sin sumar un color nuevo. */}
+               sitio: los distingue de los chips sin sumar un color nuevo.
+
+               ⚠️ TAMBIÉN VAN CON `TAG` aunque sean números, y es una decisión
+               tomada: «320 cal» es un ATRIBUTO del plato en una fila de
+               atributos, no el dato que se vino a buscar. La píldora del
+               horario en las cards de eventos sí es lo segundo, y por eso
+               aquélla se queda en negrita con su acolchado propio. Lo único
+               que sobrevive acá de ese mundo es `tabular-nums`, que alinea las
+               cifras y no tiene nada que ver con el tamaño. */}
         {duros.length > 0 ? (
           <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
             {duros.map((d) => (
-              <li
-                key={d}
-                className="rounded-pill bg-bone px-2 py-0.75 font-body text-micro font-medium tabular-nums text-muted"
-              >
+              <li key={d} className={`rounded-pill bg-bone ${TAG} tabular-nums text-muted`}>
                 {d}
               </li>
             ))}
@@ -266,10 +277,7 @@ export default function DishCard({ dish }: { readonly dish: Dish }) {
               Contains
             </li>
             {alergenos.map((a) => (
-              <li
-                key={a}
-                className="rounded-pill px-2 py-0.75 font-body text-micro font-medium text-terra ring-1 ring-terra/45"
-              >
+              <li key={a} className={`rounded-pill ${TAG} text-terra ring-1 ring-terra/45`}>
                 {a}
               </li>
             ))}

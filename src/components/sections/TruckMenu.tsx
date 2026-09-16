@@ -4,6 +4,7 @@ import { PendingBlock } from '@/components/shared/PendingData';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { getTruckMenu } from '@/lib/restoexp';
+import { TAG } from '@/lib/tag';
 
 /**
  * La carta de un food truck.
@@ -147,7 +148,9 @@ export default async function TruckMenu({
               ].map((campo) => (
                 <li
                   key={campo}
-                  className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-micro font-medium text-deep"
+                  /* Letra y acolchado de `TAG`: era 13px con menos aire, o sea
+                     un tamaño propio para lo mismo. Ver `lib/tag.ts`. */
+                  className={`rounded-pill bg-cream ${TAG} text-deep`}
                 >
                   {campo}
                 </li>

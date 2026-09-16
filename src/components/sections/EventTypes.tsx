@@ -3,6 +3,7 @@ import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { TIPOS_EVENTO } from '@/content/event-types';
+import { TAG } from '@/lib/tag';
 
 /**
  * ══════════════════════════════════════════════════════════════════════════
@@ -95,7 +96,9 @@ export default function EventTypes() {
                 {tipo.formats.map((f) => (
                   <li
                     key={f}
-                    className="inline-flex items-center gap-1.75 rounded-btn bg-bone px-2.5 py-1.25 font-body text-caption font-medium text-muted"
+                    /* Letra y acolchado salen de `TAG`, el molde común de los
+                       tags del sitio. Ver `lib/tag.ts`. */
+                    className={`inline-flex items-center gap-1.75 rounded-btn bg-bone ${TAG} text-muted`}
                   >
                     <span aria-hidden="true" className="size-1 shrink-0 rounded-pill bg-river" />
                     {f}

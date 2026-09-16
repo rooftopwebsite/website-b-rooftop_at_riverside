@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { type Step } from '@/components/shared/StepStair';
+import { TAG } from '@/lib/tag';
 
 
 /**
@@ -479,9 +480,15 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
                       `aria-hidden`. `river` tiene prohibido ser texto —2.50:1—
                       pero acá no es texto: es un cuadrado de 4px decorativo, y
                       el dato lo dice la palabra de al lado.
+
+                      ⚠️ LA LETRA Y EL ACOLCHADO YA NO SE ESCRIBEN ACÁ: salen
+                      de `TAG`, el molde que comparten los tags de todo el
+                      sitio. Estos chips eran la referencia —Camila los señaló
+                      para unificar el resto—, así que lo que se ve no cambió:
+                      lo que cambió es de dónde sale.
                       ══════════════════════════════════════════════════════
                     */
-                    className="inline-flex items-center gap-1.75 rounded-btn bg-bone px-2.5 py-1.25 font-body text-caption font-medium text-muted"
+                    className={`inline-flex items-center gap-1.75 rounded-btn bg-bone ${TAG} text-muted`}
                   >
                     <span aria-hidden="true" className="size-1 shrink-0 rounded-pill bg-river" />
                     {tag}
