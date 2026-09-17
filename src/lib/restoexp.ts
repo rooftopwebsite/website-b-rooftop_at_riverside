@@ -245,6 +245,66 @@ export async function getMenu(): Promise<readonly MenuGroup[] | null> {
   return grupos.filter((g) => g.items.length > 0);
 }
 
+/**
+ * LA CARTA DEL BAR CON TODAS LAS COLUMNAS.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ES `getMenu()` PERO PIDIENDO LA FICHA ENTERA, y esa diferencia es el
+ * motivo de que exista. `getMenu` selecciona cuatro columnas —nombre,
+ * descripción, precio base y si está activo— porque nació para una carta que
+ * se imprimía como lista de dos columnas. Con eso, todo lo demás que el
+ * cliente carga en el dashboard no llegaba nunca a la página: las VARIANTES
+ * de precio (copa y botella), la foto, el descuento, los dietarios, los
+ * alérgenos, el picante y las notas.
+ *
+ * Acá se piden las 29 columnas de `CAMPOS_PLATO`, que son las mismas que ya
+ * usaba `getTruckMenu`. El que decide qué mostrar es el componente, no la
+ * consulta: si mañana el cliente le carga una foto a un trago, aparece sola.
+ *
+ * ⚠️ LAS DOS CONVIVEN Y NO SE FUSIONAN. `getMenu` sigue sirviendo a quien
+ * necesita la carta liviana; ésta trae 29 columnas por ítem y no tiene sentido
+ * pedirlas para una lista de nombres y precios.
+ *
+ * ⚠️ DEVUELVE `null` Y NO UN ARRAY VACÍO cuando no hay nada, que es lo que
+ * espera el lado de la página para caer al respaldo transcrito a mano. Una
+ * carta desactualizada es mala; una carta vacía es peor.
+ */
+export async function getBarMenu(): Promise<readonly DishGroup[] | null> {
+  const menus = await query<{ id: string }>(
+    `menus?restaurant_id=eq.${RESTAURANT_ID}&select=id&limit=1`,
+  );
+  const menu = menus[0];
+  if (!menu) return null;
+
+  const cats = await query<{ id: string; name: string; description: string | null }>(
+    `menu_categories?menu_id=eq.${menu.id}&select=id,name,description&order=sort_order`,
+  );
+  if (cats.length === 0) return null;
+
+  const grupos = await Promise.all(
+    cats.map(async (c) => {
+      const items = await query<Dish>(
+        `menu_items?category_id=eq.${c.id}&select=${CAMPOS_PLATO}&order=sort_order`,
+      );
+      return {
+        title: sinEmDash(c.name) ?? c.name,
+        note: sinEmDash(c.description),
+        items: items
+          .filter((i) => i.is_active)
+          .map((i) => ({
+            ...i,
+            name: sinEmDash(i.name) ?? i.name,
+            description: sinEmDash(i.description),
+            notes: sinEmDash(i.notes),
+          })),
+      };
+    }),
+  );
+
+  const conPlatos = grupos.filter((g) => g.items.length > 0);
+  return conPlatos.length > 0 ? conPlatos : null;
+}
+
 /* ==========================================================================
    EL MENÚ DE CADA TRUCK
 

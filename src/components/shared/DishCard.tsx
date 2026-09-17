@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import type { Dish } from '@/lib/restoexp';
 import { formatPrice } from '@/content/bar-menu';
-import { Dot } from './Icon';
 import { TAG } from '@/lib/tag';
 
 /**
@@ -298,13 +297,18 @@ export default function DishCard({ dish }: { readonly dish: Dish }) {
           </p>
         ) : null}
 
-        {/* El punto de marca, sólo cuando la tarjeta no tiene nada abajo. Cierra
-            la pila para que el `gap-3` no deje el aire flotando. */}
-        {!dish.notes && alergenos.length === 0 ? (
-          <span aria-hidden="true" className="mt-auto pt-1">
-            <Dot className="size-1.5 text-sunset" />
-          </span>
-        ) : null}
+        {/*
+          ⚠️ ACÁ HABÍA UN PUNTO NARANJA Y SE FUE EN SU PRIMER USO REAL. Existía
+          para cerrar la pila cuando la tarjeta no tenía ni notas ni alérgenos,
+          y en una carta de trucks —donde la mayoría sí los tiene— era un
+          remate ocasional. La carta del bar son 50 tarjetas y NINGUNA tiene
+          notas: el punto aparecía en las cincuenta y dejaba de leerse como un
+          gesto de marca para leerse como suciedad en la pantalla.
+
+          Lo que hacía además del adorno era empujar con `mt-auto`, y eso no se
+          extraña: sin nada abajo, el contenido se apoya arriba y la tarjeta
+          cierra con su propio `p-5.5`.
+        */}
       </div>
     </article>
   );

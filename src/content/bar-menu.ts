@@ -1,3 +1,4 @@
+import type { Dish, DishGroup } from '@/lib/restoexp';
 /**
  * La carta del Sunset Bar.
  *
@@ -311,3 +312,72 @@ export const CARTAS_FALLBACK: readonly MenuCarta[] = [
   { id: 'beer', title: 'Beer and seltzers', eyebrow: 'On tap and in the can', lead: 'Drafts from breweries down the road, and the cans everybody actually orders.', columnas: [...BEER_SECTIONS] },
   { id: 'wine', title: 'Wine', eyebrow: 'By the glass', lead: 'House pours are the ones in the happy hour.', columnas: [...WINE_SECTIONS] },
 ];
+
+/**
+ * EL RESPALDO, TRADUCIDO A LA FORMA DE LA BASE.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EXISTE PARA QUE LA PÁGINA TENGA UN SOLO CAMINO DE DIBUJO. La carta se
+ * renderiza con `DishCard`, que habla el tipo `Dish` de la base; el respaldo
+ * de acá está en el tipo `MenuItem`, que es la transcripción a mano y tiene
+ * cuatro campos. Sin este puente habría que escribir la carta dos veces —una
+ * por cada forma— y el día que se toque una, la otra queda vieja.
+ *
+ * ⚠️ LO QUE NO SE INVENTA. Un ítem transcrito no tiene foto, ni dietarios, ni
+ * alérgenos, ni variantes: esos campos salen en `null` o en `false` y la
+ * tarjeta simplemente no los dibuja. El respaldo se ve más pobre que la carta
+ * de la base A PROPÓSITO, porque eso es exactamente lo que es.
+ *
+ * ⚠️ CADA SECCIÓN DEL RESPALDO ES UN GRUPO, no cada carta. En la base los
+ * grupos son las CATEGORÍAS del dashboard —«Signature cocktails», «Draft»,
+ * «By the glass»— y las secciones del respaldo son la misma división, así que
+ * los tabs salen iguales con datos o sin ellos.
+ *
+ * ⚠️ `note` DEL ÍTEM VA A `notes` Y NO A LA DESCRIPCIÓN: en la transcripción
+ * es la línea de variantes o sabores, que es justo lo que la tarjeta pone en
+ * el pie con el filete punteado.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export function respaldoComoGrupos(
+  cartas: readonly MenuCarta[] = CARTAS_FALLBACK,
+): readonly DishGroup[] {
+  return cartas.flatMap((carta) =>
+    carta.columnas.map((seccion) => ({
+      title: seccion.title,
+      note: seccion.subtitle ?? null,
+      items: seccion.items.map(
+        (item): Dish => ({
+          name: item.name,
+          description: item.description ?? null,
+          base_price: item.price,
+          base_price_max: null,
+          base_is_price_range: false,
+          price_variants: null,
+          discount_percent: null,
+          show_currency: true,
+          image_url: null,
+          image_alt: null,
+          spice_level: null,
+          calories: null,
+          cooking_time_minutes: null,
+          allergens: null,
+          tags: null,
+          notes: item.note ?? null,
+          is_new: false,
+          is_suggested: false,
+          is_vegan: false,
+          is_vegetarian: false,
+          is_gluten_free: false,
+          is_dairy_free: false,
+          is_nut_free: false,
+          is_halal: false,
+          is_keto: false,
+          is_organic: false,
+          contains_alcohol: true,
+          is_active: true,
+          sort_order: null,
+        }),
+      ),
+    })),
+  );
+}
