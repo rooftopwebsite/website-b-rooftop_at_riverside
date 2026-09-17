@@ -21,6 +21,16 @@ export interface NavLink {
   readonly badge?: string;
   /** Abre en otra pestaña. Se anuncia por texto además del icono. */
   readonly external?: boolean;
+  /**
+   * Sólo en `NAV_PRIMARY`: en DESKTOP este destino no va en la nav de la
+   * izquierda, va suelto a la derecha, pegado al CTA. En mobile no cambia
+   * nada: el drawer los lista a todos en el mismo orden.
+   *
+   * ⚠️ ES UN DATO DE NAVEGACIÓN, no un estilo: dice de qué lado del medallón
+   * cae el link, que es una decisión de jerarquía. Por eso vive acá y no en el
+   * Header. Ver el bloque de `NAV_PRIMARY`.
+   */
+  readonly side?: boolean;
 }
 
 /**
@@ -53,39 +63,46 @@ export interface NavGroup {
  * sitemap, y se entra por el CTA, por los quick links del footer y por los
  * CTA del drawer.
  *
- * ⚠️ Y CON EL LUGAR QUE DEJA, «WHAT'S ON» VUELVE A LA IZQUIERDA. Estaba suelto
- * a la derecha del medallón por un problema de balance que ya no existe:
- * cuando la nav tenía cinco items más «More», la izquierda terminaba a 62px de
- * la caja del logo mientras la derecha tenía 334px de aire, así que se mandaba
- * uno al otro lado. Sacando «Events» la izquierda queda en tres items más
- * «More» y el reparto se arregla solo, sin partir la lista en dos.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ «WHAT'S ON» VA A LA DERECHA DEL MEDALLÓN, Y ESTE LINK CRUZÓ LA BARRA DOS
+ * VECES EN EL MISMO DÍA. Vale dejar las dos razones escritas, porque son
+ * distintas y la segunda es la que manda:
  *
- * Con esto la barra dice una cosa por lado: a la izquierda los destinos, a la
- * derecha la acción. Es también lo que pidió Camila en el mismo mensaje —«en
- * su lugar pongamos al lado de Food Trucks y More, What's On».
+ *   · 2026-09-16, a la izquierda: sacando «Events» la barra quedaba
+ *     descompensada al revés, con la derecha vacía. Era un argumento de
+ *     BALANCE, medido en píxeles de aire contra la caja del logo.
+ *   · 2026-09-17, de vuelta a la derecha: «movamos el link este al otro lado
+ *     para que el calendario y los eventos estén juntos». Es un argumento de
+ *     SIGNIFICADO, y por eso gana: «What's On» es el calendario y el CTA lleva
+ *     a eventos, así que las dos cosas que responden «qué pasa acá y cuándo»
+ *     quedan pegadas, y la izquierda se queda con los lugares —el bar, los
+ *     trucks— más el mega-menú.
+ *
+ * ⚠️ NO SE VUELVE A MOVER POR BALANCE. Si la barra queda cargada de un lado,
+ * lo que se toca es el TAMAÑO de la letra (`--text-nav`, que tiene la tabla de
+ * cuánto aire compra cada escalón) o se manda un destino a «More». Mover éste
+ * rompe el par que se acaba de armar.
  * ══════════════════════════════════════════════════════════════════════════
  */
 export const NAV_PRIMARY: readonly NavLink[] = [
   { label: 'Sunset Bar', href: '/sunset-bar' },
   { label: 'Food Trucks', href: '/food-trucks' },
-  { label: "What's On", href: '/whats-on' },
+  { label: "What's On", href: '/whats-on', side: true },
 ];
 
 /**
- * La nav de desktop.
+ * Los dos lados de la barra de desktop. SE DERIVAN de `NAV_PRIMARY`, que es la
+ * única lista escrita a mano: así el drawer de mobile —que los muestra a todos
+ * seguidos— no puede quedar desfasado del desktop, y mover un link de lado es
+ * cambiar una palabra en un solo lugar.
  *
- * ⚠️ ACÁ HABÍA DOS LISTAS —`NAV_MAIN` y `NAV_SIDE`— Y AHORA HAY UNA. La
- * segunda salía de filtrar por un campo `side` de `NavLink` que marcaba qué
- * destino se dibujaba a la derecha del medallón. Con «What's On» de vuelta a
- * la izquierda ese lado quedó con el CTA solo, así que el campo, el filtro y
- * el `map` del Header no filtraban ni dibujaban nada.
- *
- * ⚠️ `NAV_MAIN` SE QUEDA COMO ALIAS y no se reemplaza por `NAV_PRIMARY` en el
- * Header: los dos nombres dicen cosas distintas —«la lista» y «lo que va en la
- * barra horizontal»— y el día que un destino vuelva a mudarse de lado, el
- * cambio es acá y no en el componente.
+ * ⚠️ `NAV_SIDE` ES UN ARRAY aunque hoy tenga un solo item. El Header lo mapea
+ * igual que a `NAV_MAIN`, así que marcar un segundo link con `side` sale
+ * gratis y no hace falta un `!` para convencer a TypeScript de que el `find`
+ * encontró algo.
  */
-export const NAV_MAIN: readonly NavLink[] = NAV_PRIMARY;
+export const NAV_MAIN: readonly NavLink[] = NAV_PRIMARY.filter((l) => !l.side);
+export const NAV_SIDE: readonly NavLink[] = NAV_PRIMARY.filter((l) => l.side);
 
 /**
  * El mega-menú «More», en tres bloques rotulados.

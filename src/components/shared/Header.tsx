@@ -9,6 +9,7 @@ import { CAJA_ALTA_CLS } from '@/lib/flags';
 import {
   NAV_CTA,
   NAV_MAIN,
+  NAV_SIDE,
   NAV_MORE,
   NAV_MORE_FEATURED,
   NAV_MORE_GROUPS,
@@ -458,23 +459,52 @@ export default function Header() {
             </button>
           </nav>
 
-          {/* ── CTA ──────────────────────────────────────────────────────
+          {/* ── El calendario + el CTA ───────────────────────────────────
               ⚠️ `flex-1` + `justify-end` y no `shrink-0`: con el logo fuera
               del flujo, los dos grupos tienen que repartirse el ancho en
               partes iguales o el eje del medallón deja de coincidir con el
               centro óptico de la barra.
 
-              ⚠️ ESTE LADO ES SÓLO EL CTA, Y ANTES TENÍA UN LINK DE TEXTO AL
-              LADO. Era «What's On», que se dibujaba acá porque la nav de la
-              izquierda estaba cargada de items; volvió con los demás el
-              2026-09-16, cuando «Events» salió de la barra y liberó el lugar.
-              El porqué está en `nav.ts`, arriba de `NAV_PRIMARY`.
+              ⚠️ ESTE LADO SON DOS COSAS QUE VAN JUNTAS, y ése es todo el
+              argumento: «What's On» es el calendario y el CTA lleva a eventos.
+              Pedido de Camila, 2026-09-17: «movamos el link este al otro lado
+              para que el calendario y los eventos estén juntos». El link
+              cruzó la barra dos veces en dos días y las dos razones están
+              escritas en `nav.ts`, arriba de `NAV_PRIMARY`.
 
-              ⚠️ NO VUELVE A ENTRAR NADA ACÁ SIN MIRAR ESTO PRIMERO: la regla
-              que sobrevive de aquella versión es que al lado del botón naranja
-              va un LINK DE TEXTO y nunca un segundo botón. Con dos cajas
-              compitiendo en el extremo derecho, el CTA real pierde. */}
+              ⚠️ EL COMPONENTE NO SABE CUÁL ES EL LINK DE LA DERECHA: dibuja lo
+              que `NAV_SIDE` traiga. Si mañana hay que mover otro, se marca con
+              `side` en la lista y acá no se toca nada. */}
           <div className="flex min-w-0 flex-1 items-center justify-end gap-3 desk:gap-6 desk:pl-20">
+            {/*
+              ⚠️ ACÁ VA UN LINK DE TEXTO Y NO UN SEGUNDO BOTÓN. Con dos botones
+              —«What's On» en `outline` + «Plan an Event» en relleno— el extremo
+              derecho tenía dos cajas compitiendo y el CTA real perdía. Un link
+              de texto al lado de una píldora naranja tiene una jerarquía que se
+              lee de una: uno es la salida de servicio, el otro es la acción.
+
+              ⚠️ USA `NAV_ITEM`, EL MISMO QUE LOS DE LA IZQUIERDA. Tuvo un
+              estilo propio —cuerpo regular, un escalón más chico— y se cayó:
+              mantenerlo sería dejar un item de la nav con otro tamaño que los
+              demás sólo por estar del otro lado del logo.
+            */}
+            {NAV_SIDE.map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                aria-current={isCurrent(href) ? 'page' : undefined}
+                className={[
+                  NAV_ITEM,
+                  'hidden desk:block',
+                  isCurrent(href)
+                    ? 'text-ink underline decoration-sunset decoration-2 underline-offset-[10px]'
+                    : 'text-ink hover:text-terra',
+                ].join(' ')}
+              >
+                {label}
+              </Link>
+            ))}
+
             <ButtonLink
               href={NAV_CTA.primary.href}
               variant="primary"
