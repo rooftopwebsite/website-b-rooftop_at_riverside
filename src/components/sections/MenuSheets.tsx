@@ -217,7 +217,7 @@ export default function MenuSheets() {
               height={ALTO}
               priority={indice === 0}
               sizes="(min-width: 640px) 560px, 92vw"
-              className="block w-full"
+              className="block h-auto w-full"
             />
             {/*
               ⚠️ ACÁ ESTABA EL RÓTULO DE LA HOJA —«Cocktails and specials»— Y SE

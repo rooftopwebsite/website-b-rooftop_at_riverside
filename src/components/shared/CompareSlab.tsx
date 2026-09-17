@@ -156,14 +156,39 @@ export default function CompareSlab({
           `PADDING_CRUCE`, que se exporta de acá para que el número viva en un
           solo archivo: si cambia el margen negativo, cambia el hueco.
         */}
-        <div className="relative z-10 mt-bloque -mb-32 grid items-stretch gap-8 lg:grid-cols-2 lg:gap-10">
+        {/*
+          ⚠️ EL AIRE DE ARRIBA ES MAYOR QUE `bloque` Y NO PUEDE NO SERLO, que es
+          la única excepción a ese token en todo el sitio. Camila, 2026-09-17,
+          marcó este hueco: el «más espacio» del pedido.
+
+          El motivo es el sticker. `bloque` mide el aire entre una bajada y el
+          BORDE de lo que viene abajo, pero acá lo que viene abajo no empieza en
+          su borde: el sticker se le monta encima y sobresale media altura, unos
+          26px. Con `mt-bloque` el aire real entre el último renglón de la bajada
+          y el sticker quedaba en 22px, o sea la mitad del que declara el token.
+          72/88 devuelve esos 26px y deja arriba el aire que `bloque` promete.
+        */}
+        <div className="relative z-10 mt-18 -mb-32 grid items-stretch gap-8 lg:mt-22 lg:grid-cols-2 lg:gap-10">
           {[
             { col: ours, nuestro: true },
             { col: theirs, nuestro: false },
           ].map(({ col, nuestro }) => (
             <div
               key={col.label}
-              className="relative flex flex-col rounded-frame bg-bone grano px-6 pt-14 pb-10 text-center sm:px-10 sm:pt-16"
+              /*
+                ⚠️ EL `pt` BAJÓ DE 56/64 A 44/48. Camila, 2026-09-17, marcó este
+                hueco como «menos espacio». El número viejo reservaba lugar para un
+                sticker entero, y el sticker entero no está adentro: la mitad de
+                arriba cuelga afuera. Lo que hay que reservar es su MITAD, unos 26px,
+                más el aire que la separa del primer ítem.
+
+                44px dejan 18px libres bajo el sticker de los trucks. El de la otra
+                tarjeta está rotado 4°, que sobre 210px de ancho le agrega 7px de
+                alto por esquina: con 48 en `sm` —que es donde ese sticker ya mide
+                todo lo que va a medir— le quedan 15px. Ninguno de los dos toca el
+                primer ítem, y por debajo de esto sí lo tocarían.
+              */
+              className="relative flex flex-col rounded-frame bg-bone grano px-6 pt-11 pb-10 text-center sm:px-10 sm:pt-12"
             >
               {/*
                 EL FILETE PUNTEADO INTERIOR. El color es el que dice de qué
@@ -233,7 +258,10 @@ export default function CompareSlab({
               </span>
 
               <div className="relative flex flex-1 flex-col">
-                <ul className="mt-8 flex list-none flex-col gap-6 p-0">
+                {/* El `mt` acompaña al `pt` de la tarjeta: los dos formaban el hueco
+                  que Camila marcó, así que bajar uno solo dejaba la mitad del
+                  problema en pie. 32 → 24. */}
+                <ul className="mt-6 flex list-none flex-col gap-6 p-0">
                   {col.rows.map((r) => (
                     <li key={r} className="flex flex-col items-center gap-2.5">
                       <span
