@@ -191,7 +191,37 @@ export default function PlateHero({
           esta foto son los dos vasos de los extremos. El número vive en la
           entrada de `scripts/build-media.mjs`.
         */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-frame bg-fog sm:aspect-[16/9] lg:aspect-[17/9]">
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ EL `max-h` ES LO QUE GARANTIZA QUE SE VEA FONDO DEBAJO DE LA FOTO
+          SIN SCROLLEAR. Camila, 2026-09-17: «quiero ver al menos 40px de fondo
+          crema debajo de la imagen sin necesidad de hacer scroll». Con la
+          proporción sola, en 1920×972 el pie de la foto caía en 952 y quedaban
+          20px: se leía como si la imagen estuviera cortada por la pantalla.
+
+          ⚠️ LOS 378 SON UNA CUENTA, no un número de gusto: 333 de todo lo que
+          la foto tiene encima —barra de servicio, header, la pregunta y la
+          mitad de la placa que no la pisa— más los 40 de fondo pedidos, más
+          cinco de colchón para el redondeo. Si cambia el alto del header o el
+          cuerpo del titular, este número se mueve con ellos.
+
+          ⚠️ ES `max-h` Y NO `h`, y la diferencia importa: así la proporción
+          17:9 sigue mandando en una pantalla holgada y el tope sólo entra a
+          jugar cuando la pantalla es baja. Ahí la caja se vuelve más apaisada
+          que el archivo, o sea que `object-cover` recorta ARRIBA Y ABAJO —24px
+          repartidos en 972— y nunca por los costados, que es donde están los
+          dos vasos de los extremos.
+
+          ⚠️ LO QUE ESTE TOPE NO PUEDE RESOLVER: arriba de ~1015px de alto de
+          viewport, la cenefa de la sección siguiente vuelve a asomar. Son dos
+          pedidos que se cruzan —«que no asomen las olas» y «40px de fondo»— y
+          sólo se cumplen los dos juntos mientras la pantalla esté en el rango
+          normal de un portátil o un monitor de 1080. Para cumplirlos SIEMPRE
+          habría que atar el alto de la foto al viewport, y eso recorta la foto
+          por los costados en pantallas altas.
+          ══════════════════════════════════════════════════════════════════
+        */}
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-frame bg-fog sm:aspect-[16/9] lg:aspect-[17/9] lg:max-h-[calc(100svh-378px)]">
           {photo ? (
             <Image
               src={photo}

@@ -2658,6 +2658,76 @@ main:has(+ .banda-arco) > :last-child {
     drop-shadow(0 4px 8px rgba(1, 69, 69, 0.18));
 }
 
+/**
+ * LA MISMA SOMBRA, PARA CUANDO EL STICKER CAE SOBRE SUPERFICIE OSCURA.
+ *
+ * ⚠️ POR QUÉ HACE FALTA UNA SEGUNDA. `.sticker` tira una sombra en `deep`
+ * (rgba 1,69,69) porque nació para el logo del header y para el emblema de la
+ * ola, o sea sobre hueso. Verde sobre verde no existe: los stickers de la banda
+ * de happy hour en `/sunset-bar` salían planos, pegados al fondo. Camila: «el
+ * redondo no tiene sombra, agregale igual que al otro».
+ *
+ * ⚠️ ES NEGRO Y NO `deep` MÁS OSCURO, y es a propósito: lo que tiene que
+ * separar la pieza del fondo es LUMINANCIA, no tono. Un verde más oscuro sobre
+ * verde sigue leyéndose como parte de la misma mancha.
+ *
+ * Las dos pasadas son las mismas de `.sticker` —una corta que dibuja el canto
+ * del papel y una abierta que lo despega— con más alcance, porque sobre oscuro
+ * la difusa se traga antes.
+ */
+.sticker-oscuro {
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.22))
+    drop-shadow(0 10px 18px rgba(0, 0, 0, 0.3));
+}
+
+/**
+ * EL FLOTE DE LOS STICKERS: ocho píxeles arriba y abajo, muy lento.
+ *
+ * ⚠️ VA EN UN ELEMENTO DISTINTO AL DE LA ROTACIÓN. Los stickers están
+ * inclinados con `rotate-6`, que también es `transform`: si la animación
+ * viviera en el mismo nodo, los keyframes le pisarían la inclinación y la pieza
+ * se enderezaría al arrancar el ciclo. Por eso la rotación va en el envoltorio
+ * y esto adentro. Es la misma trampa que tiene la ola de `/sunset-bar`.
+ *
+ * ⚠️ LOS SEIS SEGUNDOS SON PARA QUE NO SE NOTE COMO ANIMACIÓN. Camila pidió
+ * «un pequeño movimiento»: si el ciclo es corto, ocho píxeles se leen como un
+ * parpadeo. A esta velocidad la pieza parece apenas suelta.
+ *
+ * ⚠️ DOS STICKERS EN LA MISMA PANTALLA NO PUEDEN IR SINCRONIZADOS o se lee
+ * como un latido de la página entera. El segundo corre el `animation-delay` y
+ * la duración desde la clase de utilidad, no desde acá.
+ */
+@keyframes rt-flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.rt-flotar {
+  animation: rt-flotar 6s ease-in-out infinite;
+}
+
+/**
+ * El segundo sticker de una pantalla: mismo flote, otro tiempo.
+ *
+ * ⚠️ ES UNA CLASE Y NO DOS VALORES SUELTOS EN EL JSX. `.rt-flotar` declara el
+ * ATAJO `animation`, que reescribe duración y retraso enteros, así que un
+ * `[animation-delay:…]` puesto al lado queda pisado según el orden de las
+ * reglas. Con una clase propia el atajo se declara una sola vez y gana el que
+ * corresponde.
+ *
+ * ⚠️ EL RETRASO ES NEGATIVO para que arranque con el ciclo ya empezado: con un
+ * retraso positivo los dos stickers quedan quietos al cargar la página y
+ * después uno espera al otro, que es justo lo que se quiere evitar.
+ */
+.rt-flotar-2 {
+  animation: rt-flotar 7.5s ease-in-out -1.4s infinite;
+}
+
 /* ==========================================================================
    MOVIMIENTO REDUCIDO — la red de seguridad
 

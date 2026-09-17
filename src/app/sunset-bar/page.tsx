@@ -1,28 +1,20 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import { ButtonLink } from "@/components/shared/Button";
-import PlateHero from "@/components/shared/PlateHero";
-import Section from "@/components/shared/Section";
-import { Heading, SectionHead } from "@/components/shared/Type";
-import {
-  CARTAS_FALLBACK,
-  MENU_LEGAL,
-  cartasFromGroups,
-  formatPrice,
-  type MenuItem,
-  type MenuSection,
-} from "@/content/bar-menu";
-import { getMenu } from "@/lib/restoexp";
-import { HAPPY_HOUR } from "@/content/happy-hour";
-import { breadcrumbJsonLd, jsonLdScript, pageMeta } from "@/lib/seo";
+import type { Metadata } from 'next';
+import Image from 'next/image';
+import { OLA_SUAVE } from '@/lib/brand-art';
+import MenuSheets from '@/components/sections/MenuSheets';
+import PlateHero from '@/components/shared/PlateHero';
+import Section from '@/components/shared/Section';
+import { Heading } from '@/components/shared/Type';
+import { HAPPY_HOUR } from '@/content/happy-hour';
+import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
-  route: "/sunset-bar",
+  route: '/sunset-bar',
   image: {
-    url: "/images/venue/wall-cocktails-rooftop.jpg",
+    url: '/images/venue/wall-cocktails-rooftop.jpg',
     width: 540,
     height: 720,
-    alt: "Drinks on a table on the rooftop at Rooftop at Riverside",
+    alt: 'Drinks on a table on the rooftop at Rooftop at Riverside',
   },
 });
 
@@ -40,26 +32,33 @@ export const metadata: Metadata = pageMeta({
  */
 export default async function SunsetBarPage() {
   /*
-   * ⚠️ LA CARTA SALE DE LA BASE. El menú «Sunset Bar» está cargado entero en
-   * el dashboard de RestoExp: nueve categorías, 50 ítems con precio y
-   * descripción. Descubierto el 2026-09-15; hasta entonces estaba transcrito
-   * a mano en `content/bar-menu.ts` porque el sitio viejo lo publica como dos
-   * JPG y nadie había mirado la base.
+   * ══════════════════════════════════════════════════════════════════════════
+   * ⚠️ ESTA PÁGINA YA NO LEE LA CARTA DE LA BASE, y estuvo a punto de hacerlo.
+   * El 2026-09-17 se armó entera: `getBarMenu()` traía las nueve categorías y
+   * los cincuenta ítems con su ficha completa, y `BarMenu` los dibujaba en
+   * tarjetas con tabs. Camila lo dio de baja el mismo día: «por el momento el
+   * menú del bar no lo tendremos digital como pensé; colocaremos el PDF que
+   * está en la web».
    *
-   * ⚠️ `CARTAS_FALLBACK` es el respaldo. Si la base no contesta se sirve la
-   * transcripción: una carta desactualizada es mala, una carta vacía es peor.
+   * ⚠️ NO SE BORRÓ NADA DE ESE CAMINO. Siguen en el árbol `BarMenu`,
+   * `respaldoComoGrupos()` y `getBarMenu()`, y volver es cambiar `<MenuSheets />`
+   * por `<BarMenu grupos={carta} />` y descomentar estas dos líneas:
+   *
+   *     const deLaBase = await getBarMenu();
+   *     const carta = deLaBase ?? respaldoComoGrupos();
+   *
+   * ⚠️ MIENTRAS TANTO LA PÁGINA NO PEGA CONTRA LA BASE, que es la otra cara de
+   * la decisión: ni consulta, ni revalidación, ni respaldo que mantener. La
+   * carta se actualiza cuando el cliente manda una imagen nueva.
+   * ══════════════════════════════════════════════════════════════════════════
    */
-  const grupos = await getMenu();
-  const cartas = grupos ? cartasFromGroups(grupos) : CARTAS_FALLBACK;
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: jsonLdScript(
-            breadcrumbJsonLd([{ name: "Sunset Bar", path: "/sunset-bar" }]),
-          ),
+          __html: jsonLdScript(breadcrumbJsonLd([{ name: 'Sunset Bar', path: '/sunset-bar' }])),
         }}
       />
 
@@ -189,25 +188,136 @@ export default async function SunsetBarPage() {
         ⚠️ `grano-capa` Y NO `grano`: la ola es un `<img>`, así que el grano no
         puede ir de fondo. Es la misma nota que tiene `PhotoDivider`.
 
+        ══════════════════════════════════════════════════════════════════════
+        ⚠️ SE VE LA MITAD DEL DIBUJO, NO EL DIBUJO ENTERO, Y ESO ES LO QUE SACA
+        EL PICO DEL MEDIO. El archivo son DOS caminos espejados que se
+        encuentran en el centro del `viewBox` (x≈785 de 1570), y en esa junta
+        las dos curvas no empalman: forman un vértice. Estirado a lo ancho de
+        la pantalla, el vértice se lee como un pico justo en el medio. Camila:
+        «cuidado, no quiero que tenga este pico».
+
+        La salida es que la junta no entre en cuadro: con el dibujo al 200 % de
+        ancho y pegado a la izquierda, lo que se ve es su mitad izquierda —dos
+        lomas limpias— y el vértice queda afuera, a un ancho de pantalla de
+        distancia.
+
+        ⚠️ EL ALTO VA ESCRITO Y NO SALE DE LA PROPORCIÓN. Al 200 % de ancho el
+        alto natural sería el doble: una franja de 400px. Con `h-*` el dibujo
+        se estira sólo en vertical, que es lo que hacen todas las cenefas del
+        repo — `WaveBorder` usa `preserveAspectRatio="none"` para lo mismo.
+
+        ⚠️ `rt-wave` ES LA MISMA ANIMACIÓN QUE LA HOME: un vaivén de 11s que
+        corre el dibujo un 3,5 % de su propio ancho. Pedido de Camila: «quiero
+        que tenga movimiento, animación como en la home». Al 200 % de ancho ese
+        corrimiento son 7 % de la pantalla, y como sobra dibujo para los dos
+        lados no aparece borde en ningún momento del ciclo. Con
+        `prefers-reduced-motion` se apaga sola: el corte global vive en
+        `globals.css`.
+
         ⚠️ VA INLINE Y NO COMO COMPONENTE porque es el primer uso. Si una
         segunda página pide este mismo corte, sube a `shared/` — es la regla
         que ya está escrita en `YardSteps`.
         ══════════════════════════════════════════════════════════════════════
       */}
-      <div
-        aria-hidden="true"
-        className="grano-capa relative -mb-px w-full overflow-hidden bg-deep"
-      >
-        <Image
-          src="/brand/wave-only.svg"
-          alt=""
-          width={1570}
-          height={169}
-          className="block w-full -scale-y-100"
-        />
+      <div aria-hidden="true" className="grano-capa relative -mb-px w-full overflow-hidden bg-deep">
+        {/*
+          ⚠️ EL ESPEJO VA ADENTRO DEL SVG Y NO EN CSS, y no es un capricho: la
+          animación `rt-wave` escribe `transform: translateX(...)` sobre este
+          mismo elemento, así que un `-scale-y-100` en la clase quedaría pisado
+          y la ola se daría vuelta al arrancar el ciclo. Dentro del `<path>` el
+          espejo es coordenadas, no CSS, y los dos conviven.
+
+          ⚠️ EL 110 % DE ANCHO CON −5 % DE MARGEN ES LO QUE HACE POSIBLE LA
+          ANIMACIÓN: el vaivén corre el dibujo un 3,5 % y el sobrante es lo que
+          sigue tapando los dos bordes. Los dos números están atados — es el
+          mismo truco que usa `PhotoDivider` en la home, con 114 y −7.
+        */}
+        <svg
+          viewBox={OLA_SUAVE.viewBox}
+          preserveAspectRatio="none"
+          className="rt-wave -ml-[5%] block h-[104px] w-[110%] text-bone sm:h-[136px] lg:h-[168px]"
+        >
+          <path
+            d={OLA_SUAVE.d}
+            fill="currentColor"
+            transform={`translate(0 ${OLA_SUAVE.alto}) scale(1 -1)`}
+          />
+        </svg>
       </div>
       <Section tone="deep" band="md" labelledBy="hh-title">
-        <div className="text-center">
+        <div className="relative text-center">
+          {/*
+            ══════════════════════════════════════════════════════════════════
+            ⚠️ LOS DOS STICKERS LLENAN EL VACÍO DE LOS COSTADOS. Camila marcó
+            sobre la página las dos zonas de verde liso a los lados del titular:
+            «en esos espacios coloca stickers». La banda es ancha y el contenido
+            está todo en una columna centrada, así que sin esto son dos terceras
+            partes de superficie plana.
+
+            ⚠️ SON PIEZAS DEL BRAND BOOK Y NO DIBUJOS NUEVOS: el azulejo
+            (`seal.svg`) y el emblema redondo (`emblem.svg`). Los dos vienen ya
+            troquelados con su filo crema, así que sobre el verde se leen como
+            calcomanías pegadas y no como logos flotando.
+
+            ⚠️ EL REDONDO ACÁ SÍ Y EN LA OLA NO, y no es contradicción: lo que
+            Camila sacó fue el medallón montado SOBRE la cenefa, que ensuciaba
+            el corte entre las dos superficies. Suelto sobre el verde no estorba
+            a nada.
+
+            ⚠️ VAN PEGADOS A LOS BORDES DE LA CAJA Y NO FUERA DE ELLA. Con un
+            `-left-*` quedarían más cerca del borde de la pantalla —que es donde
+            Camila los dibujó— pero a 1344px de ancho el margen es de 88px y se
+            saldrían de cuadro. Anclados en `left-0`/`right-0` caen igual en la
+            zona vacía y no dependen del ancho de la pantalla.
+
+            ⚠️ DESDE `desk` PARA ARRIBA Y NADA ABAJO. En una pantalla angosta no
+            hay vacío que llenar: el titular y la pastilla ocupan el ancho y los
+            stickers se les montarían encima.
+
+            ⚠️ `aria-hidden` Y `pointer-events-none`: son decoración pura. No
+            dicen nada que el texto no diga y no tienen que aparecer en el árbol
+            de accesibilidad ni comerse un clic.
+            ══════════════════════════════════════════════════════════════════
+          */}
+          {/*
+            ⚠️ LA ROTACIÓN VA EN EL ENVOLTORIO Y EL FLOTE ADENTRO, y no es un
+            capricho: los dos son `transform`. Juntos en un nodo, los keyframes
+            de `rt-flotar` le pisan la inclinación al sticker y la pieza se
+            endereza al arrancar el ciclo. Es la misma trampa que la ola de más
+            arriba, donde el espejo tuvo que mudarse adentro del SVG.
+
+            ⚠️ EL SEGUNDO CORRE 1,4s Y DURA 1,5s MÁS. Sincronizados, los dos
+            suben y bajan al mismo tiempo y la banda entera parece latir.
+          */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-[-236px] left-0 hidden w-[184px] -rotate-6 desk:block"
+          >
+            <span className="sticker-oscuro rt-flotar block">
+              <Image
+                src="/brand/seal.svg"
+                alt=""
+                width={260}
+                height={260}
+                className="block w-full"
+              />
+            </span>
+          </span>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-[-172px] right-0 hidden w-[164px] rotate-6 desk:block"
+          >
+            <span className="sticker-oscuro rt-flotar-2 block">
+              <Image
+                src="/brand/emblem.svg"
+                alt=""
+                width={260}
+                height={260}
+                className="block w-full"
+              />
+            </span>
+          </span>
+
           <Heading level={2} id="hh-title" className="text-banda text-paper">
             Happy hour
           </Heading>
@@ -283,9 +393,7 @@ export default async function SunsetBarPage() {
                   <span className="font-display text-d2 leading-none tabular-nums text-sunset-deep">
                     {d.price}
                   </span>
-                  <span className="font-body text-d6 text-ink sm:text-d5">
-                    {d.what}
-                  </span>
+                  <span className="font-body text-d6 text-ink sm:text-d5">{d.what}</span>
                 </li>
               ))}
             </ul>
@@ -309,149 +417,35 @@ export default async function SunsetBarPage() {
         todos los ítems de una, la carta no se renderiza vacía.
         ══════════════════════════════════════════════════════════════════
       */}
-      {cartas.map((carta, n) => (
-        <Section
-          key={carta.id}
-          tone={n % 2 === 0 ? "paper" : "cream"}
-          band="lg"
-          labelledBy={`carta-${carta.id}`}
-        >
-          <SectionHead
-            eyebrow={carta.eyebrow}
-            eyebrowTone={n % 2 === 0 ? "deep" : "plum"}
-            id={`carta-${carta.id}`}
-            title={carta.title}
-            {...(carta.lead ? { lead: carta.lead } : {})}
-          />
+      <MenuSheets />
 
-          {carta.columnas.length === 1 ? (
-            <div className="mt-[36px] max-w-[760px]">
-              {carta.columnas[0].items.map((item) => (
-                <MenuRow key={item.name} item={item} detailed />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-[36px] grid gap-[40px] md:grid-cols-2 lg:gap-[56px]">
-              {carta.columnas.map((col) => (
-                <MenuColumn key={col.id} section={col} />
-              ))}
-            </div>
-          )}
-        </Section>
-      ))}
+      {/*
+        ══════════════════════════════════════════════════════════════════════
+        ⚠️ ACÁ HABÍA UN BLOQUE DE CIERRE Y SE FUE ENTERO el 2026-09-17. Camila
+        lo tachó sobre la captura: «elimina esta aclaración y CTAs haciendo que
+        luego del menú esté el footer». Tenía tres cosas y ninguna se pierde de
+        verdad:
 
-      {/* ── Pie legal + cierre ─────────────────────────────────────────── */}
-      <Section band="md">
-        <div className="flex flex-col gap-[24px] border-t border-ink/15 pt-[28px] lg:flex-row lg:items-start lg:justify-between">
-          <p className="max-w-[52ch] text-[15px] leading-[1.6] text-body/75">
-            {MENU_LEGAL}
-          </p>
-          <div className="flex flex-col gap-[12px] sm:flex-row">
-            <ButtonLink href="/food-trucks" variant="secondary">
-              See the food trucks
-            </ButtonLink>
-            <ButtonLink href="/whats-on" variant="primary">
-              What&rsquo;s on tonight
-            </ButtonLink>
-          </div>
-        </div>
-        {/*
-          ⚠️ ACÁ DECÍA «we don't have a kitchen» y se sacó el 2026-09-15: el
-          PDF «Events Packages» del propio cliente ofrece «specialty menus
-          provided by in house catering». Lo que sí está verificado es que los
-          trucks cobran aparte, que es el dato que la gente necesita.
-          TODO: confirmar con cliente qué es el catering in house.
-        */}
-        <p className="mt-[20px] max-w-[60ch] text-[15px] leading-[1.6] text-body/75">
-          Food comes from the trucks in the yard, and each one takes its own
-          orders and its own payment. This list is the one tab that is ours.
-        </p>
-      </Section>
+          · La línea legal —impuestos incluidos y 22 % de propina en cuentas sin
+            firmar— que ESTÁ IMPRESA EN LA PROPIA LÁMINA, al pie de la página 1.
+            La teníamos duplicada en HTML al lado de la imagen que ya la dice.
+          · «Food comes from the trucks in the yard…», que explica que la comida
+            se paga aparte. Lo mismo lo dice el bloque «How this works» de
+            `/food-trucks`, que es donde esa confusión corresponde.
+          · Dos CTA a `/food-trucks` y `/whats-on`, que son los dos destinos que
+            el header ya tiene arriba, fijos, en toda la página.
+
+        ⚠️ Y ADEMÁS ARREGLA EL COLOR DE LAS ESQUINAS DEL FOOTER, que era el otro
+        pedido del mismo mensaje. El footer monta con `banda-arco`: la regla
+        `:has(+ .banda-arco)` de `globals.css` le pone al hermano anterior un
+        borde inferior transparente del alto del radio, y lo que se ve en esas
+        dos esquinas es el FONDO DE ESE HERMANO. Con este bloque en el medio era
+        blanco; sin él, el hermano anterior pasa a ser el panel del menú, que es
+        `bg-bone grano`. O sea que las esquinas quedan en hueso y con grano sin
+        escribir una clase nueva.
+        ══════════════════════════════════════════════════════════════════════
+      */}
     </>
   );
 }
 
-/**
- * Una fila de carta: nombre, filete de puntos y precio.
- *
- * ⚠️ El precio va dentro de un `<dd>`… no: va en un `<div>` con el nombre en
- * negrita, y no en una tabla, porque una carta es una LISTA de productos, no
- * datos tabulares. El precio se asocia por proximidad y por el orden del DOM.
- * El `aria-label` del contenedor no hace falta: el lector lee «Bomb Pop, 10
- * dollars, tequila, blue curaçao…», que es el orden correcto.
- */
-function MenuRow({
-  item,
-  detailed = false,
-}: {
-  readonly item: MenuItem;
-  readonly detailed?: boolean;
-}) {
-  const { whole, cents } = formatPrice(item.price);
-  return (
-    <div className="flex flex-col border-b border-ink/10 py-[16px] last:border-b-0">
-      <div className="flex items-baseline gap-[10px]">
-        <h3 className="font-display text-d6 uppercase lg:text-d5">
-          {item.name}
-        </h3>
-        {item.house ? (
-          <span className="rounded-btn bg-magenta px-[6px] py-[2px] text-[11px] font-bold uppercase tracking-[0.1em] text-paper">
-            House
-          </span>
-        ) : null}
-        {/* El filete de puntos ata visualmente el nombre con el precio.
-            `aria-hidden` porque no es contenido. */}
-        <span
-          aria-hidden="true"
-          className="mb-[4px] flex-1 border-b border-dotted border-ink/25"
-        />
-        <p className="shrink-0 font-display text-d6 tabular-nums lg:text-d5">
-          <span className="sr-only">Price: </span>
-          <span aria-hidden="true">$</span>
-          {whole}
-          {cents ? <sup className="text-[0.6em]">{cents}</sup> : null}
-          <span className="sr-only"> dollars</span>
-        </p>
-      </div>
-      {detailed && item.description ? (
-        <p className="mt-[4px] max-w-[52ch] text-[16px] leading-[1.55] text-body/75">
-          {item.description}
-        </p>
-      ) : null}
-      {/* ⚠️ La cursiva se fue de la nota de abajo. El brand no la usa en
-          ninguna parte y ésta era la única ocurrencia del sitio. La nota se
-          distingue del cuerpo por tamaño (15px contra 16) y por color
-          (`muted` contra `ink`), que es el mismo mecanismo que usa el resto
-          del sistema. */}
-      {detailed && item.note ? (
-        <p className="mt-[2px] max-w-[52ch] text-[15px] leading-[1.5] text-muted">
-          {item.note}
-        </p>
-      ) : null}
-      {!detailed && item.description ? (
-        <p className="mt-[2px] text-[13px] leading-[1.45] text-body/75">
-          {item.description}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
-function MenuColumn({ section }: { readonly section: MenuSection }) {
-  return (
-    <div>
-      <Heading level={3} role="label">
-        {section.title}
-      </Heading>
-      <span
-        aria-hidden="true"
-        className="mt-[8px] block h-[2px] w-[28px] bg-river"
-      />
-      <div className="mt-[12px]">
-        {section.items.map((item) => (
-          <MenuRow key={item.name} item={item} />
-        ))}
-      </div>
-    </div>
-  );
-}

@@ -167,23 +167,29 @@ const FOTOS = [
      franja se queda con un tercio del cuadro. Eso hace que el `foco` sea LA
      decisión de esta entrada y no un ajuste fino.
 
-     ⚠️ EL `foco` BAJÓ TRES VECES Y EL ÚLTIMO CAMBIO NO ES DE ENCUADRE, ES DE
-     ALTURA. Medido sobre el original, los cuatro recortes:
+     ⚠️ EL `foco` SE MOVIÓ CINCO VECES Y NO TODAS POR EL MISMO MOTIVO. Medido
+     sobre el original, el recorrido entero:
 
          0.62 · 21:9 → franja 2130..3758   los vasos enteros, con sus bases
          0.52 · 21:9 → franja 1655..3283   «recortada desde más arriba, que se
                                            vea menos la base de los vasos»
          0.44 · 21:9 → franja 1276..2904   «recórtala mejor, más desde arriba»
-         0.40 · 17:9 → franja  894..2906   ← ésta
+         0.40 · 17:9 → franja  894..2906   la franja crece a lo alto para tapar
+                                           el pliegue, sin mover el pie
+         0.56 · 17:9 → franja 1653..3665   ← ésta
 
-     ⚠️ LA ÚLTIMA MANTIENE EL BORDE DE ABAJO Y CRECE SÓLO HACIA ARRIBA, y eso
-     es a propósito. El pedido nuevo no era de encuadre: «que no asomen las
-     olas al comienzo, que deba hacer scroll para verlas; haz que la imagen sea
-     algo más alta». Una franja más alta con el mismo `foco` habría bajado el
-     borde inferior y devuelto las bases que se habían sacado en los dos pasos
-     anteriores. Con 0.40 el corte de abajo queda en 2906 —dos píxeles del
-     anterior— y los 380 que gana la franja entran todos arriba, en el fondo
-     desenfocado, que es justo donde la placa del titular apoya.
+     ⚠️ LOS TRES DEL MEDIO SON EL MISMO PEDIDO —menos base de los vasos— Y EL
+     ÚLTIMO LO CORRIGE. Al subir la franja a 17:9 manteniendo el borde de abajo,
+     los vasos quedaron apoyados contra el filo inferior con un tercio de cuadro
+     de fondo desenfocado encima: técnicamente cumplía lo pedido y visualmente
+     se leía como si la foto estuviera cortada. Camila, sobre la página:
+     «centra los vasos al corte de la imagen».
+
+     ⚠️ CENTRARLOS DEVUELVE ALGO DE MESA, y es inevitable: el grupo de vasos
+     ocupa una banda fija del original, así que ponerlo en el medio de la franja
+     obliga a mostrar lo que tiene debajo. Lo que NO vuelve es lo que se había
+     sacado en el primer paso —el cuadro no baja hasta 3758— así que las bases
+     se ven apoyadas en la mesa y no en primer plano.
 
      ⚠️ 2576×1364 ES 17:9 AL DOBLE. El marco de `PlateHero` topea en 1288 de
      ancho, así que el archivo va al 2× para las pantallas retina, igual que
@@ -202,7 +208,7 @@ const FOTOS = [
     out: 'public/images/venue/bar-cocktails-wide.jpg',
     w: 2576,
     h: 1364,
-    foco: 0.4,
+    foco: 0.56,
     q: 78,
   },
 
