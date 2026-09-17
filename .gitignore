@@ -47,3 +47,6 @@ design-audit/specimen.html
 # se versiona es el derivado: el dato transcrito en content/*.ts.
 # Se regenera con design-audit/tmp/scrape-wix.mjs
 src/content/_source/
+
+# Log del `next dev` cuando se lo corre a un archivo. Artefacto local.
+dev-server.log

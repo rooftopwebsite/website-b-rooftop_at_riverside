@@ -40,6 +40,7 @@ bloquea toda la lógica de reservas**: el 0, OpenTable.
 | C · Archivos y enlaces | 9 | el cliente / decisión técnica nuestra |
 | D · Textos | 3 | los dueños de los trucks |
 | E · Marca | 1 | quien tenga el original del logo |
+| F · Temporada de fútbol | 6 | Chris, Anthony y nosotros |
 
 ---
 
@@ -148,7 +149,7 @@ alguien lo usa para decidir.
 
 | # | qué | dónde cae | qué se ve hoy |
 |---|---|---|---|
-| 12 bis | **Qué días es el happy hour: ¿martes o miércoles?** El cliente lo publica de dos formas distintas y una de las dos contradice sus propios horarios. | `/sunset-bar` y `/whats-on` | «Wednesday – Friday», que es lo que dice el footer |
+| 12 bis | ~~**Qué días es el happy hour: ¿martes o miércoles?**~~ **RESUELTO el 2026-09-17, y ninguna de las dos opciones era la buena.** El cliente pasó el dato real: **Weekend Happy Hour, sábado y domingo de 12 a 6, en todo el venue**, con `$1 off` en drafts, bottles y cans, `$8` Tito's, Captain y Crown's, `$10` margaritas y Superior Light Beer como marca destacada. Lo que publicábamos («Wednesday – Friday, 3–6 PM, $4 drafts, $5 house wines, $6 house drinks») salía del footer del sitio Wix y estaba mal de punta a punta. **Queda abierta una sola pregunta: ¿existe además un happy hour de semana, o el de fin de semana es el único?** | `/sunset-bar`, `/whats-on` y la píldora del hero de la home | El dato nuevo, leído del evento de la base |
 | 13 | **Capacidad de pie** del Sunset Bar, The Yard, The Patio y Full Buyout | `/events/spaces`, la tabla de cada espacio | `TBD` con borde punteado |
 | 14 | **Capacidad sentada** de los mismos cuatro | ídem | `TBD` |
 | 15 | **Mínimo de invitados** de los mismos cuatro | ídem | `TBD` |
@@ -263,6 +264,34 @@ del sitio sale de una IA.
 | # | qué | por qué |
 |---|---|---|
 | 27 | **El logo lockup full color en vectorial** (`.ai`, `.svg` o `.pdf`) | Es lo único del sitio que no escala: el header usa un PNG. Del isotipo, de la cenefa de olas, del azulejo y del medallón de sol y palmera ya tenemos el vector, salido del Figma. Del lockup completo, no |
+
+---
+
+## F · Temporada de fútbol
+
+Abierto el 2026-09-17, cuando llegaron las specials de los trucks, el happy hour
+de fútbol del bar y las reglas del sorteo. **Todo este bloque se borra cuando
+Chris avise que la temporada terminó**, junto con `content/game-day.ts`, los tres
+eventos del dashboard y las láminas de promo de cada truck.
+
+| # | qué | dónde cae | qué se ve hoy |
+|---|---|---|---|
+| 33 | **¿Hasta qué domingo corre todo?** Sin fecha de fin, los tres eventos siguen publicándose solos. La base ya tiene la columna (`end_date`) y el sitio ahora la respeta: el día que Chris diga la fecha, se carga y el calendario se apaga solo | Los tres eventos de fútbol en `/whats-on` y en la home | Sin fecha de fin, o sea «hasta que alguien los borre a mano» |
+| 34 | **«Touchdown Shots»: ¿el touchdown de quién?** El documento dice «cada vez que el equipo del cliente anota un touchdown», y eso se lee de dos maneras: el equipo de la casa, o el equipo del que es hincha quien está en la mesa. Cambia a quién le corresponde el shot de $4 | El bloque «On football Sundays» de `/sunset-bar` | Publicado como «our team», que es la lectura estrecha: si la promo fuera la ancha, nadie se queja; al revés, sí |
+| 35 | **El nombre y las specials del cuarto truck** (el de cocina jamaiquina, que además sigue con el nombre sin confirmar) | La ficha de ese truck en `/food-trucks` | El truck aparece con el nombre marcado como no confirmado y sin carta |
+| 36 | **¿Tienen bases legales del sorteo?** No son un requisito nuestro y no bloquean la publicación: el evento cuenta la dinámica, no nombra premios y manda a las redes, que es donde el cliente publica qué se sortea cada semana. Vale preguntar igual, porque el propio Chris levantó la mano por el tema de responsabilidad y porque el sorteo de los jueves del sitio viejo (`/tnt-sign-ups`, ítem 29) **sí tenía bases escritas**: si las de éste existen, se linkean desde el evento en una línea | La ficha del evento del sorteo | El evento se publica con la dinámica y el link a redes. Sin bases publicadas |
+| 37 | **¿Se pueden nombrar los cuatro equipos?** La mecánica del sorteo es una urna por equipo, y los cuatro nombres son marcas registradas. El sitio nuevo no usa ni un nombre ni un logo de la NFL porque el brief lo exige (ver `auditoria-servicios.md`) | El texto del evento del sorteo | Escrito como «one for each team in the division», que cuenta la mecánica sin imprimir las marcas |
+| 38 | **Las fechas reales de Wooftop Wednesdays y de Bingo Night.** Es el ítem más urgente del bloque: hoy los dos están cargados en el dashboard como eventos de un solo día, con fecha 9 de septiembre, o sea **ya pasada**, así que no aparecen en la home ni en la semana. Ross Brown y La Noche sí son semanales y están verificados contra el calendario público del cliente (`current-site-inventory.md` §9); estos dos no aparecen ahí en ninguna fecha | La home y `/whats-on` | Nada: los dos desaparecieron del sitio el día que alguien los editó en el dashboard |
+
+| 39 | **Las dos URLs de Eventbrite**, la de Ross Brown y la de La Noche. Hoy los dos botones apuntan al PERFIL del organizador, que al 2026-09-15 dice «No upcoming events» | La fila de cada uno en la grilla semanal de `/whats-on` | «Tickets on Eventbrite» linkeando al perfil completo |
+| 40 | ~~Las descripciones de esos dos eventos dicen lo contrario~~ **RESUELTO el 2026-09-17.** Camila confirmó que los dos llevan entrada, así que se reescribieron las descripciones en el dashboard («Free, and no ticket needed» y «No cover, no ticket» se fueron) y **el sitio dejó de afirmar que algo es gratis en cualquier lado**: se fueron la píldora «Free entry», el `isAccessibleForFree` del JSON-LD de los eventos y el del local, «Almost all of it is free and none of it needs a ticket» de la home, y «there is no cover» de la FAQ. La regla nueva: el evento con entrada la anuncia, el resto no dice nada | Todo el sitio | Sólo se anuncia lo que SÍ necesita ticket |
+
+> **Sobre el 38, que es nuestro trabajo y no del cliente:** el dashboard sólo
+> sabe guardar UN día de la semana como recurrencia, así que algo que pasa «un
+> miércoles al mes» no se puede cargar como recurrente sin mentir. La forma
+> correcta es **una fila por fecha**, con la recurrencia destildada. El sitio ya
+> las muestra: desde el 2026-09-17 la home y el calendario expanden los dos
+> tipos sobre las mismas fechas.
 
 ---
 
