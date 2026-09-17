@@ -148,6 +148,7 @@ alguien lo usa para decidir.
 
 | # | qué | dónde cae | qué se ve hoy |
 |---|---|---|---|
+| 12 bis | **Qué días es el happy hour: ¿martes o miércoles?** El cliente lo publica de dos formas distintas y una de las dos contradice sus propios horarios. | `/sunset-bar` y `/whats-on` | «Wednesday – Friday», que es lo que dice el footer |
 | 13 | **Capacidad de pie** del Sunset Bar, The Yard, The Patio y Full Buyout | `/events/spaces`, la tabla de cada espacio | `TBD` con borde punteado |
 | 14 | **Capacidad sentada** de los mismos cuatro | ídem | `TBD` |
 | 15 | **Mínimo de invitados** de los mismos cuatro | ídem | `TBD` |
@@ -159,6 +160,25 @@ alguien lo usa para decidir.
 
 Los cuatro espacios están en `src/content/spaces.ts` y los trucks en
 `src/content/trucks.ts`: los números entran ahí y los `TBD` se van solos.
+
+> ⚠️ **El detalle del 12 bis, porque ahora se ve en la misma pantalla.** El
+> cliente publica el happy hour en dos lugares y no dicen lo mismo:
+>
+> | dónde | qué dice |
+> |---|---|
+> | el footer de `eatdrinkparadise.com` | `Wednesday - Friday | 3pm - 6pm` |
+> | la lámina 2 del menú, en el recuadro «HAPPY HOUR» | `TUE - FRI | 3-6 PM` |
+>
+> Y los horarios del propio venue dicen que **los lunes y los martes está
+> cerrado** (`content/hours.ts`, la FAQ y los días cerrados del calendario), o
+> sea que un happy hour que arranca el martes no puede ser. Por eso el sitio
+> publica «Wednesday – Friday»: es la versión que no se contradice con nada.
+>
+> Desde que `/sunset-bar` muestra la lámina del menú, **las dos versiones
+> conviven en la misma página**: la banda verde dice miércoles y la imagen de
+> abajo dice martes. No se puede arreglar desde el código —el texto está
+> adentro del JPG— así que o el cliente confirma cuál vale y manda la lámina
+> corregida, o alguien va a preguntar.
 
 ---
 
