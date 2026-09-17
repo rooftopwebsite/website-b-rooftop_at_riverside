@@ -166,8 +166,15 @@ export function venueJsonLd(v: Venue) {
         openingHours: schemaHours(v),
         servesCuisine: 'Cocktails',
         priceRange: '$$',
+        /*
+         * ⚠️ `publicAccess` SÍ, `isAccessibleForFree` NO, y la diferencia no
+         * es un detalle. El lugar es de acceso público y se entra sin
+         * reserva, eso es cierto y se declara. Que la ENTRADA sea gratis dejó
+         * de ser cierto el 2026-09-17, cuando se confirmó que dos de las
+         * noches fijas llevan ticket. Es el mismo dato que se sacó de la
+         * píldora de los eventos y del JSON-LD de `/whats-on`.
+         */
         publicAccess: true,
-        isAccessibleForFree: true,
         areaServed: ['Bonita Springs', 'Naples', 'Estero'],
       },
       {

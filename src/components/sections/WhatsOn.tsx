@@ -11,10 +11,8 @@ import { activeTrucks } from '@/content/trucks';
 import {
   type VenueEvent,
   type Weekday,
-  recurringEvents,
+  shortDate,
   timeRange,
-  weekdayLabel,
-  whenLabel,
 } from '@/content/events';
 
 /**
@@ -121,13 +119,27 @@ const VISIBLES = [
   { mq: '(min-width: 768px)', n: 2 },
 ] as const;
 
-function venueWeekday(): Weekday {
+/**
+ * Qué día es HOY en Bonita Springs: el número de día de la semana y la fecha.
+ *
+ * ⚠️ LAS DOS COSAS Y NO SÓLO EL DÍA DE LA SEMANA. El día de la semana sigue
+ * haciendo falta para el titular de «cerrado hoy»; la FECHA es lo que permite
+ * marcar cuál de las próximas ocho tarjetas es la de hoy, ahora que cada
+ * tarjeta es una fecha concreta y no un día de la semana.
+ */
+function venueToday(): { readonly weekday: Weekday; readonly date: string } {
   const label = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/New_York',
     weekday: 'short',
   }).format(new Date());
   const map: Record<string, Weekday> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-  return map[label] ?? 0;
+  const date = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+  return { weekday: map[label] ?? 0, date };
 }
 
 /** Lunes y martes el lugar está cerrado. Dato del brief, no inventado. */
@@ -135,10 +147,13 @@ const CLOSED_DAYS: readonly Weekday[] = [1, 2];
 
 function EventCard({
   event,
+  date,
   isToday,
   fuera,
 }: {
   readonly event: VenueEvent;
+  /** La fecha de ESTA ocurrencia, `YYYY-MM-DD`. */
+  readonly date: string;
   readonly isToday: boolean;
   /** No entra en la ventana del carrusel: se apaga. Ver el track. */
   readonly fuera: boolean;
@@ -424,11 +439,13 @@ function EventCard({
         */}
         <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
           <span className="font-body text-dato font-bold uppercase tracking-eyebrow text-cream">
-            {isToday
-              ? 'Today'
-              : event.weekday !== null
-                ? weekdayLabel(event.weekday)
-                : whenLabel(event)}
+            {/*
+              ⚠️ LA FECHA REAL, Y ANTES ERA EL NOMBRE DEL DÍA. La tarjeta ya
+              no representa «los miércoles» sino un miércoles: el 30 de
+              septiembre. Con el nombre del día suelto, dos ocurrencias del
+              mismo evento en la lista de ocho salían idénticas.
+            */}
+            {isToday ? 'Today' : shortDate(date)}
           </span>
           <span className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-caption font-bold whitespace-nowrap text-deep">
             {timeRange(event)}
@@ -600,9 +617,10 @@ function CalendarCard({
         <span className="block font-display text-d2 font-extrabold uppercase leading-[0.9]">
           See the whole calendar
         </span>
+        {/* ⚠️ Sin «Almost all of it is free»: dos de las noches fijas llevan
+            entrada. Ver la nota de la píldora de entradas en `/whats-on`. */}
         <span className="mt-4 block max-w-[26ch] font-body text-base font-light">
-          {musicaLarga}, Bingo on Wednesdays and DJ sets late on Saturdays. Almost
-          all of it is free.
+          {musicaLarga}, Bingo on Wednesdays and DJ sets late on Saturdays.
         </span>
       </span>
 
@@ -614,19 +632,31 @@ function CalendarCard({
 }
 
 export default function WhatsOn({
-  week,
+  proximos,
   musicaLarga,
 }: {
-  readonly week: readonly VenueEvent[];
+  /**
+   * LAS PRÓXIMAS FECHAS, ya ordenadas y resueltas en el servidor.
+   *
+   * ⚠️ ANTES ERA `week`: la lista de eventos RECURRENTES, o sea la
+   * programación fija. Dejaba afuera todo lo que tiene fecha propia, que es
+   * justo lo que el cliente carga mes a mes en el dashboard. Pedido de
+   * Camila, 2026-09-17: «en la home mostrar los próximos 8 para luego
+   * llevarte a ver el calendario».
+   *
+   * ⚠️ VIENE COMO OCURRENCIAS Y NO COMO EVENTOS: el mismo evento puede
+   * aparecer dos veces con dos fechas distintas, y eso es correcto.
+   */
+  readonly proximos: readonly { readonly event: VenueEvent; readonly date: string }[];
   readonly musicaLarga: string;
 }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const [today, setToday] = useState<Weekday | null>(null);
+  const [today, setToday] = useState<{ weekday: Weekday; date: string } | null>(null);
   const [index, setIndex] = useState(0);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
 
-  useEffect(() => setToday(venueWeekday()), []);
+  useEffect(() => setToday(venueToday()), []);
 
   /*
    * ⚠️ ARRANCA EN 1 Y NO EN 3. El servidor no sabe el ancho de la pantalla, y
@@ -647,17 +677,29 @@ export default function WhatsOn({
 
 
   /*
-   * El orden: hoy primero, después el resto en su orden natural. Antes de
-   * montar `today` es `null` y la lista sale sin reordenar — que es la semana
-   * completa, información correcta y útil por sí sola.
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ YA NO SE REORDENA NADA EN EL CLIENTE, Y ESO ES LA MEJORA. La lista
+   * venía ordenada por día de la semana y había que rotarla al montar para
+   * poner el evento de hoy adelante: era el único modo de que «lo primero»
+   * fuera «lo más próximo» cuando lo único que se sabía era el día.
+   *
+   * Ahora cada tarjeta trae su fecha y el servidor las manda ordenadas desde
+   * hoy, así que la primera YA es la más próxima. El servidor pinta lo mismo
+   * que se ve después de montar: menos salto y una tarjeta menos de la que
+   * desconfiar.
+   *
+   * ⚠️ LO QUE SE FILTRA EN EL CLIENTE ES OTRA COSA: las fechas que quedaron
+   * atrás. La página se revalida cada una hora, así que entre la generación
+   * y la visita puede haber pasado un día entero y la primera tarjeta ser de
+   * ayer. Sacarla es barato y evita publicar algo que ya pasó.
+   * ══════════════════════════════════════════════════════════════════════
    */
-  const events = (
-    today === null
-      ? week
-      : [...week.filter((e) => e.weekday === today), ...week.filter((e) => e.weekday !== today)]
-  ).slice(0, MAX_CARDS);
+  const events = (today === null ? proximos : proximos.filter((o) => o.date >= today.date)).slice(
+    0,
+    MAX_CARDS,
+  );
 
-  const isClosedToday = today !== null && CLOSED_DAYS.includes(today);
+  const isClosedToday = today !== null && CLOSED_DAYS.includes(today.weekday);
 
   /*
    * ══════════════════════════════════════════════════════════════════════
@@ -672,7 +714,17 @@ export default function WhatsOn({
    * visibles`, y los puntos son `max + 1`.
    * ══════════════════════════════════════════════════════════════════════
    */
-  const tarjetas = [...events.map((e) => e.title), 'See the whole calendar'];
+  /*
+   * ⚠️ SON LOS TÍTULOS Y NO LOS SLUGS: esta lista es la que nombra cada punto
+   * del carrusel para un lector de pantalla. Y desde que la lista son fechas,
+   * el mismo evento puede aparecer dos veces, así que el punto lleva además
+   * el día: «NFC North HQ (Sun, Sep 21)» y «NFC North HQ (Sun, Sep 28)» son
+   * dos destinos distintos y tienen que sonar distinto.
+   */
+  const tarjetas = [
+    ...events.map((o) => `${o.event.title} (${shortDate(o.date)})`),
+    'See the whole calendar',
+  ];
   const maxIndex = Math.max(0, tarjetas.length - visibles);
 
   /*
@@ -876,9 +928,16 @@ export default function WhatsOn({
    * Un lunes, «This week in the yard» encabezando cuatro tarjetas de eventos
    * hace que alguien salga de casa. El lugar está cerrado lunes y martes.
    */
+  /*
+   * ⚠️ «COMING UP» Y NO «THIS WEEK». El titular tiene que decir lo mismo que
+   * las tarjetas de abajo, y abajo ya no hay una semana: hay ocho fechas, que
+   * pueden ser diez días o un mes según lo que haya cargado el cliente.
+   * Prometer «esta semana» sobre una tarjeta de octubre es el mismo error que
+   * arreglamos en el renglón del día.
+   */
   const headline = isClosedToday
     ? { a: 'Closed today,', b: 'back Wednesday' }
-    : { a: 'This week', b: 'in the yard' };
+    : { a: 'Coming up', b: 'in the yard' };
 
   const trucks = activeTrucks();
 
@@ -953,7 +1012,7 @@ export default function WhatsOn({
           onScroll={onScroll}
           tabIndex={0}
           role="group"
-          aria-label="This week’s events"
+          aria-label="Upcoming events"
           /*
             ⚠️ SIN `px-borde`, SIN `scroll-px-borde` Y SIN `justify-center-safe`.
             Los tres estaban para parchar el mismo problema, que ya no existe:
@@ -1060,11 +1119,18 @@ export default function WhatsOn({
           */
           className="[margin-inline:-2rem] -mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto px-8 pt-3.5 pb-13 scroll-px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {events.map((event, i) => (
+          {events.map((o, i) => (
+            /*
+              ⚠️ LA CLAVE LLEVA LA FECHA. El mismo evento puede estar dos
+              veces en las próximas ocho tarjetas —un semanal aparece cada
+              siete días—, así que el slug solo no alcanza para identificar
+              la tarjeta y React reusaría el nodo equivocado al reordenar.
+            */
             <EventCard
-              key={event.slug}
-              event={event}
-              isToday={today !== null && event.weekday === today}
+              key={`${o.event.slug}-${o.date}`}
+              event={o.event}
+              date={o.date}
+              isToday={today !== null && o.date === today.date}
               fuera={dentro.length > 0 && !dentro[i]}
             />
           ))}

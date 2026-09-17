@@ -5,7 +5,8 @@ import MenuSheets from '@/components/sections/MenuSheets';
 import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
 import { Heading } from '@/components/shared/Type';
-import { HAPPY_HOUR } from '@/content/happy-hour';
+import { GAME_DAY_DEALS, GAME_DAY_NOTE } from '@/content/game-day';
+import { getHappyHour } from '@/content/happy-hour';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
@@ -47,11 +48,18 @@ export default async function SunsetBarPage() {
    *     const deLaBase = await getBarMenu();
    *     const carta = deLaBase ?? respaldoComoGrupos();
    *
-   * ⚠️ MIENTRAS TANTO LA PÁGINA NO PEGA CONTRA LA BASE, que es la otra cara de
-   * la decisión: ni consulta, ni revalidación, ni respaldo que mantener. La
-   * carta se actualiza cuando el cliente manda una imagen nueva.
+   * ⚠️ MIENTRAS TANTO LA CARTA NO SALE DE LA BASE, que es la otra cara de la
+   * decisión: ni consulta, ni respaldo que mantener. Se actualiza cuando el
+   * cliente manda una imagen nueva.
+   *
+   * ⚠️ EL HAPPY HOUR SÍ SALE DE LA BASE, desde el 2026-09-17, y es la única
+   * lectura que hace esta página. No es una vuelta atrás de lo de arriba: la
+   * carta es una lámina que el cliente manda por mail, y el happy hour es un
+   * evento que el cliente carga en el dashboard. Pedido de Camila: «donde se
+   * nombre happy hour y se exponga su info debe levantar la info de la base».
    * ══════════════════════════════════════════════════════════════════════════
    */
+  const happyHour = await getHappyHour();
 
   return (
     <>
@@ -299,7 +307,7 @@ export default async function SunsetBarPage() {
                 alt=""
                 width={260}
                 height={260}
-                className="block w-full"
+                className="block h-auto w-full"
               />
             </span>
           </span>
@@ -313,7 +321,7 @@ export default async function SunsetBarPage() {
                 alt=""
                 width={260}
                 height={260}
-                className="block w-full"
+                className="block h-auto w-full"
               />
             </span>
           </span>
@@ -331,7 +339,7 @@ export default async function SunsetBarPage() {
             las cards de eventos). `deep` sobre `cream` da 9.44:1.
           */}
           <p className="mt-5 inline-block rounded-pill bg-cream px-6 py-2.5 font-display text-d5 uppercase tracking-eyebrow text-deep lg:px-7 lg:py-3">
-            {HAPPY_HOUR.days} · {HAPPY_HOUR.time}
+            {happyHour.days} · {happyHour.time}
           </p>
 
           {/*
@@ -376,7 +384,7 @@ export default async function SunsetBarPage() {
               tres renglones de cuatro letras. `sm:` es el corte.
             */}
             <ul className="relative m-0 flex list-none flex-col divide-y divide-dashed divide-ink/20 p-0 sm:flex-row sm:divide-x sm:divide-y-0">
-              {HAPPY_HOUR.deals.map((d) => (
+              {happyHour.deals.map((d) => (
                 <li
                   key={d.price}
                   className="flex flex-1 items-baseline justify-center gap-3 py-4 sm:px-4 sm:py-2"
@@ -394,6 +402,74 @@ export default async function SunsetBarPage() {
                     {d.price}
                   </span>
                   <span className="font-body text-d6 text-ink sm:text-d5">{d.what}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/*
+              ⚠️ LA NOTA SALE DEL MISMO EVENTO Y ES OPCIONAL. Hoy dice cuál es
+              la cerveza destacada, que es un dato que el cliente mandó suelto
+              y que no es un precio: no entra en la fila de tres y tampoco se
+              puede tirar. Si el evento no la trae, no se dibuja nada.
+            */}
+            {happyHour.note ? (
+              <p className="relative m-0 mt-5 text-center font-body text-base font-light text-ink/75">
+                {happyHour.note}
+              </p>
+            ) : null}
+          </div>
+
+          {/*
+            ══════════════════════════════════════════════════════════════════
+            ⚠️ LAS PROMOS DE FÚTBOL VAN PEGADAS AL HAPPY HOUR Y NO EN UNA
+            SECCIÓN PROPIA. El documento del cliente las define como «happy
+            hour curado para días de fútbol, que incluye el happy hour regular
+            como base»: son la misma barra el mismo día, una encima de la
+            otra. Separarlas en dos bandas obligaría a leer dos veces para
+            entender que no compiten.
+
+            ⚠️ NO REUSA EL CHROME DE LA TARJETA DE ARRIBA, y es deliberado: la
+            regla escrita tres comentarios más arriba dice que una TERCERA
+            copia de esa plancha hay que subirla a `shared/` en el mismo
+            commit. Este bloque no la necesita, porque no es lo mismo: arriba
+            son tres precios pelados y acá cada promo tiene nombre, mecánica y
+            precio. Un renglón por promo sobre la banda oscura alcanza.
+
+            ⚠️ SE BORRA ENTERO CUANDO TERMINE LA TEMPORADA, junto con
+            `content/game-day.ts`. Por eso es un bloque cerrado y no líneas
+            sueltas metidas en la tarjeta de arriba.
+            ══════════════════════════════════════════════════════════════════
+          */}
+          <div className="mt-11 lg:mt-14">
+            <Heading level={3} className="text-d4 text-paper lg:text-d3">
+              On football Sundays
+            </Heading>
+
+            <p className="mt-3.5 max-w-[52ch] font-body text-base font-light text-bone/85">
+              {GAME_DAY_NOTE}
+            </p>
+
+            <ul className="m-0 mt-7 flex list-none flex-col gap-0 p-0">
+              {GAME_DAY_DEALS.map((d) => (
+                <li
+                  key={d.name}
+                  className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-dashed border-bone/25 py-4.5 last:border-b"
+                >
+                  {/*
+                    ⚠️ EL PRECIO PRIMERO Y EN NARANJA. Sobre la banda `deep`
+                    el `sunset` es legible de sobra (la ley del color del repo
+                    sólo lo prohíbe como tinta sobre claro), y es el dato que
+                    alguien busca cuando barre la lista con la vista.
+                  */}
+                  <span className="min-w-[3.5ch] font-display text-d4 leading-none tabular-nums text-sunset">
+                    {d.price}
+                  </span>
+                  <span className="font-display text-d5 uppercase tracking-eyebrow text-paper">
+                    {d.name}
+                  </span>
+                  <span className="basis-full font-body text-base font-light text-bone/85 sm:basis-auto sm:flex-1">
+                    {d.how}
+                  </span>
                 </li>
               ))}
             </ul>

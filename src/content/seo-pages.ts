@@ -29,16 +29,29 @@ export const PAGE_SEO = {
   '/': {
     h1: 'Bonita comes together',
     title: 'Rooftop at Riverside | Rooftop Bar & Food Truck Park in Bonita Springs, FL',
+    /*
+     * ⚠️ SIN LOS DÍAS DEL HAPPY HOUR, Y LOS TENÍA. Decía «happy hour
+     * Wednesday to Friday», que el 2026-09-17 resultó ser un dato equivocado
+     * heredado del footer del sitio viejo: es sábado y domingo.
+     *
+     * No se corrige el día, se saca: una description es texto ESTÁTICO que se
+     * hornea en el build, así que cualquier horario escrito acá vuelve a
+     * quedar viejo el día que el cliente lo cambie en el dashboard y nadie se
+     * entera. El horario vive en el evento y se publica en la página, que es
+     * donde alguien lo va a buscar.
+     */
     description:
-      "A rooftop bar over four food trucks in downtown Bonita Springs. Live music on the calendar, happy hour Wednesday to Friday, dogs welcome in the yard. No reservations, just come up.",
+      'A rooftop bar over four food trucks in downtown Bonita Springs. Live music on the calendar, happy hour on the weekend, dogs welcome in the yard. No reservations, just come up.',
     keywords: ['rooftop bar bonita springs', 'food truck park'],
   },
 
   '/sunset-bar': {
     h1: "Bonita's only rooftop",
     title: 'Sunset Bar | The Only Rooftop Bar in Bonita Springs',
+    // ⚠️ Ídem la home: los días, las horas y los tres precios que decía acá
+    // eran los del sitio viejo y estaban mal. El dato vive en el evento.
     description:
-      'Craft cocktails, local drafts and the best west-facing seat in town. Happy hour Wednesday to Friday, 3 to 6: $4 drafts, $5 house wines, $6 house drinks.',
+      'Craft cocktails, local drafts and the best west-facing seat in town. Weekend happy hour, and the whole rooftop looking at the sunset.',
     keywords: ['rooftop bar', 'happy hour bonita springs'],
   },
 

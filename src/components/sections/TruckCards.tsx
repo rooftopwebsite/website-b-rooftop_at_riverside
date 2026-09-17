@@ -46,6 +46,105 @@ import { HOURS } from '@/content/hours';
  * cuando haga falta.
  */
 /**
+ * EL TOLDO que corona la foto de cada tarjeta.
+ *
+ * Pedido de Camila, 2026-09-17: que las tarjetas lleven «un tildito, típico de
+ * los íconos que representan una tienda», y que no dé sensación de aniñado. El
+ * ícono que mandó de referencia es el de Google Business: una casilla con el
+ * toldo a rayas arriba. Esto es ese toldo, y con él la tarjeta de un negocio
+ * que no tiene local pasa a tener frente.
+ *
+ * ⚠️ VA ARRIBA DE LA FOTO Y NO ABAJO. La primera versión lo puso al pie, como
+ * remate; Camila mandó la referencia y marcó el borde de arriba: «con toldito
+ * me refería a algo así». Y tiene razón por dibujo: un toldo cuelga, no se
+ * apoya. Al pie los mismos dientes se leen como un recorte ondulado cualquiera.
+ *
+ * ⚠️ NO ES EL FESTÓN QUE SE BORRÓ. `Scallop.tsx` murió porque pretendía ser el
+ * SEPARADOR de marca, y el brand book tiene olas para eso. Eso no cambia: la
+ * cenefa entre dos superficies de la página sigue siendo `WaveBorder` y esto no
+ * compite con ella. Es otra pieza y otra escala: no corta la página, corona una
+ * foto adentro de una tarjeta de 266px.
+ *
+ * ⚠️ EL ARCO ES CHATO A PROPÓSITO. 10px de hondo contra 13 de medio período es
+ * 0,77 de un semicírculo. El semicírculo entero es la forma de una guirnalda de
+ * cumpleaños, que era exactamente lo que había que esquivar; achatado se lee
+ * como la caída de una lona tensada.
+ *
+ * ⚠️ VA DEL COLOR DE LA TARJETA Y NO A RAYAS. El ícono de referencia tiene el
+ * toldo rayado, y rayas es justo por donde esto se vuelve infantil: cuatro
+ * tarjetas con cuatro toldos a rayas es una calesita. Del color del cuerpo es
+ * el CUERPO el que baja sobre la foto, y la tarjeta se lee como una sola pieza
+ * recortada en vez de como una foto con un adorno encima.
+ *
+ * ⚠️ SÓLO VA DONDE HAY FOTO DE VERDAD. Sobre el placeholder de «falta la foto»
+ * cortaría su filete punteado por arriba, que es la misma razón por la que el
+ * `bg-fog` tampoco va ahí.
+ */
+const TOLDO = {
+  /** Cada cuánto se repite el diente. Fijo en px: el tamaño no depende del
+      ancho de la tarjeta, porque es textura y no grilla. */
+  periodo: 26,
+  /**
+   * La banda lisa de arriba, antes de que empiecen los dientes.
+   *
+   * ⚠️ SIN ELLA NO HAY TOLDO. La primera versión eran los dientes pelados
+   * colgando del borde, y ahí dos dientes vecinos sólo se tocan en un punto:
+   * se leía como una fila de medialunas, no como una lona. La banda es lo que
+   * los une en UNA pieza, y es lo que tiene el ícono de la tienda.
+   */
+  banda: 7,
+  /** Cuánto baja el diente por debajo de la banda. */
+  alto: 10,
+  /** Ancho del `viewBox`. Más que cualquier tarjeta, así el dibujo se recorta
+      en vez de estirarse. Ver `preserveAspectRatio` abajo. */
+  ancho: 1600,
+} as const;
+
+/**
+ * El camino, armado una vez al cargar el módulo y no una vez por tarjeta.
+ *
+ * Va por el borde de arriba hacia la derecha, baja el alto de la banda y
+ * vuelve hacia la izquierda en arcos: cada arco es un diente.
+ *
+ * ⚠️ SE DIBUJAN LOS ARCOS UNO POR UNO Y NO CON UN `<pattern>`, que es como lo
+ * resuelve `WaveBorder`. Un `pattern` necesita un `id`, y acá el mismo SVG se
+ * repite cuatro veces en la misma página: cuatro `id` iguales es HTML inválido.
+ * Sin `id` no hay nada que pueda chocar.
+ *
+ * ⚠️ EL `sweep-flag` VA EN 1 Y NO EN 0, y es al revés de lo que pide la
+ * intuición. Los arcos se recorren de DERECHA A IZQUIERDA, y en esa dirección
+ * el que sale hacia abajo es el 1. Con 0 los dientes muerden hacia arriba y el
+ * toldo queda dado vuelta.
+ */
+const TOLDO_D = (() => {
+  const { periodo: p, alto: a, banda: b, ancho } = TOLDO;
+  const dientes = Math.ceil(ancho / p);
+  const w = dientes * p;
+  let d = `M0 0L${w} 0L${w} ${b}`;
+  for (let i = dientes; i >= 1; i -= 1) d += ` A${p / 2} ${a} 0 0 1 ${(i - 1) * p} ${b}`;
+  return `${d}L0 0Z`;
+})();
+
+function ToldoEdge() {
+  return (
+    <svg
+      aria-hidden="true"
+      role="presentation"
+      width="100%"
+      height={TOLDO.banda + TOLDO.alto}
+      viewBox={`0 0 ${TOLDO.ancho} ${TOLDO.banda + TOLDO.alto}`}
+      /* `slice` recorta lo que sobra a la derecha en vez de escalar: así el
+         diente mide 26px igual en la tarjeta angosta de desktop que en la ancha
+         de mobile, que es lo que lo mantiene leyéndose como toldo. */
+      preserveAspectRatio="xMinYMin slice"
+      className="pointer-events-none absolute inset-x-0 top-0 block"
+    >
+      <path d={TOLDO_D} fill="var(--color-paper)" />
+    </svg>
+  );
+}
+
+/**
  * Agrupa días seguidos con el mismo horario de trucks: «Wednesday to Thursday».
  *
  * ⚠️ AGRUPA POR CONSECUTIVOS Y NO POR VALOR, que es la misma regla que la tira
@@ -149,13 +248,16 @@ export default function TruckCards({
                   caía a 4.38:1 y axe lo marcó. */}
               <div className={`relative aspect-[3/2] ${t.photo ? 'bg-fog' : ''}`}>
                 {t.photo ? (
-                  <Image
-                    src={t.photo}
-                    alt={t.photoAlt ?? t.name}
-                    fill
-                    sizes="(min-width: 1024px) 280px, (min-width: 640px) 46vw, 92vw"
-                    className="object-cover"
-                  />
+                  <>
+                    <Image
+                      src={t.photo}
+                      alt={t.photoAlt ?? t.name}
+                      fill
+                      sizes="(min-width: 1024px) 280px, (min-width: 640px) 46vw, 92vw"
+                      className="object-cover"
+                    />
+                    <ToldoEdge />
+                  </>
                 ) : (
                   <PhotoPending brief={t.photoBrief} ratio="aspect-[3/2]" className="h-full" />
                 )}
@@ -257,10 +359,24 @@ export default function TruckCards({
         única pieza de ese color antes del comparativo, así que se ve desde
         lejos.
 
-        ⚠️ LOS DÍAS VAN EN FILA Y NO APILADOS. Son cuatro tramos, y en fila se
-        leen como una semana: el ojo compara los horarios entre sí en un solo
-        barrido. Apilados hay que leer cuatro renglones para descubrir que el
-        fin de semana abre antes.
+        ⚠️ LOS DÍAS VAN EN DOS COLUMNAS Y ANTES IBAN EN CUATRO. Camila,
+        2026-09-17: «poné los días en dos columnas así se distribuye mejor la
+        información».
+
+        En cuatro columnas cada tramo medía 170px y el rótulo más largo
+        —«Wednesday to Thursday»— era el Único que se partía en dos renglones.
+        Eso empujaba su horario un renglón más abajo que los otros tres, y una
+        fila de horarios que no se alinea es exactamente lo contrario de lo que
+        una fila de horarios tiene que hacer.
+
+        En dos columnas entran los cuatro rótulos en una sola línea, los cuatro
+        horarios apoyan en la misma base y el bloque queda cuadrado al lado del
+        título en vez de estirado a lo ancho de la losa.
+
+        ⚠️ Y LA COLUMNA DE LOS DÍAS PASÓ A SER LA QUE NO CRECE. Con `1fr` del
+        lado de la `<dl>` las dos columnas se repartían media losa cada una y
+        quedaba un hueco muerto después de cada horario. Ahora el `1fr` lo toma
+        el título y la `<dl>` mide lo que mide su contenido.
 
         ⚠️ LOS DÍAS CERRADOS NO SE LISTAN. Es la misma decisión que el cliente
         pidió para la barra de horarios del encabezado: se comunica por cuándo
@@ -268,7 +384,7 @@ export default function TruckCards({
         ══════════════════════════════════════════════════════════════════
       */}
       <div className="mt-bloque overflow-hidden rounded-shell bg-deep grano sombra-card">
-        <div className="grid gap-8 p-8 lg:grid-cols-[minmax(0,auto)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:p-11">
+        <div className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,auto)] lg:items-center lg:gap-14 lg:p-11">
           <div>
             <h3 className="m-0 font-display text-d4 font-bold uppercase leading-none text-paper lg:text-d3">
               When the trucks
@@ -279,7 +395,7 @@ export default function TruckCards({
             </p>
           </div>
 
-          <dl className="m-0 grid grid-cols-2 gap-x-8 gap-y-6 lg:grid-cols-4">
+          <dl className="m-0 grid grid-cols-2 gap-x-8 gap-y-6 lg:gap-x-14 lg:gap-y-7">
             {tramos.map((t) => (
               <div key={t.label} className="border-t border-paper/20 pt-4">
                 <dt className="font-body text-micro font-bold uppercase tracking-cta text-cream">

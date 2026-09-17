@@ -169,7 +169,13 @@ export const FAQS: readonly Faq[] = [
   {
     group: 'Visiting',
     q: 'Is there an age limit at night?',
-    a: 'Families are welcome all day and there is no cover. Anyone drinking needs ID. Florida law, 21 and up.',
+    /*
+     * ⚠️ DECÍA «AND THERE IS NO COVER» Y SE FUE EL 2026-09-17. No era un dato
+     * confirmado —la nota de abajo ya lo advertía— y encima dejó de ser
+     * cierto: dos de las noches fijas llevan ticket. La pregunta es sobre
+     * EDAD, así que la respuesta se queda con lo que sí sabemos.
+     */
+    a: 'Families are welcome all day. Anyone drinking needs ID. Florida law, 21 and up.',
     // TODO: confirmar con cliente. Que no haya cover y que los chicos entren a
     // toda hora no está escrito en ningún lado. El único «21 and up» del
     // material es el waiver de bar games, que es otra cosa.

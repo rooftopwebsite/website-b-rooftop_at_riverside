@@ -123,10 +123,17 @@ const steps = (fraseMusica: string): readonly TicketStep[] => [
     n: '03',
     kicker: 'What’s on',
     title: 'Stay for whoever’s playing',
-    // ⚠️ La frase de música viene por props: el número de noches no está
-    // confirmado. Ver `content/entertainment.ts`.
-    body: `${fraseMusica}, Bingo on Wednesdays, DJ sets late on Saturdays. Almost all of it is free and none of it needs a ticket.`,
-    tags: [fraseMusica, 'Bingo Wednesdays', 'DJ sets Saturdays', 'No ticket, no cover'],
+    /*
+     * ⚠️ La frase de música viene por props: el número de noches no está
+     * confirmado. Ver `content/entertainment.ts`.
+     *
+     * ⚠️ SE FUE «ALMOST ALL OF IT IS FREE AND NONE OF IT NEEDS A TICKET», y
+     * era la afirmación más fuerte que hacía el sitio sobre las entradas.
+     * Dejó de ser cierta el 2026-09-17: Ross Brown y La Noche llevan ticket.
+     * Lo mismo con la píldora «No ticket, no cover» de acá abajo.
+     */
+    body: `${fraseMusica}, Bingo on Wednesdays, DJ sets late on Saturdays. The calendar says what each night is.`,
+    tags: [fraseMusica, 'Bingo Wednesdays', 'DJ sets Saturdays', 'Walk in, no reservation'],
   },
 ];
 

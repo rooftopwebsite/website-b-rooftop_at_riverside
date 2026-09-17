@@ -44,9 +44,9 @@ export const NOCHES_CLAIM = 5;
 /** Cuántas noches distintas de la semana tienen algo cargado hoy. */
 export async function nochesConEventos(): Promise<number> {
   const eventos = await getVenueEvents();
-  const dias = new Set(
-    eventos.filter((e) => e.kind === 'recurring' && e.weekday !== null).map((e) => e.weekday),
-  );
+  // `flatMap`: un evento puede caer en varios días (el happy hour es sábado
+  // y domingo), y lo que se cuenta son DÍAS distintos, no eventos.
+  const dias = new Set(eventos.filter((e) => e.kind === 'recurring').flatMap((e) => e.weekdays));
   return dias.size;
 }
 
@@ -57,11 +57,9 @@ export async function nochesConMusica(): Promise<number> {
     eventos
       .filter(
         (e) =>
-          e.kind === 'recurring' &&
-          e.weekday !== null &&
-          e.tags.some((t) => ['live-music', 'dj', 'music'].includes(t)),
+          e.kind === 'recurring' && e.tags.some((t) => ['live-music', 'dj', 'music'].includes(t)),
       )
-      .map((e) => e.weekday),
+      .flatMap((e) => e.weekdays),
   );
   return dias.size;
 }

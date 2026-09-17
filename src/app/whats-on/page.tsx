@@ -7,14 +7,15 @@ import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import {
   activeFilters,
+  getVenueEvents,
   isTicketed,
   matchesFilter,
-  recurringEvents,
   timeRange,
-  weekdayLabel,
+  weekdaysLabel,
   type VenueEvent,
 } from '@/content/events';
-import { HAPPY_HOUR } from '@/content/happy-hour';
+import { GAME_DAY_DEALS, GAME_DAY_LABEL } from '@/content/game-day';
+import { getHappyHour } from '@/content/happy-hour';
 import { fraseEntretenimiento } from '@/content/entertainment';
 import { ArrowSquareOut } from '@/components/shared/Icon';
 import { BRAND } from '@/lib/brand';
@@ -61,10 +62,24 @@ export default async function WhatsOnPage({
   const type = sp.type ?? null;
 
   const venue = await getVenue();
-  const semana = await recurringEvents();
+  /*
+   * ⚠️ UNA SOLA LECTURA PARA TODA LA PÁGINA, y de la base. Antes el mes salía
+   * del volcado versionado y la semana de la base, así que los dos bloques de
+   * esta misma pantalla podían no coincidir. Ahora la lista es una y las dos
+   * vistas son dos recortes de lo mismo.
+   */
+  const eventos = await getVenueEvents();
+  // El happy hour es OTRO evento de la misma base. Ver `content/happy-hour.ts`.
+  const happyHour = await getHappyHour();
+  const semana = eventos.filter((e) => e.kind === 'recurring');
   // Ver `content/entertainment.ts`: el número de noches no está confirmado.
   const musicaLarga = await fraseEntretenimiento();
-  const filtros = activeFilters(semana);
+  /*
+   * ⚠️ LOS FILTROS SE CUENTAN SOBRE TODOS LOS EVENTOS y antes sólo sobre los
+   * recurrentes. Un festival cargado con fecha propia existía en la grilla del
+   * mes pero no encendía su filtro, así que «Festivals» no se dibujaba nunca.
+   */
+  const filtros = activeFilters(eventos);
 
   /*
    * ⚠️ EL FILTRO SE APLICA A LAS OCURRENCIAS DEL MES, no a la programación
@@ -72,7 +87,9 @@ export default async function WhatsOnPage({
    * leerse entera siempre: filtrarla dejaría a alguien creyendo que el
    * miércoles no pasa nada porque estaba mirando «Sports».
    */
-  const occurrences = occurrencesInMonth(year, month).filter((o) => matchesFilter(o.event, type));
+  const occurrences = occurrencesInMonth(eventos, year, month).filter((o) =>
+    matchesFilter(o.event, type),
+  );
   const byDay = groupByDay(occurrences);
   const grid = monthGrid(year, month);
   const eventsByDate = new Map(byDay.map((d) => [d.date, d.events]));
@@ -107,9 +124,13 @@ export default async function WhatsOnPage({
         con una única fecha le miente a Google, que después muestra en el rich
         result un día que ya pasó.
 
-        ⚠️ `offers` SÓLO SI HAY `ticketUrl`. Sin entrada va
-        `isAccessibleForFree: true`, que es el dato correcto y además es el que
-        Google usa para mostrar «Free» en el resultado.
+        ⚠️ `offers` SÓLO SI HAY `ticketUrl`, y NADA si no lo hay. Acá se
+        emitía `isAccessibleForFree: true` para todo lo demás, o sea que el
+        sitio le declaraba a Google que un evento era gratis por no tener
+        cargada una URL de entrada. Es el mismo error que la píldora «Free
+        entry» y se fue el mismo día, 2026-09-17, cuando se confirmó que Ross
+        Brown y La Noche llevan entrada. Un rich result que dice «Free» sobre
+        un show con entrada es peor que uno que no dice nada.
         ══════════════════════════════════════════════════════════════════
       */}
       {occurrences.length > 0 ? (
@@ -139,7 +160,7 @@ export default async function WhatsOnPage({
                         availability: 'https://schema.org/InStock',
                       },
                     }
-                  : { isAccessibleForFree: true }),
+                  : {}),
               })),
             ),
           }}
@@ -149,22 +170,33 @@ export default async function WhatsOnPage({
       <PageHero
         eyebrow="The calendar"
         title={"What's on this week"}
-        lead={`${musicaLarga}, Bingo on Wednesdays, and the dogs get their own day. Most of it is free.`}
+        /* ⚠️ Sin «Most of it is free»: ver la nota de la píldora de entradas. */
+        lead={`${musicaLarga}, Bingo on Wednesdays, and the dogs get their own day.`}
         crumbs={[{ name: "What's On", path: '/whats-on' }]}
-      >
-        <div className="flex flex-wrap gap-[12px]">
-          <ButtonLink href="/whats-on/calendar.ics" variant="secondary">
-            Download iCal
-          </ButtonLink>
-          <ButtonLink
-            href="https://calendar.google.com/calendar/r?cid=webcal://rooftopatriverside.com/whats-on/calendar.ics"
-            variant="secondary"
-            external
-          >
-            Add to Google Calendar
-          </ButtonLink>
-        </div>
-      </PageHero>
+      />
+
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ ACÁ VIVÍAN «DOWNLOAD ICAL» Y «ADD TO GOOGLE CALENDAR», y se fueron
+        el 2026-09-17. Camila: «¿esto lo tenía la página vieja? si no, sacalo,
+        me parece rarísimo».
+
+        No lo tenía: la auditoría del sitio vigente lo dice con todas las
+        letras —«no hay `Event` en JSON-LD, no hay iCal»
+        (`current-site-inventory.md` §9)— y el barrido de enlaces externos
+        encontró exactamente TRES en las nueve páginas: Toast, Instagram y
+        Facebook. Suscribirse al calendario de un bar no es un gesto que este
+        público haga, y dos botones arriba de todo pedían justamente eso.
+
+        ⚠️ LO QUE SÍ SE QUEDA ES EL JSON-LD `Event` de más arriba, que es la
+        otra mitad del arreglo y la que de verdad importa: es lo que hace que
+        Google vea los eventos, y es lo que el calendario de Wix no da porque
+        es un iframe de un tercero.
+
+        Con los botones se fue también la ruta `/whats-on/calendar.ics` y
+        `buildICal()`: sin quién los linkee eran 130 líneas sirviendo a nadie.
+        ══════════════════════════════════════════════════════════════════
+      */}
 
       {/*
         ⚠️ EL DESTACADO VA ANTES DEL CALENDARIO Y NO ADENTRO. Es un evento que
@@ -173,7 +205,19 @@ export default async function WhatsOnPage({
         vez y en grande, es lo que reemplaza a la página que tenía. Ver
         `FeaturedEvent`.
       */}
-      <FeaturedEvent />
+      {/*
+        ⚠️ LAS PROMOS DE FÚTBOL SE LE PASAN DESDE ACÁ Y NO LAS BUSCA LA CARD.
+        El destacado lo elige el cliente con un tag en el dashboard, así que la
+        card tiene que servir para cualquier evento; las promos, en cambio, son
+        de UNO solo. La card además las filtra contra la descripción del evento
+        destacado y no publica la que no esté nombrada ahí, así que el día que el
+        destacado cambie el bloque se apaga sin que nadie toque esta línea.
+
+        ⚠️ ESTA LÍNEA SE BORRA CON LA TEMPORADA, junto con `content/game-day.ts`
+        y el bloque «On football Sundays» de `/sunset-bar`. Son los tres lugares,
+        y no hay un cuarto.
+      */}
+      <FeaturedEvent deals={GAME_DAY_DEALS} dealsLabel={GAME_DAY_LABEL} />
 
       <Section band="md" labelledBy="cal-title">
         {/*
@@ -322,7 +366,14 @@ export default async function WhatsOnPage({
           eyebrowTone="deep"
           id="semana-title"
           title="The standing lineup"
-          lead="This part does not change. No tickets, no cover, no date to keep track of."
+          /*
+            ⚠️ YA NO DICE «NO TICKETS». Decía «This part does not change. No
+            tickets, no cover, no date to keep track of», y desde el
+            2026-09-17 la segunda mitad es falsa: Ross Brown y La Noche llevan
+            entrada, que se saca por Eventbrite. Lo que sigue siendo cierto es
+            lo primero, y es lo que quedó.
+          */
+          lead="This part does not change. Same nights, same hours, week after week."
         />
 
         {/* El happy hour, destacado */}
@@ -331,7 +382,7 @@ export default async function WhatsOnPage({
             <div>
               <Eyebrow tone="terra">Happy hour</Eyebrow>
               <Heading level={3} className="mt-[8px] text-d5 lg:text-d4">
-                {HAPPY_HOUR.days}, {HAPPY_HOUR.time}
+                {happyHour.days}, {happyHour.time}
               </Heading>
             </div>
             <ul className="flex list-none flex-wrap gap-[8px]">
@@ -340,7 +391,7 @@ export default async function WhatsOnPage({
                   bloque es la oferta entera; esto es una píldora de resumen
                   dentro del calendario, donde «$4 Drafts» es UN dato. Lo que
                   cambió es de dónde sale la frase, no la frase. */}
-              {HAPPY_HOUR.deals.map((d) => (
+              {happyHour.deals.map((d) => (
                 <li
                   key={d.price}
                   className="rounded-pill bg-cream px-[14px] py-[6px] font-display text-d7 uppercase tabular-nums text-ink"
@@ -360,25 +411,59 @@ export default async function WhatsOnPage({
               className="grid gap-[6px] border-b border-ink/12 py-[18px] last:border-b-0 sm:grid-cols-[140px_minmax(0,1fr)_auto] sm:items-baseline sm:gap-[24px]"
             >
               <span className="eyebrow text-body/75">
-                {e.weekday !== null ? weekdayLabel(e.weekday) : 'Every week'}
+                {e.weekdays.length > 0 ? weekdaysLabel(e.weekdays) : 'Every week'}
               </span>
               <span className="flex flex-col">
                 <span className="font-display text-d6 uppercase lg:text-d5">{e.title}</span>
                 <span className="mt-[2px] text-[16px] leading-[1.5] text-body/75">{e.summary}</span>
               </span>
-              <span className="shrink-0 text-caption font-bold tabular-nums text-body/75">
-                {timeRange(e)}
-                <span className="ml-[8px] font-normal">{e.space}</span>
+              <span className="flex shrink-0 flex-col items-start gap-[6px] text-caption font-bold tabular-nums text-body/75 sm:items-end">
+                <span>
+                  {timeRange(e)}
+                  <span className="ml-[8px] font-normal">{e.space}</span>
+                </span>
+
+                {/*
+                  ══════════════════════════════════════════════════════════
+                  ⚠️ EL LINK A LA ENTRADA VA EN LA FILA, y es lo único que
+                  distingue a un show con entrada de una noche de entrada
+                  libre en esta lista. Pedido de Camila, 2026-09-17: «Ross
+                  Brown y La Noche son los únicos dos que deben decir que son
+                  con entrada sacada por link externo, y de alguna manera
+                  debemos redirigir a la página de la ticketera».
+
+                  ⚠️ QUIÉN LLEVA ENTRADA NO SE DECIDE ACÁ: sale de
+                  `isTicketed()`, o sea de tener `ticketUrl`. Ver el
+                  diccionario `TICKETS` en `content/events.ts`, que además
+                  explica por qué hoy los dos apuntan al perfil del
+                  organizador y no a su propia página de venta.
+                  ══════════════════════════════════════════════════════════
+                */}
+                {isTicketed(e) && e.ticketUrl ? (
+                  <a
+                    href={e.ticketUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-[6px] font-normal text-terra underline underline-offset-2 hover:text-ink"
+                  >
+                    Get tickets
+                    <ArrowSquareOut className="size-[14px] shrink-0" />
+                    <span className="sr-only">(opens in a new tab)</span>
+                  </a>
+                ) : null}
               </span>
             </li>
           ))}
         </ul>
 
         <div className="mt-[28px] flex flex-col gap-[12px] text-[16px] leading-[1.7] text-body/80">
-          <p>
-            Ticketed shows run in The Yard and sell through Eventbrite. Everything on this list is
-            free and you just walk in.
-          </p>
+          {/*
+            ⚠️ DECÍA QUE TODO ESTO ERA GRATIS Y DEJÓ DE SER CIERTO el
+            2026-09-17: dos de las noches fijas llevan entrada. Ahora este
+            párrafo sólo dice DÓNDE se sacan, y quién la necesita lo dice su
+            propia fila. Nada afirma que algo sea gratis.
+          */}
+          <p>The shows that need a ticket sell through Eventbrite.</p>
           {/*
             ⚠️ ESTE CTA GENERAL SE QUEDA, ADEMÁS DEL DE CADA EVENTO. Desde el
             2026-09-15 cada evento con `ticketUrl` linkea a su propia página de
@@ -459,16 +544,27 @@ function EventRow({ event }: { readonly event: VenueEvent }) {
           {timeRange(event)}
           <span className="ml-[8px] font-normal">{event.space}</span>
         </span>
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ SE DICE QUE HAY ENTRADA, NO SE DICE QUE NO LA HAY. Acá había un
+          «Free entry» para todo lo que no tuviera `ticketUrl`, y esa píldora
+          era una afirmación que el sitio no puede sostener: la sacaba de la
+          FALTA de un dato, no de un dato. Cuando el 2026-09-17 se confirmó
+          que Ross Brown y La Noche llevan entrada, los dos venían mostrando
+          «Free entry» desde el día uno.
+
+          Camila, ese mismo día: «no hables de entrada gratis ni paga, solo
+          que debe sacar ticket». Así que el evento con entrada la anuncia, y
+          el resto no dice nada, que es lo único honesto mientras el dato de
+          quién cobra no esté completo.
+          ══════════════════════════════════════════════════════════════════
+        */}
         {isTicketed(event) ? (
           <span className="inline-flex items-center gap-[5px] rounded-pill bg-sunset px-[12px] py-[4px] text-ink">
             Tickets
             <ArrowSquareOut className="size-3.5" aria-hidden="true" />
           </span>
-        ) : (
-          <span className="rounded-pill border border-ink/25 px-[12px] py-[4px] font-normal">
-            Free entry
-          </span>
-        )}
+        ) : null}
       </span>
     </>
   );

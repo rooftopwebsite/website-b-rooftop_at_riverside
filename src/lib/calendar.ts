@@ -1,15 +1,45 @@
-import { EVENTS_FALLBACK, type VenueEvent, type Weekday } from '@/content/events';
-import { venueAddressLine, type Venue } from './venue';
+import { type VenueEvent, type Weekday } from '@/content/events';
 import { BRAND } from './brand';
-import { SITE_URL } from './seo';
 
 /**
- * Expansión del calendario y exportación a iCal.
+ * Expansión del calendario: de un puñado de eventos a las fechas concretas.
  *
  * Todo esto corre EN EL SERVIDOR. Es la diferencia central con el sitio actual:
  * el calendario de Wix es un iframe de `calendar.boomte.ch` y no devuelve un
  * solo nombre de evento en el HTML. Acá cada ocurrencia está en el HTML servido
- * y cada evento tiene su propia URL.
+ * y la lee Google.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ACÁ ABAJO VIVÍA `buildICal()` Y SE FUE EL 2026-09-17, junto con la ruta
+ * `/whats-on/calendar.ics` y los dos botones que la linkeaban. Camila: «¿esto
+ * lo tenía la página vieja? si no, sacalo, me parece rarísimo».
+ *
+ * No lo tenía —`current-site-inventory.md` §9: «no hay `Event` en JSON-LD, no
+ * hay iCal»—, y sin los botones eran 130 líneas y una ruta sirviendo a nadie.
+ * Lo que sí queda, y es la parte que importaba, es el JSON-LD `Event` que
+ * emite `/whats-on`: eso es lo que hace que los eventos existan para Google.
+ *
+ * Si algún día vuelve: los recurrentes tienen que salir como `RRULE` con
+ * `BYDAY` de varios días y `UNTIL` cuando el evento tiene fin de temporada, no
+ * como cientos de ocurrencias sueltas.
+ * ══════════════════════════════════════════════════════════════════════════
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LOS EVENTOS ENTRAN POR PARÁMETRO Y ANTES SALÍAN DE `EVENTS_FALLBACK`.
+ * Ese respaldo es el volcado versionado en `events.json`, o sea la foto de la
+ * base del día que alguien corrió el sync por última vez.
+ *
+ * El costo era concreto y estaba en producción: la tira de la semana leía la
+ * base en vivo y la GRILLA DEL MES leía el JSON, así que los dos bloques de
+ * `/whats-on` podían contradecirse en la misma pantalla. Verificado el
+ * 2026-09-17: en la base Wooftop Wednesdays y Bingo Night estaban cargados
+ * como NO recurrentes y en el JSON seguían como semanales. La tira los
+ * escondía y el mes los mostraba.
+ *
+ * Pedido de Camila, 2026-09-17: «en el calendario deben estar los de la base,
+ * todos los eventos deben levantarse de ahí». Este módulo ya no importa
+ * eventos: se los pasa quien los leyó, que es siempre una página server.
+ * ══════════════════════════════════════════════════════════════════════════
  */
 
 export interface Occurrence {
@@ -49,34 +79,123 @@ export function shiftMonth(year: number, month: number, delta: number) {
 const iso = (y: number, m: number, d: number) =>
   `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
+export const weekdayOf = (date: string) =>
+  new Date(`${date}T12:00:00Z`).getUTCDay() as Weekday;
+
+/**
+ * Hoy en el huso del venue, como `YYYY-MM-DD`.
+ *
+ * ⚠️ NO ES `new Date().toISOString()`. El servidor de Vercel corre en UTC: a
+ * las 9 de la noche en Bonita Springs allá ya es el día siguiente, así que el
+ * evento de esta noche desaparecería de «lo que viene» cuatro horas antes de
+ * empezar. `en-CA` se usa porque formatea justo `YYYY-MM-DD`.
+ */
+export function todayInVenue(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: BRAND.address.timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
+/**
+ * ¿Este evento pasa este día?
+ *
+ * ⚠️ UN RECURRENTE NO ES ETERNO: se repite en su día de la semana, pero
+ * solamente entre `from` y `until`. Sin ese corte, un evento de temporada se
+ * publica todo el año y una promo que terminó sigue prometida en el
+ * calendario, que es peor que no tenerla.
+ *
+ * ⚠️ UN PUNTUAL ES UNA FECHA Y NADA MÁS. Es el caso de todo lo que tiene
+ * agenda irregular, y desde el 2026-09-17 es el caso por defecto: el
+ * dashboard sólo sabe guardar UN día de la semana como recurrencia, así que
+ * algo que pasa «un miércoles al mes» cargado como semanal es directamente un
+ * dato falso. Lo correcto es una fila por fecha.
+ */
+export function happensOn(event: VenueEvent, date: string): boolean {
+  if (event.kind !== 'recurring') return event.date === date;
+  if (!event.weekdays.includes(weekdayOf(date))) return false;
+  if (date < event.from) return false;
+  return event.until === null || date <= event.until;
+}
+
+const byDateThenTime = (a: Occurrence, b: Occurrence) =>
+  a.date === b.date
+    ? a.event.startTime.localeCompare(b.event.startTime)
+    : a.date.localeCompare(b.date);
+
 /**
  * Todas las ocurrencias de un mes, ordenadas por fecha y hora.
  *
  * Los recurrentes se expanden sobre cada día del mes que cae en su día de la
- * semana. Los puntuales entran si su fecha es de ese mes.
+ * semana y está dentro de su temporada. Los puntuales entran por su fecha.
  */
-export function occurrencesInMonth(year: number, month: number): readonly Occurrence[] {
+export function occurrencesInMonth(
+  events: readonly VenueEvent[],
+  year: number,
+  month: number,
+): readonly Occurrence[] {
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const out: Occurrence[] = [];
 
   for (let day = 1; day <= daysInMonth; day++) {
     const date = iso(year, month, day);
-    const weekday = new Date(`${date}T12:00:00Z`).getUTCDay() as Weekday;
-
-    for (const event of EVENTS_FALLBACK) {
-      if (event.kind === 'recurring' && event.weekday === weekday) {
-        out.push({ event, date });
-      } else if (event.date === date) {
-        out.push({ event, date });
-      }
+    for (const event of events) {
+      if (happensOn(event, date)) out.push({ event, date });
     }
   }
 
-  return out.sort((a, b) =>
-    a.date === b.date
-      ? a.event.startTime.localeCompare(b.event.startTime)
-      : a.date.localeCompare(b.date),
-  );
+  return out.sort(byDateThenTime);
+}
+
+/**
+ * LO QUE VIENE: las próximas N fechas reales, contando desde hoy.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ES LA LISTA QUE LA HOME NECESITA Y NO TENÍA. La home mostraba la
+ * PROGRAMACIÓN SEMANAL —los recurrentes, con el nombre del día— y esa lista
+ * tiene dos agujeros: deja afuera todo lo que tiene fecha propia, que es
+ * justo lo que el cliente carga mes a mes, y no sabe decir «el sábado que
+ * viene» sino «los sábados».
+ *
+ * Pedido de Camila, 2026-09-17: «en la home mostrar los próximos 8 para luego
+ * llevarte a ver el calendario». Ocho es lo que ya entraba en el carrusel
+ * (`MAX_CARDS`), así que el tope no cambia: cambia QUÉ se cuenta.
+ *
+ * ⚠️ MEZCLA LOS DOS TIPOS EN UNA SOLA LISTA ORDENADA POR FECHA, que es la
+ * única forma de que «lo próximo» sea cierto. Un recurrente de mañana va
+ * antes que un puntual de la semana que viene, y al revés.
+ *
+ * ⚠️ EL HORIZONTE ESTÁ ACOTADO A 120 DÍAS. Sin tope, un calendario vacío
+ * haría girar el bucle para siempre buscando ocho fechas que no existen.
+ * Cuatro meses es más que suficiente: el cliente entrega el calendario del
+ * mes siguiente el día 10.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export function upcomingOccurrences(
+  events: readonly VenueEvent[],
+  from: string,
+  limit: number,
+): readonly Occurrence[] {
+  const HORIZONTE = 120;
+  const out: Occurrence[] = [];
+  const day = new Date(`${from}T12:00:00Z`);
+
+  for (let i = 0; i < HORIZONTE && out.length < limit; i++) {
+    const date = day.toISOString().slice(0, 10);
+    const delDia: Occurrence[] = [];
+    for (const event of events) {
+      if (happensOn(event, date)) delDia.push({ event, date });
+    }
+    // Un día puede tener más de un evento: entran ordenados por hora, y si
+    // el cupo se agota en el medio, se corta ahí. Mejor ocho fechas ciertas
+    // que nueve para emparejar un día.
+    out.push(...delDia.sort(byDateThenTime).slice(0, limit - out.length));
+    day.setUTCDate(day.getUTCDate() + 1);
+  }
+
+  return out;
 }
 
 /** Las ocurrencias agrupadas por día, para la vista de lista. */
@@ -119,84 +238,4 @@ export function longDate(date: string): string {
     day: 'numeric',
     timeZone: 'UTC',
   });
-}
-
-/* ==========================================================================
-   iCal
-   ========================================================================== */
-
-const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
-
-/** RFC 5545 pide líneas de 75 octetos como máximo, plegadas con un espacio. */
-function fold(line: string): string {
-  if (line.length <= 73) return line;
-  const parts: string[] = [];
-  let rest = line;
-  parts.push(rest.slice(0, 73));
-  rest = rest.slice(73);
-  while (rest.length > 72) {
-    parts.push(` ${rest.slice(0, 72)}`);
-    rest = rest.slice(72);
-  }
-  if (rest) parts.push(` ${rest}`);
-  return parts.join('\r\n');
-}
-
-const RRULE_DAY = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'] as const;
-
-/**
- * El calendario completo en iCal, con los recurrentes como RRULE en vez de
- * cientos de ocurrencias sueltas. Es lo que hace que el archivo pese 3 KB y no
- * 300, y que Google Calendar los muestre como serie.
- */
-export function buildICal(venue: Venue): string {
-  const now = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-  const lines: string[] = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    `PRODID:-//${BRAND.name}//Events//EN`,
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
-    `X-WR-CALNAME:${esc(BRAND.name)}`,
-    `X-WR-TIMEZONE:${venue.timezone}`,
-  ];
-
-  for (const e of EVENTS_FALLBACK) {
-    // Para los recurrentes hace falta una fecha de arranque: se usa la primera
-    // ocurrencia a partir de hoy que caiga en su día de la semana.
-    let startDate = e.date;
-    if (!startDate && e.weekday !== null) {
-      const d = new Date();
-      while (d.getUTCDay() !== e.weekday) d.setUTCDate(d.getUTCDate() + 1);
-      startDate = d.toISOString().slice(0, 10);
-    }
-    if (!startDate) continue;
-
-    const dt = (day: string, hhmm: string) => `${day.replace(/-/g, '')}T${hhmm.replace(':', '')}00`;
-    const endDay = e.endsNextDay
-      ? new Date(new Date(`${startDate}T12:00:00Z`).getTime() + 86400000).toISOString().slice(0, 10)
-      : startDate;
-
-    lines.push(
-      'BEGIN:VEVENT',
-      `UID:${e.slug}@rooftopatriverside.com`,
-      `DTSTAMP:${now}`,
-      `DTSTART;TZID=${venue.timezone}:${dt(startDate, e.startTime)}`,
-      `DTEND;TZID=${venue.timezone}:${dt(endDay, e.endTime)}`,
-      fold(`SUMMARY:${esc(e.title)}`),
-      fold(`DESCRIPTION:${esc(e.summary)}`),
-      fold(`LOCATION:${esc(`${e.space}, ${venue.name}, ${venueAddressLine(venue)}`)}`),
-      fold(`URL:${SITE_URL}/whats-on/${e.slug}`),
-    );
-
-    if (e.kind === 'recurring' && e.weekday !== null) {
-      lines.push(`RRULE:FREQ=WEEKLY;BYDAY=${RRULE_DAY[e.weekday]}`);
-    }
-
-    lines.push('END:VEVENT');
-  }
-
-  lines.push('END:VCALENDAR');
-  // RFC 5545: los saltos son CRLF.
-  return `${lines.join('\r\n')}\r\n`;
 }

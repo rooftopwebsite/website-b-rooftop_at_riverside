@@ -22,6 +22,14 @@
 export interface HappyHour {
   /** Rango de días. En dash (–), que es la forma correcta de un rango. */
   readonly days: string;
+  /**
+   * Los mismos días abreviados: «Sat – Sun».
+   *
+   * ⚠️ NO ES UN LUJO: la píldora del hero de la home tiene un presupuesto
+   * medido de ~22 caracteres y el nombre completo de dos días no entra. Ver
+   * la tabla de anchos en `Hero.tsx`.
+   */
+  readonly daysShort: string;
   /** Rango horario. En dash. */
   readonly time: string;
   /**

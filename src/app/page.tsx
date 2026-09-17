@@ -6,8 +6,10 @@ import { HowThisPlaceWorks } from '@/components/sections/HomeSections';
 import PhotoDivider from '@/components/sections/PhotoDivider';
 import ThreeDoors from '@/components/sections/ThreeDoors';
 import WhatsOn from '@/components/sections/WhatsOn';
-import { recurringEvents } from '@/content/events';
+import { getVenueEvents } from '@/content/events';
+import { todayInVenue, upcomingOccurrences } from '@/lib/calendar';
 import { fraseCorta, fraseEntretenimiento } from '@/content/entertainment';
+import { fraseHappyHour } from '@/content/happy-hour';
 import YardSteps from '@/components/sections/YardSteps';
 import { pageMeta } from '@/lib/seo';
 
@@ -83,17 +85,29 @@ export const metadata: Metadata = pageMeta({
  * no se importa: los ratings del cliente no están confirmados.
  */
 export default async function HomePage() {
-  // ⚠️ Los eventos se leen ACÁ, en el servidor, y bajan por props: WhatsOn es
-  // un componente cliente y un cliente no puede ser async.
-  const week = await recurringEvents();
+  /*
+   * ⚠️ Los eventos se leen ACÁ, en el servidor, y bajan por props: WhatsOn es
+   * un componente cliente y un cliente no puede ser async.
+   *
+   * ⚠️ Y LO QUE BAJA SON LAS PRÓXIMAS OCHO FECHAS, no la programación
+   * semanal. Antes era `recurringEvents()`, o sea sólo lo que se repite: un
+   * evento con fecha propia no llegaba nunca a la home aunque fuera mañana.
+   * Ahora se expanden los dos tipos sobre el calendario y se cortan las ocho
+   * primeras a partir de hoy.
+   */
+  const eventos = await getVenueEvents();
+  const proximos = upcomingOccurrences(eventos, todayInVenue(), 8);
   // Ver `content/entertainment.ts`: el número de noches no está confirmado.
   const musicaCorta = await fraseCorta();
   const musicaLarga = await fraseEntretenimiento();
+  // La píldora del hero decía «Happy hour Wed – Fri», que era el dato viejo y
+  // equivocado. Ahora sale del evento. Ver `content/happy-hour.ts`.
+  const happyHour = await fraseHappyHour();
 
   return (
     <>
-      <Hero fraseMusica={musicaCorta} />
-      <WhatsOn week={week} musicaLarga={musicaLarga} />
+      <Hero fraseMusica={musicaCorta} fraseHappyHour={happyHour} />
+      <WhatsOn proximos={proximos} musicaLarga={musicaLarga} />
       <HowThisPlaceWorks />
       <YardSteps fraseMusica={musicaLarga} />
       <PhotoDivider />

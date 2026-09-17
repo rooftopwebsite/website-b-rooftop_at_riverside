@@ -119,7 +119,22 @@ const MARCO_MIN = 320;
  */
 const STATUS_MS = 4600;
 
-export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) {
+export default function Hero({
+  fraseMusica,
+  fraseHappyHour,
+}: {
+  readonly fraseMusica: string;
+  /**
+   * «Happy hour Sat – Sun», armada en el servidor desde el evento de la base.
+   *
+   * ⚠️ ERA UNA CONSTANTE Y DECÍA UN DÍA EQUIVOCADO. El pill anunciaba «Happy
+   * hour Wed – Fri» porque ese dato salía del footer del sitio viejo; el
+   * happy hour real es sábado y domingo. Ahora baja por props, igual que
+   * `fraseMusica` y por el mismo motivo: el dato es del cliente y vive en el
+   * dashboard, no en este archivo.
+   */
+  readonly fraseHappyHour: string;
+}) {
   const frameRef = useRef<HTMLDivElement | null>(null);
   const plateRef = useRef<HTMLParagraphElement | null>(null);
   const [notch, setNotch] = useState<{ w: number; h: number } | null>(null);
@@ -352,7 +367,7 @@ export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) 
    * teal saltan los cuatro contra ese fondo.
    * ══════════════════════════════════════════════════════════════════════
    */
-  const HAPPY = { text: 'Happy hour Wed – Fri', Icon: Martini, medalla: 'bg-cream text-ink' };
+  const HAPPY = { text: fraseHappyHour, Icon: Martini, medalla: 'bg-cream text-ink' };
   /*
    * ⚠️ EL TEXTO VIENE POR PROPS Y ANTES ESTABA ESCRITO ACÁ. El cliente pidió
    * el 2026-09-15 no dar por definitivo «five nights a week» hasta
@@ -526,10 +541,20 @@ export default function Hero({ fraseMusica }: { readonly fraseMusica: string }) 
           aria-live="polite"
           className="mb-1.5 flex flex-1 basis-85 items-center gap-2.5 rounded-pill bg-mint py-1.5 pr-1.5 pl-5 sm:mb-0 sm:self-stretch lg:gap-3.5 lg:py-2 lg:pr-2 lg:pl-6.5"
         >
-          <span className="min-w-0 flex-1 font-body text-pastilla font-medium text-ink">
+          {/*
+            ⚠️ `whitespace-nowrap` + `truncate`: LA PÍLDORA NUNCA CAE EN DOS
+            RENGLONES. Pedido de Camila, 2026-09-17: «no quiero que quede
+            jamás en dos líneas». La medida de arriba dice cuántos caracteres
+            entran y el texto se elige para entrar —ver el tope en
+            `content/happy-hour.ts`—, pero eso es una convención y esto es una
+            garantía: uno de los textos ahora sale del dashboard, así que el
+            día que alguien escriba un título largo la píldora se recorta con
+            puntos suspensivos en vez de romper el alto del hero.
+          */}
+          <span className="min-w-0 flex-1 truncate font-body text-pastilla font-medium whitespace-nowrap text-ink">
             {/* La `key` es lo que reinicia la animación: sin ella React
                 reusa el nodo, el texto cambia y no hay transición. */}
-            <span key={message.text} className="rt-roll inline-block">
+            <span key={message.text} className="rt-roll inline-block max-w-full truncate align-bottom">
               {message.text}
             </span>
           </span>
