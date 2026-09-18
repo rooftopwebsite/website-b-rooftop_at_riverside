@@ -100,9 +100,39 @@ const PAGINAS = [
 const ANCHO = 1294;
 const ALTO = 2000;
 
-/** El control redondo de las flechas, el mismo que usa el carrusel de la home. */
+/**
+ * El control redondo de las flechas DENTRO DEL VISOR, el mismo que usa el
+ * carrusel de la home. Va claro porque atrás tiene el telón negro del diálogo.
+ */
 const FLECHA =
   'grid size-12 shrink-0 place-items-center rounded-pill bg-bone text-deep shadow-md transition-all duration-300 ease-brand hover:bg-paper active:scale-95 disabled:pointer-events-none disabled:opacity-40 lg:size-13';
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * LAS FLECHAS DE LA SECCIÓN, QUE NO SON LAS DEL VISOR Y POR ESO SON OTRA COSA.
+ *
+ * ⚠️ ERAN INVISIBLES, LITERALMENTE. `FLECHA` es `bg-bone` y esta banda TAMBIÉN
+ * es `bg-bone`: el botón era un círculo del mismo color que el fondo, con una
+ * sombra suave por todo contraste. Camila, 2026-09-17: «hace un rato probó otra
+ * persona la web y la flecha pasó completamente desapercibida, no la veía y no
+ * sabía cómo cambiar de página». No es una cuestión de gusto: era un control
+ * que existía y que nadie encontraba.
+ *
+ * ⚠️ AHORA VAN EN `deep` SOBRE `bone`, que es el contraste más fuerte que tiene
+ * la paleta sin usar el naranja. El naranja queda descartado a propósito: en
+ * este sitio la píldora `sunset` ES el CTA —el del header, el de los heroes— y
+ * dos píldoras naranjas en la misma pantalla se pelean por el mismo clic.
+ *
+ * ⚠️ EL ANILLO Y LA SOMBRA LARGA SON PARTE DEL ARREGLO, no decoración: separan
+ * el botón del papel de la banda para que se lea como algo que se toca.
+ *
+ * ⚠️ LA DESHABILITADA SIGUE VIÉNDOSE. A 0.3 de opacidad no invita al clic pero
+ * sigue estando, y es la mitad de la pista: dos flechas, una apagada, dicen
+ * «hay otra página» sin que nadie lo explique.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const FLECHA_CARTA =
+  'grid size-12 shrink-0 place-items-center rounded-pill bg-deep text-paper shadow-lg ring-1 ring-ink/15 transition-all duration-300 ease-brand hover:bg-deeper hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-30 lg:size-14';
 
 export default function MenuSheets() {
   const [indice, setIndice] = useState(0);
@@ -192,34 +222,98 @@ export default function MenuSheets() {
         </p>
 
         {/*
-          ⚠️ LAS FLECHAS VAN MONTADAS SOBRE LA LÁMINA Y NO DEBAJO. Debajo
-          quedaban a dos mil píxeles del borde de arriba de la imagen: para
-          pasar de página había que scrollear hasta el pie. Sobre el cuadro,
-          centradas en vertical, están donde el ojo ya está.
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ LAS FLECHAS YA NO SE MONTAN SOBRE LA LÁMINA: LA FLANQUEAN. Estaban
+          a caballo del borde, medio botón sobre el menú y medio afuera. Camila,
+          2026-09-17: «poné estas flechas por fuera de la imagen, no
+          pisándolas». Sobre una lámina que es puro dibujo y texto chico, un
+          círculo encima tapa ingredientes y precios, y además el botón perdía
+          su forma contra lo que tuviera debajo.
 
-          ⚠️ EL `max-w` ES LO QUE EVITA QUE LA LÁMINA SE VUELVA UN CARTEL. A
+          ⚠️ SIGUEN A MEDIA ALTURA Y NO AL PIE, que es lo que ya estaba resuelto
+          y no se toca: la lámina mide 866px de alto, así que con las flechas
+          abajo hay que scrollear la hoja entera para pasar de página.
+
+          ⚠️ ES UNA GRILLA DE TRES COLUMNAS Y DOS FILAS, Y LOS BOTONES SON LOS
+          MISMOS EN LOS DOS TAMAÑOS. Lo único que cambia es en qué celda cae
+          cada cosa: en desktop las flechas van a los costados y el contador
+          abajo; en pantalla angosta no hay margen para sacarlas afuera —a 390px
+          la lámina ya ocupa todo— así que suben a una fila propia ARRIBA de la
+          imagen, con el contador en el medio: «← Page 1 of 2 →». Dos juegos de
+          botones habrían sido dos controles duplicados para un lector de
+          pantalla.
+
+          ⚠️ ARRIBA Y NO ABAJO EN MOBILE por el mismo motivo de siempre: abajo
+          quedan a una hoja de distancia. Arriba se ven antes que la lámina.
+
+          ⚠️ EL `max-w` DE LA LÁMINA ES LO QUE EVITA QUE SE VUELVA UN CARTEL. A
           todo el ancho del contenedor la página mediría 1168 de ancho y 1806
           de alto: una sola lámina ocuparía dos pantallas y el carrusel dejaría
-          de tener sentido.
+          de tener sentido. Por eso la columna del medio topa en 560 y el
+          contenedor crece sólo lo que necesitan las flechas.
+          ══════════════════════════════════════════════════════════════════
         */}
-        <div className="relative mx-auto mt-9 w-full max-w-[560px] lg:mt-12">
+        <div className="mx-auto mt-9 grid w-full max-w-[560px] grid-cols-[auto_minmax(0,1fr)_auto] items-center justify-items-center gap-x-3 gap-y-5 md:max-w-[720px] md:grid-cols-[auto_minmax(0,560px)_auto] md:gap-x-5 lg:mt-12 lg:max-w-[760px]">
           <button
             type="button"
-            onClick={() => setAbierto(true)}
-            aria-label={`Enlarge the menu: ${pagina.rotulo}`}
-            className="group block w-full cursor-zoom-in overflow-hidden rounded-shell bg-paper sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1"
+            onClick={() => setIndice((i) => Math.max(0, i - 1))}
+            disabled={indice === 0}
+            aria-label="Previous page of the menu"
+            className={`${FLECHA_CARTA} col-start-1 row-start-1`}
           >
-            <Image
-              key={pagina.src}
-              src={pagina.src}
-              alt={pagina.alt}
-              width={ANCHO}
-              height={ALTO}
-              priority={indice === 0}
-              sizes="(min-width: 640px) 560px, 92vw"
-              className="block h-auto w-full"
-            />
-            {/*
+            <ArrowLeft className="size-5 lg:size-6" />
+          </button>
+
+          {/*
+            ⚠️ EL CONTADOR ES TEXTO Y NO PUNTITOS. Con dos páginas, dos puntos
+            no dicen cuál es cuál; «Page 1 of 2» lo dice, y además lo lee un
+            lector de pantalla sin que haya que explicarle nada.
+
+            ⚠️ Y AHORA ADEMÁS HACE DE RÓTULO DE LAS FLECHAS. En pantalla angosta
+            queda entre las dos, así que el control se lee entero de una:
+            flecha, «Page 1 of 2», flecha. Era la otra mitad del problema que
+            reportó Camila —no sólo no se veía el botón, tampoco se entendía que
+            la lámina tuviera una segunda página—.
+
+            ⚠️ `aria-live` PORQUE EL CAMBIO NO MUEVE EL FOCO: quien pasa de
+            página con las flechas se queda en el botón, así que sin esto nada
+            le avisa que la lámina cambió.
+          */}
+          <p
+            aria-live="polite"
+            className="col-start-2 row-start-1 m-0 text-center font-body text-caption font-semibold tracking-eyebrow text-ink/70 uppercase md:col-span-3 md:col-start-1 md:row-start-2"
+          >
+            Page {indice + 1} of {PAGINAS.length}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => setIndice((i) => Math.min(PAGINAS.length - 1, i + 1))}
+            disabled={indice === PAGINAS.length - 1}
+            aria-label="Next page of the menu"
+            className={`${FLECHA_CARTA} col-start-3 row-start-1`}
+          >
+            <ArrowRight className="size-5 lg:size-6" />
+          </button>
+
+          <div className="col-span-3 col-start-1 row-start-2 w-full md:col-span-1 md:col-start-2 md:row-start-1">
+            <button
+              type="button"
+              onClick={() => setAbierto(true)}
+              aria-label={`Enlarge the menu: ${pagina.rotulo}`}
+              className="group block w-full cursor-zoom-in overflow-hidden rounded-shell bg-paper sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1"
+            >
+              <Image
+                key={pagina.src}
+                src={pagina.src}
+                alt={pagina.alt}
+                width={ANCHO}
+                height={ALTO}
+                priority={indice === 0}
+                sizes="(min-width: 640px) 560px, 92vw"
+                className="block h-auto w-full"
+              />
+              {/*
               ⚠️ ACÁ ESTABA EL RÓTULO DE LA HOJA —«Cocktails and specials»— Y SE
               FUE. Camila lo tachó sobre la página: la lámina ya dice en grande
               qué es, con el titular impreso del propio menú, así que el rótulo
@@ -234,46 +328,12 @@ export default function MenuSheets() {
               ⚠️ Y LA AYUDA QUEDÓ CENTRADA. Sola contra el borde derecho se
               leía como el pie de una tarjeta a la que le falta la otra mitad.
             */}
-            <span className="block px-5 py-4 text-center font-body text-caption font-medium text-muted transition-colors duration-200 group-hover:text-terra">
-              Tap to enlarge
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIndice((i) => Math.max(0, i - 1))}
-            disabled={indice === 0}
-            aria-label="Previous page of the menu"
-            className={`${FLECHA} absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2`}
-          >
-            <ArrowLeft className="size-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setIndice((i) => Math.min(PAGINAS.length - 1, i + 1))}
-            disabled={indice === PAGINAS.length - 1}
-            aria-label="Next page of the menu"
-            className={`${FLECHA} absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2`}
-          >
-            <ArrowRight className="size-5" />
-          </button>
+              <span className="block px-5 py-4 text-center font-body text-caption font-medium text-muted transition-colors duration-200 group-hover:text-terra">
+                Tap to enlarge
+              </span>
+            </button>
+          </div>
         </div>
-
-        {/*
-          ⚠️ EL CONTADOR ES TEXTO Y NO PUNTITOS. Con dos páginas, dos puntos no
-          dicen cuál es cuál; «Page 1 of 2» lo dice, y además lo lee un lector
-          de pantalla sin que haya que explicarle nada.
-
-          ⚠️ `aria-live` PORQUE EL CAMBIO NO MUEVE EL FOCO: quien pasa de página
-          con las flechas se queda en el botón, así que sin esto nada le avisa
-          que la lámina cambió.
-        */}
-        <p
-          aria-live="polite"
-          className="mt-4 text-center font-body text-caption font-medium tracking-eyebrow text-muted uppercase"
-        >
-          Page {indice + 1} of {PAGINAS.length}
-        </p>
       </div>
 
       {/*
