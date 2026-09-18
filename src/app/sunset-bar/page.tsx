@@ -2,10 +2,12 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { OLA_SUAVE } from '@/lib/brand-art';
 import MenuSheets from '@/components/sections/MenuSheets';
+import FeaturedEventCard, { dealsNombrados } from '@/components/shared/FeaturedEventCard';
 import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
 import { Heading } from '@/components/shared/Type';
-import { GAME_DAY_DEALS, GAME_DAY_NOTE } from '@/content/game-day';
+import { getVenueEvents } from '@/content/events';
+import { GAME_DAY_DEALS, GAME_DAY_LABEL, GAME_DAY_NOTE } from '@/content/game-day';
 import { getHappyHour } from '@/content/happy-hour';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
@@ -60,6 +62,47 @@ export default async function SunsetBarPage() {
    * ══════════════════════════════════════════════════════════════════════════
    */
   const happyHour = await getHappyHour();
+
+  /*
+   * ══════════════════════════════════════════════════════════════════════════
+   * ESTA BANDA PUBLICA PROMOCIONES DE LA BARRA, NO LA CARTELERA DEL BAR. Es la
+   * regla de Camila, 2026-09-18: «necesito que aparezcan en esta página sólo los
+   * eventos de promoción, o sea los de live music no, el de happy y el de NFC,
+   * los dos de DJ y Ross no».
+   *
+   * ⚠️ SON DOS FILTROS Y LOS DOS HACEN FALTA:
+   *
+   *   · `space === 'Sunset Bar'` — que pase acá arriba. Sin esto entraría
+   *     cualquier promo del yard o del venue entero.
+   *   · que el evento PUBLIQUE PRECIOS — que sea una promo y no un show. Es lo
+   *     que deja afuera a Ross Brown y a La Noche, que son música en vivo: son
+   *     del bar, pero no son una oferta de barra.
+   *
+   * ⚠️ «ES PROMO» SE DECIDE POR EL CONTENIDO DEL EVENTO, NO POR UN TAG, y eso es
+   * a propósito. La versión del 2026-09-17 colgaba este bloque del tag
+   * `featured` y Camila la frenó: «por eso no estaba de acuerdo con usar tags,
+   * puede traer problemas si el cliente no conoce la lógica detrás». `featured`
+   * no significa nada de su negocio, significa algo de NUESTRO layout, así que
+   * sacándolo de un evento se le vaciaba media página sin ningún aviso.
+   *
+   * ⚠️ ES EL MISMO CRITERIO QUE YA USA `content/happy-hour.ts`, que identifica
+   * al happy hour por su TÍTULO y no por el tag `happy-hour` —que lo lleva
+   * Wooftop Wednesdays—. El dato manda sobre la etiqueta. Acá el dato es que el
+   * texto del evento nombra los precios de la temporada.
+   *
+   * ⚠️ EL HAPPY HOUR NO ENTRA EN ESTA LISTA Y NO ES UN OLVIDO: ya es la tarjeta
+   * clara de arriba de esta misma banda, la que sale de `getHappyHour()`. Los
+   * dos de la regla de Camila están, uno arriba del otro.
+   *
+   * ⚠️ AL CERRAR LA TEMPORADA ESTO SE APAGA SOLO. Se borra `content/game-day.ts`
+   * con sus promos, ningún evento del bar publica precios y la lista queda
+   * vacía: debajo del happy hour no se dibuja nada y no hay que acordarse de
+   * sacar ningún bloque.
+   * ══════════════════════════════════════════════════════════════════════════
+   */
+  const promosDelBar = (await getVenueEvents()).filter(
+    (e) => e.space === 'Sunset Bar' && dealsNombrados(e, GAME_DAY_DEALS).length > 0,
+  );
 
   return (
     <>
@@ -338,8 +381,41 @@ export default async function SunsetBarPage() {
             el repo ya usa para el DATO destacado (la píldora del horario en
             las cards de eventos). `deep` sobre `cream` da 9.44:1.
           */}
-          <p className="mt-5 inline-block rounded-pill bg-cream px-6 py-2.5 font-display text-d5 uppercase tracking-eyebrow text-deep lg:px-7 lg:py-3">
-            {happyHour.days} · {happyHour.time}
+          {/*
+            ══════════════════════════════════════════════════════════════════
+            ⚠️ EN MOBILE SE PARTE EN DOS RENGLONES A PROPÓSITO: los días
+            arriba, el horario abajo. Pedido de Camila, 2026-09-17: «separa en
+            dos líneas por un lado días y por otro horas, pero que sea a
+            propósito para controlar que en mobile no quede cortado como
+            ahora».
+
+            ⚠️ EL PUNTO ESTÁ EN QUE EL CORTE SEA NUESTRO Y NO DEL WRAP. El
+            texto es «Saturday – Sunday · 12 PM – 6 PM»: 34 caracteres en caja
+            alta con `tracking-eyebrow` que no entran a 390px, así que la
+            pastilla se envolvía sola y el corte caía donde tocara — a veces
+            partiendo el rango de horas, que es el dato que alguien viene a
+            leer. Con los dos `block` el renglón se corta donde tiene sentido
+            y el rango nunca se parte.
+
+            ⚠️ EL `·` SE VA EN MOBILE Y VUELVE EN `sm`. Un separador al final
+            de un renglón cuelga sin nada que separar. Va en un `<span>` con
+            `aria-hidden` porque es puntuación decorativa: para un lector de
+            pantalla los dos datos ya son frases distintas.
+
+            ⚠️ SIGUE SIENDO `rounded-pill` CON DOS RENGLONES. Una píldora de
+            dos líneas no se deforma porque el radio es la mitad del alto: con
+            `py-2.5` y dos renglones el borde es un semicírculo más alto, que
+            es lo mismo que hace la píldora del horario en las cards de
+            eventos cuando el texto es largo.
+            ══════════════════════════════════════════════════════════════════
+          */}
+          <p className="mt-5 inline-block rounded-pill bg-cream px-6 py-2.5 text-center font-display text-d5 uppercase tracking-eyebrow text-deep lg:px-7 lg:py-3">
+            <span className="block sm:inline">{happyHour.days}</span>
+            <span aria-hidden="true" className="hidden sm:inline">
+              {' '}
+              ·{' '}
+            </span>
+            <span className="block sm:inline">{happyHour.time}</span>
           </p>
 
           {/*
@@ -387,7 +463,51 @@ export default async function SunsetBarPage() {
               {happyHour.deals.map((d) => (
                 <li
                   key={d.price}
-                  className="flex flex-1 items-baseline justify-center gap-3 py-4 sm:px-4 sm:py-2"
+                  /*
+                    ══════════════════════════════════════════════════════════
+                    ⚠️ EL PRECIO VA ARRIBA DEL TEXTO HASTA `lg`, Y AL LADO
+                    RECIÉN EN DESKTOP. Camila, 2026-09-17, sobre la captura de
+                    una tablet: «fíjate cómo se está viendo la card con los
+                    ítems de promo, desastre, alinea los elementos para que se
+                    vea bien, en mobile centrados».
+
+                    ⚠️ QUÉ SE ROMPÍA Y POR QUÉ. Las tres columnas arrancaban en
+                    `sm:`, o sea desde 640px, con el precio y el texto EN FILA.
+                    A 820px cada columna queda en ~200px y ahí adentro «$1 off»
+                    al lado de «Drafts, bottles and cans» no entra: el precio
+                    se parte en dos renglones y el texto en tres, con la
+                    baseline alineando la primera línea de cada uno. Se leía
+                    «$1 / off | Drafts, / bottles / and cans», que es el
+                    desastre de la captura.
+
+                    ⚠️ APILADO ENTRA SIEMPRE porque cada pieza usa el ancho
+                    completo de su columna: el precio en un renglón y el texto
+                    en dos como mucho. Y de paso es la forma que ya pedía
+                    mobile —«en mobile centrados»—, así que es la misma regla
+                    en los dos tamaños en vez de dos arreglos distintos.
+
+                    ⚠️ EN `lg` VUELVE A LA FILA, que es como se aprobó en
+                    desktop: ahí la columna mide ~380px y el precio de 58px
+                    junto al texto lee como una etiqueta de barra. `items-
+                    baseline` sólo tiene sentido en esa forma, por eso viaja
+                    con ella.
+                    ══════════════════════════════════════════════════════════
+                  */
+                  /*
+                    ⚠️ `justify-start` MIENTRAS ESTÁ APILADO, y es lo que hace
+                    que los tres precios queden A LA MISMA ALTURA. Con
+                    `justify-center` cada columna centraba su propio contenido
+                    en el eje vertical, así que «Margaritas» —que ocupa un
+                    renglón contra los dos de las otras dos— empujaba su «$10»
+                    unos píxeles más abajo que el «$1 off» y el «$8» de al
+                    lado. Tres números grandes desalineados entre sí es
+                    exactamente lo que se veía mal.
+
+                    En `lg` vuelve a `center`, pero ahí el eje es el
+                    HORIZONTAL —la fila— y lo que centra es el par precio más
+                    texto dentro de su columna, que es otra cosa.
+                  */
+                  className="flex flex-1 flex-col items-center justify-start gap-1 py-4 text-center sm:px-4 lg:flex-row lg:items-baseline lg:justify-center lg:gap-3 lg:py-2 lg:text-left"
                 >
                   {/*
                     ⚠️ EL NÚMERO VA EN `sunset-deep` Y NO EN `sunset`. La
@@ -398,10 +518,30 @@ export default async function SunsetBarPage() {
                     (`BRAND.headlineAccent.onLight`) y da 3.28:1 sobre `bone`, que pasa para
                     texto grande. A 58px lo es de sobra.
                   */}
-                  <span className="font-display text-d2 leading-none tabular-nums text-sunset-deep">
+                  {/*
+                    ⚠️ `whitespace-nowrap` PORQUE EL PRECIO NO SIEMPRE ES UN
+                    NÚMERO SOLO. «$1 off» son dos palabras, y en la fila de
+                    desktop se partía en «$1 / off»: dos renglones de 58px que
+                    empujaban su columna más alta que las otras dos y dejaban
+                    la fila con los tres precios a distinta altura.
+
+                    El caso aparece sólo en la primera oferta y sólo en `lg`,
+                    que es donde el precio comparte renglón con el texto y le
+                    queda poco ancho. Es el mismo dato que en mobile entra
+                    holgado, así que no es un problema de contenido: el precio
+                    es una unidad y se rompía porque nadie se lo había dicho.
+                  */}
+                  <span className="font-display text-d2 leading-none whitespace-nowrap tabular-nums text-sunset-deep">
                     {d.price}
                   </span>
-                  <span className="font-body text-d6 text-ink sm:text-d5">{d.what}</span>
+                  {/*
+                    ⚠️ SUBE A `d5` EN `lg` Y NO EN `sm`, y viaja con el cambio
+                    de forma de arriba: mientras el texto va APILADO debajo del
+                    precio tiene el ancho entero de la columna y `d6` le da dos
+                    renglones cómodos. En `sm:` el cuerpo grande era parte de
+                    lo que no entraba.
+                  */}
+                  <span className="font-body text-d6 text-ink lg:text-d5">{d.what}</span>
                 </li>
               ))}
             </ul>
@@ -428,52 +568,68 @@ export default async function SunsetBarPage() {
             otra. Separarlas en dos bandas obligaría a leer dos veces para
             entender que no compiten.
 
-            ⚠️ NO REUSA EL CHROME DE LA TARJETA DE ARRIBA, y es deliberado: la
-            regla escrita tres comentarios más arriba dice que una TERCERA
-            copia de esa plancha hay que subirla a `shared/` en el mismo
-            commit. Este bloque no la necesita, porque no es lo mismo: arriba
-            son tres precios pelados y acá cada promo tiene nombre, mecánica y
-            precio. Un renglón por promo sobre la banda oscura alcanza.
+            ⚠️ SON LA MISMA CARD QUE ABRE `/whats-on`, y hasta el 2026-09-17
+            fueron un título propio con una lista de renglones. Camila: «esto
+            así tal cual pongámoslo debajo de happy hour en sunset bar, porque
+            ahora estamos nombrando el evento pero re diferente el diseño». Era
+            exacto: el mismo domingo se publicaba en dos páginas con dos formas
+            que no se parecían en nada, y la de acá ni siquiera nombraba al
+            evento —decía «On football Sundays» y el evento se llama NFC North
+            HQ—. Ahora las dos dibujan `FeaturedEventCard`.
 
-            ⚠️ SE BORRA ENTERO CUANDO TERMINE LA TEMPORADA, junto con
-            `content/game-day.ts`. Por eso es un bloque cerrado y no líneas
-            sueltas metidas en la tarjeta de arriba.
+            ⚠️ Y NO ES SÓLO ESTÉTICA: la card trae el día, el horario y el texto
+            que el cliente escribió en el dashboard, que acá no estaban. El
+            bloque viejo publicaba tres precios sin decir a qué noche
+            pertenecían.
+
+            ⚠️ ES UNA LISTA Y NO UNA CARD SUELTA, aunque hoy tenga un solo
+            elemento. Lo que se dibuja acá lo arma `promosDelBar`, arriba: las
+            promociones de la barra. Hoy la única es el domingo de fútbol, pero
+            el día que el cliente sume otra oferta al bar aparece sola, sin
+            tocar esto.
+
+            ⚠️ NO LLEVA TÍTULO DE GRUPO, y lo tuvo por un rato. Con la lista
+            filtrada a promociones, lo que hay debajo de «Happy hour» es más
+            happy hour: un rótulo en el medio los separaría en dos cosas cuando
+            el documento del cliente dice expreso que son la misma. La nota
+            hace de puente y alcanza.
+
+            ⚠️ SE APAGA SOLO AL CERRAR LA TEMPORADA. Sin `content/game-day.ts`
+            ningún evento del bar publica precios, la lista queda vacía y acá
+            no se dibuja nada. No hay bloque que acordarse de borrar.
             ══════════════════════════════════════════════════════════════════
           */}
-          <div className="mt-11 lg:mt-14">
-            <Heading level={3} className="text-d4 text-paper lg:text-d3">
-              On football Sundays
-            </Heading>
+          {promosDelBar.length > 0 ? (
+            <div className="mt-11 flex flex-col gap-7 lg:mt-14 lg:gap-9">
+              {promosDelBar.map((ev) => {
+                const promos = dealsNombrados(ev, GAME_DAY_DEALS);
+                return (
+                  <div key={ev.slug}>
+                    {/*
+                      ⚠️ LA NOTA VA CON LA CARD QUE LE CORRESPONDE Y NO ARRIBA
+                      DE TODAS. Es el único renglón del sitio que dice que el
+                      happy hour de siempre NO se suspende los domingos, y el
+                      texto del evento —que es lo que la card publica— no lo
+                      dice. Habla del fútbol, así que se dibuja sólo sobre la
+                      card que trae esas promos.
+                    */}
+                    {promos.length > 0 ? (
+                      <p className="m-0 mx-auto mb-5 max-w-[52ch] font-body text-base font-light text-bone/85">
+                        {GAME_DAY_NOTE}
+                      </p>
+                    ) : null}
 
-            <p className="mt-3.5 max-w-[52ch] font-body text-base font-light text-bone/85">
-              {GAME_DAY_NOTE}
-            </p>
-
-            <ul className="m-0 mt-7 flex list-none flex-col gap-0 p-0">
-              {GAME_DAY_DEALS.map((d) => (
-                <li
-                  key={d.name}
-                  className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-dashed border-bone/25 py-4.5 last:border-b"
-                >
-                  {/*
-                    ⚠️ EL PRECIO PRIMERO Y EN NARANJA. Sobre la banda `deep`
-                    el `sunset` es legible de sobra (la ley del color del repo
-                    sólo lo prohíbe como tinta sobre claro), y es el dato que
-                    alguien busca cuando barre la lista con la vista.
-                  */}
-                  <span className="min-w-[3.5ch] font-display text-d4 leading-none tabular-nums text-sunset">
-                    {d.price}
-                  </span>
-                  <span className="font-display text-d5 uppercase tracking-eyebrow text-paper">
-                    {d.name}
-                  </span>
-                  <span className="basis-full font-body text-base font-light text-bone/85 sm:basis-auto sm:flex-1">
-                    {d.how}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+                    <FeaturedEventCard
+                      event={ev}
+                      deals={GAME_DAY_DEALS}
+                      dealsLabel={GAME_DAY_LABEL}
+                      headingLevel={3}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       </Section>
 
