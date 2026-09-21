@@ -1208,6 +1208,43 @@
     font-size: var(--text-base);
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
+
+    /*
+     * ══════════════════════════════════════════════════════════════════════
+     * LA PÁGINA NO SE ARRASTRA DE COSTADO. NUNCA.
+     *
+     * Camila, 2026-09-21, con una captura de la página corrida hacia la
+     * derecha: «por momentos se rompe, en tablet y solo scroleando».
+     *
+     * ⚠️ NO ES UN PARCHE SOBRE UN DESBORDE: no hay desborde. Barrido de 600 a
+     * 1400px cada 20px, en las dos vistas de `/whats-on`, medido con
+     * `scrollWidth` contra `clientWidth`: cero en los 82 anchos. Esto es un
+     * cinturón contra el desborde MOMENTÁNEO —el recompilado del dev server,
+     * una imagen que llega sin dimensiones, una fuente que ensancha un
+     * renglón antes de asentarse—.
+     *
+     * ⚠️ EL PROBLEMA NO ES EL DESBORDE, ES QUE QUEDA PEGADO. Si el desborde
+     * desaparece solo, el navegador devuelve la página a x=0. Pero si en ese
+     * instante alguien toca un link de la barra del calendario, el
+     * corrimiento SOBREVIVE a la navegación, porque esos links llevan
+     * `scroll={false}` para no saltar al hero. Medido: se arrastra a x=60,
+     * se navega, y la página siguiente arranca en x=60. En un teléfono o una
+     * tablet no hay barra de scroll que lo delate, así que se ve como si el
+     * diseño estuviera roto y no se arregla hasta recargar.
+     *
+     * ⚠️ ES `clip` Y NO `hidden`, Y ESA ES TODA LA DIFERENCIA. `overflow:
+     * hidden` crea un contenedor de scroll, y un contenedor de scroll MATA a
+     * `position: sticky` de sus descendientes: se irían al diablo el header y
+     * la barra del calendario, sin avisar y sin error. `clip` recorta sin
+     * crear ese contenedor. Verificado en el navegador: con `clip`, la barra
+     * se sigue pegando a 79px.
+     *
+     * ⚠️ NO AFECTA A LAS TIRAS QUE SÍ SCROLLEAN DE COSTADO —los filtros del
+     * calendario, las categorías de la carta, el carrusel de la home—: cada
+     * una es su propio `overflow-x: auto` y sigue andando.
+     * ══════════════════════════════════════════════════════════════════════
+     */
+    overflow-x: clip;
   }
 
   /* Sin viudas: equilibra los títulos y evita palabras solas al final. */
