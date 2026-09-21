@@ -1,4 +1,5 @@
-import WaveBorder, { type Surface } from './WaveBorder';
+import SoftWave from './SoftWave';
+import type { Surface } from './WaveBorder';
 import Image from 'next/image';
 import Section from './Section';
 import { Eyebrow, Heading } from './Type';
@@ -85,9 +86,16 @@ export default function CompareSlab({
         arriba es `bone`: la curva salía del color equivocado y se veía un
         escalón de 1.08:1 justo antes del corte. Ahora el color de partida es
         una prop y lo pasa quien usa el componente.
+
+        ⚠️ Y DESDE EL 2026-09-21 ES `SoftWave`, LA ONDULACIÓN LARGA, y ya no la
+        cenefa de rulos. Camila, sobre esta misma costura: «pon acá también las
+        olas». Es el mismo corte que ya estaba aprobado en `/sunset-bar` y en
+        el hero de esta página, así que las tres olas de `/food-trucks` son
+        ahora la misma: dos cenefas distintas en una página se leían como dos
+        marcas.
         ══════════════════════════════════════════════════════════════════
       */}
-      <WaveBorder from={from} to="deep" />
+      <SoftWave from={from} to="deep" className="relative" />
       {/*
         ⚠️ `bandBottom="none"` NO ES UN DESCUIDO: es lo que deja que las
         tarjetas crucen. El `-mb-32` del grid tira 128px hacia abajo, pero el
@@ -95,7 +103,17 @@ export default function CompareSlab({
         justo AL RAS del borde verde en vez de pisarlo. Sin `pb`, el margen
         negativo es lo único que decide cuánto sobresalen.
       */}
-      <Section tone="deep" band="lg" bandBottom="none" labelledBy={id}>
+      {/*
+        ⚠️ LA BANDA DE ARRIBA ES `sm` Y ERA `lg`. Camila, 2026-09-21, sobre el
+        hueco entre la ola y «How this works»: «necesito que este espacio sea
+        más bajo». Los 128px de `lg` son el aire que una sección necesita
+        cuando lo que tiene encima es otra sección; acá lo que tiene encima es
+        la ola, que ya termina en unos 100px de verde liso. Sumados eran 230px
+        de nada antes del rótulo.
+
+        ⚠️ EL `pb` NO SE TOCA: sigue en `none` por lo de abajo.
+      */}
+      <Section tone="deep" band="lg" bandTop="sm" bandBottom="none" labelledBy={id}>
         {/*
           ══════════════════════════════════════════════════════════════════
           ⚠️ EL ENCABEZADO VA CENTRADO Y ANTES IBA A LA IZQUIERDA. Camila,

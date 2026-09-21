@@ -198,15 +198,102 @@ export function upcomingOccurrences(
   return out;
 }
 
-/** Las ocurrencias agrupadas por día, para la vista de lista. */
-export function groupByDay(occ: readonly Occurrence[]) {
+/**
+ * Las ocurrencias indexadas por fecha, que es como las pide la grilla.
+ *
+ * ⚠️ REEMPLAZA A `groupByDay()`, que devolvía un arreglo de `{ date, events }`
+ * y obligaba a quien lo usara a construir el `Map` igual. El único consumidor
+ * era la vista de lista de `/whats-on`, que se eliminó el 2026-09-17 cuando el
+ * calendario se volvió visual; la grilla y la agenda del celular necesitan
+ * buscar por fecha, así que la forma correcta es el índice.
+ */
+export function occurrencesByDate(
+  occ: readonly Occurrence[],
+): ReadonlyMap<string, readonly Occurrence[]> {
   const map = new Map<string, Occurrence[]>();
   for (const o of occ) {
     const list = map.get(o.date);
     if (list) list.push(o);
     else map.set(o.date, [o]);
   }
-  return [...map.entries()].map(([date, events]) => ({ date, events }));
+  return map;
+}
+
+export interface NextUp {
+  readonly event: VenueEvent;
+  /** La PRIMERA fecha del evento dentro de la ventana. */
+  readonly date: string;
+  /** Las otras fechas del mismo evento dentro de la ventana, en orden. */
+  readonly alsoOn: readonly string[];
+}
+
+/**
+ * LO QUE VIENE, UNA TARJETA POR EVENTO.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ NO ES `upcomingOccurrences` CON OTRO NOMBRE, y la diferencia es el
+ * motivo por el que existe. Aquella devuelve OCURRENCIAS: si el horizonte
+ * abarca dos jueves, Ross Brown sale dos veces. Eso está bien en el carrusel
+ * de la home, que es una tira corta de «las próximas ocho fechas», y está mal
+ * en un muro de tarjetas con afiche: la misma foto grande repetida dos veces
+ * en la misma pantalla se lee como un error de carga, no como un evento que
+ * se repite.
+ *
+ * Pedido de Camila, 2026-09-17, al rediseñar `/whats-on`: «yo creo que debería
+ * estar una sola vez cada evento de los próximos 15 días, si se repiten estar
+ * una sola vez y que en la card debería entenderse que también está este mismo
+ * evento esta x fecha».
+ *
+ * ⚠️ POR ESO LAS REPETICIONES NO SE TIRAN, SE GUARDAN. Van en `alsoOn`, y la
+ * tarjeta las publica. Descartarlas sería mentir por omisión: alguien que no
+ * puede el jueves 17 necesita saber que hay otro el 24, y ése es justamente el
+ * dato que una lista de ocurrencias da gritando y una lista deduplicada
+ * perdería.
+ *
+ * ⚠️ LA VENTANA SE CUENTA EN DÍAS, NO EN CANTIDAD DE EVENTOS. Son 15 días
+ * corridos desde hoy: lo que la persona puede planear. El `limit` es un tope
+ * de seguridad para que un mes de festival no publique treinta tarjetas, no el
+ * criterio de corte.
+ *
+ * ⚠️ `from` TIENE QUE SER `todayInVenue()`. Ver la nota de esa función: con
+ * `toISOString()` el servidor de Vercel, que corre en UTC, borra el evento de
+ * esta noche cuatro horas antes de que empiece.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export function nextByEvent(
+  events: readonly VenueEvent[],
+  from: string,
+  days: number,
+  limit: number,
+): readonly NextUp[] {
+  const porSlug = new Map<string, { event: VenueEvent; date: string; alsoOn: string[] }>();
+  const orden: string[] = [];
+  const day = new Date(`${from}T12:00:00Z`);
+
+  for (let i = 0; i < days; i++) {
+    const date = day.toISOString().slice(0, 10);
+
+    // Dentro de un mismo día manda la hora: el happy hour de las 3 va antes
+    // que el bingo de las 7, igual que en la grilla del mes.
+    const delDia = events
+      .filter((e) => happensOn(e, date))
+      .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+    for (const event of delDia) {
+      const ya = porSlug.get(event.slug);
+      if (ya) ya.alsoOn.push(date);
+      else {
+        porSlug.set(event.slug, { event, date, alsoOn: [] });
+        orden.push(event.slug);
+      }
+    }
+
+    day.setUTCDate(day.getUTCDate() + 1);
+  }
+
+  // `orden` ya está por fecha y hora de la PRIMERA aparición, que es el orden
+  // en que se recorrió la ventana. No hace falta volver a ordenar.
+  return orden.slice(0, limit).map((slug) => porSlug.get(slug)!);
 }
 
 /**
@@ -231,11 +318,23 @@ export function monthGrid(year: number, month: number) {
 
 export const dayNumber = (date: string) => Number(date.slice(8, 10));
 
-export function longDate(date: string): string {
-  return new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    timeZone: 'UTC',
-  });
-}
+/**
+ * Las tres líneas de la placa de fecha de las tarjetas: `THU` / `17` / `SEP`.
+ *
+ * ⚠️ EL MES VA EN LA PLACA aunque la sección diga «los próximos 15 días». La
+ * ventana cruza el fin de mes una de cada dos semanas, y una placa que dice
+ * «THU 2» a fines de septiembre es una fecha que hay que adivinar.
+ *
+ * ⚠️ `timeZone: 'UTC'` con la hora clavada al mediodía, como en todo este
+ * archivo: la fecha ya viene resuelta en el huso del venue y volver a
+ * interpretarla en el del visitante la corre un día para medio planeta.
+ */
+const parte = (date: string, opts: Intl.DateTimeFormatOptions) =>
+  new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US', { ...opts, timeZone: 'UTC' });
+
+export const weekdayShort = (date: string) => parte(date, { weekday: 'short' }).toUpperCase();
+
+export const monthShort = (date: string) => parte(date, { month: 'short' }).toUpperCase();
+
+/** `2026-09-20` → `Sep 20`. Las repeticiones, en el renglón de la tarjeta. */
+export const monthDay = (date: string) => parte(date, { month: 'short', day: 'numeric' });

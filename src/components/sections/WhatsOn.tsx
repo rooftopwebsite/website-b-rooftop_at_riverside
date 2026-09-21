@@ -66,7 +66,7 @@ import {
  * QUE NO HAY MÁS. Conviene tenerlo escrito porque «faltan tarjetas» parece un
  * bug y no lo es.
  *
- * El dashboard devuelve exactamente cuatro recurrentes —Wooftop Wednesdays,
+ * El dashboard devolvía exactamente cuatro recurrentes —Wooftop Wednesdays,
  * Bingo Night, Ross Brown y La Noche · DJ David Cast— y la auditoría del
  * sitio viejo (`docs/current-site-inventory.md` §9) ya dejó constancia de que
  * los otros que nombra el brief, «Sunset Saturdays» y «Jazz Wednesdays», NO
@@ -1117,7 +1117,28 @@ export default function WhatsOn({
             dónde se corta lo que no entra.
             ══════════════════════════════════════════════════════════════
           */
-          className="[margin-inline:-2rem] -mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto px-8 pt-3.5 pb-13 scroll-px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          /*
+            ══════════════════════════════════════════════════════════════
+            ⚠️ LOS TRES VALORES SON `borde` Y ANTES ERAN 32px FIJOS
+            (`[margin-inline:-2rem]`, `px-8`, `scroll-px-8`). El trío está
+            bien pensado —la sangría negativa saca el carrusel del contenedor
+            y el padding devuelve las tarjetas a la alineación del texto—,
+            pero estaba escrito con un número que no era el del contenedor.
+
+            ⚠️ POR QUÉ IMPORTA: la sangría tiene que valer EXACTAMENTE el
+            gutter del padre o el carrusel no llega al borde (si es menor) o
+            se pasa de la pantalla (si es mayor). Con el gutter en 24px se
+            pasaba 8px y el documento tenía scroll horizontal; el 2026-09-17,
+            al bajar el token a 16px, pasó a 16. Medido a 393px: el documento
+            scrolleaba 394px sobre 378 de viewport.
+
+            ⚠️ EL DESBORDE NO ERA NUEVO, sólo creció. Es la clase de error que
+            un número fijo esconde mientras el token casualmente se le parece.
+            Con `borde` en los tres lugares la sangría sigue al gutter en
+            cualquier medida y el carrusel corta justo en el filo.
+            ══════════════════════════════════════════════════════════════
+          */
+          className="-mx-borde -mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto px-borde pt-3.5 pb-13 scroll-px-borde [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {events.map((o, i) => (
             /*

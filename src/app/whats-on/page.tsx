@@ -1,35 +1,31 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import FeaturedEvent from '@/components/sections/FeaturedEvent';
+import MonthCalendar from '@/components/sections/MonthCalendar';
+import UpcomingCards from '@/components/sections/UpcomingCards';
 import { ButtonLink } from '@/components/shared/Button';
-import PageHero from '@/components/shared/PageHero';
+import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
-import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
+import { Heading, SectionHead } from '@/components/shared/Type';
 import {
   activeFilters,
+  featuredEvent,
   getVenueEvents,
   isTicketed,
   matchesFilter,
-  timeRange,
-  weekdaysLabel,
-  type VenueEvent,
 } from '@/content/events';
 import { GAME_DAY_DEALS, GAME_DAY_LABEL } from '@/content/game-day';
-import { getHappyHour } from '@/content/happy-hour';
 import { fraseEntretenimiento } from '@/content/entertainment';
-import { ArrowSquareOut } from '@/components/shared/Icon';
-import { BRAND } from '@/lib/brand';
 import { getVenue, venueAddressLine } from '@/lib/venue';
 import {
-  dayNumber,
-  groupByDay,
-  longDate,
   monthGrid,
   monthKey,
   monthLabel,
+  nextByEvent,
+  occurrencesByDate,
   occurrencesInMonth,
   parseMonth,
   shiftMonth,
+  todayInVenue,
 } from '@/lib/calendar';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
@@ -49,17 +45,21 @@ export const metadata: Metadata = pageMeta({
  * marcar y —lo importante— rastrear.
  */
 
-const WEEKDAY_HEADERS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
-
 export default async function WhatsOnPage({
   searchParams,
 }: {
-  searchParams: Promise<{ month?: string; view?: string; type?: string }>;
+  searchParams: Promise<{ month?: string; type?: string }>;
 }) {
   const sp = await searchParams;
   const { year, month } = parseMonth(sp.month);
-  const view = sp.view === 'month' ? 'month' : 'list';
   const type = sp.type ?? null;
+  /*
+   * ⚠️ HOY EN EL HUSO DEL VENUE Y NO EN EL DEL SERVIDOR. Lo necesitan las dos
+   * mitades de la página: la ventana de 15 días de las tarjetas y el círculo
+   * naranja de la grilla. Ver `todayInVenue()`: con `toISOString()`, Vercel
+   * corre en UTC y a las 9 de la noche en Bonita Springs ya sería mañana.
+   */
+  const hoy = todayInVenue();
 
   const venue = await getVenue();
   /*
@@ -69,9 +69,6 @@ export default async function WhatsOnPage({
    * vistas son dos recortes de lo mismo.
    */
   const eventos = await getVenueEvents();
-  // El happy hour es OTRO evento de la misma base. Ver `content/happy-hour.ts`.
-  const happyHour = await getHappyHour();
-  const semana = eventos.filter((e) => e.kind === 'recurring');
   // Ver `content/entertainment.ts`: el número de noches no está confirmado.
   const musicaLarga = await fraseEntretenimiento();
   /*
@@ -82,24 +79,60 @@ export default async function WhatsOnPage({
   const filtros = activeFilters(eventos);
 
   /*
-   * ⚠️ EL FILTRO SE APLICA A LAS OCURRENCIAS DEL MES, no a la programación
-   * semanal de abajo. La semana es la grilla fija del lugar y tiene que
-   * leerse entera siempre: filtrarla dejaría a alguien creyendo que el
-   * miércoles no pasa nada porque estaba mirando «Sports».
+   * QUIÉN VA EN GRANDE. Sale del tag de la base, no de acá: es el evento que
+   * el cliente marca como destacado en el dashboard. Lo único que hace la
+   * página es pasar su slug a la grilla, que le da el doble de ancho.
+   */
+  const destacado = await featuredEvent();
+
+  /*
+   * ⚠️ EL FILTRO SE APLICA AL CALENDARIO ENTERO —las tarjetas de arriba y la
+   * grilla del mes— y NO a la programación semanal de abajo. La semana es la
+   * grilla fija del lugar y tiene que leerse entera siempre: filtrarla
+   * dejaría a alguien creyendo que el miércoles no pasa nada porque estaba
+   * mirando «Sports».
+   *
+   * ⚠️ HASTA EL 2026-09-17 SÓLO FILTRABA EL MES, porque el otro bloque de la
+   * página era la programación semanal. Ahora arriba hay tarjetas de fechas
+   * concretas, que son calendario igual que la grilla: si tocar «Sports» no
+   * las moviera, el filtro parecería roto.
    */
   const occurrences = occurrencesInMonth(eventos, year, month).filter((o) =>
     matchesFilter(o.event, type),
   );
-  const byDay = groupByDay(occurrences);
   const grid = monthGrid(year, month);
-  const eventsByDate = new Map(byDay.map((d) => [d.date, d.events]));
+  const eventsByDate = occurrencesByDate(occurrences);
+
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * LO QUE VIENE, QUE AHORA ES LO PRIMERO DE LA PÁGINA.
+   *
+   * ⚠️ EL MISMO FILTRO QUE LA GRILLA. Los filtros son cinco píldoras arriba
+   * de todo y gobiernan la pantalla entera: si alguien toca «Sports» y las
+   * tarjetas de arriba no se mueven, el filtro parece roto. La única lista
+   * que NO se filtra sigue siendo la programación semanal de más abajo, y el
+   * motivo está anotado en su bloque.
+   *
+   * ⚠️ 15 DÍAS Y UN EVENTO UNA SOLA VEZ. El tope de 8 es una red por si un
+   * mes de festival carga veinte fechas distintas, no el criterio de corte.
+   * Ver `nextByEvent()`.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  const proximos = nextByEvent(eventos, hoy, 15, 8).filter((o) => matchesFilter(o.event, type));
 
   const prev = shiftMonth(year, month, -1);
   const next = shiftMonth(year, month, 1);
   const label = monthLabel(year, month);
 
-  const href = (m: { year: number; month: number }, v: string, t: string | null = type) =>
-    `/whats-on?month=${monthKey(m.year, m.month)}&view=${v}${t ? `&type=${t}` : ''}`;
+  /*
+   * ⚠️ SE FUE `&view=`. Había dos vistas, «List» y «Month», y un conmutador
+   * para elegir una y esconder la otra. Desde el 2026-09-17 la página muestra
+   * las dos cosas a la vez, porque contestan preguntas distintas: las
+   * tarjetas dicen «qué puedo hacer estos días» y la grilla dice «qué hay el
+   * 28». El parámetro viejo en una URL guardada simplemente se ignora.
+   */
+  const href = (m: { year: number; month: number }, t: string | null = type) =>
+    `/whats-on?month=${monthKey(m.year, m.month)}${t ? `&type=${t}` : ''}`;
 
   return (
     <>
@@ -167,12 +200,63 @@ export default async function WhatsOnPage({
         />
       ) : null}
 
-      <PageHero
-        eyebrow="The calendar"
-        title={"What's on this week"}
-        /* ⚠️ Sin «Most of it is free»: ver la nota de la píldora de entradas. */
-        lead={`${musicaLarga}, Bingo on Wednesdays, and the dogs get their own day.`}
-        crumbs={[{ name: "What's On", path: '/whats-on' }]}
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ ES `PlateHero`, EL DE `/sunset-bar`, Y ERA `PageHero`. Camila,
+        2026-09-21: «este hero debe ser como el de Sunset Bar, copialo».
+
+        Lo que cambia no es sólo la forma: el hero viejo era una columna de
+        texto a la izquierda sobre fondo liso, sin una sola imagen, en la página
+        que justamente vende noches. Éste abre con una pregunta, el titular
+        centrado en una placa que MUERDE una foto a lo ancho, y las dos esquinas
+        inversas donde la placa entra en la imagen. Todo eso lo trae el
+        componente; acá sólo se elige qué dice y qué foto va.
+
+        ⚠️ «THIS WEEK» EN COLOR, y es ley del sitio y no adorno de esta página:
+        «recordá siempre al menos una palabra en los heros destacar con color».
+        Va en `sunset-deep` —no en `sunset`— porque es tinta sobre claro: el
+        naranja de marca ahí da 2.35:1. El mismo criterio que «rooftop» en
+        `/sunset-bar`.
+
+        ⚠️ EL H1 SIGUE SIENDO EXACTAMENTE «What's on this week», que es lo que
+        dice `PAGE_SEO` y lo que compara `npm run check:seo`. El `span` parte el
+        renglón pero no el texto: el espacio antes del span queda dentro del
+        `textContent`.
+
+        ⚠️ SIN MIGAS, IGUAL QUE EN `/sunset-bar`. Estuvieron un rato —«Home /
+        What's On»— y Camila las tachó con una cruz sobre la captura el
+        2026-09-21, que es la segunda vez que las tacha en este hero: la primera
+        fue en `/sunset-bar`, el 2026-09-16. El motivo vale igual acá: es un
+        solo salto, y la nav de arriba ya tiene «What's On» marcado como página
+        actual.
+
+        ⚠️ EL BREADCRUMB PARA GOOGLE NO SE FUE: el JSON-LD sigue arriba, en el
+        `<script>` de esta misma página. Lo que se saca es la fila de texto, que
+        en un hero centrado entraba por la izquierda y rompía el eje.
+
+        ⚠️ LA PREGUNTA ES LA QUE ALGUIEN ESCRIBE EN GOOGLE. `PlateHero` la
+        publica en cuerpo, no como rótulo, justamente para que se lea como una
+        pregunta y no como una etiqueta de sección.
+
+        ⚠️ EL `lead` DICE «ONE WEDNESDAY A MONTH» Y ANTES DECÍA «THE DOGS GET
+        THEIR OWN DAY». Aquello daba a entender un día fijo de la semana, que
+        es lo que decía la base hasta el 2026-09-21: Wooftop Wednesdays, todos
+        los miércoles. Madeline Powers confirmó que el evento es **Wooftop
+        Fest, el tercer miércoles de cada mes**, así que la promesa semanal
+        pasó a ser falsa. Ver el bloque G de `docs/pedido-al-cliente.md`.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <PlateHero
+        question="Looking for live music tonight in Bonita Springs?"
+        title={
+          <>
+            {"What's on "}
+            <span className="block text-sunset-deep">this week</span>
+          </>
+        }
+        lead={`${musicaLarga}, Bingo on Wednesdays, and one Wednesday a month that belongs to the dogs.`}
+        photo="/images/venue/whats-on-yard-wide.jpg"
+        photoAlt="A full yard on an event afternoon: long table, tent and people under the umbrellas"
       />
 
       {/*
@@ -199,27 +283,29 @@ export default async function WhatsOnPage({
       */}
 
       {/*
-        ⚠️ EL DESTACADO VA ANTES DEL CALENDARIO Y NO ADENTRO. Es un evento que
-        se repite todas las semanas de la temporada, así que como fila del mes
-        aparecería cuatro o cinco veces y ninguna se vería. Arriba, una sola
-        vez y en grande, es lo que reemplaza a la página que tenía. Ver
-        `FeaturedEvent`.
-      */}
-      {/*
-        ⚠️ LAS PROMOS DE FÚTBOL SE LE PASAN DESDE ACÁ Y NO LAS BUSCA LA CARD.
-        El destacado lo elige el cliente con un tag en el dashboard, así que la
-        card tiene que servir para cualquier evento; las promos, en cambio, son
-        de UNO solo. La card además las filtra contra la descripción del evento
-        destacado y no publica la que no esté nombrada ahí, así que el día que el
-        destacado cambie el bloque se apaga sin que nadie toque esta línea.
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ ACÁ VIVÍA LA CARD GIGANTE DEL DESTACADO —`FeaturedEvent`, la banda
+        oscura con media card de texto y media de precios— y se fue el
+        2026-09-21. Camila: «me gustaría no necesitar de esta card gigante (sí
+        en bar); acá en What's On quisiera que esté directo el What is coming
+        up, y dentro de esa sección de 3 columnas poder destacar algunas cards:
+        las destacadas podrían ocupar dos lugares».
 
-        ⚠️ ESTA LÍNEA SE BORRA CON LA TEMPORADA, junto con `content/game-day.ts`
-        y el bloque «On football Sundays» de `/sunset-bar`. Son los tres lugares,
-        y no hay un cuarto.
-      */}
-      <FeaturedEvent deals={GAME_DAY_DEALS} dealsLabel={GAME_DAY_LABEL} />
+        ⚠️ EL DESTACADO NO SE PERDIÓ, CAMBIÓ DE FORMA. Sigue saliendo del tag
+        `featured` de la base —lo elige el cliente en el dashboard— y sigue
+        publicando sus precios; lo que cambia es que ahora es una tarjeta ANCHA
+        dentro de la grilla de «lo que viene», ocupando dos de las tres
+        columnas, en vez de una banda propia antes del calendario.
 
-      <Section band="md" labelledBy="cal-title">
+        ⚠️ Y LA CARD GIGANTE SIGUE VIVA EN `/sunset-bar`, que es donde Camila
+        la dejó expresamente. `FeaturedEventCard` no se borra: es de esa página
+        ahora, y `sections/FeaturedEvent` —la banda que lo envolvía acá— queda
+        sin usar a propósito, para el día que otra página quiera abrir con un
+        destacado en grande.
+        ══════════════════════════════════════════════════════════════════
+      */}
+
+      <Section band="md" labelledBy="proximos-title">
         {/*
           ══════════════════════════════════════════════════════════════
           LOS FILTROS. Son LINKS y no botones: cada filtro es una URL que se
@@ -234,20 +320,32 @@ export default async function WhatsOnPage({
           ══════════════════════════════════════════════════════════════
         */}
         {filtros.length > 1 ? (
-          <nav aria-label="Filter events by type" className="mb-[20px]">
-            <ul className="flex list-none flex-wrap gap-[8px]">
+          /*
+            ⚠️ LOS FILTROS VAN CENTRADOS Y CON COLOR DESDE EL 2026-09-21.
+            Camila: «esta información la quiero centrada y con color, le falta
+            vida y estilo rooftop; centrá el contenido del título y su bajada y
+            todo, y los tags también centrados y que no sean con negro».
+
+            Iban pegados a la izquierda con el activo en `ink`, o sea una
+            píldora negra: el único negro macizo de una página cuya paleta es
+            verde, naranja y crema. Ahora el activo es el naranja de marca con
+            tinta oscura encima —que es la regla del token, el blanco sobre
+            `sunset` da 2.54:1— y los inactivos son filete y letra en verde.
+          */
+          <nav aria-label="Filter events by type" className="mb-[28px]">
+            <ul className="m-0 flex list-none flex-wrap justify-center gap-[8px] p-0">
               {[{ id: null as string | null, label: 'Everything' }, ...filtros].map((f) => {
                 const activo = (f.id ?? null) === type;
                 return (
                   <li key={f.id ?? 'all'}>
                     <Link
-                      href={href({ year, month }, view, f.id ?? null)}
+                      href={href({ year, month }, f.id ?? null)}
                       aria-current={activo ? 'true' : undefined}
                       className={[
                         'inline-block rounded-pill px-[16px] py-[7px] text-caption font-bold uppercase tracking-[0.1em] transition-colors',
                         activo
-                          ? 'bg-ink text-paper'
-                          : 'border border-ink/20 text-ink/70 hover:border-ink hover:text-ink',
+                          ? 'bg-sunset text-ink shadow-btn'
+                          : 'border border-teal600/35 text-deep hover:border-teal600 hover:bg-mint/50',
                       ].join(' ')}
                     >
                       {f.label}
@@ -259,11 +357,123 @@ export default async function WhatsOnPage({
           </nav>
         ) : null}
 
+        {/*
+          ══════════════════════════════════════════════════════════════
+          BLOQUE 1: LO QUE VIENE, EN TARJETAS CON AFICHE.
+
+          ⚠️ OCUPA EL LUGAR DE LA VISTA «LIST», que era lo primero que veía
+          quien abría el calendario: días apilados, todo texto, sin una sola
+          imagen, aunque los eventos traen afiche desde el 2026-09-11.
+
+          ⚠️ LAS CARAS ARRIBA Y EL MAPA ABAJO. Son dos preguntas distintas y
+          por eso son dos bloques y no dos pestañas. Ver `UpcomingCards`.
+          ══════════════════════════════════════════════════════════════
+        */}
+        {/*
+          ⚠️ CENTRADO Y CON UNA PALABRA EN COLOR. Camila, 2026-09-21: «centrá el
+          contenido del título y su bajada y todo», «le falta vida y estilo
+          rooftop». El encabezado iba alineado a la izquierda y entero en tinta,
+          que es la forma más plana que tiene el kit.
+
+          ⚠️ «COMING UP» EN `sunset-deep` NO ES UN ADORNO: es la misma ley que
+          rige los heros del sitio —«recordá siempre al menos una palabra en los
+          heros destacar con color»— aplicada al encabezado que abre el
+          calendario. Y es `sunset-deep` y no `sunset` porque acá el fondo es
+          claro: el naranja de marca como tinta sobre claro da 2.35:1.
+
+          ⚠️ EL RÓTULO VA EN `deep`, QUE ES EL TONO DE LA CASA. Estuvo un rato
+          en `magenta` y Camila lo frenó: «cuidado con el The next 15 days, ese
+          color no lo usamos nunca creo; que tenga lógica con los demás, debe
+          seguir la misma estética». Tenía razón y el número lo dice: de los 26
+          rótulos del sitio, 12 van en `deep`, 9 en `plum`, 5 en `terra` y el
+          magenta era ÉSTE, o sea el único. Un color que aparece una sola vez no
+          es un acento, es un error de tipeo.
+        */}
+        <SectionHead
+          eyebrow="The next 15 days"
+          eyebrowTone="deep"
+          align="center"
+          id="proximos-title"
+          title={
+            <>
+              What is <span className="text-sunset-deep">coming up</span>
+            </>
+          }
+          lead="Everything on the books for the next two weeks. What runs more than once says so on the card."
+        />
+
+        {proximos.length > 0 ? (
+          /*
+            ⚠️ LAS PROMOS DE FÚTBOL TAMBIÉN VIAJAN ACÁ, y es el tercer lugar
+            que las recibe por prop —los otros dos son la card grande de esta
+            misma página y `/sunset-bar`—. Camila, 2026-09-21: «debe mostrar
+            toda la info». La tarjeta filtra sola contra el texto de cada
+            evento, así que esto no le pone precios al bingo.
+
+            ⚠️ ESTA LÍNEA SE BORRA CON LA TEMPORADA, junto con las otras dos y
+            `content/game-day.ts`.
+          */
+          <UpcomingCards
+            items={proximos}
+            deals={GAME_DAY_DEALS}
+            dealsLabel={GAME_DAY_LABEL}
+            featuredSlug={destacado?.slug ?? null}
+          />
+        ) : (
+          /*
+            ⚠️ EL VACÍO DE LAS TARJETAS NO ES EL DEL MES. Acá el motivo es
+            siempre el mismo —no hay nada en quince días— o el filtro, y en
+            los dos casos la grilla de abajo sigue teniendo qué mostrar, así
+            que la salida es mirar el mes, no cambiar de mes.
+          */
+          <p className="mt-[24px] max-w-[58ch] text-[16px] leading-[1.7] text-body/80">
+            {type
+              ? 'Nothing of that kind in the next two weeks. Clear the filter above, or look at the month below.'
+              : 'Nothing on the books for the next two weeks yet. The calendar for the coming month usually lands around the 10th.'}
+          </p>
+        )}
+
+        {/*
+          ══════════════════════════════════════════════════════════════
+          BLOQUE 2: EL MES. Ver `MonthCalendar`.
+          ══════════════════════════════════════════════════════════════
+        */}
+        {/*
+          ══════════════════════════════════════════════════════════════
+          ⚠️ EL MES VA ADENTRO DE UNA CARD GIGANTE Y ANTES IBA SUELTO SOBRE LA
+          PÁGINA. Camila, 2026-09-21: «¿podemos este calendario meterlo en una
+          card gigante o separarlo de alguna manera de las cards anteriores?».
+
+          El problema era de lectura, no de estética: arriba hay una grilla de
+          tarjetas con borde y abajo empezaba otra grilla —la del mes— sin nada
+          que dijera dónde termina una y empieza la otra. Dos grillas pegadas
+          se leen como una sola que cambió de forma a mitad de camino.
+
+          ⚠️ LA CARD ES DEL COLOR DE LA PÁGINA Y LA SEPARAN EL FILETE, LA
+          SOMBRA Y EL AIRE: NO UN COLOR. La primera versión fue `bone`, que es
+          el escalón de 1.08:1 que el sitio usa para cortar dos bloques, y sobre
+          una página `paper` se leía como una plancha amarilla. Camila,
+          2026-09-21: «necesito que el color de esta card sea muchísimo más
+          sutil, casi como el fondo; no quiero que se vea amarilla».
+
+          Y tiene razón de fondo: el amarillo del brand book —`cream`— es color
+          de píldora, no de superficie grande, y `bone` tirado a 900px de ancho
+          empieza a leerse como su pariente. Con el mismo `paper` de la página,
+          lo único que dice dónde empieza la card es su borde, que es
+          exactamente lo que hacía falta: separar, no pintar.
+
+          ⚠️ SIN `grano`, Y NO ES UN OLVIDO: `check:grano` lo marca. La regla
+          del repo es que el grano va en los FONDOS, no en los objetos, y esto
+          es un objeto —una card con filete y sombra— aunque mida 900px. Como
+          además es del mismo color que la sección, no hay parche que disimular.
+          ══════════════════════════════════════════════════════════════
+        */}
+        <div className="mt-[56px] rounded-frame border border-ink/12 bg-paper p-[18px] sombra-card lg:mt-[80px] lg:p-[32px]">
         {/* ── Barra de navegación del mes ─────────────────────────────── */}
-        <div className="flex flex-col gap-[16px] border-y border-ink/15 py-[16px] sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-[16px] border-b border-ink/15 pb-[16px] sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-[12px]">
             <Link
-              href={href(prev, view)}
+              href={href(prev)}
               rel="prev"
               className="grid h-[40px] w-[40px] place-items-center rounded-btn border border-ink/20 transition-colors hover:border-ink hover:bg-ink hover:text-paper"
             >
@@ -276,7 +486,7 @@ export default async function WhatsOnPage({
               {label}
             </Heading>
             <Link
-              href={href(next, view)}
+              href={href(next)}
               rel="next"
               className="grid h-[40px] w-[40px] place-items-center rounded-btn border border-ink/20 transition-colors hover:border-ink hover:bg-ink hover:text-paper"
             >
@@ -287,22 +497,14 @@ export default async function WhatsOnPage({
             </Link>
           </div>
 
-          {/* Conmutador de vista. Son LINKS, no botones: cada vista es una URL. */}
-          <div className="flex items-center gap-[2px] rounded-btn border border-ink/20 p-[3px]">
-            {(['list', 'month'] as const).map((v) => (
-              <Link
-                key={v}
-                href={href({ year, month }, v)}
-                aria-current={view === v ? 'true' : undefined}
-                className={[
-                  'rounded-btn px-[16px] py-[7px] text-caption font-bold uppercase tracking-[0.12em] transition-colors',
-                  view === v ? 'bg-ink text-paper' : 'text-ink/60 hover:text-ink',
-                ].join(' ')}
-              >
-                {v === 'list' ? 'List' : 'Month'}
-              </Link>
-            ))}
-          </div>
+          {/*
+            ⚠️ ACÁ ESTABA EL CONMUTADOR «LIST | MONTH» y se fue el 2026-09-17.
+            Obligaba a elegir entre las dos mitades de la respuesta y escondía
+            la otra, y su opción por defecto era la lista de texto: o sea que
+            el calendario de una página que se llama «the calendar» estaba a
+            un clic de distancia y apagado. Ahora las dos cosas están, una
+            arriba de la otra, y no hay nada que elegir.
+          */}
         </div>
 
         {occurrences.length === 0 ? (
@@ -322,360 +524,48 @@ export default async function WhatsOnPage({
             </p>
             <div className="mt-[20px] flex flex-wrap gap-[12px]">
               {type ? (
-                <ButtonLink href={href({ year, month }, view, null)} variant="primary">
+                <ButtonLink href={href({ year, month }, null)} variant="primary">
                   See everything
                 </ButtonLink>
               ) : null}
-              <ButtonLink href={href(next, view)} variant="secondary">
+              <ButtonLink href={href(next)} variant="secondary">
                 Try {monthLabel(next.year, next.month)}
               </ButtonLink>
             </div>
           </div>
-        ) : view === 'list' ? (
-          <ListView days={byDay} />
         ) : (
-          <MonthView grid={grid} eventsByDate={eventsByDate} label={label} />
+          <MonthCalendar
+            grid={grid}
+            eventsByDate={eventsByDate}
+            label={label}
+            today={hoy}
+            venueName={venue.name}
+          />
         )}
+        </div>
       </Section>
 
       {/*
         ══════════════════════════════════════════════════════════════════
-        LA PROGRAMACIÓN SEMANAL FIJA.
+        ⚠️ ACÁ VIVÍA «THE STANDING LINEUP», LA PROGRAMACIÓN SEMANAL FIJA, y se
+        fue el 2026-09-21. Camila, sobre la captura de esa banda entera: «esta
+        parte quítala, no debe ir».
 
-        ⚠️ ES VISUALMENTE DISTINTA DEL CALENDARIO DE ARRIBA, y tiene que
-        serlo: son dos cosas que se leen distinto. Arriba están las FECHAS
-        —los shows puntuales, los que pueden llevar entrada—; acá abajo está
-        la GRILLA, lo que pasa todas las semanas y nunca necesita ticket. Si
-        se vieran iguales, alguien buscaría una entrada para el bingo.
+        Era una banda `bone` con el happy hour destacado arriba y una fila por
+        noche fija —La Noche, Wooftop Wednesdays, Bingo, Game day at the trucks—
+        más el botón general a Eventbrite al pie.
 
-        Por eso acá no hay fechas, hay DÍAS; el fondo es `bone` y no `paper`;
-        y cada renglón es un día de la semana, no un evento suelto.
+        ⚠️ NO SE PIERDE NINGÚN DATO DE LA PÁGINA: los mismos eventos ya salen
+        arriba, en las tarjetas de los próximos 15 días y en la grilla del mes,
+        porque los tres bloques leen la MISMA lista de la base. Lo que se
+        publicaba dos veces ahora se publica una.
 
-        ⚠️ EL HAPPY HOUR VA ACÁ Y ES EL DESTACADO. Es uno de los dos únicos
-        lugares del sitio donde aparece (el otro es `/sunset-bar`), y es
-        recurrente como el resto de esta grilla pero el único que es una
-        oferta, así que va arriba y con la píldora de precio a la vista. Ver
-        `content/happy-hour.ts`.
-
-        ⚠️ NO SE FILTRA. Ver la nota del filtro arriba.
-        ══════════════════════════════════════════════════════════════════
+        ⚠️ LO QUE SÍ SE FUE ES EL CTA GENERAL A EVENTBRITE, que vivía sólo acá.
+        Los eventos con entrada siguen linkeando a su propia página de
+        Eventbrite desde su tarjeta, que es el camino que pidió Camila el
+        2026-09-15. Si hace falta la puerta al perfil completo, va en otro lado
+        y no en una banda que se sacó.
       */}
-      <Section tone="bone" band="lg" labelledBy="semana-title">
-        <SectionHead
-          eyebrow="Every week"
-          eyebrowTone="deep"
-          id="semana-title"
-          title="The standing lineup"
-          /*
-            ⚠️ YA NO DICE «NO TICKETS». Decía «This part does not change. No
-            tickets, no cover, no date to keep track of», y desde el
-            2026-09-17 la segunda mitad es falsa: Ross Brown y La Noche llevan
-            entrada, que se saca por Eventbrite. Lo que sigue siendo cierto es
-            lo primero, y es lo que quedó.
-          */
-          lead="This part does not change. Same nights, same hours, week after week."
-        />
-
-        {/* El happy hour, destacado */}
-        <div className="mt-[36px] rounded-card border-2 border-sunset bg-paper p-[24px] lg:p-[32px]">
-          <div className="flex flex-col gap-[16px] lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <Eyebrow tone="terra">Happy hour</Eyebrow>
-              <Heading level={3} className="mt-[8px] text-d5 lg:text-d4">
-                {happyHour.days}, {happyHour.time}
-              </Heading>
-            </div>
-            <ul className="flex list-none flex-wrap gap-[8px]">
-              {/* ⚠️ ACÁ LOS DOS PEDAZOS VAN JUNTOS, y es a propósito: en
-                  `/sunset-bar` el precio se separa del nombre porque ese
-                  bloque es la oferta entera; esto es una píldora de resumen
-                  dentro del calendario, donde «$4 Drafts» es UN dato. Lo que
-                  cambió es de dónde sale la frase, no la frase. */}
-              {happyHour.deals.map((d) => (
-                <li
-                  key={d.price}
-                  className="rounded-pill bg-cream px-[14px] py-[6px] font-display text-d7 uppercase tabular-nums text-ink"
-                >
-                  {d.price} {d.what}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* La grilla por día */}
-        <ul className="mt-[28px] flex list-none flex-col">
-          {semana.map((e) => (
-            <li
-              key={e.slug}
-              className="grid gap-[6px] border-b border-ink/12 py-[18px] last:border-b-0 sm:grid-cols-[140px_minmax(0,1fr)_auto] sm:items-baseline sm:gap-[24px]"
-            >
-              <span className="eyebrow text-body/75">
-                {e.weekdays.length > 0 ? weekdaysLabel(e.weekdays) : 'Every week'}
-              </span>
-              <span className="flex flex-col">
-                <span className="font-display text-d6 uppercase lg:text-d5">{e.title}</span>
-                <span className="mt-[2px] text-[16px] leading-[1.5] text-body/75">{e.summary}</span>
-              </span>
-              <span className="flex shrink-0 flex-col items-start gap-[6px] text-caption font-bold tabular-nums text-body/75 sm:items-end">
-                <span>
-                  {timeRange(e)}
-                  <span className="ml-[8px] font-normal">{e.space}</span>
-                </span>
-
-                {/*
-                  ══════════════════════════════════════════════════════════
-                  ⚠️ EL LINK A LA ENTRADA VA EN LA FILA, y es lo único que
-                  distingue a un show con entrada de una noche de entrada
-                  libre en esta lista. Pedido de Camila, 2026-09-17: «Ross
-                  Brown y La Noche son los únicos dos que deben decir que son
-                  con entrada sacada por link externo, y de alguna manera
-                  debemos redirigir a la página de la ticketera».
-
-                  ⚠️ QUIÉN LLEVA ENTRADA NO SE DECIDE ACÁ: sale de
-                  `isTicketed()`, o sea de tener `ticketUrl`. Ver el
-                  diccionario `TICKETS` en `content/events.ts`, que además
-                  explica por qué hoy los dos apuntan al perfil del
-                  organizador y no a su propia página de venta.
-                  ══════════════════════════════════════════════════════════
-                */}
-                {isTicketed(e) && e.ticketUrl ? (
-                  <a
-                    href={e.ticketUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-[6px] font-normal text-terra underline underline-offset-2 hover:text-ink"
-                  >
-                    Get tickets
-                    <ArrowSquareOut className="size-[14px] shrink-0" />
-                    <span className="sr-only">(opens in a new tab)</span>
-                  </a>
-                ) : null}
-              </span>
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-[28px] flex flex-col gap-[12px] text-[16px] leading-[1.7] text-body/80">
-          {/*
-            ⚠️ DECÍA QUE TODO ESTO ERA GRATIS Y DEJÓ DE SER CIERTO el
-            2026-09-17: dos de las noches fijas llevan entrada. Ahora este
-            párrafo sólo dice DÓNDE se sacan, y quién la necesita lo dice su
-            propia fila. Nada afirma que algo sea gratis.
-          */}
-          <p>The shows that need a ticket sell through Eventbrite.</p>
-          {/*
-            ⚠️ ESTE CTA GENERAL SE QUEDA, ADEMÁS DEL DE CADA EVENTO. Desde el
-            2026-09-15 cada evento con `ticketUrl` linkea a su propia página de
-            Eventbrite (pedido de Camila). Éste es la puerta al perfil
-            completo, para quien quiere ver qué hay a la venta sin saber
-            todavía a qué show va. No se pisan: uno es «esta noche», el otro es
-            «qué hay».
-          */}
-          {BRAND.eventbrite ? (
-            <div className="mt-[8px]">
-              <ButtonLink href={BRAND.eventbrite} variant="primary" external>
-                See everything on Eventbrite
-              </ButtonLink>
-            </div>
-          ) : null}
-        </div>
-      </Section>
     </>
-  );
-}
-
-/* ==========================================================================
-   Vistas
-   ========================================================================== */
-
-function ListView({
-  days,
-}: {
-  readonly days: readonly { date: string; events: readonly { event: VenueEvent }[] }[];
-}) {
-  return (
-    <div className="mt-[32px] flex flex-col">
-      {days.map(({ date, events }) => (
-        <div key={date} className="grid gap-[8px] border-b border-ink/12 py-[24px] lg:grid-cols-[180px_minmax(0,1fr)] lg:gap-[32px]">
-          <h3 className="eyebrow pt-[4px] text-body/75">{longDate(date)}</h3>
-          <ul className="flex flex-col gap-[2px]">
-            {events.map(({ event }) => (
-              <li key={`${date}-${event.slug}`}>
-                <EventRow event={event} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/**
- * Una fila de evento.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ SÓLO ES UN LINK SI HAY ENTRADA QUE COMPRAR, y entonces sale AFUERA, a
- * Eventbrite. Antes linkeaba a `/whats-on/[slug]`, una ficha por evento que
- * se eliminó el 2026-09-15 por decisión de Camila: el calendario muestra todo
- * y el evento con entrada deriva directo al ticketing.
- *
- * ⚠️ EL AVISO DE QUE SE VA DEL SITIO ESTÁ ANTES DEL CLIC, no después. Lleva
- * las tres cosas: el ícono de enlace externo, el `rel="noopener noreferrer"`
- * y un texto para lector de pantalla que dice que abre en otra pestaña.
- *
- * ⚠️ SIN ENTRADA NO ES UN LINK Y NO ES UN BOTÓN MUERTO. Muestra «free entry»,
- * que es el dato que la persona necesita. Un evento clickeable que no lleva a
- * ninguna parte es peor que un evento que no es clickeable.
- * ══════════════════════════════════════════════════════════════════════════
- */
-function EventRow({ event }: { readonly event: VenueEvent }) {
-  const cuerpo = (
-    <>
-      <span className="flex flex-col">
-        <span className="font-display text-d5 uppercase transition-colors group-hover:text-deep">
-          {event.title}
-        </span>
-        <span className="mt-[2px] text-[16px] leading-[1.5] text-body/75">{event.summary}</span>
-      </span>
-      <span className="flex shrink-0 items-center gap-[12px] text-caption font-bold tabular-nums text-body/75">
-        <span>
-          {timeRange(event)}
-          <span className="ml-[8px] font-normal">{event.space}</span>
-        </span>
-        {/*
-          ══════════════════════════════════════════════════════════════════
-          ⚠️ SE DICE QUE HAY ENTRADA, NO SE DICE QUE NO LA HAY. Acá había un
-          «Free entry» para todo lo que no tuviera `ticketUrl`, y esa píldora
-          era una afirmación que el sitio no puede sostener: la sacaba de la
-          FALTA de un dato, no de un dato. Cuando el 2026-09-17 se confirmó
-          que Ross Brown y La Noche llevan entrada, los dos venían mostrando
-          «Free entry» desde el día uno.
-
-          Camila, ese mismo día: «no hables de entrada gratis ni paga, solo
-          que debe sacar ticket». Así que el evento con entrada la anuncia, y
-          el resto no dice nada, que es lo único honesto mientras el dato de
-          quién cobra no esté completo.
-          ══════════════════════════════════════════════════════════════════
-        */}
-        {isTicketed(event) ? (
-          <span className="inline-flex items-center gap-[5px] rounded-pill bg-sunset px-[12px] py-[4px] text-ink">
-            Tickets
-            <ArrowSquareOut className="size-3.5" aria-hidden="true" />
-          </span>
-        ) : null}
-      </span>
-    </>
-  );
-
-  const clases =
-    'group flex flex-col gap-[4px] py-[10px] sm:flex-row sm:items-baseline sm:justify-between sm:gap-[24px]';
-
-  if (!isTicketed(event)) return <div className={clases}>{cuerpo}</div>;
-
-  return (
-    <a
-      href={event.ticketUrl as string}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={clases}
-    >
-      {cuerpo}
-      <span className="sr-only">Buy tickets on Eventbrite (opens in a new tab)</span>
-    </a>
-  );
-}
-
-function MonthView({
-  grid,
-  eventsByDate,
-  label,
-}: {
-  readonly grid: readonly (string | null)[][];
-  readonly eventsByDate: Map<string, readonly { event: VenueEvent }[]>;
-  readonly label: string;
-}) {
-  return (
-    // La grilla no entra en un teléfono, así que scrollea DENTRO de su propio
-    // contenedor. El body nunca scrollea en horizontal.
-    <div className="mt-[32px] overflow-x-auto" tabIndex={0} role="region" aria-label="Month calendar, scrollable">
-      <table className="w-full min-w-[860px] table-fixed border-collapse">
-        <caption className="sr-only">Events at Rooftop at Riverside in {label}</caption>
-        <thead>
-          <tr>
-            {WEEKDAY_HEADERS.map((d) => (
-              <th
-                key={d}
-                scope="col"
-                className="border-b border-ink/20 pb-[10px] text-left eyebrow text-body/75"
-              >
-                {d}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {grid.map((week, wi) => (
-            <tr key={wi}>
-              {week.map((date, di) => {
-                const events = date ? eventsByDate.get(date) : undefined;
-                return (
-                  <td
-                    key={date ?? `empty-${wi}-${di}`}
-                    className={[
-                      'h-[124px] border-b border-r border-ink/10 p-[8px] align-top',
-                      di === 0 ? 'border-l' : '',
-                      date ? '' : 'bg-ink/[0.02]',
-                    ].join(' ')}
-                  >
-                    {date ? (
-                      <>
-                        <span className="block font-display text-d6 tabular-nums text-body/75">
-                          {dayNumber(date)}
-                        </span>
-                        {events ? (
-                          <ul className="mt-[4px] flex flex-col gap-[3px]">
-                            {events.map(({ event }) => (
-                              <li key={`${date}-${event.slug}`}>
-                                {/*
-                                  ⚠️ Misma regla que en la vista de lista: es
-                                  un link SÓLO si hay entrada, y sale afuera.
-                                */}
-                                {isTicketed(event) ? (
-                                  <a
-                                    href={event.ticketUrl as string}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block rounded-btn bg-sunset px-[6px] py-[4px] text-[12px] leading-[1.3] font-bold text-ink transition-colors hover:bg-sunset-hover"
-                                  >
-                                    {event.title}
-                                    <span className="block font-normal">{timeRange(event)}</span>
-                                    <span className="sr-only">
-                                      Buy tickets (opens in a new tab)
-                                    </span>
-                                  </a>
-                                ) : (
-                                  <div className="rounded-btn bg-cream px-[6px] py-[4px] text-[12px] leading-[1.3] font-bold">
-                                    {event.title}
-                                    <span className="block font-normal text-body/75">
-                                      {timeRange(event)}
-                                    </span>
-                                  </div>
-                                )}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : null}
-                      </>
-                    ) : null}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
   );
 }

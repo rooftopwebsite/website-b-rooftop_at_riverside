@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { OLA_SUAVE } from '@/lib/brand-art';
+import SoftWave from '@/components/shared/SoftWave';
 import MenuSheets from '@/components/sections/MenuSheets';
 import FeaturedEventCard, { dealsNombrados } from '@/components/shared/FeaturedEventCard';
 import PlateHero from '@/components/shared/PlateHero';
@@ -86,9 +86,10 @@ export default async function SunsetBarPage() {
    * sacándolo de un evento se le vaciaba media página sin ningún aviso.
    *
    * ⚠️ ES EL MISMO CRITERIO QUE YA USA `content/happy-hour.ts`, que identifica
-   * al happy hour por su TÍTULO y no por el tag `happy-hour` —que lo lleva
-   * Wooftop Wednesdays—. El dato manda sobre la etiqueta. Acá el dato es que el
-   * texto del evento nombra los precios de la temporada.
+   * al happy hour por su TÍTULO y no por el tag `happy-hour` —que hasta el
+   * 2026-09-21 llevaba Wooftop Wednesdays, hoy Wooftop Fest y ya sin ese tag—.
+   * El dato manda sobre la etiqueta. Acá el dato es que el texto del evento
+   * nombra los precios de la temporada.
    *
    * ⚠️ EL HAPPY HOUR NO ENTRA EN ESTA LISTA Y NO ES UN OLVIDO: ya es la tarjeta
    * clara de arriba de esta misma banda, la que sale de `getHappyHour()`. Los
@@ -236,65 +237,20 @@ export default async function SunsetBarPage() {
         funciona entre un hueso arriba y un verde abajo. Si alguna de las dos
         superficies cambia, esto se rompe en silencio.
 
-        ⚠️ `grano-capa` Y NO `grano`: la ola es un `<img>`, así que el grano no
-        puede ir de fondo. Es la misma nota que tiene `PhotoDivider`.
+        ⚠️ YA NO VA INLINE: ES `shared/SoftWave`. Nació escrita a mano acá con
+        la nota de que si una segunda página pedía el mismo corte subía a
+        `shared/`, y el 2026-09-21 la pidió `/food-trucks` —«que las olas sean
+        como la de sunset bar, no estas»—. Las trampas del dibujo (el pico del
+        medio que hay que dejar fuera de cuadro, el espejo dentro del path, el
+        110 % de ancho que hace posible la animación) están todas anotadas
+        adentro del componente.
 
-        ══════════════════════════════════════════════════════════════════════
-        ⚠️ SE VE LA MITAD DEL DIBUJO, NO EL DIBUJO ENTERO, Y ESO ES LO QUE SACA
-        EL PICO DEL MEDIO. El archivo son DOS caminos espejados que se
-        encuentran en el centro del `viewBox` (x≈785 de 1570), y en esa junta
-        las dos curvas no empalman: forman un vértice. Estirado a lo ancho de
-        la pantalla, el vértice se lee como un pico justo en el medio. Camila:
-        «cuidado, no quiero que tenga este pico».
-
-        La salida es que la junta no entre en cuadro: con el dibujo al 200 % de
-        ancho y pegado a la izquierda, lo que se ve es su mitad izquierda —dos
-        lomas limpias— y el vértice queda afuera, a un ancho de pantalla de
-        distancia.
-
-        ⚠️ EL ALTO VA ESCRITO Y NO SALE DE LA PROPORCIÓN. Al 200 % de ancho el
-        alto natural sería el doble: una franja de 400px. Con `h-*` el dibujo
-        se estira sólo en vertical, que es lo que hacen todas las cenefas del
-        repo — `WaveBorder` usa `preserveAspectRatio="none"` para lo mismo.
-
-        ⚠️ `rt-wave` ES LA MISMA ANIMACIÓN QUE LA HOME: un vaivén de 11s que
-        corre el dibujo un 3,5 % de su propio ancho. Pedido de Camila: «quiero
-        que tenga movimiento, animación como en la home». Al 200 % de ancho ese
-        corrimiento son 7 % de la pantalla, y como sobra dibujo para los dos
-        lados no aparece borde en ningún momento del ciclo. Con
-        `prefers-reduced-motion` se apaga sola: el corte global vive en
-        `globals.css`.
-
-        ⚠️ VA INLINE Y NO COMO COMPONENTE porque es el primer uso. Si una
-        segunda página pide este mismo corte, sube a `shared/` — es la regla
-        que ya está escrita en `YardSteps`.
+        ⚠️ ACÁ EL CORTE ES `bone` → `deep`: arriba el hueso del hero, abajo el
+        verde que emerge. El SVG ya no trae el color adentro, los dos salen de
+        las props.
         ══════════════════════════════════════════════════════════════════════
       */}
-      <div aria-hidden="true" className="grano-capa relative -mb-px w-full overflow-hidden bg-deep">
-        {/*
-          ⚠️ EL ESPEJO VA ADENTRO DEL SVG Y NO EN CSS, y no es un capricho: la
-          animación `rt-wave` escribe `transform: translateX(...)` sobre este
-          mismo elemento, así que un `-scale-y-100` en la clase quedaría pisado
-          y la ola se daría vuelta al arrancar el ciclo. Dentro del `<path>` el
-          espejo es coordenadas, no CSS, y los dos conviven.
-
-          ⚠️ EL 110 % DE ANCHO CON −5 % DE MARGEN ES LO QUE HACE POSIBLE LA
-          ANIMACIÓN: el vaivén corre el dibujo un 3,5 % y el sobrante es lo que
-          sigue tapando los dos bordes. Los dos números están atados — es el
-          mismo truco que usa `PhotoDivider` en la home, con 114 y −7.
-        */}
-        <svg
-          viewBox={OLA_SUAVE.viewBox}
-          preserveAspectRatio="none"
-          className="rt-wave -ml-[5%] block h-[104px] w-[110%] text-bone sm:h-[136px] lg:h-[168px]"
-        >
-          <path
-            d={OLA_SUAVE.d}
-            fill="currentColor"
-            transform={`translate(0 ${OLA_SUAVE.alto}) scale(1 -1)`}
-          />
-        </svg>
-      </div>
+      <SoftWave from="bone" to="deep" className="relative -mb-px" />
       <Section tone="deep" band="md" labelledBy="hh-title">
         <div className="relative text-center">
           {/*
@@ -488,9 +444,17 @@ export default async function SunsetBarPage() {
 
                     ⚠️ EN `lg` VUELVE A LA FILA, que es como se aprobó en
                     desktop: ahí la columna mide ~380px y el precio de 58px
-                    junto al texto lee como una etiqueta de barra. `items-
-                    baseline` sólo tiene sentido en esa forma, por eso viaja
-                    con ella.
+                    junto al texto lee como una etiqueta de barra.
+
+                    ⚠️ Y EN ESA FILA EL TEXTO VA CENTRADO CONTRA EL PRECIO, que
+                    hasta el 2026-09-21 era `items-baseline`. Camila: «centra
+                    los textos para que no quede desfasado». Con la baseline,
+                    «Drafts, bottles and cans» apoyaba su PRIMER renglón en la
+                    base del «$1 off» y el segundo colgaba por debajo del
+                    número: el texto de esa columna arrancaba más abajo que el
+                    de las otras dos, que son de un renglón. Con `items-center`
+                    el texto se centra contra el precio mida uno o dos
+                    renglones, y los tres pares leen a la misma altura.
                     ══════════════════════════════════════════════════════════
                   */
                   /*
@@ -507,7 +471,34 @@ export default async function SunsetBarPage() {
                     HORIZONTAL —la fila— y lo que centra es el par precio más
                     texto dentro de su columna, que es otra cosa.
                   */
-                  className="flex flex-1 flex-col items-center justify-start gap-1 py-4 text-center sm:px-4 lg:flex-row lg:items-baseline lg:justify-center lg:gap-3 lg:py-2 lg:text-left"
+                  /*
+                    ══════════════════════════════════════════════════════════
+                    ⚠️ LA FILA ARRANCA EN `desk` (1344) Y ARRANCABA EN `lg`
+                    (1024), Y ES POR EL ANCHO QUE PIDE EL TEXTO MÁS LARGO.
+                    Camila, 2026-09-21, sobre «$1 off · Drafts, bottles and
+                    cans»: «sigo viendo mal esto».
+
+                    La cuenta: en fila, los tres pares miden ~1.030px sumados
+                    —«$1 off» y sus 24 caracteres son el más ancho—. A 1024 de
+                    pantalla la tarjeta deja 862 útiles, así que la primera
+                    columna no entra y el texto se parte en dos renglones
+                    mientras los otros dos quedan en uno: tres columnas que no
+                    se parecen, que es lo que se veía mal. A 1344 sobran 120px.
+
+                    ⚠️ Y LAS COLUMNAS DEJAN DE SER IGUALES: `flex-auto` en vez
+                    de `flex-1`. Con tres columnas exactamente iguales, la más
+                    angosta —«$10 Margaritas»— desperdicia el ancho que a la
+                    primera le falta. Repartido por contenido, ninguna parte su
+                    texto y los dos filetes punteados caen donde el contenido
+                    cambia, que es lo que un separador tiene que marcar.
+
+                    ⚠️ DEBAJO DE 1344 SIGUE APILADO, que es la forma que Camila
+                    ya aprobó para mobile —«en mobile centrados»— y la que
+                    entra siempre: el precio en un renglón y el texto en dos
+                    como mucho, cada uno con el ancho entero de su columna.
+                    ══════════════════════════════════════════════════════════
+                  */
+                  className="flex flex-1 flex-col items-center justify-start gap-1 py-4 text-center sm:px-4 desk:flex-auto desk:flex-row desk:items-baseline desk:justify-center desk:gap-3 desk:py-2 desk:text-left"
                 >
                   {/*
                     ⚠️ EL NÚMERO VA EN `sunset-deep` Y NO EN `sunset`. La
@@ -541,7 +532,7 @@ export default async function SunsetBarPage() {
                     renglones cómodos. En `sm:` el cuerpo grande era parte de
                     lo que no entraba.
                   */}
-                  <span className="font-body text-d6 text-ink lg:text-d5">{d.what}</span>
+                  <span className="font-body text-d6 text-ink desk:text-d5">{d.what}</span>
                 </li>
               ))}
             </ul>

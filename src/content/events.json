@@ -1,21 +1,20 @@
 [
   {
     "id": "35114abe-65d5-4d2e-8ad4-0a2a3fcb8103",
-    "title": "Wooftop Wednesdays",
-    "description": "Bring the dog. Two-for-one drinks, and every truck runs a $5 item your dog can order. Excludes flights.",
+    "title": "Wooftop Fest",
+    "description": "The third Wednesday of every month, bring the dog: this place goes pet-friendly for the day.\nThere is an off-leash area we run with Barkyard and Tap, and pet vendors set up for the day.",
     "bannerUrl": null,
-    "startDate": "2026-09-09",
+    "startDate": "2026-10-21",
     "endDate": null,
     "startTime": "15:00:00",
     "endTime": "20:00:00",
-    "isRecurring": true,
-    "recurrenceType": "weekly",
-    "recurrenceDays": "[3]",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
     "price": null,
     "tags": [
       "dog-friendly",
-      "weekly",
-      "happy-hour"
+      "festival"
     ]
   },
   {
@@ -42,8 +41,8 @@
     "title": "Ross Brown",
     "description": "Live music every week. Free, and no ticket needed.",
     "bannerUrl": "https://kqibgbvdgxrjhdyfoxvm.supabase.co/storage/v1/object/public/restaurant-assets/restaurants/b726bcd3-1167-4b09-ba64-39e79bbef141/events/restaurant/1789135765227_7cf4jq.webp?v=1789135765438",
-    "startDate": "2026-09-10",
-    "endDate": null,
+    "startDate": "2026-12-10",
+    "endDate": "2026-12-31",
     "startTime": "18:00:00",
     "endTime": "20:00:00",
     "isRecurring": true,

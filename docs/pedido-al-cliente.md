@@ -41,6 +41,7 @@ bloquea toda la lógica de reservas**: el 0, OpenTable.
 | D · Textos | 3 | los dueños de los trucks |
 | E · Marca | 1 | quien tenga el original del logo |
 | F · Temporada de fútbol | 6 | Chris, Anthony y nosotros |
+| G · Los mensuales de Madeline | 9 | Madeline Powers |
 
 ---
 
@@ -281,10 +282,11 @@ eventos del dashboard y las láminas de promo de cada truck.
 | 35 | **El nombre y las specials del cuarto truck** (el de cocina jamaiquina, que además sigue con el nombre sin confirmar) | La ficha de ese truck en `/food-trucks` | El truck aparece con el nombre marcado como no confirmado y sin carta |
 | 36 | **¿Tienen bases legales del sorteo?** No son un requisito nuestro y no bloquean la publicación: el evento cuenta la dinámica, no nombra premios y manda a las redes, que es donde el cliente publica qué se sortea cada semana. Vale preguntar igual, porque el propio Chris levantó la mano por el tema de responsabilidad y porque el sorteo de los jueves del sitio viejo (`/tnt-sign-ups`, ítem 29) **sí tenía bases escritas**: si las de éste existen, se linkean desde el evento en una línea | La ficha del evento del sorteo | El evento se publica con la dinámica y el link a redes. Sin bases publicadas |
 | 37 | **¿Se pueden nombrar los cuatro equipos?** La mecánica del sorteo es una urna por equipo, y los cuatro nombres son marcas registradas. El sitio nuevo no usa ni un nombre ni un logo de la NFL porque el brief lo exige (ver `auditoria-servicios.md`) | El texto del evento del sorteo | Escrito como «one for each team in the division», que cuenta la mecánica sin imprimir las marcas |
-| 38 | **Las fechas reales de Wooftop Wednesdays y de Bingo Night.** Es el ítem más urgente del bloque: hoy los dos están cargados en el dashboard como eventos de un solo día, con fecha 9 de septiembre, o sea **ya pasada**, así que no aparecen en la home ni en la semana. Ross Brown y La Noche sí son semanales y están verificados contra el calendario público del cliente (`current-site-inventory.md` §9); estos dos no aparecen ahí en ninguna fecha | La home y `/whats-on` | Nada: los dos desaparecieron del sitio el día que alguien los editó en el dashboard |
+| 38 | **RESUELTO A MEDIAS el 2026-09-21: la mitad de Wooftop.** El mail de Madeline contestó la pregunta de ese evento (es mensual, tercer miércoles, y pasó a llamarse Wooftop Fest; ver el bloque G). **Bingo Night sigue abierto.** Texto original: las fechas reales de Wooftop Wednesdays y de Bingo Night. Es el ítem más urgente del bloque: hoy los dos están cargados en el dashboard como eventos de un solo día, con fecha 9 de septiembre, o sea **ya pasada**, así que no aparecen en la home ni en la semana. Ross Brown y La Noche sí son semanales y están verificados contra el calendario público del cliente (`current-site-inventory.md` §9); estos dos no aparecen ahí en ninguna fecha | La home y `/whats-on` | Nada: los dos desaparecieron del sitio el día que alguien los editó en el dashboard |
 
 | 39 | **Las dos URLs de Eventbrite**, la de Ross Brown y la de La Noche. Hoy los dos botones apuntan al PERFIL del organizador, que al 2026-09-15 dice «No upcoming events» | La fila de cada uno en la grilla semanal de `/whats-on` | «Tickets on Eventbrite» linkeando al perfil completo |
 | 40 | ~~Las descripciones de esos dos eventos dicen lo contrario~~ **RESUELTO el 2026-09-17.** Camila confirmó que los dos llevan entrada, así que se reescribieron las descripciones en el dashboard («Free, and no ticket needed» y «No cover, no ticket» se fueron) y **el sitio dejó de afirmar que algo es gratis en cualquier lado**: se fueron la píldora «Free entry», el `isAccessibleForFree` del JSON-LD de los eventos y el del local, «Almost all of it is free and none of it needs a ticket» de la home, y «there is no cover» de la FAQ. La regla nueva: el evento con entrada la anuncia, el resto no dice nada | Todo el sitio | Sólo se anuncia lo que SÍ necesita ticket |
+| 41 | **Las descripciones de los eventos repiten el día, el horario y el espacio**, que son datos que la tarjeta ya publica arriba en su propia línea. «Weekend Happy Hour» abre con «Every Saturday and Sunday, from noon to 6 PM, all over the venue» y la tarjeta ya dice «12 PM – 6 PM · Venue-wide» dos renglones más arriba; «Game Day at the Trucks» y «NFC North HQ» hacen lo mismo con la hora de apertura y de cierre. Pedido de Camila, 2026-09-21: «cuidado con las descripciones de los eventos, que no repitan información que ya está simplificada en la card, como días y horarios o lugar». **Es texto del dashboard, no del sitio**: la tarjeta publica lo que el cliente escribe, y el día que la descripción empiece por lo que el evento ES en vez de por cuándo pasa, la tarjeta deja de repetirse sola | Las tarjetas de `/whats-on` y la card de `/sunset-bar` | La descripción se publica tal cual, con la repetición a la vista |
 
 > **Sobre el 38, que es nuestro trabajo y no del cliente:** el dashboard sólo
 > sabe guardar UN día de la semana como recurrencia, así que algo que pasa «un
@@ -292,6 +294,49 @@ eventos del dashboard y las láminas de promo de cada truck.
 > correcta es **una fila por fecha**, con la recurrencia destildada. El sitio ya
 > las muestra: desde el 2026-09-17 la home y el calendario expanden los dos
 > tipos sobre las mismas fechas.
+
+---
+
+## G · Los mensuales de Madeline
+
+Abierto el 2026-09-21, con el mail de **Madeline Powers** (`mpowers@eatdrinkparadise.com`,
+con copia a Chris Magnus y a Jimbo Mann) del 17 de septiembre y su respuesta del 18.
+El mail trajo dos eventos mensuales y adelantó un tercero.
+
+> ### Lo que el mail ya resolvió, y por qué importa
+>
+> **Wooftop Fest es Wooftop Wednesdays.** Es el mismo evento contado por dos
+> personas distintas, y la prueba no es el nombre: coinciden en el día
+> (miércoles), en el público (perros), en la promo (2x1 en tragos) y en una
+> palabra inventada que no se repite por casualidad. Lo que NO coincide es la
+> cadencia, y ahí manda el mail: **tercer miércoles de cada mes**, no todas las
+> semanas.
+>
+> La fila del dashboard no la escribimos nosotros: existe desde el **8 de
+> septiembre a las 17:20 UTC**, diez días antes de nuestra primera carga, y el
+> nombre también está en el brief del cliente. O sea que Madeline está
+> describiendo un evento que ya estaba cargado en su propia base, con otro
+> nombre y con la frecuencia equivocada.
+>
+> **Se cargó el 2026-09-21** como fila única del 21 de octubre, con la
+> recurrencia destildada, que es la única forma honesta de expresar «un
+> miércoles al mes» en este dashboard (ver la nota del ítem 38).
+
+| # | qué | dónde cae | qué se ve hoy |
+|---|---|---|---|
+| 42 | **¿Cuándo arranca «la temporada oficialmente»?** Es la pregunta madre de todo este bloque: Madeline avisó el 18 que el 2x1, la banda, el DJ, el bloody mary bar y el brunch **no rigen en octubre** y entran «cuando arranque la temporada». Sin esa fecha no podemos programar contenido para ninguno de los cinco, ni sabemos cuándo volver a editar los eventos | La descripción de Wooftop Fest y la del Neighborhood Market, en el dashboard | Los dos eventos se publican sin un solo extra, que es lo correcto mientras no haya fecha |
+| 43 | **El 2x1 en tragos de Wooftop Fest: ¿sigue vigente?** Madeline lo da como histórico («ofrecían») y dijo que lo tiene que confirmar. **Hasta el 2026-09-21 el sitio lo prometía como hecho firme**, todos los miércoles, en la FAQ y en la descripción del evento. Ya se sacó de los dos lugares | La FAQ de perros y la tarjeta del evento | Ni la FAQ ni el evento nombran el 2x1 |
+| 44 | **La banda en vivo de Wooftop Fest**: quién toca y desde cuándo. Madeline la nombró como parte de la temporada y dijo que pasa la info | La tarjeta del evento y la cuenta de noches con música de `content/entertainment.ts` | El evento no nombra música, y la cuenta de noches no lo suma |
+| 45 | **El horario de Wooftop Fest.** Nadie lo confirmó. Las 3 a 8 PM que publica el sitio vienen **heredadas de la fila semanal vieja**, no del mail. Si el fest es más largo que un miércoles normal, hoy lo estamos publicando corto | La línea de horario de la tarjeta del evento | «3 PM – 8 PM», sin confirmar |
+| 46 | **El ítem de $5 para perros en cada truck: ¿existe todavía?** Estaba en la fila original del dashboard y Madeline **no lo menciona** en ninguno de los dos mails. Se sacó de la descripción junto con el 2x1, porque las dos son promos sin confirmar del mismo texto viejo | La tarjeta del evento y la FAQ de perros | No se nombra en ningún lado |
+| 47 | **¿Se pueden llevar perros los otros días?** Antes la FAQ podía decir «sí, los miércoles». Ahora que el evento es mensual, lo único que podemos afirmar es que el tercer miércoles el lugar es pet-friendly, y quedó sin responder qué pasa el resto del mes. **Ojo con dónde ya está afirmado:** la meta description de la home dice «dogs welcome in the yard», sin condición de día. No se tocó porque nadie dijo lo contrario y es plausible en un patio al aire libre, pero es una afirmación sin respaldo | La FAQ «Are dogs allowed?» (hoy sin renderizar) y la meta description de `/` en `content/seo-pages.ts` | La FAQ habla sólo del tercer miércoles; la home sigue diciendo «dogs welcome in the yard» |
+| 48 | **Las fechas de Wooftop Fest de noviembre en adelante.** Madeline confirmó el 21 de octubre y dijo que va a cargar los meses siguientes en el calendario. Por el patrón, noviembre cae el **18**, pero **no se carga por patrón**: cada fecha entra cuando ella la confirma | `/whats-on` y la home | Una sola fecha publicada, el 21 de octubre |
+| 49 | **El Neighborhood Market no está cargado en el dashboard, y su horario se contradice.** El mail del 17 dice que en temporada va de 12 PM a 4 PM y que octubre podría ser el último mes en formato 4 PM a 8 PM; el del 18 confirma que el 20 de septiembre fue de 4 PM a 8 PM, sin explicar el desfase. Falta además las fechas de octubre y noviembre (el patrón es tercer domingo, o sea **18 de octubre** y **15 de noviembre**) y los tres extras de temporada: DJ, bloody mary bar y brunch. **El 20 de septiembre ya pasó y no se carga** | `/whats-on`, la home y `/market`, que hoy describe el market sin una sola fecha | `/market` sigue con el TODO de frecuencia abierto desde `content/market.ts` |
+| 50 | **Sunset Saturday: la activación nueva.** Madeline la anuncia con temáticas rotativas por tipo de grupo social (profesionales, singles, amigos) y sin detalles cerrados. **Conecta con la branding session del 3 de septiembre**, donde se habló de «Sunset Saturdays» con géneros rotativos para el Sunset Bar de arriba, así que parece la confirmación de que esa idea avanza. Ojo con el choque: el sábado a la noche ya lo ocupa La Noche · DJ David Cast, de 10 PM a 2 AM | Todavía en ningún lado | Nada. `current-site-inventory.md` §9 dejó constancia de que «Sunset Saturdays» aparecía en el brief y **no existía en ninguna de las dos fuentes de datos**. Ahora existe como intención, no como fecha |
+
+> **Lo que NO se cargó, y a propósito:** el Neighborhood Market del 20 de
+> septiembre. Ya pasó. Un evento vencido en el dashboard es exactamente lo que
+> dejó a Wooftop y a Bingo fuera del sitio en septiembre (ítem 38).
 
 ---
 

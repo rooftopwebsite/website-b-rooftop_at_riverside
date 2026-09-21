@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Reveal } from './Motion';
-import WaveBorder, { type Surface } from './WaveBorder';
+import SoftWave from './SoftWave';
+import type { Surface } from './WaveBorder';
 import { Eyebrow } from './Type';
 
 /**
@@ -81,11 +82,21 @@ export default function PageHeroWave({
       style={{ backgroundColor: `var(--color-${from})` }}
     >
       {/*
-        ⚠️ EL `pb` ES GRANDE PORQUE LA ONDA SE COME EL PIE. La cenefa mide unos
-        90px de alto y se apoya en el borde de abajo de la sección: sin aire, la
-        bajada queda montada sobre la cresta de la primera ola.
+        ⚠️ EL `pb` ES GRANDE PORQUE LA ONDA SE COME EL PIE. La ola mide 104px en
+        mobile y 168 en desktop, y se apoya en el borde de abajo de la sección:
+        sin aire, la bajada queda montada sobre la cresta.
+
+        ⚠️ ES EL ALTO ENTERO DE LA OLA MÁS UN PELO, Y TIENE QUE SERLO. La franja
+        de la ola trae fondo propio y opaco —el color de llegada—, así que todo
+        lo que le quede debajo desaparece: con un `pb` más chico que la ola, la
+        bajada del hero se borraba entera. Por eso los tres valores van atados a
+        los tres altos del dibujo: 104 → `pb-28`, 136 → `pb-36`, 168 → `pb-44`.
+
+        ⚠️ Y NI UN PÍXEL MÁS. Camila, 2026-09-21: «que se vean las cards al
+        entrar». Cada píxel de aire que se agregue acá es un píxel que las
+        tarjetas bajan, y esta página abre justamente para mostrarlas.
       */}
-      <div className="caja-ancha pt-14 pb-24 text-center lg:pt-20 lg:pb-32">
+      <div className="caja-ancha pt-14 pb-28 text-center sm:pb-36 lg:pt-16 lg:pb-44">
         <Reveal>
           {eyebrow ? (
             <Eyebrow tone="deep" className="justify-center">
@@ -131,8 +142,18 @@ export default function PageHeroWave({
         El `-bottom-px` es el mismo píxel de siempre: en pantallas con DPR
         fraccional (1,25 y 1,5 de Windows) el redondeo deja una línea del fondo
         asomando entre la cenefa y lo que sigue.
+
+        ⚠️ ES `SoftWave` Y ERA `WaveBorder`, o sea la ondulación larga y no la
+        cenefa de rulos. Camila, 2026-09-21: «que las olas sean como la de
+        sunset bar, no estas». Es el mismo corte que ya aprobó ahí, así que las
+        dos páginas que abren con ola abren con la misma.
+
+        ⚠️ Y POR ESO EL `pb` CRECIÓ. La cenefa medía ~90px y ésta mide 168 en
+        desktop: con el pie de antes la curva le comía el último renglón a la
+        bajada. El `pb` es el alto de la ola más el aire, y por eso cambia en
+        los mismos cortes que el alto de la ola.
       */}
-      <WaveBorder from={from} to={to} className="pointer-events-none absolute inset-x-0 -bottom-px" />
+      <SoftWave from={from} to={to} className="pointer-events-none absolute inset-x-0 -bottom-px" />
     </section>
   );
 }

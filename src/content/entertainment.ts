@@ -1,4 +1,26 @@
-import { getVenueEvents } from './events';
+import { getVenueEvents, type VenueEvent } from './events';
+import { todayInVenue } from '@/lib/calendar';
+
+/**
+ * ¿Este recurrente está corriendo HOY?
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ANTES NO SE MIRABA Y LA CUENTA SE INFLABA. Las funciones de abajo
+ * contaban los días de la semana de TODOS los recurrentes, sin fijarse en su
+ * temporada, así que un evento que arranca en diciembre ya sumaba una noche
+ * en septiembre.
+ *
+ * Se notó el 2026-09-17 con Ross Brown, que pasó a ser una residencia de
+ * cuatro jueves de diciembre: sin este filtro el sitio seguía diciendo «live
+ * music two nights a week» durante los tres meses en que la única noche con
+ * música es el sábado.
+ *
+ * Es el mismo criterio de `happensOn` en `lib/calendar.ts`, aplicado a la
+ * temporada en vez de a un día puntual.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const enTemporada = (e: VenueEvent, hoy: string): boolean =>
+  e.from <= hoy && (e.until === null || e.until >= hoy);
 
 /**
  * CUÁNTAS NOCHES HAY ENTRETENIMIENTO. El claim, sin dar por cierto lo que no
@@ -18,9 +40,27 @@ import { getVenueEvents } from './events';
  *     Ross Brown                jueves     música en vivo
  *     La Noche · DJ David Cast  sábado     DJ
  *
+ * ⚠️ ACTUALIZADO EL 2026-09-21: **Wooftop Wednesdays dejó de ser semanal.**
+ * Pasó a ser Wooftop Fest, el tercer miércoles de cada mes, según el mail de
+ * Madeline Powers del 17 de septiembre y su confirmación del 18. El miércoles
+ * NO sale de la cuenta porque Bingo Night sigue siendo semanal ese día.
+ *
  * Son CUATRO noches distintas con algo, y sólo DOS con música. No cinco. El
  * «five nights a week» aparecía en doce lugares del sitio, incluido el pill
  * del hero y tres descriptions de SEO.
+ *
+ * ⚠️ ACTUALIZADO EL 2026-09-17: **Ross Brown dejó de ser semanal.** Pasó a ser
+ * una residencia de cuatro jueves de diciembre (10, 17, 24 y 31), según el
+ * calendario de Google del cliente. O sea que hasta el 10 de diciembre la
+ * única noche con música es el sábado, y las cuentas de abajo lo reflejan
+ * solas gracias a `enTemporada`.
+ *
+ * ⚠️ Y CONTRADICE AL CALENDARIO PÚBLICO DE WIX, que el 2026-09-11 mostraba a
+ * Ross Brown los jueves 17 y 24 de septiembre. Se eligió el de Google porque
+ * es el que el venue usa para operar y el de Wix es la fuente que este
+ * proyecto viene a reemplazar por desactualizada. **Es pregunta abierta al
+ * cliente**, y si confirma que sigue semanal se borra el `end_date` en el
+ * dashboard y listo. Detalle en `_interno/calendario-google-2026-09-17.md`.
  *
  * ⚠️ MIENTRAS NO ESTÉ CONFIRMADO, EL SITIO NO DICE UN NÚMERO. Dice lo que el
  * calendario puede sostener, y el calendario es la fuente: si el cliente carga
@@ -44,20 +84,28 @@ export const NOCHES_CLAIM = 5;
 /** Cuántas noches distintas de la semana tienen algo cargado hoy. */
 export async function nochesConEventos(): Promise<number> {
   const eventos = await getVenueEvents();
+  const hoy = todayInVenue();
   // `flatMap`: un evento puede caer en varios días (el happy hour es sábado
   // y domingo), y lo que se cuenta son DÍAS distintos, no eventos.
-  const dias = new Set(eventos.filter((e) => e.kind === 'recurring').flatMap((e) => e.weekdays));
+  const dias = new Set(
+    eventos
+      .filter((e) => e.kind === 'recurring' && enTemporada(e, hoy))
+      .flatMap((e) => e.weekdays),
+  );
   return dias.size;
 }
 
 /** De esas, cuántas tienen música o DJ. */
 export async function nochesConMusica(): Promise<number> {
   const eventos = await getVenueEvents();
+  const hoy = todayInVenue();
   const dias = new Set(
     eventos
       .filter(
         (e) =>
-          e.kind === 'recurring' && e.tags.some((t) => ['live-music', 'dj', 'music'].includes(t)),
+          e.kind === 'recurring' &&
+          enTemporada(e, hoy) &&
+          e.tags.some((t) => ['live-music', 'dj', 'music'].includes(t)),
       )
       .flatMap((e) => e.weekdays),
   );

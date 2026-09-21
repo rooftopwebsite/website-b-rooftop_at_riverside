@@ -72,7 +72,25 @@ export default async function FindUs() {
       aria-labelledby="find-us-title"
       className="relative z-[3] banda-arco bg-bone grano pt-16 pb-cierre lg:pt-32"
     >
-      <div className="caja-ancha">
+      {/*
+        ⚠️ EL GUTTER DE MOBILE ES PROPIO Y MAYOR QUE EL DEL SITIO (24 contra
+        16), y es el único bloque que lo pide.
+
+        Camila lo marcó en su momento mirando este bloque en un teléfono
+        —«esto en mobile debe estar marginado como en tablet»— y el arreglo de
+        entonces fue subir el PISO GLOBAL de `--spacing-borde` a 24px. Eso
+        curaba `FindUs` y de paso engordaba las 23 rutas; el 2026-09-17 el
+        piso volvió a 16 —el estándar de los otros proyectos de la casa, ver
+        la nota del token— y el aire de más se quedó acá, que es donde hacía
+        falta.
+
+        ⚠️ POR QUÉ ESTE BLOQUE Y NO LOS OTROS: el titular va a 9vw y las redes
+        se anclan fuera del flujo a la derecha, así que a 390px el renglón
+        llega hasta el filo y 16px no alcanzan para que se lea despegado del
+        vidrio. Con `max-sm:` sólo entra en teléfonos: de `sm` para arriba el
+        `clamp` del token ya pasó los 24px solo.
+      */}
+      <div className="caja-ancha max-sm:[padding-inline:24px]">
         {/*
           ══════════════════════════════════════════════════════════════════
           ⚠️ LAS REDES SE ANCLAN EN EL HUECO DEL TITULAR, Y ES LA MISMA LÓGICA

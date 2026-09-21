@@ -67,7 +67,7 @@ export const PAGE_SEO = {
     h1: "What's on this week",
     title: 'Events & Live Music | Rooftop at Riverside',
     description:
-      'Live music, Bingo Night and Wooftop Wednesdays in downtown Bonita Springs. See the calendar by month or by list, filter it, and add it to your own.',
+      'Live music, Bingo Night and Wooftop Fest in downtown Bonita Springs. See the calendar by month or by list, filter it, and add it to your own.',
     keywords: ['live music bonita springs tonight', 'things to do'],
   },
 

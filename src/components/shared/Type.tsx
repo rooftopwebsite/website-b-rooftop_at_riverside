@@ -310,7 +310,28 @@ export function SectionHead({
          * ⚠️ 60ch y no 62ch: es el valor del brief para la bajada. El cuerpo
          * corrido usa 75ch, que es otro componente.
          */
-        <p className="mt-gap-bajada max-w-[60ch] text-lead bajada">{lead}</p>
+        /*
+         * ⚠️ `mx-auto` CUANDO EL BLOQUE VA CENTRADO, y faltaba. El `text-center`
+         * del contenedor centra los RENGLONES adentro del párrafo, pero el
+         * párrafo mide 60ch y sin margen automático se apoyaba a la izquierda
+         * de su caja: el eyebrow y el título quedaban en el centro de la
+         * sección y la bajada 70px a la izquierda. Camila lo marcó rodeando la
+         * bajada de `/whats-on` el 2026-09-21: «centrá la bajada».
+         *
+         * Va atado a `centered` y no puesto siempre porque en el bloque
+         * alineado a la izquierda —el default— un `mx-auto` lo despegaría del
+         * borde en cuanto la sección sea más ancha que 60ch.
+         */
+        <p
+          className={[
+            'mt-gap-bajada max-w-[60ch] text-lead bajada',
+            centered ? 'mx-auto' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {lead}
+        </p>
       ) : null}
       {children}
     </div>

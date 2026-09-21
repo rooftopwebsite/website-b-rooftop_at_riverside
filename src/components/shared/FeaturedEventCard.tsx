@@ -67,6 +67,24 @@ export const dealsNombrados = (
   event === null ? [] : deals.filter((d) => parrafosDe(event).some((p) => nombraPrecio(p, d.price)));
 
 /**
+ * El cuerpo del evento SIN los párrafos que dicen los precios.
+ *
+ * ⚠️ SE EXPORTA PORQUE LA TARJETA CHICA HACE LO MISMO. Desde el 2026-09-21 las
+ * tarjetas de «lo que viene» de `/whats-on` también publican las promos en una
+ * plancha propia —Camila: «¿por qué esta card no muestra la info de los
+ * descuentos o promo en tragos? debe mostrar toda la info»—, así que necesitan
+ * el mismo recorte: el párrafo en prosa que enumera los precios se va, porque
+ * la plancha lo dice mejor y dos veces el mismo dato es ruido.
+ *
+ * ⚠️ SIN PROMOS QUE COINCIDAN DEVUELVE EL CUERPO ENTERO, que es lo que hace que
+ * esto se caiga con gracia en los otros veinte eventos del calendario.
+ */
+export const cuerpoSinPrecios = (
+  event: VenueEvent,
+  promos: readonly FeaturedDeal[],
+): readonly string[] => parrafosDe(event).filter((p) => !promos.some((d) => nombraPrecio(p, d.price)));
+
+/**
  * ══════════════════════════════════════════════════════════════════════════
  * LA CARD GRANDE DEL EVENTO DESTACADO: media card de texto, media de precios.
  *
@@ -129,8 +147,6 @@ export default function FeaturedEventCard({
   const cuando =
     event.kind === 'recurring' && event.weekdays.length > 0 ? weekdaysLabel(event.weekdays) : null;
 
-  const parrafos = parrafosDe(event);
-
   /*
     ══════════════════════════════════════════════════════════════════════════
     ⚠️ LA PLANCHA DE PRECIOS REEMPLAZA A LA FOTO, Y EL PÁRRAFO QUE LOS DICE SE
@@ -154,7 +170,7 @@ export default function FeaturedEventCard({
     ══════════════════════════════════════════════════════════════════════════
   */
   const promos = dealsNombrados(event, deals);
-  const cuerpo = parrafos.filter((p) => !promos.some((d) => nombraPrecio(p, d.price)));
+  const cuerpo = cuerpoSinPrecios(event, promos);
 
   return (
     /*
@@ -208,9 +224,22 @@ export default function FeaturedEventCard({
             {promos.map((d) => (
               <li
                 key={d.price}
-                className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-dashed border-bone/25 py-4.5 last:border-b"
+                className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-dashed border-bone/25 py-4.5 last:border-b"
               >
-                <span className="min-w-[3.5ch] font-display text-d3 leading-none tabular-nums text-sunset">
+                {/*
+                  ⚠️ EL ANCHO MÍNIMO DEL PRECIO ES LO QUE ALINEA LOS TRES
+                  NOMBRES, no un capricho: «$3» y «$25» no miden lo mismo, y
+                  sin un mínimo cada nombre arrancaría en una columna distinta.
+                  Con `tabular-nums` el dígito es de ancho fijo, así que 3ch
+                  —el «$» más los dos dígitos de «$25»— es el mínimo que hace
+                  falta.
+
+                  ⚠️ ERA 3.5ch Y UN `gap-x-4`, y sumaban un hueco de casi 50px
+                  entre «$3» y «2 MINUTE DRILL». Camila, 2026-09-21: «junta más
+                  los títulos con los precios, está raro tan separado». Medio ch
+                  de más no lo pedía nadie: era aire que no alineaba nada.
+                */}
+                <span className="min-w-[3ch] font-display text-d3 leading-none tabular-nums text-sunset">
                   {d.price}
                 </span>
                 <span className="font-display text-d5 uppercase tracking-eyebrow text-paper">

@@ -340,27 +340,32 @@
    * `wide` — la caja del rediseño `food-truck-club`. La usan el header, la
    * barra de servicio y las nueve secciones de la home.
    *
-   * ⚠️ VALE 1280 Y NO 1400, QUE ES LA MEDIDA DEL DISEÑO. Es una decisión de
-   * Camila tomada sobre la página renderizada, y conviene que quede escrita
-   * porque contradice al prototipo: el canvas de Claude Design compone la
-   * home a 1400 y quien vaya a la fuente va a encontrar ese número.
+   * ⚠️ VALE 1392 = 1280 + 56×2, Y ESE NÚMERO NO ES UN ANCHO DE TEXTO: es el
+   * ancho de la BANDA. `caja-ancha` lleva el gutter ADENTRO, así que para que
+   * su contenido mida los mismos 1280 que `caja` hay que sumarle los dos
+   * paddings del tope del `clamp`.
    *
-   * El motivo es de unidad. Las 22 páginas internas van en `site` —1280, el
-   * ancho unánime de las seis fuentes auditadas— y con la home a 1400 el
-   * sitio tenía DOS anchos de contenido: al pasar de la home a `/the-yard`
-   * el texto se corría 60px y el salto se veía. Igualadas, el header y el
-   * pie —que son los mismos en las 23 páginas— dejan de moverse.
+   * ⚠️ ESTUVO EN 1280 Y ESE ERA EL ERROR, aunque el número pareciera el
+   * correcto. Con la banda en 1280 y el padding adentro, el contenido medía
+   * 1168: cincuenta y seis píxeles por lado menos que cualquier sección con
+   * `caja`, que pone el gutter por fuera. En la misma página, el header y el
+   * pie arrancaban 56px más adentro que las tarjetas. Camila lo marcó dos
+   * veces con líneas verticales sobre la captura —la primera vez sobre el
+   * footer, el 2026-09-19— y el 2026-09-21 sobre el header: «haz que el max
+   * ancho de contenido sea el de los banners, necesito que el max ancho sea
+   * ese en footer y header también».
    *
-   * ⚠️ NO SE FUSIONA CON `site` aunque hoy valgan lo mismo. Los dos números
-   * son iguales, las dos cajas NO: `caja` lleva el gutter por fuera y
-   * `caja-ancha` por dentro (ver las dos utilidades más abajo). Colapsarlas
-   * cambiaría el ancho de texto de las 22 internas.
+   * La unidad que se buscaba entonces sigue siendo la de ahora, y es lo que
+   * este número arregla de verdad: UN solo ancho de contenido en las 23
+   * páginas, 1280, lo dibuje la caja que lo dibuje.
    *
-   * La diferencia que se pierde: a 1400 el carrusel de eventos tenía 60px
-   * más de fuga antes de irse del borde. Sigue sangrando —no está envuelto
-   * en `caja-ancha`, justamente para eso—, sólo que arranca más adentro.
+   * ⚠️ SIGUE SIN FUSIONARSE CON `site`, y ahora menos: los números ya ni
+   * coinciden. `caja` mide el contenido, `caja-ancha` mide la banda.
+   *
+   * ⚠️ POR DEBAJO DE 1392 NO CAMBIA NADA. Ahí manda el ancho de la pantalla y
+   * el `clamp` del padding, que son los de siempre.
    */
-  --container-wide: 1280px;
+  --container-wide: 1392px;
   /*
    * `head` — el ancho del bloque de encabezado de sección (eyebrow + h2 +
    * bajada). Lo usa `max-w-head` en `SectionHead`.
@@ -411,23 +416,41 @@
    * 4vw es la pendiente del diseño y 56px el techo, que es donde la caja de
    * 1400 ya no crece más.
    *
-   * ⚠️ EL PISO SUBIÓ DE 16px A 24px. Pedido de Camila, mirando `FindUs` en un
-   * teléfono: «esto en mobile debe estar marginado como en tablet».
+   * ⚠️ EL PISO VOLVIÓ A 16px EL 2026-09-17, y conviene leer la vuelta entera
+   * porque ya estuvo en 16, subió a 24 y volvió.
    *
-   * El 4vw no llega a los 16px hasta los 400px de ancho, así que en TODOS los
-   * teléfonos el gutter era el piso y nada más que el piso — 16px fijos
-   * mientras el titular crece a 9vw. Medido a 390: el gutter daba 16 y a 834
-   * daba 33, y esa diferencia es la que se ve como «sin margen».
+   * Subió a 24 por pedido de Camila mirando `FindUs` en un teléfono: «esto en
+   * mobile debe estar marginado como en tablet». El diagnóstico de entonces
+   * era correcto —`FindUs` se veía pegado al vidrio— pero la cura se aplicó al
+   * TOKEN GLOBAL, y el que estaba mal era un solo bloque.
    *
-   * 24px es el piso y no 33: igualar el valor de la tablet dejaría 66px de los
-   * 390 en aire y el titular de `FindUs` —que ya entra justo— perdería dos
-   * caracteres por renglón. 24 es el escalón que se nota sin comerse la línea.
+   * ⚠️ LO QUE DESTAPÓ EL ERROR: el hero de placa no tenía 24px de gutter,
+   * tenía 48. `PlateHero` ponía `px-borde` en la sección Y `caja-ancha` en el
+   * div de adentro, o sea el par que la nota de `caja-ancha` dice explícitamente
+   * que no se combina porque suma los dos paddings. Con el piso en 24 eso daba
+   * 48px de aire en un teléfono de 375 útiles: la foto quedaba en 279px, tan
+   * ancha como la placa del titular, y el hero perdía la mordida que es su
+   * forma. Camila: «el hero se debe apreciar, tener protagonismo».
    *
-   * ⚠️ ESTO MUEVE EL SITIO ENTERO, que es para lo que está el token: lo usan
-   * `caja`, `caja-ancha` y `px-borde`, o sea las 23 rutas. No es un arreglo
-   * de `FindUs`.
+   * ⚠️ 16 ES EL ESTÁNDAR DE LA CASA, verificado contra los otros proyectos el
+   * 2026-09-17 en vez de elegido a ojo:
+   *
+   *     casa-pirul      px-4 md:px-6        16 → 24
+   *     juanitos        px-4 md:px-8        16 → 32
+   *     santa-maria     px-5 sm:px-6 lg:px-8    20 → 24 → 32
+   *
+   * O sea que el piso de la casa es 16 y el gutter CRECE con el dispositivo,
+   * que es justo lo que el `clamp` de 4vw ya hacía. Rooftop con 24 de piso
+   * —y 48 efectivos en el hero— era el único fuera de la línea.
+   *
+   * ⚠️ `FindUs` NO VUELVE AL PROBLEMA: se queda en 24px con un padding propio
+   * en mobile, que es donde tenía que estar el arreglo desde el principio. Un
+   * bloque que necesita más aire lo pide él, no el sitio entero.
+   *
+   * ⚠️ ESTO MUEVE EL SITIO ENTERO: lo usan `caja`, `caja-ancha` y `px-borde`,
+   * o sea las 23 rutas.
    */
-  --spacing-borde: clamp(24px, 4vw, 56px);
+  --spacing-borde: clamp(16px, 4vw, 56px);
 
   /* ── Bandas de sección ──────────────────────────────────────────────────
      Se aplican siempre como PAR mobile/desktop y siempre simétricas

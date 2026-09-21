@@ -212,6 +212,39 @@ const FOTOS = [
     q: 78,
   },
 
+  /* ── La foto del hero de `/whats-on`: el mismo 17:9 ─────────────────────
+     ⚠️ ES LA SEGUNDA DERIVADA PARA `PlateHero` Y VA EN LA MISMA MEDIDA que la
+     del bar, por el mismo motivo: el marco topea en 1288 CSS y el archivo va
+     al 2× para retina. Si el marco cambia de proporción, cambian las dos.
+
+     Camila, 2026-09-21: «este hero debe ser como el de Sunset Bar, copialo».
+     Copiar el hero es copiar también su contrato de imagen.
+
+     ⚠️ ES DE DÍA Y ES UNA DECISIÓN, NO LO QUE HABÍA. La primera versión fue la
+     banda del medio de `_RCZ4336` —el show de noche, con la gente bailando bajo
+     las luces—, y se cayó por dos cosas que Camila marcó sobre la página: la
+     placa del titular le comía la cabeza al que canta, y la quería de día.
+     «Cambiá la imagen por una que no corte la cabeza de la persona principal
+     pero que se siga viendo un evento, si es posible que la foto sea de día».
+
+     ⚠️ ÉSTA NO TIENE PROTAGONISTA, Y POR ESO FUNCIONA. Es el patio lleno en un
+     evento de tarde: no hay una cabeza en el centro que la placa pueda cortar,
+     y lo que la placa tapa es la lona y el banderín. Además dice «evento» sin
+     que haga falta explicarlo —la mesa larga, la carpa, la gente de pie— que es
+     lo que la página vende.
+
+     ⚠️ EL ORIGINAL ES APAISADO —7008×4672— así que de acá sale una banda casi
+     entera, no un recorte violento: `foco: 0.5` deja las sombrillas arriba y
+     las mesas abajo, y ninguna cara queda cortada por el borde. */
+  {
+    src: 'DSC04091.JPG',
+    out: 'public/images/venue/whats-on-yard-wide.jpg',
+    w: 2576,
+    h: 1364,
+    foco: 0.5,
+    q: 78,
+  },
+
   /* ── La foto del hueco de la escalera: 4:5 ──────────────────────────────
      ⚠️ `_RCZ5847` es la ventanilla del truck de noche con gente pidiendo. Es
      literalmente lo que dice el paso 01 —«order at whichever window you

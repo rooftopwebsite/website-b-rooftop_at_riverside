@@ -3,7 +3,6 @@ import { ArrowUpRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { SectionHead } from '@/components/shared/Type';
-import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { activeTrucks, nombreVisible } from '@/content/trucks';
 import { HOURS } from '@/content/hours';
 
@@ -116,31 +115,85 @@ const TOLDO = {
  * el que sale hacia abajo es el 1. Con 0 los dientes muerden hacia arriba y el
  * toldo queda dado vuelta.
  */
+/**
+ * ⚠️ EL CAMINO YA NO TRAE LA BANDA LISA, Y NO ES QUE SE HAYA PERDIDO: desde que
+ * el toldo se montó ENCIMA de la tarjeta, la banda es un `<span>` con fondo y
+ * esquinas redondeadas arriba —que un `<path>` no puede redondear sin volverse
+ * ilegible— y acá quedan sólo los dientes, colgando de su borde inferior.
+ *
+ * Las dos piezas se solapan un píxel (`-mt-px`) porque entre dos elementos
+ * pintados del mismo color, en pantallas con DPR fraccional, el redondeo deja
+ * una línea del fondo asomando en la junta.
+ */
 const TOLDO_D = (() => {
-  const { periodo: p, alto: a, banda: b, ancho } = TOLDO;
+  const { periodo: p, alto: a, ancho } = TOLDO;
   const dientes = Math.ceil(ancho / p);
   const w = dientes * p;
-  let d = `M0 0L${w} 0L${w} ${b}`;
-  for (let i = dientes; i >= 1; i -= 1) d += ` A${p / 2} ${a} 0 0 1 ${(i - 1) * p} ${b}`;
-  return `${d}L0 0Z`;
+  let d = `M0 0L${w} 0`;
+  for (let i = dientes; i >= 1; i -= 1) d += ` A${p / 2} ${a} 0 0 1 ${(i - 1) * p} 0`;
+  return `${d}Z`;
 })();
 
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EL TOLDO SE MONTÓ ENCIMA DE LA TARJETA Y ESTABA ADENTRO. Camila,
+ * 2026-09-21, con el dibujo hecho sobre la captura: «quiero que el toldo esté
+ * por fuera de la card, como sobre ella no dentro de ella, así como dibujo en
+ * la imagen, y que tenga color, para que sean vistosos y no pasen
+ * desapercibidos».
+ *
+ * Los tres cambios que pide el dibujo, y son tres cosas distintas:
+ *
+ *   · SOBRESALE POR LOS COSTADOS. Antes medía exactamente el ancho de la foto,
+ *     así que era un recorte del borde superior y no una pieza apoyada encima.
+ *     Un toldo real vuela sobre la vereda: sobresale 10px por lado.
+ *   · ASOMA POR ARRIBA. La lona sube 12px por encima del borde de la tarjeta,
+ *     que es lo que lo despega de la foto y lo convierte en frente.
+ *   · VA EN COLOR. En `paper` era el cuerpo de la tarjeta bajando sobre la
+ *     foto —deliberado entonces, invisible ahora—.
+ *
+ * ⚠️ POR ESO VIVE FUERA DEL `article` Y NO ADENTRO: la tarjeta es
+ * `overflow-hidden` para recortar la foto en sus esquinas, y ahí adentro nada
+ * puede sobresalir. Cuelga del `<li>`, que es `relative` justamente para esto.
+ *
+ * ⚠️ LOS 10px DE VUELO NO SON UN NÚMERO SUELTO: el `gap` de la grilla es 24, así
+ * que dos toldos vecinos se acercan a 4px sin tocarse. Si cambia el `gap`,
+ * cambia esto.
+ *
+ * ⚠️ EL COLOR ES `sunset` Y NO UNA RAYA. La referencia del ícono de tienda
+ * tiene el toldo rayado y eso se descartó desde el principio: cuatro toldos a
+ * rayas son una calesita. Liso y en el naranja de marca es la misma pieza con
+ * el volumen que faltaba, y cierra con el CTA naranja al pie de la tarjeta: la
+ * tarjeta queda enmarcada arriba y abajo por el mismo color.
+ *
+ * ⚠️ AHORA VA EN LAS CUATRO TARJETAS, incluida la del placeholder. Antes se
+ * salteaba esa porque el dibujo le cortaba el filete punteado por arriba; fuera
+ * de la tarjeta no toca nada, y un roster donde tres tienen frente y una no se
+ * lee como un error de carga.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
 function ToldoEdge() {
   return (
-    <svg
+    <span
       aria-hidden="true"
-      role="presentation"
-      width="100%"
-      height={TOLDO.banda + TOLDO.alto}
-      viewBox={`0 0 ${TOLDO.ancho} ${TOLDO.banda + TOLDO.alto}`}
-      /* `slice` recorta lo que sobra a la derecha en vez de escalar: así el
-         diente mide 26px igual en la tarjeta angosta de desktop que en la ancha
-         de mobile, que es lo que lo mantiene leyéndose como toldo. */
-      preserveAspectRatio="xMinYMin slice"
-      className="pointer-events-none absolute inset-x-0 top-0 block"
+      className="pointer-events-none absolute -top-[12px] -right-[10px] -left-[10px] z-10 block"
     >
-      <path d={TOLDO_D} fill="var(--color-paper)" />
-    </svg>
+      {/* La lona: el lomo liso que se apoya sobre el borde de la tarjeta. */}
+      <span className="block h-[13px] rounded-t-[10px] bg-sunset" />
+      <svg
+        role="presentation"
+        width="100%"
+        height={TOLDO.alto}
+        viewBox={`0 0 ${TOLDO.ancho} ${TOLDO.alto}`}
+        /* `slice` recorta lo que sobra a la derecha en vez de escalar: así el
+           diente mide 26px igual en la tarjeta angosta de desktop que en la
+           ancha de mobile, que es lo que lo mantiene leyéndose como toldo. */
+        preserveAspectRatio="xMinYMin slice"
+        className="-mt-px block"
+      >
+        <path d={TOLDO_D} fill="var(--color-sunset)" />
+      </svg>
+    </span>
   );
 }
 
@@ -191,8 +244,20 @@ export default function TruckCards({
   const trucks = activeTrucks();
   const tramos = tramosDeTrucks();
 
+  /*
+    ⚠️ SIN ENCABEZADO NO HAY BANDA DE ARRIBA, Y NO ES UN DESCUIDO. Con `head` la
+    sección arranca con su título y los 128px de `lg` son el aire que ese
+    título necesita. Sin él —que es `/food-trucks`— lo primero de la sección
+    son las tarjetas, y el aire ya lo puso la ola del hero: la franja de la ola
+    termina en unos 100px del color de esta sección, así que otros 128px abajo
+    eran aire sobre aire, y era lo que empujaba las tarjetas fuera de la
+    primera pantalla. Camila, 2026-09-21: «que se vean las cards al entrar».
+
+    ⚠️ EL `pb` NO CAMBIA: abajo sigue el `lg`, porque ahí lo que hay es el
+    final de la sección y el corte con lo que venga.
+  */
   return (
-    <Section tone={tone} band="lg" labelledBy={id}>
+    <Section tone={tone} band="lg" bandTop={head ? undefined : 'none'} labelledBy={id}>
       {head ? (
         <SectionHead
           eyebrow="In the yard"
@@ -234,12 +299,29 @@ export default function TruckCards({
         todas las grillas de este sitio.
         ══════════════════════════════════════════════════════════════════
       */}
-      <StaggerGroup
-        as="ul"
+      {/*
+        ⚠️ ESTA GRILLA NO SE REVELA AL SCROLL Y ANTES SÍ. Camila, 2026-09-21:
+        «quiero que al entrar a esta página ya estén cargadas las 4 cards».
+
+        Era un `StaggerGroup` con cuatro `RevealItem`, o sea las tarjetas en
+        `opacity: 0` hasta que el scroll las cruzaba. El problema es DÓNDE caen:
+        con el hero centrado arriba, las cuatro asoman por el pie de la primera
+        pantalla, y el `viewport` del repo dispara con `-20%` de margen —o sea
+        cuando al elemento le falta un quinto de pantalla para entrar—. Así que
+        al abrir la página se veían cuatro huecos blancos justo donde está el
+        contenido, y aparecían recién al mover la rueda.
+
+        ⚠️ NO SE TOCÓ EL MECANISMO DE REVELADO DEL REPO, que sigue siendo el de
+        `Motion` y sigue en todas las demás secciones. Lo que cambia es esta
+        grilla, que es la primera de su página: lo que está arriba del pliegue
+        no se revela, se muestra.
+      */}
+      <ul
         className={`grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4 ${head ? 'mt-bloque' : ''}`}
       >
         {trucks.map((t) => (
-          <RevealItem as="li" key={t.slug} className="h-full">
+          <li key={t.slug} className="relative h-full">
+            <ToldoEdge />
             <article className="flex h-full flex-col overflow-hidden rounded-shell bg-paper sombra-card">
               {/* ⚠️ EL `bg-fog` VA SÓLO DETRÁS DE UNA FOTO REAL, donde tapa el hueco
                   mientras carga. Debajo del placeholder NO: el relleno del
@@ -256,7 +338,6 @@ export default function TruckCards({
                       sizes="(min-width: 1024px) 280px, (min-width: 640px) 46vw, 92vw"
                       className="object-cover"
                     />
-                    <ToldoEdge />
                   </>
                 ) : (
                   <PhotoPending brief={t.photoBrief} ratio="aspect-[3/2]" className="h-full" />
@@ -330,9 +411,9 @@ export default function TruckCards({
                 </div>
               </div>
             </article>
-          </RevealItem>
+          </li>
         ))}
-      </StaggerGroup>
+      </ul>
 
       {/*
         ══════════════════════════════════════════════════════════════════
@@ -383,7 +464,19 @@ export default function TruckCards({
         ABRE, no por cuándo no.
         ══════════════════════════════════════════════════════════════════
       */}
-      <div className="mt-bloque overflow-hidden rounded-shell bg-deep grano sombra-card">
+      {/*
+        ⚠️ LA LOSA NO OCUPA TODO EL ANCHO Y ANTES SÍ. Camila, 2026-09-21:
+        «borra todo este espacio extra, haz la card angosta para no tener ese
+        espacio». Con la losa a ancho completo el `1fr` del título se estiraba
+        hasta el borde y entre «When the trucks are open» y la primera columna
+        de horarios quedaba un hueco de ~400px sin nada adentro.
+
+        El ancho máximo está calculado sobre el contenido: ~300px de la columna
+        del título (su bajada mide `34ch`), 56px de `gap`, ~450px de las dos
+        columnas de horarios y los 88px de `p-11`. Se centra con `mx-auto`, así
+        que lo que sobra queda de los dos lados en vez de adentro.
+      */}
+      <div className="mx-auto mt-bloque overflow-hidden rounded-shell bg-deep grano sombra-card lg:max-w-[58rem]">
         <div className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,auto)] lg:items-center lg:gap-14 lg:p-11">
           <div>
             <h3 className="m-0 font-display text-d4 font-bold uppercase leading-none text-paper lg:text-d3">

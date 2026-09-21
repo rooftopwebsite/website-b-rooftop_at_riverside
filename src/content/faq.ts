@@ -100,9 +100,9 @@ export const FAQS: readonly Faq[] = [
   {
     group: 'Visiting',
     q: 'Are dogs allowed?',
-    a: 'Yes. Wednesday is Wooftop Wednesdays: bring the dog, drinks are two for one, and every truck runs a $5 item your dog can order.',
+    a: 'Yes. The third Wednesday of every month is Wooftop Fest: bring the dog, there is an off-leash area we run with Barkyard and Tap, and pet vendors set up alongside the trucks.',
     source:
-      'Evento del dashboard de RestoExp, textual: «Bring the dog. Two-for-one drinks, and every truck runs a $5 item your dog can order. Excludes flights.» Ver `content/events.json`.',
+      'Mail de Madeline Powers del 2026-09-17 y su confirmación del 18: Wooftop Fest es el tercer miércoles de cada mes, pet-friendly, en partnership con Barkyard and Tap (área sin correa) y con vendors de mascotas. ⚠️ EL 2X1 EN TRAGOS NO SE NOMBRA A PROPÓSITO: Madeline lo da como histórico, sin confirmar, y avisó que los extras de temporada (2x1, banda) NO rigen en octubre. Tampoco se nombra el ítem de $5 para perros, que venía de la fila vieja del dashboard y ella no menciona. Los tres van al pedido al cliente.',
   },
   {
     group: 'Events',

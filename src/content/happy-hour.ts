@@ -35,10 +35,18 @@ import { formatTime, getVenueEvents, weekdaysLabel, type VenueEvent } from './ev
  *
  * ⚠️ QUÉ EVENTO ES: el que se LLAMA «happy hour», y NO el que lleva el tag
  * `happy-hour`. La diferencia importa y está verificada contra la base el
- * 2026-09-17: **Wooftop Wednesdays lleva ese tag** —tiene 2x1 en tragos, así
- * que la etiqueta no está mal— y es el primero de la lista. Seleccionando por
- * tag, el bloque de happy hour de `/sunset-bar` publicaría los miércoles de
+ * 2026-09-17: **Wooftop Wednesdays llevaba ese tag** —tenía 2x1 en tragos, así
+ * que la etiqueta no estaba mal— y era el primero de la lista. Seleccionando
+ * por tag, el bloque de happy hour de `/sunset-bar` publicaba los miércoles de
  * perros.
+ *
+ * ⚠️ ESE EVENTO YA NO LLEVA EL TAG, y el criterio del título sigue igual de
+ * necesario. El 2026-09-21 Wooftop Wednesdays pasó a ser **Wooftop Fest**, el
+ * tercer miércoles de cada mes, y se le sacó `happy-hour` porque Madeline
+ * Powers avisó que el 2x1 está sin confirmar y que los extras de temporada no
+ * rigen en octubre. O sea que el choque de hoy no existe, pero la razón por la
+ * que el título manda sobre el tag no cambió: el cliente etiqueta como quiere
+ * y nada impide que mañana vuelva a poner `happy-hour` en otro evento.
  *
  * El título es el criterio porque es lo único que distingue AL evento de los
  * que se le parecen, y el cliente lo escribe igual sin que nadie se lo pida.

@@ -124,7 +124,21 @@ export default function PlateHero({
   return (
     <section
       aria-labelledby={titleId}
-      className="bg-bone grano px-borde pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]"
+      /*
+        ⚠️ SIN `px-borde`. LA SECCIÓN NO LLEVA GUTTER PROPIO porque el
+        `caja-ancha` de adentro ya lo pone, y los dos juntos SE SUMAN — es
+        exactamente el par que la nota de `caja-ancha` en `globals.css` dice
+        que no se combina.
+
+        Estuvo sumando desde el principio y el costo se veía en mobile: 48px
+        de aire por lado sobre 375 útiles dejaban la foto en 279px, o sea
+        EXACTAMENTE tan ancha como la placa del titular. Con la placa del
+        mismo ancho que la foto no hay mordida, y la mordida es la forma de
+        este hero: se veía una placa apoyada arriba de una foto, no una placa
+        entrando en ella. Camila, 2026-09-17: «el hero se debe apreciar, tener
+        protagonismo».
+      */
+      className="bg-bone grano pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]"
     >
       <div className="caja-ancha">
         {crumbs && crumbs.length > 0 ? (
@@ -168,6 +182,57 @@ export default function PlateHero({
           className="relative z-10 mx-auto mt-5 mb-[-0.94em] w-fit max-w-full rounded-b-frame bg-bone grano px-[0.3em] pb-[0.12em] text-center font-display text-banda font-extrabold uppercase text-ink lg:mt-7"
         >
           {title}
+
+          {/*
+            ══════════════════════════════════════════════════════════════
+            ⚠️ LAS DOS ESQUINAS INVERSAS. Camila las marcó sobre la página con
+            dos flechas rojas en los ángulos vivos, igual que las había pasado
+            para el hero de la home: «colocá los elementos vectoriales que
+            usamos en el home en esas dos esquinas».
+
+            ES EL MISMO PROBLEMA QUE EN LA HOME y la misma pieza. Esta placa
+            muerde el borde de arriba de la foto, así que donde sus dos
+            costados cruzan ese borde quedan dos ángulos de 90°, y un ángulo
+            vivo entre dos superficies delata que una está tapando a la otra.
+            Con el radio invertido el hueso no termina: se curva y entra en la
+            foto. La nota larga de por qué es una máscara y no un
+            `border-radius` está en `globals.css`, en la utilidad.
+
+            ⚠️ VAN COLGADAS DE LA PLACA Y NO ADENTRO DE LA FOTO. La placa es
+            `w-fit`: su ancho es el del titular, que cambia con el texto, con
+            el viewport y con si la display ya cargó. Metidas en la caja de la
+            foto habría que medirlo en JS como hace la home con su recorte;
+            colgadas de `left-full` y `right-full` se acomodan solas.
+
+            ⚠️ LA ALTURA ES `100% − 0.94em`, QUE ES EL MISMO NÚMERO DEL
+            `mb-[-0.94em]` de esta placa, o sea exactamente donde arranca la
+            foto. Está escrito en `em` por el mismo motivo que el margen: se
+            mide contra el titular, que es un `clamp` de 45 a 112px, y en
+            píxeles daría bien en una medida y mal en las otras. Los dos
+            números se mueven juntos — si cambia el solapamiento, cambia acá.
+
+            ⚠️ LA IZQUIERDA VA ESPEJADA Y LA DE LA HOME NO. `globals.css`
+            avisa que las dos esquinas de la home son la misma pieza SIN
+            ROTAR, y esto no la contradice: allá el recorte está en una
+            ESQUINA del marco y sus dos ángulos vivos miran para el mismo
+            lado. Acá la placa está CENTRADA, así que los dos ángulos son
+            simétricos y el de la izquierda es el espejo del de la derecha.
+
+            Es espejo (`scale-x-[-1]`), no rotación. La advertencia de
+            `globals.css` es contra ROTAR, que es lo que invierte la dirección
+            del mordisco y se lee como la foto metiéndose en el hueso. Un
+            espejo horizontal deja el disco abajo, que es de donde viene la
+            foto en los dos lados.
+            ══════════════════════════════════════════════════════════════
+          */}
+          <span
+            aria-hidden="true"
+            className="esquina-inversa top-[calc(100%-0.94em)] left-full"
+          />
+          <span
+            aria-hidden="true"
+            className="esquina-inversa top-[calc(100%-0.94em)] right-full scale-x-[-1]"
+          />
         </h1>
 
         {/*
@@ -221,7 +286,55 @@ export default function PlateHero({
           por los costados en pantallas altas.
           ══════════════════════════════════════════════════════════════════
         */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-frame bg-fog sm:aspect-[16/9] lg:aspect-[17/9] lg:max-h-[calc(100svh-378px)]">
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ EN MOBILE LA FOTO ES VERTICAL (4:5) Y ANTES ERA APAISADA (16:10).
+          Pedido de Camila, 2026-09-17: «en mobile la imagen debe ser vertical
+          dado que pierde lo horizontal».
+
+          Tiene razón y el número lo muestra: a 390px una caja 16:10 mide
+          343×214, o sea una franja de 214px de alto en una pantalla de 844.
+          El hero ocupaba un cuarto de la pantalla y la foto se leía como un
+          banner, no como la portada de la página. En 4:5 la misma caja mide
+          343×429 y el hero pasa a ocupar la mitad de arriba, que es el
+          protagonismo que se pidió.
+
+          ⚠️ 4:5 Y NO 3:4 NI 9:16. Con 3:4 (343×457) y sobre todo con 9:16
+          (343×610) la foto empuja la bajada y los CTA fuera del pliegue, y
+          este hero los tiene abajo. 4:5 es el vertical más alto que deja
+          asomar lo que sigue.
+
+          ⚠️ LA PROPORCIÓN VA EN CUATRO ESCALONES Y NO EN DOS, que es lo que
+          pidió Camila al mandar a mirar los otros proyectos de la casa: «fijate
+          cómo van variando los márgenes mínimos entre dispositivos».
+
+              mobile   4:5    vertical, el hero ocupa media pantalla
+              sm       4:3    la transición
+              md      16:9    apaisada
+              lg      17:9    la proporción del archivo
+
+          El par 4:5 → 16:9 saltaba de vertical a muy apaisada en un solo
+          pixel de viewport: medido a 640px, la foto pasaba de 512×640 a
+          585×329 y el hero perdía de golpe la presencia que acababa de ganar
+          en el teléfono. `4/3` en el medio es el escalón que falta, y es el
+          mismo criterio con el que el gutter crece 16 → 24 → 32 en vez de
+          saltar.
+
+          ⚠️ EL ESCALÓN DE `md` NO ES DECORATIVO: 16:9 entra recién cuando el
+          ancho alcanza para que una foto apaisada siga siendo alta. Abajo de
+          768 la caja queda en una banda de menos de 340px de alto, que es la
+          franja que este cambio vino a sacar.
+
+          ⚠️ EL RECORTE DE `object-cover` CAMBIA Y ESO ES LO QUE HAY QUE
+          MIRAR AL CAMBIAR LA FOTO: el archivo es 17:9, así que en una caja
+          4:5 se recorta FUERTE por los costados. En la foto de `/sunset-bar`
+          eso se come los dos vasos de los extremos, que en desktop son los
+          que cierran la composición. Es el precio del vertical y es el que
+          se pidió; si alguna foto no tolera el recorte, la salida es una
+          derivada vertical propia, no volver la caja a apaisada.
+          ══════════════════════════════════════════════════════════════════
+        */}
+        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-frame bg-fog sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[17/9] lg:max-h-[calc(100svh-378px)]">
           {photo ? (
             <Image
               src={photo}
