@@ -103,54 +103,17 @@ export const ENHANCEMENTS_NOTE =
   'Pricing depends on availability and group size, so these get quoted with your request.';
 
 /* ==========================================================================
-   LA GALERÍA Y EL PDF
+   EL PDF
    ========================================================================== */
 
-/**
- * Las fotos de eventos anteriores.
- *
- * ⚠️ TODAS SON REALES, de la entrega del cliente en `public/images/venue/`.
- * Donde no hay foto del caso va `src: null` y la página dibuja el hueco gris
- * con el pedido escrito en español. Lo que NO se hace es rellenar una galería
- * de «eventos anteriores» con stock: es lo que mira alguien que está por
- * alquilar el lugar, y le estaríamos mostrando una fiesta que no pasó acá.
+/*
+ * ⚠️ ACÁ VIVÍA `GALERIA`, las seis casillas de «nights that already happened»
+ * de /events, y se fue con esa sección el 2026-09-21. Camila: «eliminemos esta
+ * parte». Cuatro de las seis eran fotos de `public/images/venue/` que la misma
+ * página ya muestra en el hero y en los espacios, y las otras dos eran huecos
+ * esperando material que el cliente no mandó. Los archivos siguen en el repo:
+ * lo que se borró es la lista, no las fotos.
  */
-export const GALERIA: readonly {
-  readonly src: string | null;
-  readonly alt: string;
-  readonly brief: string;
-}[] = [
-  {
-    src: '/images/venue/wall-dancing-night.jpg',
-    alt: 'The dance floor at Rooftop at Riverside at night',
-    brief: '',
-  },
-  {
-    src: '/images/venue/wall-live-music-tent.jpg',
-    alt: 'A musician playing under the tent in the yard',
-    brief: '',
-  },
-  {
-    src: '/images/venue/venue-aerial.jpg',
-    alt: 'The yard seen from the rooftop during a morning class',
-    brief: '',
-  },
-  {
-    src: '/images/venue/wall-yard-night-table.jpg',
-    alt: 'A group at a table in the yard at night with the trucks lit up',
-    brief: '',
-  },
-  {
-    src: null,
-    alt: '',
-    brief: 'Un evento corporativo en la terraza: mesas armadas, gente de pie con una copa.',
-  },
-  {
-    src: null,
-    alt: '',
-    brief: 'El patio cerrado con la reja puesta durante un show con entrada, de noche.',
-  },
-];
 
 /**
  * El PDF de eventos que el cliente ya publica.

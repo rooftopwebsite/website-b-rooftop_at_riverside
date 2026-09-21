@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import ContactForm from '@/components/sections/ContactForm';
-import ContactHero from '@/components/sections/ContactHero';
 import { ButtonLink } from '@/components/shared/Button';
+import FormSlab from '@/components/shared/FormSlab';
 import HoursCard from '@/components/shared/HoursCard';
-import { ArrowSquareOut } from '@/components/shared/Icon';
+import { ArrowSquareOut, Instagram } from '@/components/shared/Icon';
 import MapEmbed from '@/components/shared/MapEmbed';
+import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { BRAND, instagramHandle } from '@/lib/brand';
@@ -14,10 +15,10 @@ import { breadcrumbJsonLd, jsonLdScript, pageMeta, venueJsonLd } from '@/lib/seo
 export const metadata: Metadata = pageMeta({
   route: '/contact',
   image: {
-    url: '/images/venue/wall-guests-yard-day.jpg',
-    width: 1000,
-    height: 1250,
-    alt: 'Guests in the yard at Rooftop at Riverside during the day',
+    url: '/images/venue/contact-bar-day-wide.jpg',
+    width: 2576,
+    height: 1364,
+    alt: 'Guests at the bar at Rooftop at Riverside on a weekday afternoon',
   },
 });
 
@@ -25,47 +26,66 @@ export const metadata: Metadata = pageMeta({
  * `/contact` — los tres buzones, el formulario, los horarios y el mapa.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LA PÁGINA ESTÁ ARMADA SOBRE `defoodtruckclub.nl/contact`. Pedido de
- * Camila, 2026-09-16: copiar su estructura y traer de nuestras otras secciones
- * los layouts que hagan falta para todo lo que va acá.
+ * ⚠️ REDISEÑADA EL 2026-09-21. La página estaba en un idioma propio y era la
+ * única que quedaba así: abría con `ContactHero`, el encabezado COLLAGE
+ * calcado de `defoodtruckclub.nl/contact`, con el titular monocromo, sin foto,
+ * y el teléfono como una píldora gigante entrelazada con las letras.
  *
- * La referencia tiene TRES bloques y nada más:
+ * Camila, 2026-09-21: «contemplando cómo hiciste el formulario en plan an
+ * event y cómo son los heros, diseñá las páginas de join us y contact».
  *
- *   1. un encabezado COLLAGE, donde el mail y el teléfono son piezas del
- *      tamaño de las letras del titular;
- *   2. una losa de formulario a dos columnas: a la izquierda un texto corto y
- *      los datos de la empresa, a la derecha una caja de radio grande con
- *      filete punteado por dentro y el formulario escrito como una FRASE;
- *   3. el footer.
+ * ──────────────────────────────────────────────────────────────────────────
+ * ⚠️ EL HERO PASA A `PlateHero`, el de `/sunset-bar`, `/whats-on` y `/events`:
+ * pregunta arriba, placa con la palabra en color, esquinas inversas y la foto
+ * ancha que la placa muerde. Dos de las tres reglas fijas de hero del repo las
+ * incumplía este archivo — el titular iba monocromo y no había placa mordiendo
+ * ninguna foto— y ésta es la forma de cumplirlas sin inventar una cuarta.
  *
- * No tiene horarios, no tiene mapa y no tiene foto.
+ * ⚠️ `ContactHero.tsx` SE BORRÓ, pero el collage no se tiró entero. Su
+ * argumento bueno era que en una página de contacto la mitad de la gente viene
+ * a LLAMAR, así que el teléfono no puede ser un renglón de 16px abajo a la
+ * derecha. Ese mecanismo sobrevive: la píldora de teléfono en `mint` y el
+ * círculo de Instagram son ahora lo primero de la columna de datos de la losa,
+ * más chicos —60px de alto contra 104— porque ahí no compiten con un titular
+ * de 144px sino que encabezan una columna.
  *
- * ⚠️ NOSOTROS SÍ LOS TENEMOS, y no por inercia: la spec de internas
- * (`docs/prompt-claude-design-internas.md` §7.9) los pone como el contenido
- * principal de esta página, porque los dos sets de horario son la confusión
- * número uno del negocio. Van DEBAJO del formulario, en su propia banda y
- * sobre otra superficie, para que la estructura de arriba siga siendo la de la
- * referencia y no se lean como continuación de la losa.
+ * ⚠️ EL FORMULARIO EN FRASE SE QUEDA. La consigna decía «como el formulario de
+ * plan an event», y lo que se toma de ahí es LA LOSA, no el formulario: son
+ * cinco campos, y la oración con huecos funciona justamente porque son cinco.
+ * El propio `/events` documenta por qué él no la copió con quince.
  *
- * Los bloques nuestros salen de piezas que ya existen: la onda del encabezado
- * es la de `/food-trucks`, la tarjeta de horarios y el mapa diferido son los
- * mismos de siempre, y la banda oscura de cierre es la que cierra las nueve
- * internas.
- * ══════════════════════════════════════════════════════════════════════════
+ * ──────────────────────────────────────────────────────────────────────────
+ * ⚠️ LO QUE NO SE TOCÓ, y no por inercia: los horarios y el mapa. La spec de
+ * internas (`docs/prompt-claude-design-internas.md` §7.9) los pone como el
+ * contenido principal de esta página, porque los dos sets de horario son la
+ * confusión número uno del negocio. Siguen DEBAJO del formulario, en su propia
+ * banda y sobre otra superficie.
  *
  * ⚠️ EL MAPA ES LA ÚNICA COSA PESADA DE LA PÁGINA Y NO SE CARGA SOLO. Ver
  * `components/shared/MapEmbed.tsx`: la dirección, el teléfono y el link a
  * indicaciones están en HTML plano y no dependen de que baje nada.
  *
  * ⚠️ GIFT CARDS APARECE EXACTAMENTE DOS VECES. Pedido de Camila: bien visible,
- * pero «no en loop». Una en la columna de datos, arriba del pliegue, y otra en
- * la banda de cierre. Las dos salen a Toast, que es el único enlace de
- * comercio real que tiene el negocio, así que van con `target="_blank"` y
- * `rel="noopener noreferrer"` más el aviso en texto de que abren otra pestaña.
+ * pero «no en loop». Una en la columna de datos y otra en la banda de cierre.
+ * Las dos salen a Toast, que es el único enlace de comercio real del negocio,
+ * así que van con `target="_blank"` y `rel="noopener noreferrer"` más el aviso
+ * en texto de que abren otra pestaña.
  *
  * ⚠️ JSON-LD: `venueJsonLd()` ya emite el `BarOrPub` con dirección, horarios
  * (`openingHours` desde `content/hours.ts`) y teléfono. No se escribe uno a
  * mano acá: sería una segunda fuente del mismo dato.
+ *
+ * ──────────────────────────────────────────────────────────────────────────
+ * ⚠️ EL RITMO DE SUPERFICIES:
+ *
+ *     hero        bone   (la placa y la foto)
+ *     formulario  paper  ← el panel va en bone, que es lo que sostiene los campos
+ *     horarios    bone
+ *     cierre      DEEP   ← única oscura
+ *
+ * Ninguna queda pegada a otra del mismo color y hay una sola `deep`, que es lo
+ * que pide `npm run check:surfaces`.
+ * ══════════════════════════════════════════════════════════════════════════
  */
 
 /**
@@ -87,7 +107,6 @@ export const metadata: Metadata = pageMeta({
  * y el texto del barrio. Y `social_links` viene en `null`.
  * TODO: confirmar con cliente si esos campos se pueden cargar en el dashboard.
  */
-
 export default async function ContactPage() {
   const venue = await getVenue();
 
@@ -131,53 +150,102 @@ export default async function ContactPage() {
         }}
       />
 
-      {/* ══ 1. El encabezado collage ══════════════════════════════════════ */}
+      {/* ══ 1. El hero ════════════════════════════════════════════════════ */}
 
-      <ContactHero
-        eyebrow="Contact"
-        title={['Say', 'hello']}
+      {/*
+        ⚠️ EL TITULAR PARTE EN DOS RENGLONES Y ESO ES UN CONTRATO, no un
+        detalle de escritura: el solapamiento de `PlateHero` es `-0.94em`, que
+        es exactamente media placa de DOS renglones. Con uno solo, la foto le
+        pasa por encima al titular entero.
+
+        ⚠️ Y EL TEXTO PLANO TIENE QUE DAR «Say hello», que es el H1 que fija
+        `PAGE_SEO` y lo que compara `npm run check:seo`. El `<span>` parte el
+        renglón y pinta el color; no agrega ni saca una palabra.
+      */}
+      <PlateHero
+        question="Trying to reach the rooftop in Bonita Springs?"
+        title={
+          <>
+            {'Say '}
+            <span className="block text-sunset-deep">hello</span>
+          </>
+        }
         lead="Three inboxes, so your message lands with the person who can answer it instead of a shared one. If it is urgent, the phone is faster than all of it."
-        phone={venue.phone}
-        phoneHref={venue.phoneHref}
-        instagram={BRAND.social.instagram}
-        handle={'@' + instagramHandle()}
-        from="bone"
-        to="paper"
-      />
-
-      {/* ══ 2. La losa del formulario, con los buzones al costado ═════════ */}
-
-      <Section band="lg" labelledBy="write-title">
+        photo="/images/venue/contact-bar-day-wide.jpg"
+        photoAlt="Guests at the bar at Rooftop at Riverside on a weekday afternoon"
+      >
         {/*
-          ⚠️ `items-start` NO ES COSMÉTICO. Sin él las dos columnas son igual
-          de altas, y como la izquierda es más larga, la losa del formulario se
-          estiraba hasta su altura: quedaban 250px de fondo `bone` vacíos
-          debajo del botón de enviar, con el filete punteado corriendo por el
-          costado de la nada. La caja tiene que terminar donde termina el
-          formulario, como en la referencia.
+          ⚠️ EL SEGUNDO CTA NO ES EL TELÉFONO, Y SE MIDIÓ. «Call (239)
+          268-0080» son 19 caracteres, uno menos que el presupuesto de 20 que
+          declara `BASE` en `Button.tsx`, pero el presupuesto es una guía y el
+          ancho real depende de la letra: en `size="lg"` esa etiqueta da 293px
+          y a 320px de viewport quedan 288 útiles. Como la etiqueta va con
+          `nowrap`, no se parte: mete scroll horizontal a todo el documento.
+          Es exactamente el error que ya está documentado en `/events`.
+
+          El teléfono no se pierde: es la píldora grande de la columna de
+          datos, dos pantallas más abajo pero a tamaño de titular.
         */}
-        <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
-          {/*
-            ── La columna de datos ────────────────────────────────────────
-            Es la que en la referencia lleva la razón social, el KVK y el
-            número de IVA: texto corto, un filete y los datos duros. Lo nuestro
-            en ese lugar son los tres buzones y la dirección.
-          */}
-          <div>
-            <SectionHead
-              eyebrow="Write to us"
-              eyebrowTone="deep"
-              id="write-title"
-              title="Three inboxes"
-              lead="Pick the one that fits. The form does the same thing if you would rather type than open your mail app."
-            />
+        <ButtonLink href="#write" variant="primary" size="lg">
+          Write to us
+        </ButtonLink>
+        <ButtonLink href="#find" variant="secondary" size="lg">
+          Hours and map
+        </ButtonLink>
+      </PlateHero>
 
-            <div className="filete mt-9" />
+      {/* ══ 2. La losa del formulario, con los datos al costado ═══════════ */}
 
-            <ul className="mt-9 flex list-none flex-col gap-7">
+      <FormSlab
+        id="write"
+        eyebrow="Write to us"
+        eyebrowTone="deep"
+        title="Three inboxes"
+        titleId="write-title"
+        lead="Pick the one that fits. The form does the same thing if you would rather type than open your mail app."
+        aside={
+          <div className="flex flex-col gap-9">
+            {/*
+              ── Lo que sobrevive del collage ───────────────────────────────
+              ⚠️ ESTO ERA EL ENCABEZADO DE LA PÁGINA y ahora encabeza la
+              columna. La píldora y el círculo son las mismas dos piezas, con
+              el mismo filete punteado y los mismos colores; lo único que
+              cambió es la escala, de 104px de alto a 60.
+
+              ⚠️ LA PÍLDORA SIGUE EN `mint` Y NO EN `sunset`. El naranja es del
+              CTA primario y en esta pantalla el CTA es el formulario. `mint`
+              es el token de las formas grandes de acento y la tinta encima
+              queda en `ink`, o sea el mismo 15:1 de siempre.
+
+              ⚠️ ES UN `<a href="tel:">` DE VERDAD, no un número pintado
+              grande: los 60px de alto son todos área de toque, bastante más
+              que los 44 del mínimo.
+            */}
+            <div className="flex items-center gap-3">
+              <a
+                href={venue.phoneHref}
+                className="flex h-[60px] flex-1 items-center justify-center rounded-pill border-2 border-dashed border-ink/30 bg-mint px-4 font-display text-d6 font-semibold uppercase leading-none text-ink transition-colors hover:bg-river/30 sm:text-d5"
+              >
+                {venue.phone}
+              </a>
+              <a
+                href={BRAND.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex size-[60px] shrink-0 items-center justify-center rounded-full border-2 border-dashed border-ink/30 bg-cream text-ink transition-colors hover:bg-sunset"
+              >
+                <Instagram className="size-6" aria-hidden="true" />
+                <span className="sr-only">
+                  @{instagramHandle()} on Instagram (opens in a new tab)
+                </span>
+              </a>
+            </div>
+
+            {/* ── Los tres buzones ──────────────────────────────────────── */}
+            <ul className="flex list-none flex-col gap-7 p-0">
               {buzones.map((b) => (
                 <li key={b.address}>
-                  <Heading level={2} role="label">
+                  <Heading level={3} role="label">
                     {b.label}
                   </Heading>
                   <p className="mt-[10px]">
@@ -195,10 +263,11 @@ export default async function ContactPage() {
               ))}
             </ul>
 
-            <div className="filete mt-9" />
+            <hr className="w-full border-0 border-t border-ink/15" />
 
-            <div className="mt-9">
-              <Heading level={2} role="label">
+            {/* ── La dirección ─────────────────────────────────────────── */}
+            <div>
+              <Heading level={3} role="label">
                 Come by
               </Heading>
               <address className="mt-[12px] not-italic">
@@ -224,9 +293,9 @@ export default async function ContactPage() {
               </p>
             </div>
 
-            {/* ── Gift cards, 1 de 2 ─────────────────────────────────────── */}
-            <div className="mt-9 rounded-card border border-ink/15 bg-bone p-[24px]">
-              <Heading level={2} role="card">
+            {/* ── Gift cards, 1 de 2 ───────────────────────────────────── */}
+            <div className="rounded-card border border-ink/15 bg-paper p-[24px]">
+              <Heading level={3} role="card">
                 Gift cards
               </Heading>
               <p className="mt-[10px] max-w-[42ch] text-[16px] leading-[1.7] text-body/80">
@@ -240,31 +309,14 @@ export default async function ContactPage() {
               </div>
             </div>
           </div>
-
-          {/*
-            ── La losa ────────────────────────────────────────────────────
-            ⚠️ SON DOS CAJAS, UNA ADENTRO DE LA OTRA, y así está hecha la de la
-            referencia: la de afuera pone el color y el radio grande, la de
-            adentro pone el filete punteado y el aire. Con una sola caja, un
-            borde punteado sobre el radio de 44px queda pegado al contenido en
-            las esquinas, que es donde la curva se come el padding.
-
-            ⚠️ LA LOSA VA EN `bone` SOBRE SECCIÓN `paper`, y no al revés. Los
-            campos son blancos: si la caja también fuera blanca, la píldora de
-            cada campo quedaría sostenida sólo por su borde de 1px. Con la caja
-            un escalón más oscura, los cinco campos se leen a distancia.
-          */}
-          <div className="rounded-frame bg-bone p-3 sm:p-4">
-            <div className="rounded-shell border-2 border-dashed border-ink/20 px-6 py-10 sm:px-10 lg:px-12 lg:py-12">
-              <ContactForm />
-            </div>
-          </div>
-        </div>
-      </Section>
+        }
+      >
+        <ContactForm />
+      </FormSlab>
 
       {/* ══ 3. Horarios y mapa ════════════════════════════════════════════ */}
 
-      <Section tone="bone" band="lg" labelledBy="find-title">
+      <Section id="find" tone="bone" band="lg" labelledBy="find-title" className="scroll-mt-24">
         <SectionHead
           eyebrow="Hours and map"
           eyebrowTone="plum"

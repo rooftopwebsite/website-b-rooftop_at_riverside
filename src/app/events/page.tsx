@@ -5,9 +5,9 @@ import EventTypes from '@/components/sections/EventTypes';
 import InquiryForm from '@/components/sections/InquiryForm';
 import { ButtonLink } from '@/components/shared/Button';
 import CompareSlab from '@/components/shared/CompareSlab';
+import FormSlab from '@/components/shared/FormSlab';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import PlateHero from '@/components/shared/PlateHero';
-import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import SoftWave from '@/components/shared/SoftWave';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
@@ -18,7 +18,6 @@ import {
   FEES,
   EVENTS_PDF,
   FOOD_OPTIONS,
-  GALERIA,
   RENTAL,
   RENTAL_DEPOSIT,
   RENTAL_MINIMUM_HOURS,
@@ -114,6 +113,20 @@ export const metadata: Metadata = pageMeta({
  *    gente». El argumento se cae solo: prueba que el venue mueve gente EN LA
  *    CALLE, que no es lo que esta página vende.
  *
+ * 8. LA GALERÍA «NIGHTS THAT ALREADY HAPPENED», el 2026-09-21 y por el mismo
+ *    motivo que el resto: repetía. Camila: «eliminemos esta parte, sólo nos
+ *    quedaremos con las dos cards de paquete de eventos y camión de juegos».
+ *    Eran seis casillas —cuatro fotos del cliente que ya se ven en el hero y
+ *    en los espacios de esta misma página, y dos huecos grises esperando
+ *    material que nunca llegó— para mostrar el patio y la azotea por tercera
+ *    vez. Con ella se fue `GALERIA` de `content/events-pricing.ts`.
+ *
+ *    ⚠️ LAS DOS TARJETAS QUE COLGABAN DE ESA SECCIÓN NO SE PERDIERON: el
+ *    packet bajó a la columna del formulario —«paquetes de eventos puede ir
+ *    acá»— y el camión de juegos se quedó con la franja entera, con foto y con
+ *    sus tres números, que es lo que Camila pidió mirar: «hay que ver cómo
+ *    venderlas mejor».
+ *
  * ──────────────────────────────────────────────────────────────────────────
  * ⚠️ EL HERO ES `PlateHero`, EL DE LAS SECUNDARIAS. Camila, 2026-09-21: «el
  * hero debe ser como el de las secundarias, como calendar y sunset, los CTA van
@@ -141,7 +154,7 @@ export const metadata: Metadata = pageMeta({
  *     comparativa DEEP    ← ola de entrada desde menta; única oscura
  *     espacios    paper + CREAM
  *     números     paper   ← recibe las tarjetas que cruzan la losa
- *     galería     paper
+ *     camión      paper   ← era la galería
  *     cierre      bone con arco
  *
  * `mint` y `cream` cuentan las dos como crema para `npm run check:surfaces`,
@@ -304,10 +317,29 @@ export default async function EventsPage() {
           </p>
         </div>
 
-        <StaggerGroup as="ul" className="mt-bloque grid list-none gap-5 p-0 lg:grid-cols-2">
+        {/*
+          ⚠️ LA COLUMNA DERECHA ES UNA SOLA TARJETA A LO ALTO, pedido de Camila:
+          «que tres maneras de alimentar a todos vaya en vertical, y las otras
+          una sobre la otra, así no tienen tanto espacio vacío».
+
+          La grilla de 2×2 pareaba el alquiler —dos tarifas y un renglón— con la
+          comida, que lleva tres opciones con su descripción. La corta se
+          estiraba al alto de la larga y quedaba media tarjeta vacía.
+
+          Ahora la comida ocupa la columna derecha entera y el alquiler y los
+          fees se apilan a la izquierda. Los add-ons cierran A LO ANCHO DE LAS
+          DOS COLUMNAS y no en la pila: son cinco cápsulas y un renglón, o sea
+          la pieza más baja de las cuatro, y puesta en la columna dejaba los dos
+          lados descompensados otra vez. Abajo y ancha, las cápsulas entran en
+          una sola fila y la nota se le pone al lado.
+        */}
+        <StaggerGroup
+          as="ul"
+          className="mt-bloque grid list-none gap-5 p-0 lg:grid-cols-2 lg:grid-rows-[auto_1fr_auto]"
+        >
           {/* 1 · EL ALQUILER. Las dos tarifas son el dato más buscado de la
               página, así que van en `d2` y en el naranja de marca. */}
-          <RevealItem as="li" className="h-full">
+          <RevealItem as="li" className="h-full lg:col-start-1 lg:row-start-1">
             <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
               <Heading level={3} role="label" className="text-cream">
                 Renting the second floor
@@ -335,17 +367,24 @@ export default async function EventsPage() {
             </article>
           </RevealItem>
 
-          {/* 2 · LA COMIDA. Tres filas: nombre, una línea y el precio. */}
-          <RevealItem as="li" className="h-full">
+          {/* 2 · LA COMIDA. Tres filas: nombre, una línea y el precio, y la
+              tarjeta que manda el alto de la grilla: ocupa la columna derecha
+              entera. */}
+          <RevealItem as="li" className="h-full lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
               <Heading level={3} role="label" className="text-cream">
                 Three ways to feed everyone
               </Heading>
-              <ul className="m-0 mt-2 flex list-none flex-col p-0">
+              {/* ⚠️ `flex-1` EN LA LISTA Y EN CADA FILA, y sólo en `lg`. Al ser
+                  la tarjeta alta de la columna, el sobrante de alto se reparte
+                  entre las tres opciones en vez de caer todo junto al final:
+                  los filetes punteados quedan a distancias iguales y la tarjeta
+                  se lee como una carta, no como una caja a medio llenar. */}
+              <ul className="m-0 mt-2 flex list-none flex-col p-0 lg:flex-1">
                 {FOOD_OPTIONS.map((f) => (
                   <li
                     key={f.slug}
-                    className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-dashed border-bone/25 py-4 last:border-b-0 last:pb-0"
+                    className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-dashed border-bone/25 py-4 last:border-b-0 last:pb-0 lg:flex-1 lg:content-center"
                   >
                     <p className="m-0 flex-1 font-display text-d6 font-bold uppercase leading-none text-paper">
                       {f.name}
@@ -364,7 +403,7 @@ export default async function EventsPage() {
 
           {/* 3 · LOS FEES. En cuerpo chico pero a la vista: 22 % sobre una hora
               de $1.250 son $275, y enterarse después es la peor manera. */}
-          <RevealItem as="li" className="h-full">
+          <RevealItem as="li" className="h-full lg:col-start-1 lg:row-start-2">
             <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
               <Heading level={3} role="label" className="text-cream">
                 On top of that
@@ -386,24 +425,28 @@ export default async function EventsPage() {
           </RevealItem>
 
           {/* 4 · LOS ADD-ONS. Sin precio: el PDF del cliente no los publica. */}
-          <RevealItem as="li" className="h-full">
+          <RevealItem as="li" className="h-full lg:col-span-2 lg:col-start-1 lg:row-start-3">
             <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
-              <Heading level={3} role="label" className="text-cream">
-                Add-ons
-              </Heading>
-              <ul className="m-0 mt-5 flex list-none flex-wrap gap-2 p-0">
-                {ENHANCEMENTS.map((e) => (
-                  <li
-                    key={e.name}
-                    className="rounded-pill bg-paper/10 px-4 py-1.5 font-body text-caption font-medium text-paper ring-1 ring-paper/20 ring-inset"
-                  >
-                    {e.name}
-                  </li>
-                ))}
-              </ul>
-              <p className="m-0 mt-auto pt-5 font-body text-base font-light leading-[1.6] text-bone/85">
-                {ENHANCEMENTS_NOTE}
-              </p>
+              <div className="flex h-full flex-col gap-5 lg:flex-row lg:items-center lg:gap-12">
+                <div className="lg:flex-1">
+                  <Heading level={3} role="label" className="text-cream">
+                    Add-ons
+                  </Heading>
+                  <ul className="m-0 mt-5 flex list-none flex-wrap gap-2 p-0">
+                    {ENHANCEMENTS.map((e) => (
+                      <li
+                        key={e.name}
+                        className="rounded-pill bg-paper/10 px-4 py-1.5 font-body text-caption font-medium text-paper ring-1 ring-paper/20 ring-inset"
+                      >
+                        {e.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <p className="m-0 font-body text-base font-light leading-[1.6] text-bone/85 lg:max-w-[34ch]">
+                  {ENHANCEMENTS_NOTE}
+                </p>
+              </div>
             </article>
           </RevealItem>
         </StaggerGroup>
@@ -411,135 +454,105 @@ export default async function EventsPage() {
 
       {/*
         ══════════════════════════════════════════════════════════════════
-        LA GALERÍA, EL PDF Y EL CAMIÓN DE JUEGOS.
+        EL CAMIÓN DE JUEGOS, AHORA UNA FRANJA CON FOTO.
 
-        ⚠️ LAS FOTOS SON LAS REALES del cliente, y cuando no hay una del caso
-        va el hueco gris con el pedido escrito. Lo que NO se hace es rellenar
-        una galería de «eventos anteriores» con stock: sería mostrarle a quien
-        va a alquilar el lugar una fiesta que no pasó acá.
+        ⚠️ SE FUE LA GALERÍA «NIGHTS THAT ALREADY HAPPENED». Camila, 2026-09-21:
+        «eliminemos esta parte, sólo nos quedaremos con las dos cards de paquete
+        de eventos y camión de juegos». Eran seis casillas —cuatro fotos que ya
+        se ven en el hero y en los espacios de esta misma página, y dos huecos
+        grises esperando material que el cliente no mandó— para repetir lo que
+        la página ya venía mostrando.
 
-        ⚠️ EL PDF SIGUE FUERA DE `public/`. 13 MB versionados viajan en cada
-        deploy para siempre; mientras el cliente no pase una versión liviana,
-        el link apunta al que él ya sirve.
-        TODO: pedirle una versión comprimida para hospedarla.
+        ⚠️ EL PDF NO SE BORRÓ: SE MUDÓ A LA COLUMNA DEL FORMULARIO. Camila:
+        «paquetes de eventos puede ir acá». Debajo de los datos de contacto
+        había media columna vacía, y el packet es justamente eso: la otra
+        salida para quien no quiere llenar quince campos.
 
-        ⚠️ EL FORMATO Y EL PESO VAN AL LADO DEL BOTÓN Y NO ADENTRO. «Events
-        Packages PDF, 13 MB» más la flecha no entra en un renglón en ningún
-        celular: partía en dos. Los tres datos siguen a la vista antes de
-        tocar, que es para lo que estaban.
+        ⚠️ Y EL CAMIÓN DEJA DE SER MEDIA TARJETA DE TEXTO. Se vendía con un
+        párrafo al lado del botón de descarga; ahora tiene la franja entera, su
+        foto, y los tres datos que deciden —pantallas, juegos y desde cuánto
+        sale— antes de mandar a nadie a otra página.
+
+        ⚠️ NI UN NÚMERO ESCRITO A MANO: todos salen de `content/game-truck.ts`,
+        que es el mismo archivo que lee `/game-truck`. Fue el motivo por el que
+        se borró `EventGameTruck`, y no se reintroduce acá.
+
+        ⚠️ EL `id="game-truck"` SOBREVIVE: `AboutExperience` linkea a
+        `/events#game-truck`.
+
+        ⚠️ LA FOTO ES `game-controller.jpg` Y NO `game-truck.jpg`: la segunda es
+        el flyer de Instagram con el logo encima, que a media página se lee como
+        un banner pegado y no como una foto del lugar.
         ══════════════════════════════════════════════════════════════════
       */}
-      <Section band="lg" labelledBy="proof-gallery">
-        <SectionHead
-          eyebrow="What it looks like"
-          eyebrowTone="plum"
-          id="proof-gallery"
-          title="Nights that already happened"
-          lead="The same yard, the same rooftop, with other people's parties in them."
-        />
-
-        <StaggerGroup
-          as="ul"
-          className="mt-bloque grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3"
+      <Section band="lg" labelledBy="game-truck-title">
+        <div
+          id="game-truck"
+          className="grid scroll-mt-24 items-center gap-8 lg:grid-cols-2 lg:gap-14"
         >
-          {GALERIA.map((g) =>
-            g.src ? (
-              <RevealItem
-                as="li"
-                key={g.alt}
-                className="relative aspect-[4/3] overflow-hidden rounded-shell sombra-card"
-              >
-                <Image
-                  src={g.src}
-                  alt={g.alt}
-                  fill
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  className="object-cover"
-                />
-              </RevealItem>
-            ) : (
-              <RevealItem as="li" key={g.brief}>
-                <PhotoPending brief={g.brief} ratio="aspect-[4/3]" />
-              </RevealItem>
-            ),
-          )}
-        </StaggerGroup>
-
-        {/*
-          Las dos tarjetas de cierre de la sección: el packet y el add-on.
-          ⚠️ EL CAMIÓN DE JUEGOS ES UNA TARJETA Y ERA UNA SECCIÓN ENTERA con
-          tabla de precios propia. Ver el punto 4 del encabezado. Los dos
-          datos que lleva —las pantallas y los juegos— se leen del contenido,
-          que es lo que la tabla borrada no hacía.
-        */}
-        <div className="mt-bloque grid gap-6 lg:grid-cols-2">
-          {/* ⚠️ LAS DOS TARJETAS LLEVAN EYEBROW para que los dos títulos
-              arranquen a la misma altura. Sin el de acá, «The events packet»
-              quedaba un renglón más arriba que «The gaming truck» y el par se
-              leía desalineado. */}
-          <div className="flex flex-col rounded-shell bg-bone p-6 lg:p-8">
-            <Eyebrow tone="deep">Download</Eyebrow>
-            <Heading level={3} role="card" className="mt-2.5">
-              The events packet
-            </Heading>
-            <p className="mt-2.5 max-w-[52ch] font-body text-base font-light leading-[1.7] text-body/80">
-              Spaces, food options, enhancements and the small print, in one file you can forward to
-              whoever signs off on it.
-            </p>
-            <div className="mt-auto pt-6">
-              {/* ⚠️ `md` Y NO `lg`, POR ANCHO MEDIDO. En `lg` esta etiqueta más
-                  el ícono de enlace externo dan 261px, y la tarjeta sólo deja
-                  240 a 320px de viewport. La etiqueta no se puede acortar: sale
-                  de `EVENTS_PDF.label`, que es el nombre del archivo del
-                  cliente. Lo que se acorta es el botón, que además es una
-                  acción secundaria dentro de una tarjeta y no el CTA de la
-                  página. */}
-              <ButtonLink href={EVENTS_PDF.href} variant="dark" size="md" external>
-                {EVENTS_PDF.label}
-              </ButtonLink>
-              <p className="mt-2 font-body text-micro font-medium text-body/70">
-                {EVENTS_PDF.format}, {EVENTS_PDF.size}
-              </p>
-            </div>
+          {/* ⚠️ LA FOTO VA PRIMERA EN MOBILE y segunda en desktop. Apilada, la
+              franja arranca con la imagen igual que las tarjetas del resto del
+              sitio; en dos columnas el texto queda a la izquierda, que es por
+              donde se sigue leyendo después de la losa oscura de arriba. */}
+          <div className="relative order-1 aspect-[4/3] overflow-hidden rounded-shell sombra-card lg:order-2">
+            <Image
+              src="/images/game-controller.jpg"
+              alt="A game controller in hand inside the gaming truck"
+              fill
+              sizes="(min-width: 1024px) 45vw, 100vw"
+              className="object-cover"
+            />
           </div>
 
-          <div id="game-truck" className="flex scroll-mt-24 flex-col rounded-shell bg-bone p-6 lg:p-8">
-            <Eyebrow tone="deep">Add-on</Eyebrow>
-            <Heading level={3} role="card" className="mt-2.5">
-              The gaming truck
-            </Heading>
-            <p className="mt-2.5 max-w-[52ch] font-body text-base font-light leading-[1.7] text-body/80">
-              {SCREENS} screens and {GAMES_TOTAL} games in a trailer that parks in the yard, with a
-              Game Coach running it. Party packages start at $
-              {PACKAGES[0].price.toLocaleString('en-US')} for {PACKAGES[0].hours} hours.
+          <div className="order-2 lg:order-1">
+            <SectionHead
+              eyebrow="Add-on"
+              eyebrowTone="magenta"
+              id="game-truck-title"
+              title="Park a gaming truck in the yard"
+              lead={`A trailer with ${SCREENS} screens pulls into the yard, plugs in and runs on its own staff, so the guests who would rather play than mingle have somewhere to go.`}
+            />
+
+            <dl className="m-0 mt-9 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3">
+              <div className="border-t border-ink/15 pt-3.5">
+                <dt className="eyebrow text-body/75">Screens</dt>
+                <dd className="m-0 mt-2 font-display text-d4 font-extrabold leading-none tabular-nums text-deep">
+                  {SCREENS}
+                </dd>
+              </div>
+              <div className="border-t border-ink/15 pt-3.5">
+                <dt className="eyebrow text-body/75">Games</dt>
+                <dd className="m-0 mt-2 font-display text-d4 font-extrabold leading-none tabular-nums text-deep">
+                  {GAMES_TOTAL}
+                </dd>
+              </div>
+              <div className="border-t border-ink/15 pt-3.5">
+                <dt className="eyebrow text-body/75">Party packages</dt>
+                <dd className="m-0 mt-2 font-display text-d4 font-extrabold leading-none tabular-nums text-sunset-deep">
+                  ${PACKAGES[0].price.toLocaleString('en-US')}
+                </dd>
+              </div>
+            </dl>
+
+            <p className="mt-7 max-w-[54ch] font-body text-base font-light leading-[1.7] text-body/80">
+              {PACKAGES[0].hours} hours with a Game Coach running it, {PACKAGES[0].diferencias[0]}.{' '}
+              {PACKAGES[1].diferencias[0]} the package is $
+              {PACKAGES[1].price.toLocaleString('en-US')}.
             </p>
+
             {/*
-              ══════════════════════════════════════════════════════════════
-              ⚠️ DICE «See the truck» Y NO «See the gaming truck», Y EL NÚMERO
-              ESTÁ MEDIDO EN EL NAVEGADOR, NO ESTIMADO.
+              ⚠️ DICE «See the truck» Y NO «See the gaming truck». El número
+              está medido en el navegador: a 320px de viewport y en `size="lg"`,
+              «See the gaming truck» da 293px y la etiqueta va con `nowrap`, así
+              que no se partía en dos renglones: estiraba la caja y le metía
+              scroll horizontal a todo el documento. «See the truck» da 201px.
 
-              «See the gaming truck» son 20 caracteres, que es justo el
-              presupuesto que declara `BASE` en `Button.tsx`. Pero el
-              presupuesto es una guía y el ancho real depende de la letra:
-              medido a 320px de viewport, esa etiqueta en `size="lg"` da
-              **293px**. La tarjeta deja 248 —288 de columna menos los 40 del
-              `p-5`—, así que se pasaba por 45. Y como la etiqueta va con
-              `nowrap`, no se partía en dos renglones: estiraba la tarjeta a
-              341px y le metía 37px de scroll horizontal a TODO el documento.
-
-              Las tres referencias medidas en el mismo ancho y tamaño:
-                  «See the spaces»        14 car. → 214px
-                  «Events Packages»       15 car. → 261px (lleva ícono)
-                  «See the gaming truck»  20 car. → 293px
-                  «See the truck»         13 car. → 201px  ← ésta
-
-              ⚠️ NO QUEDA AMBIGUO CON LOS FOOD TRUCKS. El botón está adentro de
-              una tarjeta cuyo rótulo dice «Add-on», cuyo título dice «The
-              gaming truck» y cuyo cuerpo habla de pantallas y consolas.
-              ══════════════════════════════════════════════════════════════
+              ⚠️ NO QUEDA AMBIGUO CON LOS FOOD TRUCKS: el botón cierra una
+              franja rotulada «Add-on», titulada «gaming truck» y con una foto
+              de un joystick al lado.
             */}
-            <div className="mt-auto pt-6">
-              <ButtonLink href="/game-truck" variant="secondary" size="md">
+            <div className="mt-8">
+              <ButtonLink href="/game-truck" variant="secondary" size="lg">
                 See the truck
               </ButtonLink>
             </div>
@@ -579,31 +592,37 @@ export default async function EventsPage() {
         quince campos tiene la salida A LA VISTA antes de empezar, no después
         de scrollear el formulario entero.
 
-        ⚠️ `banda-arco` ENTRA CON EL ARCO sobre la galería. El hueco que ésta
-        necesita para no quedar tapada lo pone la regla `:has(+ .banda-arco)` de
+        ⚠️ `banda-arco` ENTRA CON EL ARCO sobre la franja del camión. El hueco
+        que ésta necesita para no quedar tapada lo pone la regla `:has(+ .banda-arco)` de
         globals.css. El `z-[2]` no sobra: sin él la sección anterior, que viene
         antes en el DOM, pinta su fondo encima de la parte del arco que se monta.
         ══════════════════════════════════════════════════════════════════════
       */}
-      <Section
+      {/*
+        ⚠️ ESTA LOSA YA NO ESTÁ ESCRITA ACÁ. El 2026-09-21 la misma
+        construcción tuvo que repetirse tres veces más —una en `/contact` y dos
+        en `/join-us`, una por carril— y se sacó a `shared/FormSlab.tsx`. La
+        grilla, el filete, el panel y el troquel son los mismos; lo único que
+        sigue viviendo en esta página es QUÉ va en cada hueco.
+
+        ⚠️ `panelTone="paper"` ES LA EXCEPCIÓN DEL SITIO y está explicada en el
+        componente: esta sección tiene que ser `bone` porque es la que lleva el
+        arco, así que el panel no puede ser bone también.
+      */}
+      <FormSlab
         id="inquire"
         tone="bone"
+        panelTone="paper"
         band="lg"
-        className="banda-arco z-[2] scroll-mt-24"
-      >
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.5fr)] lg:items-start lg:gap-16">
-          <div>
-            <Eyebrow tone="terra">Next step</Eyebrow>
-            <Heading level={2} className="mt-gap-kicker text-d4 lg:text-d3">
-              One screen, two minutes
-            </Heading>
-            <p className="mt-gap-bajada max-w-[42ch] font-body text-lead font-light text-body/80">
-              Tell us the date and the headcount. We answer within one business day, with numbers.
-            </p>
-
-            <hr className="mt-9 w-full border-0 border-t border-ink/15" />
-
-            <div className="mt-6 flex flex-col gap-1.5">
+        className="banda-arco z-[2]"
+        eyebrow="Next step"
+        eyebrowTone="terra"
+        title="One screen, two minutes"
+        titleId="inquire-title"
+        lead="Tell us the date and the headcount. We answer within one business day, with numbers."
+        aside={
+          <div className="flex flex-col gap-9">
+            <div className="flex flex-col gap-1.5">
               <p className="eyebrow text-body/75">Or skip the form</p>
               <a href={`mailto:${venue.emailEvents}`} className="link-texto font-body text-base">
                 {venue.emailEvents}
@@ -612,19 +631,48 @@ export default async function EventsPage() {
                 {venue.phone}
               </a>
             </div>
-          </div>
 
-          <div className="relative rounded-frame bg-paper px-5 py-9 sm:px-9 sm:py-11">
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
-            />
-            <div className="relative">
-              <InquiryForm />
+            {/*
+              ⚠️ EL PACKET VIVE ACÁ, debajo de los contactos y no en la sección
+              de arriba. Camila, 2026-09-21: «paquetes de eventos puede ir acá».
+              Es la tercera salida de la misma columna, ordenadas por cuánto
+              piden: el formulario, un mail o un teléfono, y un archivo que se
+              reenvía a quien firma sin hablar con nadie.
+
+              ⚠️ ES `bg-paper` SOBRE `bone`, igual que el panel del formulario
+              de al lado: las dos cosas que se pueden tocar en esta banda se
+              leen como la misma superficie.
+
+              ⚠️ EL BOTÓN SIGUE EN `md` Y CON EL PESO AL LADO. La etiqueta sale
+              de `EVENTS_PDF.label`, que es el nombre del archivo del cliente y
+              no se acorta; en `lg` más el ícono de enlace externo no entra en
+              esta columna. Y el formato y los 13 MB van afuera del botón porque
+              adentro parten la etiqueta en dos renglones: en un celular con
+              datos, 13 MB es una descarga que conviene decidir antes.
+            */}
+            <div className="rounded-shell bg-paper p-6">
+              <Eyebrow tone="deep">Download</Eyebrow>
+              <Heading level={3} role="card" className="mt-2.5">
+                The events packet
+              </Heading>
+              <p className="mt-2.5 font-body text-base font-light leading-[1.7] text-body/80">
+                Spaces, food options, enhancements and the small print, in one file you can forward
+                to whoever signs off on it.
+              </p>
+              <div className="mt-5">
+                <ButtonLink href={EVENTS_PDF.href} variant="dark" size="md" external>
+                  {EVENTS_PDF.label}
+                </ButtonLink>
+                <p className="mt-2 font-body text-micro font-medium text-body/70">
+                  {EVENTS_PDF.format}, {EVENTS_PDF.size}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </Section>
+        }
+      >
+        <InquiryForm />
+      </FormSlab>
     </>
   );
 }

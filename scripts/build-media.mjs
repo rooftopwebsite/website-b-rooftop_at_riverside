@@ -286,6 +286,76 @@ const FOTOS = [
     q: 78,
   },
 
+  /* ── La foto del hero de `/contact`: la cuarta 17:9 ─────────────────────
+     ⚠️ ES LA CUARTA DERIVADA PARA `PlateHero` y va en la misma medida que las
+     tres anteriores: el marco topea en 1288 CSS y el archivo va al 2× para
+     retina. Camila, 2026-09-21: `/contact` deja el encabezado collage y abre
+     como las demás, así que hereda también el contrato de imagen.
+
+     ⚠️ HIZO FALTA GENERARLA PORQUE NO QUEDABA NINGUNA LIBRE. Las tres 17:9
+     que había ya son el hero de `/sunset-bar`, `/whats-on` y `/events`, y
+     `wall-yard-night-wide.jpg` está MAL NOMBRADA: es 540×720, o sea vertical,
+     y no sirve para este marco. TODO: renombrarla, el nombre miente.
+
+     ⚠️ ES DE DÍA Y SIN PROTAGONISTA AL CENTRO, que son los dos criterios que
+     Camila fijó al elegir el hero de `/whats-on` y que se respetaron también
+     en el de `/events`. Acá lo que la placa del titular tapa es el ventanal y
+     los árboles de atrás; las tres caras quedan en la mitad de abajo.
+
+     ⚠️ POR QUÉ ÉSTA Y NO LAS OTRAS DOS CANDIDATAS. `_RCZ8015` es la terraza
+     vista desde arriba: no hay ninguna cabeza en riesgo, pero está casi vacía
+     y una página que dice «say hello» abriendo con el lugar sin gente se lee
+     fría. `_RCZ8192` es la barra entera de adentro, y se descartó por lo
+     contrario: llena, pero con el techo, los televisores y la cartelería
+     ocupando todo el tercio de arriba, o sea justo donde va la placa.
+
+     ⚠️ EL ORIGINAL ES VERTICAL —4000×6000— así que de acá sale una franja del
+     35 % del alto. `foco: 0.422` es lo que deja el ventanal arriba y los vasos
+     de la barra abajo; centrado (0,5) la placa le comía la cabeza al hombre
+     del primer plano, que es exactamente lo que Camila rechazó en el hero de
+     `/whats-on`. */
+  {
+    src: '_RCZ7197.JPG',
+    out: 'public/images/venue/contact-bar-day-wide.jpg',
+    w: 2576,
+    h: 1364,
+    foco: 0.422,
+    q: 78,
+  },
+
+  /* ── La foto del hero de `/join-us`: la quinta 17:9 ─────────────────────
+     ⚠️ MISMA MEDIDA Y MISMO MOTIVO que las cuatro anteriores.
+
+     ⚠️ ES EL ESCENARIO DEL PATIO DE DÍA, y es la única toma de música en vivo
+     con luz de día de toda la entrega. Las otras dos son de noche: `_RCZ4336`
+     es el cantante de espaldas con la cabeza justo bajo la placa —ya se había
+     descartado por eso para `/whats-on`— y `DSC02157` es el baterista, casi
+     todo desenfocado.
+
+     ⚠️ SE ELIGIÓ EL CARRIL DE ARTISTAS Y NO EL DE TRABAJO, teniendo las dos.
+     La candidata del otro carril era `_RCZ5724`, el bartender sirviendo, y
+     funciona: con `foco` bajo el sombrero pasa por debajo de la placa. Pero es
+     de interior y de noche, y la página abre con «play here» en color. Queda
+     anotada acá por si el día de mañana el carril de trabajo se separa.
+
+     ⚠️ ES LA MISMA TOMA QUE `event-live-music.jpg`, que en `/whats-on` ilustra
+     la tarjeta de Ross Brown. Es una repetición REAL y está aceptada: son
+     páginas distintas y no se cruzan en pantalla. Si molesta, la salida es
+     cambiar la de la tarjeta, que es chica, y no la del hero.
+
+     ⚠️ EL ORIGINAL ES VERTICAL —4000×6000— y `foco: 0.345` está elegido con la
+     placa simulada encima: a 0,5 el sombrero quedaba partido al medio. Con
+     0,345 la placa cae sobre la lona de la carpa y el cielo, y la cabeza entra
+     entera con aire. */
+  {
+    src: '_RCZ5702.JPG',
+    out: 'public/images/venue/join-stage-day-wide.jpg',
+    w: 2576,
+    h: 1364,
+    foco: 0.345,
+    q: 78,
+  },
+
   /* ── La foto del hueco de la escalera: 4:5 ──────────────────────────────
      ⚠️ `_RCZ5847` es la ventanilla del truck de noche con gente pidiendo. Es
      literalmente lo que dice el paso 01 —«order at whichever window you

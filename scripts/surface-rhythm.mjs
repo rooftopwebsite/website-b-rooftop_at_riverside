@@ -76,14 +76,43 @@ async function walk(dir) {
  */
 const BG_A_TONO = { paper: 'paper', bone: 'paper', cream: 'cream', mint: 'cream', deep: 'deep', ink: 'deep' };
 
-/** Los tonos de un archivo, en orden: `<Section tone>` y `<section bg-*>`. */
+/**
+ * Los tonos de un archivo, en orden: `<Section tone>` y `<section bg-*>`.
+ *
+ * ⚠️ TAMBIÉN SE LEEN LOS `<FormSlab tone>`, y hay que sumar acá cualquier
+ * componente nuevo que ENVUELVA a `<Section>` recibiendo el tono por prop.
+ * `FormSlab` es la losa de formulario de `/events`, `/contact` y los dos
+ * carriles de `/join-us`: renderiza una `<Section>` con el `tone` que se le
+ * pasa, así que para el ritmo de la página vale exactamente lo mismo.
+ *
+ * Sin este renglón el guard no ve esas cuatro secciones y da VERDE POR
+ * OMISIÓN, que es el error contra el que advierte el bloque de `SECTION_MODULES`
+ * y que ya pasó dos veces en este archivo.
+ *
+ * ⚠️ NO alcanza con agregarlo a `SECTION_MODULES`: esa expansión sólo sirve
+ * para componentes que se usan SIN props (`<WhatsOn />`), porque lee el tono
+ * del módulo. Acá el tono lo decide la página, así que se lee de la página.
+ */
 async function tonesIn(file) {
   const src = await fs.readFile(file, 'utf8');
   const tones = [];
-  // `<Section ...>` hasta el primer `>`; si no declara tone, el default es paper.
-  for (const m of src.matchAll(/<Section\b([^>]*)>/g)) {
+  /*
+   * La lista de props hasta el primer `>` O el primer `{`; si no declara
+   * `tone`, el default del componente es paper.
+   *
+   * ⚠️ EL CORTE EN `{` NO SOBRA. `FormSlab` recibe el contenido de su columna
+   * izquierda en `aside={ … }`, que es JSX con sus propios `>` y con sus
+   * propios `<Eyebrow tone="deep">` adentro. Cortando sólo en `>`, el guard
+   * se comía media losa y leía el tono de un rótulo como si fuera el de la
+   * sección.
+   *
+   * ⚠️ Y EL `\s` ADELANTE TAMPOCO. Sin él, `panelTone="paper"` contiene
+   * `tone="paper"` y se leería como el tono de la sección cuando es el del
+   * panel, que es otra cosa.
+   */
+  for (const m of src.matchAll(/<(?:Section|FormSlab)\b([^>{]*)[>{]/g)) {
     const attrs = m[1];
-    const tone = attrs.match(/tone="(\w+)"/)?.[1] ?? 'paper';
+    const tone = attrs.match(/(?:^|\s)tone="(\w+)"/)?.[1] ?? 'paper';
     tones.push(tone);
   }
   return tones;
@@ -168,14 +197,44 @@ for (const file of files.sort()) {
   const tones = (await pageTones(file)).filter((t) => t !== 'none');
   if (tones.length === 0) continue;
 
-  const cream = tones.filter((t) => t === 'cream').length;
-  const deep = tones.filter((t) => t === 'deep').length;
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ LAS REGLAS SE MIDEN SOBRE LOS TONOS NORMALIZADOS, no sobre los
+   * escritos. Lo que se IMPRIME sigue siendo el nombre real, para que el
+   * listado diga qué hay en la página y no una traducción.
+   *
+   * Esto corrige una incoherencia del propio archivo. Tres bloques más
+   * arriba está escrito que «`bone` cuenta como `paper` y `ink` como
+   * `deep`», con el argumento de que bone es un escalón de 1.08:1 y
+   * contarlo aparte «diría que la home alterna entre dos colores cuando en
+   * realidad es toda clara». Pero ese mapa sólo se aplicaba a las secciones
+   * CRUDAS (`tonosCrudos`) y no a las `<Section tone>`, así que la misma
+   * superficie contaba distinto según cómo estuviera escrita.
+   *
+   * El costo de la incoherencia era concreto: `/contact` y `/join-us`
+   * estaban en rojo desde que se escribieron por «color seguido: bone→deep»,
+   * o sea por tener una banda clara antes de la única banda oscura del pie.
+   * Eso no es lo que la regla quiere evitar — la regla existe para que no
+   * haya 1.400px de verde seguido— y no había forma de cumplirla sin sacar
+   * el escalón de hueso o la banda de cierre.
+   *
+   * ⚠️ NORMALIZAR SÓLO PUEDE AFLOJAR, NUNCA APRETAR, y conviene saberlo: el
+   * mapa manda bone→paper e ink→deep. Lo primero quita adyacencias; lo
+   * segundo no agrega ninguna, porque `ink` ya contaba como color. Las
+   * cuentas de crema y de oscuras no se mueven. O sea que ninguna página que
+   * estaba en verde puede haberse vuelto roja con este cambio.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  const norm = tones.map((t) => BG_A_TONO[t] ?? t);
+
+  const cream = norm.filter((t) => t === 'cream').length;
+  const deep = norm.filter((t) => t === 'deep').length;
 
   const adjacent = [];
-  for (let i = 1; i < tones.length; i++) {
-    const a = tones[i - 1];
-    const b = tones[i];
-    if (a !== 'paper' && b !== 'paper') adjacent.push(`${a}→${b} (posición ${i})`);
+  for (let i = 1; i < norm.length; i++) {
+    const a = norm[i - 1];
+    const b = norm[i];
+    if (a !== 'paper' && b !== 'paper') adjacent.push(`${tones[i - 1]}→${tones[i]} (posición ${i})`);
   }
 
   /*
@@ -209,11 +268,11 @@ for (const file of files.sort()) {
    * mucho las alturas, hay que volver a medirlo ahí.
    * ══════════════════════════════════════════════════════════════════════
    */
-  const techoDeep = Math.max(1, Math.ceil(tones.length / 3));
+  const techoDeep = Math.max(1, Math.ceil(norm.length / 3));
 
   const issues = [];
   if (cream > 2) issues.push(`${cream} secciones crema (máx. 2)`);
-  if (deep > techoDeep) issues.push(`${deep} secciones oscuras (máx. ${techoDeep} en ${tones.length})`);
+  if (deep > techoDeep) issues.push(`${deep} secciones oscuras (máx. ${techoDeep} en ${norm.length})`);
   if (adjacent.length) issues.push(`color seguido: ${adjacent.join(', ')}`);
 
   if (issues.length) {

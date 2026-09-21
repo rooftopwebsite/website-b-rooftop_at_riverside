@@ -96,7 +96,32 @@ function Label({
   readonly hint?: string;
 }) {
   return (
-    <label htmlFor={htmlFor} className="font-body text-[16px] font-bold">
+    /*
+     * ══════════════════════════════════════════════════════════════════════
+     * ⚠️ EL `flex-1` ES LO QUE ALINEA LOS CAMPOS DE UN MISMO RENGLÓN, y es un
+     * arreglo, no un detalle.
+     *
+     * Camila lo marcó con un círculo sobre el formulario de `/events`, el
+     * 2026-09-21: «A second date that works» ocupa DOS renglones de etiqueta y
+     * sus vecinas uno, así que su campo arrancaba 24px más abajo que los
+     * otros dos de la fila. Tres píldoras a tres alturas distintas.
+     *
+     * La causa: en una grilla, cada celda se estira al alto de la fila —eso ya
+     * pasaba— pero adentro de la celda el `<input>` iba pegado a su etiqueta y
+     * el aire sobrante quedaba ABAJO. Con la etiqueta creciendo, el aire pasa
+     * a estar entre la etiqueta y el campo, o sea que las etiquetas se alinean
+     * arriba y los campos abajo. Que es como se lee un formulario.
+     *
+     * ⚠️ NO HACE NADA FUERA DE UNA GRILLA. En una columna de campos sueltos el
+     * envoltorio mide lo que mide su contenido, así que no hay a dónde crecer
+     * y el espaciado queda idéntico al de antes.
+     *
+     * ⚠️ ARREGLA LOS CINCO FORMULARIOS DE UNA VEZ, que es el motivo por el que
+     * este archivo existe. El mismo defecto estaba en `/join-us`: «What you
+     * usually charge» contra «How many of you» en la misma fila de tres.
+     * ══════════════════════════════════════════════════════════════════════
+     */
+    <label htmlFor={htmlFor} className="flex-1 font-body text-[16px] font-bold">
       {children}
       {required ? (
         <span className="ml-[4px] text-terra" aria-hidden="true">
@@ -117,8 +142,95 @@ function ErrorText({ id, children }: { readonly id: string; readonly children: R
 }
 
 function Wrap({ children }: { readonly children: ReactNode }) {
-  return <div className="flex flex-col gap-[8px]">{children}</div>;
+  /*
+   * ⚠️ `h-full` ACOMPAÑA AL `flex-1` DE `Label`. En una grilla la celda ya se
+   * estira sola, pero cuando estos campos van adentro de un `flex` —que es lo
+   * que hace `RepeatableField`— no hay estiramiento y la etiqueta no tiene a
+   * dónde crecer. Con el alto declarado, la alineación funciona en los dos.
+   */
+  return <div className="flex h-full flex-col gap-[8px]">{children}</div>;
 }
+
+/**
+ * El envoltorio del control cuando lleva un ícono encima: la flecha de un
+ * desplegable, por ejemplo. Es el que da el `relative` contra el que se
+ * posiciona el ícono.
+ *
+ * ⚠️ TIENE QUE SER `flex` Y NO `block`, para que el `<select>` de adentro
+ * siga midiendo el ancho completo de la celda.
+ */
+function Control({ children }: { readonly children: ReactNode }) {
+  return <span className="relative flex">{children}</span>;
+}
+
+/**
+ * El estado de error de un grupo de radios o casillas dibujado a mano.
+ *
+ * ⚠️ EXISTE PARA NO EXPONER `useField` ENTERO. Los controles de este archivo lo
+ * usan para armarse solos; lo único que un grupo dibujado afuera necesita es el
+ * id del mensaje, el texto del error y el par de `aria-*` que va en cada input.
+ * Hoy lo usa una sola pieza: las tarjetas de tier de comida de
+ * `sections/InquiryForm.tsx`, que son el único control del sitio sin hermano.
+ */
+export function useRadioGroup(name: string) {
+  const { eid, err, aria } = useField(name);
+  return { eid, err, aria };
+}
+
+/**
+ * La flecha del desplegable.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ FALTABA, Y ESE ERA EL BUG. `SelectField` ya traía `appearance-none` —o
+ * sea, apagaba la flecha que dibuja el navegador— pero nunca pintaba la
+ * propia. Resultado: los desplegables de `/join-us` («What you do», «How you
+ * heard about us») se veían EXACTAMENTE IGUAL que un campo de texto, sin nada
+ * que dijera que se despliegan. El `pr-[44px]` que sí estaba reservaba el
+ * hueco de un ícono que no existía.
+ *
+ * ⚠️ LA POSICIÓN SALE DE `InlineSelect`, que es el hermano de este archivo y
+ * lo tenía bien desde el principio: 18px desde el borde. No es un número
+ * suelto — la píldora tiene 25px de radio, así que un ícono a menos de eso se
+ * mete en la curva. Es el mismo motivo por el que el padding lateral es 22.
+ *
+ * ⚠️ `pointer-events-none` NO SE SACA: sin eso, el clic sobre la flecha lo
+ * come el `<svg>` y no abre el desplegable, que es lo único que alguien
+ * intenta hacer con una flecha.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+function SelectCaret() {
+  return (
+    <CaretDown
+      className="pointer-events-none absolute right-[18px] top-1/2 size-4 -translate-y-1/2 text-body/70"
+      aria-hidden="true"
+    />
+  );
+}
+
+/**
+ * Los íconos NATIVOS de `date` y `time` —el calendario y el reloj— puestos en
+ * su lugar.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ TAMBIÉN LO MARCÓ CAMILA sobre `/events`: «que los iconos ocupen bien su
+ * lugar». El navegador dibuja ese botón al final del contenido del campo, o
+ * sea pegado al borde derecho del área de texto, y con una píldora de 25px de
+ * radio eso lo deja montado sobre la curva.
+ *
+ * No se puede reposicionar con `absolute` —es un pseudo-elemento del UA y no
+ * acepta salir del flujo de forma confiable— pero sí se le puede dar margen.
+ * Con `mr` propio queda a la misma distancia del borde que la flecha del
+ * desplegable, que es lo que hace que los tres controles se lean como una
+ * familia y no como tres cosas que hizo cada navegador a su manera.
+ *
+ * ⚠️ LA OPACIDAD LO IGUALA AL RESTO. El ícono del navegador viene en negro
+ * pleno y al lado de una flecha en `body/70` se veía más oscuro que el propio
+ * texto del campo.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const PICKER =
+  '[&::-webkit-calendar-picker-indicator]:ml-auto [&::-webkit-calendar-picker-indicator]:mr-[2px] ' +
+  '[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60';
 
 /* ── Los seis controles ─────────────────────────────────────────────────── */
 
@@ -147,7 +259,9 @@ export function TextField({
         required={p.required}
         autoComplete={p.autoComplete}
         {...aria}
-        className={[INPUT_BASE, err ? BAD : OK].join(' ')}
+        /* `PICKER` sólo tiene efecto en `time`, que es el único tipo de acá
+           que dibuja un botón propio. En los demás no matchea nada. */
+        className={[INPUT_BASE, PICKER, err ? BAD : OK].join(' ')}
       />
       {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
     </Wrap>
@@ -168,7 +282,7 @@ export function DateField(p: BaseFieldProps & { readonly min?: string }) {
         min={p.min}
         required={p.required}
         {...aria}
-        className={[INPUT_BASE, err ? BAD : OK].join(' ')}
+        className={[INPUT_BASE, PICKER, err ? BAD : OK].join(' ')}
       />
       {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
     </Wrap>
@@ -218,26 +332,29 @@ export function SelectField({
       <Label htmlFor={fid} required={p.required} hint={p.hint}>
         {p.label}
       </Label>
-      <select
-        id={fid}
-        name={p.name}
-        required={p.required}
-        defaultValue={defaultValue ?? ''}
-        onChange={onValueChange ? (e) => onValueChange(e.target.value) : undefined}
-        {...aria}
-        className={[INPUT_BASE, 'appearance-none pr-[44px]', err ? BAD : OK].join(' ')}
-      >
-        {placeholder ? (
-          <option value="" disabled>
-            {placeholder}
-          </option>
-        ) : null}
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
+      <Control>
+        <select
+          id={fid}
+          name={p.name}
+          required={p.required}
+          defaultValue={defaultValue ?? ''}
+          onChange={onValueChange ? (e) => onValueChange(e.target.value) : undefined}
+          {...aria}
+          className={[INPUT_BASE, 'appearance-none pr-[44px]', err ? BAD : OK].join(' ')}
+        >
+          {placeholder ? (
+            <option value="" disabled>
+              {placeholder}
+            </option>
+          ) : null}
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+        <SelectCaret />
+      </Control>
       {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
     </Wrap>
   );

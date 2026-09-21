@@ -106,7 +106,17 @@ export const PAGE_SEO = {
   '/join-us': {
     // ⚠️ Cambió el 2026-09-15: el carril de food trucks se eliminó de
     // `/join-us` porque lo habíamos inventado. Quedan dos, y el H1 lo dice.
-    h1: 'Two ways in',
+    //
+    // ⚠️ Y VOLVIÓ A CAMBIAR EL 2026-09-21, de «Two ways in» a esto, por el
+    // hero. La página pasó a `PlateHero`, cuyo titular TIENE que partir en dos
+    // renglones —el solapamiento de `-0.94em` es media placa de dos líneas— y
+    // «Two ways in» no parte: deja «Two» solo arriba o un «in» huérfano abajo.
+    //
+    // El reemplazo no es una frase nueva: son los dos títulos de sección de la
+    // página, que ya decían «Work here» y «Play here». Parte parejo, dice qué
+    // hace la página sin pedir que se interprete «dos maneras de entrar», y
+    // deja «play here» como la palabra en color del hero.
+    h1: 'Work here, play here',
     title: 'Jobs & Live Music Bookings | Rooftop at Riverside',
     description:
       'Two ways in: we hire through here, and we book live music for the stage in the yard. Both start with a form that a person reads.',
