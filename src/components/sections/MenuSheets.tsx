@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
 import { Heading } from '@/components/shared/Type';
 
@@ -97,6 +97,57 @@ const PAGINAS = [
   },
 ] as const;
 
+/**
+ * La lámina: un LINK al PDF cuando el cliente lo tiene cargado, y un BOTÓN que
+ * abre el visor de imágenes cuando no.
+ *
+ * ⚠️ ES UN COMPONENTE Y NO UN TERNARIO EN EL MEDIO DEL JSX porque las dos
+ * formas llevan exactamente el mismo contenido —la imagen y su pie— y
+ * duplicarlo para cambiarle la etiqueta es la manera de que mañana cambie una y
+ * no la otra.
+ *
+ * ⚠️ EL `aria-label` DICE ADÓNDE VA, no «ampliar»: son dos destinos distintos y
+ * quien no ve la lámina necesita saber cuál de los dos le toca.
+ */
+function Lamina({
+  pdfUrl,
+  rotulo,
+  onAmpliar,
+  className,
+  children,
+}: {
+  readonly pdfUrl: string | null;
+  readonly rotulo: string;
+  readonly onAmpliar: () => void;
+  readonly className: string;
+  readonly children: ReactNode;
+}) {
+  if (pdfUrl) {
+    return (
+      <a
+        href={pdfUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Open the full menu, ${rotulo} (opens in a new tab)`}
+        className={className}
+      >
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onAmpliar}
+      aria-label={`Enlarge the menu: ${rotulo}`}
+      className={className}
+    >
+      {children}
+    </button>
+  );
+}
+
 const ANCHO = 1294;
 const ALTO = 2000;
 
@@ -134,7 +185,17 @@ const FLECHA =
 const FLECHA_CARTA =
   'grid size-12 shrink-0 place-items-center rounded-pill bg-deep text-paper shadow-lg ring-1 ring-ink/15 transition-all duration-300 ease-brand hover:bg-deeper hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-30 lg:size-14';
 
-export default function MenuSheets() {
+export default function MenuSheets({
+  pdfUrl = null,
+}: {
+  /**
+   * El PDF de la carta, si el cliente lo tiene cargado en el dashboard.
+   *
+   * ⚠️ CON PDF, LA LÁMINA DEJA DE AMPLIARSE Y PASA A ABRIRLO EN OTRA PESTAÑA, y
+   * el visor de imágenes de este archivo no se dibuja. Ver la nota de la lámina.
+   */
+  readonly pdfUrl?: string | null;
+} = {}) {
   const [indice, setIndice] = useState(0);
   const [abierto, setAbierto] = useState(false);
   /** Qué lámina está ampliada, si hay alguna. Se resetea al cerrar el visor. */
@@ -297,10 +358,34 @@ export default function MenuSheets() {
           </button>
 
           <div className="col-span-3 col-start-1 row-start-2 w-full md:col-span-1 md:col-start-2 md:row-start-1">
-            <button
-              type="button"
-              onClick={() => setAbierto(true)}
-              aria-label={`Enlarge the menu: ${pagina.rotulo}`}
+            {/*
+              ══════════════════════════════════════════════════════════════
+              ⚠️ CON PDF CARGADO, LA LÁMINA ES UN LINK Y ABRE EL ARCHIVO EN OTRA
+              PESTAÑA. Sin PDF sigue abriendo el visor de imágenes de acá abajo.
+
+              Camila, 2026-09-21, sobre la versión que embebía el PDF en la
+              página: «que no aparezca la preview así, que esté como antes, que
+              se vea la imagen por fuera de la preview de PDF; y que al hacer
+              click no se abra un pop up con PDF dentro, sino el PDF suelto como
+              archivo común externo».
+
+              ⚠️ Y EL MOTIVO DE FONDO ES EL ZOOM. Un PDF embebido se lee dentro
+              de un marco con la barra del visor comiéndose el borde; abierto
+              como archivo, el navegador le da la pantalla entera, su propio
+              zoom, la descarga y el botón de volver. «La idea es que el
+              contenido PDF se vea lo más amplio posible y pueda hacerse zoom».
+
+              ⚠️ LA LÁMINA QUE SE VE ACÁ SIGUE SIENDO UNA IMAGEN DEL REPO, y eso
+              tiene una consecuencia que hay que tener escrita: si el cliente
+              sube un PDF nuevo al dashboard, la imagen de esta página NO cambia
+              sola. Hay que recortar las hojas nuevas a `public/menus/`. Es el
+              precio de que la vista previa no dependa de un visor embebido.
+              ══════════════════════════════════════════════════════════════
+            */}
+            <Lamina
+              pdfUrl={pdfUrl}
+              rotulo={pagina.rotulo}
+              onAmpliar={() => setAbierto(true)}
               className="group block w-full cursor-zoom-in overflow-hidden rounded-shell bg-paper sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1"
             >
               <Image
@@ -329,9 +414,9 @@ export default function MenuSheets() {
               leía como el pie de una tarjeta a la que le falta la otra mitad.
             */}
               <span className="block px-5 py-4 text-center font-body text-caption font-medium text-muted transition-colors duration-200 group-hover:text-terra">
-                Tap to enlarge
+                {pdfUrl ? 'Tap to open the full menu' : 'Tap to enlarge'}
               </span>
-            </button>
+            </Lamina>
           </div>
         </div>
       </div>
@@ -342,6 +427,13 @@ export default function MenuSheets() {
         pseudo-elemento `::backdrop` no recibe eventos propios. Si el clic viene
         de adentro de una lámina, el target es otro y no cierra.
       */}
+      {/*
+        ⚠️ EL VISOR DE IMÁGENES SÓLO EXISTE SIN PDF. Con el archivo cargado, la
+        lámina linkea afuera y este diálogo no se dibuja: montado igual dejaría
+        en el DOM una copia de la hoja en 1294×2000 que el navegador descarga
+        aunque nadie la abra.
+      */}
+      {pdfUrl ? null : (
       <dialog
         ref={dialogoRef}
         onClose={() => {
@@ -453,6 +545,7 @@ export default function MenuSheets() {
           </>
         ) : null}
       </dialog>
+      )}
     </section>
   );
 }

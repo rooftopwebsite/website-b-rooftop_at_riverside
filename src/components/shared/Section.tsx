@@ -43,6 +43,23 @@ const TONES = {
    */
   bone: 'bg-bone grano text-body',
   cream: 'bg-cream grano text-body',
+  /**
+   * ⚠️ `mint` ES LA CUARTA SUPERFICIE CLARA Y SE AGREGÓ EL 2026-09-21, para la
+   * banda de las tarjetas de `/food-trucks`. Camila: «el C4F2EC lo quiero detrás
+   * de las cards». Es `--color-mint`, que ya estaba en la paleta y hasta ahora
+   * sólo se usaba en piezas chicas.
+   *
+   * ⚠️ NO REEMPLAZA A `cream`: estuvo un rato ocupando su lugar en las seis
+   * secciones crema del sitio y Camila lo frenó —«que eso quede como antes»—.
+   * Son dos superficies distintas para dos trabajos distintos: el crema sigue
+   * siendo la banda cálida de las páginas de eventos y del market, y la menta es
+   * el fondo de una sola fila de tarjetas.
+   *
+   * ⚠️ ES UN CAMPO DE COLOR DE VERDAD, no un escalón como `bone`. Usarlo en dos
+   * secciones seguidas, o en una banda larga de texto, es exactamente lo que la
+   * ley del color del repo evita. Hoy tiene un solo uso.
+   */
+  mint: 'bg-mint grano text-body',
   /** `on-dark` invierte el anillo de foco a crema. Ver globals.css. */
   deep: 'bg-deep grano text-paper on-dark',
   none: '',

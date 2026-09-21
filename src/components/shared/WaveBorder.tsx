@@ -35,6 +35,8 @@ const SURFACES = {
   paper: 'var(--color-paper)',
   bone: 'var(--color-bone)',
   cream: 'var(--color-cream)',
+  /* La banda de las tarjetas de `/food-trucks`. Ver el tono `mint` de `Section`. */
+  mint: 'var(--color-mint)',
   deep: 'var(--color-deep)',
   river: 'var(--color-river)',
   sunset: 'var(--color-sunset)',

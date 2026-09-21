@@ -74,7 +74,7 @@ async function walk(dir) {
  * agrega una tercera banda `deep` a la home, el guard la ve.
  * ══════════════════════════════════════════════════════════════════════════
  */
-const BG_A_TONO = { paper: 'paper', bone: 'paper', cream: 'cream', deep: 'deep', ink: 'deep' };
+const BG_A_TONO = { paper: 'paper', bone: 'paper', cream: 'cream', mint: 'cream', deep: 'deep', ink: 'deep' };
 
 /** Los tonos de un archivo, en orden: `<Section tone>` y `<section bg-*>`. */
 async function tonesIn(file) {

@@ -3,7 +3,6 @@ import { ArrowUpRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { SectionHead } from '@/components/shared/Type';
-import MenuPdfDialog from '@/components/shared/MenuPdfDialog';
 import { cartasDeTrucks } from '@/content/menus';
 import { nombreVisible } from '@/content/trucks';
 import { HOURS } from '@/content/hours';
@@ -40,10 +39,14 @@ import { HOURS } from '@/content/hours';
  * datos ya actualicé los menús, están subidos los PDF, conectá cada card con su
  * menú de la base de datos».
  *
- * Ahora la fuente es la base —ver `getMenuPdfs` y `menuDeTruck`— y el JPG queda
- * de respaldo para el caso en que la base no conteste. Y el PDF se abre en un
- * diálogo sobre la página, no en una pestaña: «debe abrirse cada PDF como se
- * abre el de Sunset Bar». Ver `shared/MenuPdfDialog`.
+ * Ahora la fuente es la base —ver `getMenuPdfs` y `content/menus.ts`— y el JPG
+ * queda de respaldo para el caso en que la base no conteste.
+ *
+ * ⚠️ EL PDF ABRE EN OTRA PESTAÑA Y NO EN UN DIÁLOGO, que es como estuvo unas
+ * horas. El diálogo lo embebía en un marco con la barra del visor encima;
+ * Camila, el mismo 2026-09-21: «que el PDF se vea lo más amplio posible y pueda
+ * hacerse zoom». Abierto como archivo, el navegador le da la pantalla entera.
+ * `shared/MenuPdfDialog` se borró: no quedó nadie usándolo.
  *
  * ⚠️ NO HAY CTA A INSTAGRAM, aunque de El Chilango lo tengamos. Pedido de
  * Camila: la tarjeta cierra con una sola acción. Dos links juntos al pie —uno
@@ -142,8 +145,24 @@ const TOLDO = {
   asomo: 26,
 } as const;
 
-/** Los dos verdes de la raya, en orden. Salen de los tokens, no de un hex. */
-const TOLDO_RAYAS = ['var(--color-deep)', 'var(--color-teal600)'] as const;
+/**
+ * Los dos colores de la raya, en orden. Salen de los tokens, no de un hex.
+ *
+ * ⚠️ ERAN LOS DOS VERDES Y AHORA SON ROJO Y MORADO. Camila, 2026-09-21, con una
+ * muestra de un toldo a rayas: «¿podemos hacer que los toldos de las cards
+ * foodtruck sean con estos colores?». La muestra alterna un rojo de ladrillo con
+ * un morado, que son exactamente `terra` y `magenta` de la paleta: no hubo que
+ * inventar ningún color para hacerlo.
+ *
+ * ⚠️ `terra` TAMBIÉN ES EL ROJO DE ERROR del sitio, y no es un problema acá: lo
+ * usan los avisos de formulario y tres rótulos de sección, así que ya vive fuera
+ * del error. Un toldo no se confunde con un mensaje de campo inválido.
+ *
+ * ⚠️ Y LOS VERDES NO SE PIERDEN: son el fondo de la losa de horarios que va
+ * justo abajo, así que la fila de tarjetas y esa losa ahora contrastan en vez de
+ * repetirse.
+ */
+const TOLDO_RAYAS = ['var(--color-terra)', 'var(--color-magenta)'] as const;
 
 /**
  * Una raya con su punta: el rectángulo de la lona y el arco que le cuelga.
@@ -235,7 +254,7 @@ export default async function TruckCards({
 }: {
   readonly id?: string;
   /** La superficie. La manda la onda del encabezado: ver `PageHeroWave`. */
-  readonly tone?: 'paper' | 'bone';
+  readonly tone?: 'paper' | 'bone' | 'mint';
   /**
    * ¿Lleva encabezado propio?
    *
@@ -437,19 +456,31 @@ export default async function TruckCards({
                   */}
                   {carta.pdfUrl ? (
                     /*
-                      ⚠️ LA CARTA ABRE EN UN DIÁLOGO Y YA NO EN UNA PESTAÑA.
-                      Camila: «debe abrirse cada PDF como se abre el de Sunset
-                      Bar». Lo que se copia es el mecanismo —`<dialog>` nativo,
-                      telón que cierra al clic, Escape— y está todo en el
-                      componente, con el link a la pestaña como salida por si el
-                      visor embebido no dibuja.
+                      ⚠️ ABRE EL PDF EN OTRA PESTAÑA Y YA NO EN UN DIÁLOGO. El
+                      diálogo embebía el archivo en un marco con la barra del
+                      visor encima; Camila, 2026-09-21: «que el PDF se vea lo más
+                      amplio posible y pueda hacerse zoom». Abierto como archivo,
+                      el navegador le da la pantalla entera, su zoom, la descarga
+                      y el botón de volver. Es la misma decisión que la carta del
+                      bar, tomada el mismo día.
                     */
-                    <MenuPdfDialog url={carta.pdfUrl} label={t ? nombreVisible(t) : carta.name} />
+                    <a
+                      href={carta.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-dato font-semibold uppercase tracking-cta text-ink transition-colors duration-200 hover:bg-sunset-hover"
+                    >
+                      See the menu
+                      <ArrowUpRight className="size-3.5 shrink-0" />
+                      <span className="sr-only">
+                        for {t ? nombreVisible(t) : carta.name} (opens in a new tab)
+                      </span>
+                    </a>
                   ) : (
                     <button
                       type="button"
                       disabled
-                      className="inline-flex items-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-dato font-semibold uppercase tracking-cta text-ink opacity-50"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-dato font-semibold uppercase tracking-cta text-ink opacity-50"
                     >
                       See the menu
                       <ArrowUpRight className="size-3.5 shrink-0" />

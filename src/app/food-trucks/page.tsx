@@ -45,7 +45,7 @@ export default function FoodTrucksPage() {
         title="One yard."
         lead="The trucks rotate. Each one is independently owned, sets its own menu and takes its own payment. We just give them the yard and the crowd."
         from="paper"
-        to="bone"
+        to="mint"
       />
 
       {/*
@@ -59,7 +59,18 @@ export default function FoodTrucksPage() {
         lado. La tira los decía otra vez cuatro renglones antes.
       */}
 
-      <TruckCards tone="bone" head={false} />
+      {/*
+        ⚠️ LA BANDA DE LAS TARJETAS ES MENTA Y ERA `bone`. Camila, 2026-09-21,
+        rodeando el fondo a la derecha de la fila: «el C4F2EC lo quiero detrás de
+        las cards». Es el mismo color de la muestra del toldo, así que la fila
+        entera —toldo rojo y morado sobre menta— es la muestra puesta en página.
+
+        ⚠️ Y ARRASTRA DOS OLAS. La del hero pinta el color de ABAJO, así que pasa
+        a `to="mint"`; la del comparativo pinta el de ARRIBA, así que recibe
+        `from="mint"`. Si esta banda cambia de color otra vez, son tres líneas y
+        no una.
+      */}
+      <TruckCards tone="mint" head={false} />
 
       {/*
         ══════════════════════════════════════════════════════════════════
@@ -77,6 +88,9 @@ export default function FoodTrucksPage() {
         ══════════════════════════════════════════════════════════════════
       */}
       <CompareSlab
+        /* La ola de entrada se dibuja del color de la sección de ARRIBA, que
+           desde el 2026-09-21 es la banda menta de las tarjetas. */
+        from="mint"
         id="how-pay"
         eyebrow="How this works"
         accent="One yard,"

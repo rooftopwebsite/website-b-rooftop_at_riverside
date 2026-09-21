@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import SoftWave from '@/components/shared/SoftWave';
-import BarMenuPdf from '@/components/sections/BarMenuPdf';
 import MenuSheets from '@/components/sections/MenuSheets';
 import FeaturedEventCard, { dealsNombrados } from '@/components/shared/FeaturedEventCard';
 import PlateHero from '@/components/shared/PlateHero';
@@ -661,7 +660,19 @@ export default async function SunsetBarPage() {
         todos los ítems de una, la carta no se renderiza vacía.
         ══════════════════════════════════════════════════════════════════
       */}
-      {carta ? <BarMenuPdf url={carta.pdfUrl} /> : <MenuSheets />}
+      {/*
+        ⚠️ LA CARTA SE VE COMO LÁMINA Y SE ABRE COMO ARCHIVO. Estuvo media hora
+        embebida en un visor de PDF dentro de la página y Camila lo frenó: «que
+        no aparezca la preview así, que esté como antes; y que al hacer click no
+        se abra un pop up con PDF dentro, sino el PDF suelto como archivo común
+        externo, para que se vea lo más amplio posible y pueda hacerse zoom».
+
+        Así que la vista previa vuelve a ser la imagen de la hoja —que es lo que
+        había antes— y el PDF de la base es a dónde lleva el clic. El componente
+        que embebía el visor, `sections/BarMenuPdf`, se borró en el mismo commit:
+        no quedó nadie usándolo.
+      */}
+      <MenuSheets pdfUrl={carta?.pdfUrl ?? null} />
 
       {/*
         ══════════════════════════════════════════════════════════════════════
