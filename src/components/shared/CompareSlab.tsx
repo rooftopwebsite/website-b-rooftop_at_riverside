@@ -267,9 +267,29 @@ export default function CompareSlab({
                     />
                   </span>
                 ) : (
+                  /*
+                    ⚠️ EL TEXTO DEL STICKER SALE DE `theirs.label` Y ESTABA
+                    ESCRITO A MANO. Decía «A regular restaurant» fijo en el
+                    componente, que servía mientras el único consumidor era
+                    `/food-trucks`. Desde el 2026-09-21 `/events` usa la misma
+                    losa para compararse con un SALÓN, no con un restaurante,
+                    y con el texto clavado el sticker contradecía las dos
+                    columnas que tenía debajo.
+
+                    ⚠️ `label` YA EXISTÍA y sólo alimentaba el `<Heading>` para
+                    lectores de pantalla, así que el sticker y el título
+                    accesible podían decir cosas distintas. Ahora son el mismo
+                    dato y no se pueden desincronizar.
+
+                    ⚠️ `/food-trucks` PASÓ DE «A restaurant» A «A regular
+                    restaurant» en su `label` para que su sticker siga diciendo
+                    exactamente lo que decía. Lo que cambia allá es el texto
+                    del `<Heading>` invisible, que ahora coincide con lo que se
+                    ve dibujado.
+                  */
                   <span className="-rotate-4 block rounded-pill bg-bone px-5 py-2.5 ring-2 ring-terra/65 ring-inset">
                     <span className="block font-display text-d6 font-bold uppercase leading-none whitespace-nowrap text-terra">
-                      A regular restaurant
+                      {col.label}
                     </span>
                   </span>
                 )}

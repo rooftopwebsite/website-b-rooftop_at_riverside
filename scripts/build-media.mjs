@@ -245,6 +245,47 @@ const FOTOS = [
     q: 78,
   },
 
+  /* ── La foto del hero de `/events`: la tercera 17:9 ─────────────────────
+     ⚠️ ES LA TERCERA DERIVADA PARA `PlateHero` y va en la misma medida que las
+     dos anteriores, por el mismo motivo: el marco topea en 1288 CSS y el
+     archivo va al 2× para retina. Camila, 2026-09-21: «el hero debe ser como el
+     de las secundarias, como calendar y sunset».
+
+     ⚠️ HIZO FALTA GENERARLA PORQUE NO HABÍA NINGUNA. Las cuatro fotos de
+     `public/images/events/` son VERTICALES —`event-a` es 1365×2048, o sea
+     0,67— y las dos únicas 17:9 del repo ya son el hero del bar y el de
+     whats-on. Meter un retrato en el marco apaisado le recorta dos tercios del
+     alto: en `event-a`, que es la familia posando bajo la bandera, la banda del
+     medio les corta la cara.
+
+     ⚠️ ES DE DÍA Y SIN PROTAGONISTA AL CENTRO, que son los dos criterios que
+     Camila ya fijó al elegir el hero de `/whats-on`: «cambiá la imagen por una
+     que no corte la cabeza de la persona principal pero que se siga viendo un
+     evento, si es posible que la foto sea de día». Acá lo que la placa del
+     titular tapa es el cielorraso y los conductos; las caras están todas en la
+     mitad de abajo de la franja.
+
+     ⚠️ Y DICE «EVENTO PRIVADO» SIN EXPLICARLO: la gente sentada a la barra
+     larga lleva CREDENCIALES con el nombre puestas. Es un evento organizado
+     sucediendo en el lugar, que es exactamente lo que la página vende. Las
+     otras candidatas se descartaron por eso: `_RCZ5884` es de noche y con las
+     cuatro caras justo bajo la placa, `_RCZ4336` tiene una cabeza desenfocada
+     tapando el tercio izquierdo, y `DSC04095` es el concurso de panchos del 4
+     de julio, que es una fiesta pública y no un evento privado.
+
+     ⚠️ EL ORIGINAL ES VERTICAL —4000×6000— así que de acá sale una franja del
+     35 % del alto. `foco: 0.46` es lo que deja el cielorraso arriba y la barra
+     con las credenciales abajo; más arriba entra sólo techo y más abajo se
+     pierde la escena. */
+  {
+    src: '_RCZ7372.JPG',
+    out: 'public/images/events/events-hero-wide.jpg',
+    w: 2576,
+    h: 1364,
+    foco: 0.46,
+    q: 78,
+  },
+
   /* ── La foto del hueco de la escalera: 4:5 ──────────────────────────────
      ⚠️ `_RCZ5847` es la ventanilla del truck de noche con gente pidiendo. Es
      literalmente lo que dice el paso 01 —«order at whichever window you

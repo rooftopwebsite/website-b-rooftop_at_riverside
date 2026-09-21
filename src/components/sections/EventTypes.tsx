@@ -1,114 +1,213 @@
 import Image from 'next/image';
-import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import Section from '@/components/shared/Section';
-import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
+import { Eyebrow, Heading } from '@/components/shared/Type';
 import { TIPOS_EVENTO } from '@/content/event-types';
 import { TAG } from '@/lib/tag';
 
 /**
  * ══════════════════════════════════════════════════════════════════════════
- * LOS CUATRO TIPOS DE EVENTO PRIVADO, COMO SECCIONES DE `/events`.
+ * LOS CUATRO TIPOS DE EVENTO, EN LOSAS HORIZONTALES SOBRE MENTA.
  *
- * Reemplaza a `EventVertical`, que renderizaba UNA vertical por página. El
- * contenido es el mismo —sale de `content/event-types.ts`, campo por campo—
- * y lo que cambia es que las cuatro se leen de corrido en vez de vivir en
- * cuatro URLs. El porqué está en el encabezado de ese archivo.
+ * ⚠️ LA FORMA ES LA DEL DESTACADO DE `/sunset-bar`, EN CLARO. Camila,
+ * 2026-09-21: «estas cards las quiero como el destacado de NFC North en Sunset,
+ * pero clarito con su imagen».
+ *
+ * Ese destacado es `shared/FeaturedEventCard.tsx` y su geometría son cuatro
+ * cosas, que son las cuatro que están acá:
+ *
+ *   · una losa `rounded-shell` con `overflow-hidden` y `sombra-card`, partida
+ *     en DOS MITADES iguales a partir de `lg`;
+ *   · la mitad de contenido con `justify-center`, `gap-4` y `p-7 lg:p-12`;
+ *   · rótulo, titular de display en caja alta, y bajada de `lead` liviana;
+ *   · la otra mitad a sangre completa, con `aspect-[16/10]` en mobile y
+ *     `h-full min-h-[22rem]` en desktop.
+ *
+ * ⚠️ LO QUE CAMBIA ES LA SUPERFICIE Y ESO ES TODO EL PEDIDO. El destacado va
+ * en `deeper` con la plancha de precios en `ink`; acá la losa es `paper` sobre
+ * la banda menta y el contraste entre las dos mitades lo hace la foto, que es
+ * lo que el destacado pone cuando el evento SÍ tiene imagen (su rama `else`).
+ *
+ * ⚠️ LA FOTO ABRE LA TARJETA EN MOBILE Y VA A LA DERECHA EN DESKTOP, que es
+ * exactamente el orden del destacado: `lg:order-2` en la foto y `lg:order-1`
+ * en el texto. El motivo está escrito allá y vale igual acá: una foto es lo que
+ * hace la tarjeta reconocible de un scroll.
+ *
+ * ⚠️ LAS CUATRO VAN CON LA FOTO DEL MISMO LADO Y NO ALTERNADAS. La versión
+ * anterior de este archivo las daba vuelta en los impares para que no se
+ * leyeran como plantilla, y eso tenía sentido cuando eran secciones a sangre
+ * sin borde entre una y otra. Como losas separadas por 24px de menta, la
+ * repetición de la geometría es lo que las hace leer como un set — y es la
+ * forma que se pidió, que es una sola.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ QUÉ SE FUE DE ESTE ARCHIVO Y NO VUELVE.
+ *
+ * 1. LOS TRECE DESTACADOS (`tipo.highlights`). Eran tres o cuatro párrafos por
+ *    tipo, en dos columnas. La mitad repetía a la otra mitad: «four menus, zero
+ *    dietary drama» en corporate y «food nobody complains about» en
+ *    holiday-parties son la misma frase. Ese argumento ahora lo carga la losa
+ *    oscura de `CompareSlab`, en cuatro renglones comparados.
+ *
+ * 2. LA SECCIÓN «THREE KINDS OF NIGHT» de la página, que listaba
+ *    `EVENT_FAMILIES`. Era la TERCERA taxonomía: los cuatro tipos de acá, esas
+ *    tres familias y los ocho `EVENT_TYPES` del formulario. `EVENT_FAMILIES` NO
+ *    se borró: sigue generando `EVENT_SUBTYPES`, que valida el desplegable de
+ *    `InquiryForm` en el servidor.
+ *
+ * 3. EL LINK POR TARJETA. Cuatro «Ask about a <tipo> event» que iban los cuatro
+ *    a `#inquire`, el mismo destino que el CTA del hero y el del cierre. Las
+ *    losas informan; la página tiene un solo lugar donde se pide.
  *
  * ⚠️ CADA TIPO LLEVA SU `id` Y NO SE PUEDE RENOMBRAR. Las cuatro rutas viejas
- * —`/events/corporate` y compañía— redirigen con 301 a `/events#<id>`, así que
- * un `id` distinto rompe un link que puede estar en un mail que el cliente
- * mandó el mes pasado.
- *
- * ⚠️ LA FILA SE DA VUELTA EN LOS IMPARES (`lg:flex-row-reverse`). Cuatro
- * bloques idénticos con la foto siempre del mismo lado se leen como una
- * plantilla; alternando, el ojo tiene dónde apoyarse para saber que empezó
- * otro tipo. Es el mismo recurso que usa `/our-story`.
- *
- * ⚠️ EL TONO ALTERNA ENTRE `paper` Y `bone` por el mismo motivo, y NO puede
- * ser una banda de color por tipo: la regla de superficies del repo permite
- * como máximo dos secciones de crema por página, y esta página ya tiene las
- * suyas. Lo verifica `npm run check:surfaces`.
+ * —`/events/corporate` y compañía— redirigen con 301 a `/events#<id>`, y
+ * `lib/nav.ts` linkea a `/events#corporate`. Un `id` distinto rompe un link que
+ * puede estar en un mail que el cliente mandó el mes pasado.
  * ══════════════════════════════════════════════════════════════════════════
  */
 export default function EventTypes() {
   return (
-    <>
-      <Section band="lg" labelledBy="tipos-title">
-        <SectionHead
-          eyebrow="What we host"
-          eyebrowTone="plum"
-          id="tipos-title"
-          title="Pick the night you're planning"
-          lead="Four ways the same place gets used. The room, the kitchens and the bar don't change. How the night is built does."
-        />
-      </Section>
+    <Section tone="mint" band="lg" labelledBy="tipos-title">
+      <h2
+        id="tipos-title"
+        className="mx-auto max-w-[18ch] text-center font-display text-banda font-extrabold uppercase"
+      >
+        <span className="text-ink">Four kinds of night.</span>{' '}
+        <span className="text-sunset-deep">One yard</span>
+      </h2>
+      <p className="mx-auto mt-6 max-w-[60ch] text-center font-body text-lead font-light text-ink">
+        Four ways the same place gets used. The room, the kitchens and the bar don&rsquo;t change.
+        How the night is built does.
+      </p>
 
-      {TIPOS_EVENTO.map((tipo, i) => (
-        <Section
-          key={tipo.id}
-          id={tipo.id}
-          tone={i % 2 === 0 ? 'paper' : 'bone'}
-          band="lg"
-          labelledBy={`${tipo.id}-title`}
-        >
-          <div
-            className={`flex flex-col gap-10 lg:items-center lg:gap-16 ${
-              i % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
-            }`}
-          >
-            <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-card bg-mint sombra-card lg:w-[46%]">
-              <Image
-                src={tipo.image}
-                alt={tipo.imageAlt}
-                fill
-                sizes="(min-width: 1024px) 46vw, 100vw"
-                className="object-cover"
+      {/*
+        ══════════════════════════════════════════════════════════════════════
+        ⚠️ LAS CUATRO LOSAS SE APILAN AL SCROLLEAR. Camila, 2026-09-21: «me
+        gustaría que al scrolear se apilen una sobre la otra».
+
+        Es `position: sticky` por tarjeta, con el `top` creciendo 24px por
+        índice: la primera se pega bajo el header, la segunda sube por encima y
+        se pega 24px más abajo, y así. Lo que queda a la vista de cada tarjeta
+        ya pegada es esa franja de 24px, que es lo que hace leer la pila.
+
+        ⚠️ EL `top` VA EN `style` Y NO EN UNA CLASE. Tailwind sólo emite las
+        clases que encuentra ESCRITAS en el código, así que un `top-[${n}px]`
+        calculado en runtime no existiría en el CSS. Es el mismo motivo por el
+        que `PageHeroWave` pinta su fondo con `style`.
+
+        ⚠️ LOS 102px SON UNA CUENTA: 78 de alto del header —que es `sticky
+        top-0`, medido en el navegador— más 24 de aire. Si el header cambia de
+        alto, este número se mueve con él.
+
+        ⚠️ SE APILAN RECIÉN DESDE `lg`. En un teléfono cada losa mide más de
+        700px —la foto en 16:10 más el texto— y sobre una pantalla de 844
+        quedaría una sola tarjeta ocupando todo con una pila que no se ve. En
+        mobile van en flujo normal, una abajo de la otra.
+
+        ⚠️ SE FUERON `StaggerGroup` Y `RevealItem`, Y NO ES UN DESCUIDO. Los
+        dos son elementos de `motion` y lo que animan es el `transform` del
+        `<li>`. Un `transform` sobre el propio elemento pegajoso pelea con el
+        `sticky`, y además la pila YA ES la animación de este bloque: sumarle
+        un fade de entrada a cada tarjeta es un segundo gesto haciendo el mismo
+        trabajo. El zoom de la foto en hover sigue, que vive en el `group`.
+
+        ⚠️ LA OCLUSIÓN LA DA EL FONDO OPACO. `bg-paper` más `sombra-card` es lo
+        que hace que la tarjeta de arriba tape a la de abajo en vez de
+        transparentarse; sin fondo propio la pila no se leería. El orden de
+        pintado lo da el DOM —la última va encima— así que no hace falta
+        `z-index`.
+        ══════════════════════════════════════════════════════════════════════
+      */}
+      <ul className="mt-bloque flex list-none flex-col gap-6 p-0">
+        {TIPOS_EVENTO.map((tipo, i) => (
+          <li key={tipo.id} className="lg:sticky" style={{ top: `${102 + i * 24}px` }}>
+            <article
+              id={tipo.id}
+              className="group relative grid scroll-mt-24 overflow-hidden rounded-shell bg-paper text-left sombra-card lg:grid-cols-2"
+            >
+              {/* El troquel, de punta a punta de la losa. `inset-3.5` son los
+                  14px que lo despegan del borde, el mismo número que en
+                  `CompareSlab`, en la losa de happy hour y en el banner de
+                  `/food-trucks`. El `z-10` lo deja por encima de las dos
+                  mitades; no tapa nada porque los 14px caen entre el borde y
+                  el padding de 28/48 que tienen las dos. */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-3.5 z-10 rounded-shell border border-dashed border-deep/35"
               />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <Eyebrow tone="terra">{tipo.eyebrow}</Eyebrow>
-              <Heading level={2} id={`${tipo.id}-title`} className="mt-gap-kicker text-d4 lg:text-d3">
-                {tipo.title}
-              </Heading>
-              <p className="bajada mt-gap-bajada max-w-[52ch] font-body text-lead font-light">
-                {tipo.lead}
-              </p>
-
-              <StaggerGroup as="ul" className="mt-bloque grid list-none gap-6 p-0 sm:grid-cols-2">
-                {tipo.highlights.map((h) => (
-                  <RevealItem as="li" key={h.title}>
-                    <Heading level={3} className="text-d6">
-                      {h.title}
-                    </Heading>
-                    <p className="mt-2 font-body text-base font-light text-ink">{h.body}</p>
-                  </RevealItem>
-                ))}
-              </StaggerGroup>
 
               {/*
-                ⚠️ LOS FORMATOS SON ETIQUETAS Y TIENEN QUE PARECERLO. Es el
-                mismo tratamiento que los tags de `YardSteps`, y por el mismo
-                motivo: en píldora con contorno se leen como botones apagados.
-                Fondo tenue, radio de la familia y texto en `muted`.
+                ⚠️ EL FILETE PUNTEADO DA LA VUELTA ENTERA Y LA FOTO VA METIDA
+                HACIA ADENTRO. Camila, 2026-09-21, marcando la tarjeta con dos
+                cajas: «el punteado de punta a punta y la imagen adentro con
+                márgenes».
+
+                Las dos cosas se resuelven juntas y una habilita a la otra. El
+                primer intento tenía el filete SÓLO en la mitad de texto,
+                justamente porque la foto llegaba al borde y un filete de
+                `deep/35` cruzándola se veía sobre la del yoga y desaparecía
+                sobre la del bajista. Con la foto despegada del borde, el
+                troquel corre siempre sobre papel y se lee igual en las cuatro.
+
+                ⚠️ EL MARGEN DE LA FOTO ES EL MISMO PADDING QUE EL TEXTO —`p-7
+                lg:p-12`— y tiene que serlo: son las dos mitades de la misma
+                losa, y si una respira 28px y la otra 48 el eje del medio deja
+                de estar en el medio.
               */}
-              <ul className="mt-bloque flex list-none flex-wrap gap-2 p-0">
-                {tipo.formats.map((f) => (
-                  <li
-                    key={f}
-                    /* Letra y acolchado salen de `TAG`, el molde común de los
-                       tags del sitio. Ver `lib/tag.ts`. */
-                    className={`inline-flex items-center gap-1.75 rounded-btn bg-bone ${TAG} text-muted`}
-                  >
-                    <span aria-hidden="true" className="size-1 shrink-0 rounded-pill bg-river" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </Section>
-      ))}
-    </>
+              <div className="p-7 lg:order-2 lg:p-12">
+                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-ticket bg-fog lg:aspect-auto lg:h-full lg:min-h-[20rem]">
+                  <Image
+                    src={tipo.image}
+                    alt={tipo.imageAlt}
+                    fill
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-center gap-4 p-7 lg:order-1 lg:p-12">
+                <Eyebrow tone="terra" as="span">
+                  {tipo.eyebrow}
+                </Eyebrow>
+
+                {/*
+                  ⚠️ EL TITULAR VA UN ESCALÓN MÁS ABAJO QUE EL DEL DESTACADO,
+                  que es `text-d3 lg:text-d2`. Allá el título es «NFC NORTH HQ»,
+                  tres palabras cortas; acá son oraciones de nueve —«Take the
+                  team somewhere they'll actually want to go»— y a `d2` ocupan
+                  cinco renglones de media losa. `d4 lg:d3` es el cuerpo que ya
+                  tenían estos mismos títulos antes del rediseño.
+                */}
+                <Heading level={3} className="m-0 text-d4 leading-[0.98] text-ink lg:text-d3">
+                  {tipo.title}
+                </Heading>
+
+                <p className="m-0 max-w-[46ch] font-body text-lead font-light text-body">
+                  {tipo.lead}
+                </p>
+
+                {/*
+                  ⚠️ LOS FORMATOS SON ETIQUETAS Y TIENEN QUE PARECERLO: fondo
+                  tenue, radio de la familia y texto en `muted`. En píldora con
+                  contorno se leerían como botones apagados. Letra y acolchado
+                  salen de `TAG`, el molde común de los tags del sitio.
+                */}
+                <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+                  {tipo.formats.map((f) => (
+                    <li
+                      key={f}
+                      className={`inline-flex items-center gap-1.75 rounded-btn bg-bone ${TAG} text-muted`}
+                    >
+                      <span aria-hidden="true" className="size-1 shrink-0 rounded-pill bg-river" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </Section>
   );
 }

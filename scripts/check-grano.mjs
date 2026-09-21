@@ -95,6 +95,13 @@ const SUPERFICIES = {
   'rgb(255, 255, 255)': 'paper',
   'rgb(250, 246, 234)': 'bone',
   'rgb(253, 240, 180)': 'cream',
+  /* ⚠️ `mint` FALTABA. Se agregó como tono de `Section` el 2026-09-21 para la
+     banda de tarjetas de `/food-trucks` y esta lista no se actualizó, así que
+     el guardia veía una sección a pleno ancho pintada de un color que no
+     conocía y la reportaba como «objeto con grano que no es fondo». No se había
+     notado porque `/food-trucks` no está en `RUTAS`; saltó cuando `/events`
+     —que sí está— estrenó su propia banda menta. */
+  'rgb(196, 242, 236)': 'mint',
   'rgb(245, 242, 232)': 'chalk',
   'rgb(1, 69, 69)': 'deep',
   'rgb(1, 52, 52)': 'deeper',

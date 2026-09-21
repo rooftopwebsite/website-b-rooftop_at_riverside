@@ -110,7 +110,14 @@ export default function FoodTrucksPage() {
           ],
         }}
         theirs={{
-          label: 'A restaurant',
+          /* ⚠️ ERA «A restaurant» Y AHORA DICE LO MISMO QUE EL STICKER. Desde
+             el 2026-09-21 `CompareSlab` dibuja este `label` en la píldora
+             roja, que hasta entonces tenía el texto clavado adentro del
+             componente. El sticker de esta página no cambia ni un píxel; lo
+             que cambia es el `<Heading>` para lectores de pantalla, que decía
+             «A restaurant» mientras en pantalla se leía «A regular
+             restaurant». */
+          label: 'A regular restaurant',
           rows: [
             /* ⚠️ ACÁ TAMBIÉN SE UNIERON DOS, y es lo que hace que las dos columnas
                queden con la misma cantidad. El pedido decía «así tenemos misma

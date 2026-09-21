@@ -67,6 +67,14 @@ const PARES = [
   ['paper', 'deeper', 'Texto del header', 'body'],
   ['muted', 'deep', '❌ `muted` sobre oscuro — el bug que hubo que arreglar', 'body'],
 
+  ['— La tarjeta del newsletter: `teal600`, donde SÓLO pasa el blanco —'],
+  ['paper', 'teal600', 'Todo el texto de la tarjeta — título, bajada y errores', 'body'],
+  ['teal600', 'deep', 'La tarjeta contra la losa del footer — dos superficies, sin mínimo', 'deco'],
+  ['cream', 'teal600', 'El relleno del botón «Join» y el anillo de foco', 'ui'],
+  ['muted-dark', 'teal600', '❌ la bajada en `muted-dark` — por eso la tarjeta pisa `--lead-ink`', 'body'],
+  ['tomato-soft', 'teal600', '❌ el error en rojo — por eso los errores quedaron blancos', 'body'],
+  ['bone', 'teal600', '❌ ni siquiera `bone` llega: el techo de esta superficie es 4.59', 'body'],
+
   ['— Rellenos de marca: el texto encima va NEGRO —'],
   ['#000000', 'sunset', 'Texto del CTA primario', 'body'],
   ['#000000', 'river', 'Texto sobre relleno teal', 'body'],

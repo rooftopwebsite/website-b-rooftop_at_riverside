@@ -43,15 +43,26 @@ import { Heading } from './Type';
  * con un comentario.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ ERA UNA BANDA `bone` PROPIA Y AHORA ES UNA TARJETA `deeper` ADENTRO DEL
- * FOOTER. Pedido de Camila: «que esto esté en una card más oscura dentro del
- * footer, como pasa con Visit us en el footer de the-orient».
+ * ⚠️ ERA UNA BANDA `bone` PROPIA Y AHORA ES UNA TARJETA ADENTRO DEL FOOTER.
+ * Pedido de Camila: «que esto esté en una card más oscura dentro del footer,
+ * como pasa con Visit us en el footer de the-orient».
  *
  * Es el mismo patrón que the-orient resuelve en su `pre-footer.tsx`: la
- * sección comparte el fondo del footer y adentro lleva una card de bajo
- * contraste, que se lee como superficie levantada y no como bloque aparte.
- * Acá el par es `deeper` (#013434) sobre `deep` (#014545) — 1.26:1— y es el
- * mismo escalón que ya usan las tarjetas de `WhatsOn` y `EventsBanner`.
+ * sección comparte el fondo del footer y adentro lleva una card propia, que se
+ * lee como superficie levantada y no como bloque aparte.
+ *
+ * ⚠️ LA CARD ES `teal600` (#028382) Y NO `deeper`, Y ES UN CAMBIO POSTERIOR.
+ * Arrancó en `deeper` #013434 para copiar el escalón de `WhatsOn` y
+ * `EventsBanner`, pero ahí el par contra la losa `deep` daba 1.26:1 y la
+ * tarjeta sólo se veía por la sombra. Camila la pidió en el teal de la paleta.
+ * Ahora son 2.36:1 contra el footer, y el escalón va para el otro lado: la
+ * tarjeta es más CLARA que la losa, no más oscura.
+ *
+ * ⚠️ POR ESO ES LA ÚNICA PIEZA OSCURA DEL SITIO SIN JERARQUÍA DE TEXTO. Sobre
+ * #028382 sólo el blanco puro llega a 4.5:1, así que acá no hay bajada en
+ * `muted-dark` ni error en `tomato-soft`: es todo `paper`. La cuenta completa
+ * está en la nota del `<section>`, y el que la quiera revertir tiene que
+ * revertir las tres cosas juntas, no sólo el fondo.
  *
  * ⚠️ ESTO NO ROMPE «NUNCA DOS SUPERFICIES DE COLOR SEGUIDAS». La versión
  * anterior de esta nota decía que el bloque no podía ser oscuro porque dejaría
@@ -104,8 +115,12 @@ const INPUT_BASE =
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    /* Crema y no naranja: la tarjeta del newsletter es `deeper`, o sea la
-       superficie más oscura del sitio. Ver la nota de `EventsBanner`. */
+    /* Crema y no naranja: la tarjeta del newsletter es oscura. Ver la nota de
+       `EventsBanner`.
+
+       ⚠️ SIGUE SIENDO CREMA CON LA TARJETA EN `teal600`: el relleno da 4.00:1
+       contra el fondo, y un botón es una pieza de interfaz —le alcanza con
+       3:1—. El naranja ahí mediría 1.81:1 y se empastaría con el verde. */
     <Button type="submit" variant="onDark" size="lg" disabled={pending} className="w-full sm:w-auto">
       {pending ? 'Adding…' : 'Join'}
     </Button>
@@ -132,10 +147,36 @@ export default function NewsletterSignup() {
       usan las tarjetas oscuras del sitio —las de `WhatsOn` y las de
       `EventsBanner`— y esta es de la misma familia: una superficie levantada
       sobre la losa, no un recuadro de contenido.
+
+      ⚠️ LA TARJETA ES `teal600` (#028382) Y NO `deeper`, POR PEDIDO DE CAMILA.
+      Ya era un token de la paleta —lo usan `OpenStatus`, `CompareSlab` y los
+      números del game truck—, así que no entra un verde nuevo al sistema.
+
+      Antes era `deeper` #013434, que contra la losa `deep` del footer daba
+      1.26:1: la tarjeta casi no se despegaba del fondo y lo único que la
+      dibujaba era la sombra. En `teal600` la separación es 2.36:1, o sea que
+      ahora se lee como una pieza apoyada encima y no como un rebaje.
+
+      ⚠️ EL PRECIO ES QUE ADENTRO NO HAY MEDIOS TONOS. Medido: sobre #028382 el
+      ÚNICO valor que llega a los 4.5:1 de texto de cuerpo es el blanco puro,
+      4.59:1 — `bone` ya cae a 4.25 y `muted-dark` a 2.52. No es cuestión de
+      elegir mejor el gris: con la luminosidad de este fondo (0.178) el techo
+      matemático queda en 4.59, apenas arriba del mínimo. Por eso TODO el texto
+      de esta tarjeta es `paper`, sin excepción.
+
+      ⚠️ `[--lead-ink:...]` PISA LA VARIABLE PARA TODA LA TARJETA. La utilidad
+      `.bajada` la lee y dentro de `.on-dark` —la clase del `<footer>`— resuelve
+      en `muted-dark`. Se pisa una vez acá y no clase por clase: hay dos
+      `bajada` adentro —la bajada del título y la letra chica del «No spam»— más
+      la que va a traer el link a la política de privacidad, y las tres tienen
+      que seguir la misma regla sin que haya que acordarse.
+
+      ⚠️ NO SE RESUELVE CON `text-paper/80`. Una opacidad sobre este fondo da
+      3.4:1, que es el mismo problema con otro nombre.
     */
     <section
       aria-labelledby={`${id}-title`}
-      className="rounded-shell bg-deeper sombra-card px-6 py-10 sm:px-9 lg:px-12 lg:py-12"
+      className="rounded-shell bg-teal600 sombra-card px-6 py-10 [--lead-ink:var(--color-paper)] sm:px-9 lg:px-12 lg:py-12"
     >
       {/*
             ⚠️ DOS COLUMNAS DESIGUALES (`1fr` / `1.15fr`) y no mitades. El texto
@@ -159,8 +200,14 @@ export default function NewsletterSignup() {
               {/*
                 `bajada` Y NO un color literal: la utilidad lee `--lead-ink`, que
                 vale `muted` sobre claro y `muted-dark` dentro de `.on-dark` — la
-                clase que ahora trae el `<footer>`. Acá eso da 7.48:1 sobre la
-                tarjeta `deeper`.
+                clase que trae el `<footer>`.
+
+                ⚠️ ACÁ ESA CADENA TERMINA EN `paper` Y NO EN `muted-dark`, porque
+                el `<section>` pisa `--lead-ink`. Con la tarjeta en `deeper`,
+                `muted-dark` daba 7.48:1 y estaba bien; sobre `teal600` cae a
+                2.52:1. La utilidad no cambia —sigue siendo el mecanismo que
+                elige el color según la superficie—; cambia el valor que la
+                superficie declara.
 
                 Antes iba `text-body/80`, que es tinta sobre hueso: sobre esta
                 tarjeta habría quedado en 1.2:1, o sea invisible.
@@ -275,21 +322,37 @@ export default function NewsletterSignup() {
                     {/* Los errores se dicen con TEXTO además del borde rojo: el
                         color solo no es un medio de comunicación accesible.
 
-                        ⚠️ `tomato-soft` y no `terra`. `terra` es el rojo para
-                        superficie CLARA y sobre esta tarjeta da 1.16:1. Ver la
-                        nota del token en globals.css. */}
+                        ⚠️ EL TEXTO DEL ERROR ES BLANCO, NO ROJO, Y NO ES UN
+                        DESCUIDO. Sobre `teal600` no existe ningún rojo legible:
+                        para llegar a 4.5:1 contra este fondo hace falta una
+                        luminosidad de 0.978, o sea blanco puro. Medidos, los
+                        tres candidatos: `tomato-soft` 2.07:1 —era el que estaba,
+                        y funcionaba porque la tarjeta era `deeper`—, `tomato`
+                        1.19:1, `terra` 1.62:1. Ninguno llega, y un rosa pálido
+                        que sí llegara ya no se leería como rojo.
+
+                        ⚠️ EL ROJO NO SE PIERDE: sigue en el borde de 2px del
+                        campo, que cae sobre el input BLANCO y ahí `tomato` mide
+                        3.87:1 —el filete es una pieza de interfaz, le pide 3:1 y
+                        no 4.5—. El color marca CUÁL campo falló; el texto dice
+                        QUÉ pasó. Es la misma división de tareas de antes, sólo
+                        que ahora el rojo vive únicamente donde se lo puede ver.
+
+                        ⚠️ SI ESTO SE QUIERE ROJO, la tarjeta tiene que dejar de
+                        ser `teal600`, o el error tiene que mudarse a una pieza
+                        clara propia. No hay una tercera salida. */}
                     {errores.firstName ? (
-                      <p id={fid('firstName-err')} className="font-body text-dato text-tomato-soft">
+                      <p id={fid('firstName-err')} className="font-body text-dato text-paper">
                         {errores.firstName}
                       </p>
                     ) : null}
                     {errores.email ? (
-                      <p id={fid('email-err')} className="font-body text-dato text-tomato-soft">
+                      <p id={fid('email-err')} className="font-body text-dato text-paper">
                         {errores.email}
                       </p>
                     ) : null}
                     {!errores.firstName && !errores.email ? (
-                      <p className="font-body text-dato text-tomato-soft">{state.message}</p>
+                      <p className="font-body text-dato text-paper">{state.message}</p>
                     ) : null}
                   </div>
                 ) : null}
@@ -306,8 +369,11 @@ export default function NewsletterSignup() {
                     cae a 2.5:1.
 
                     `bajada` es el mecanismo que ya tiene el sitio para esto:
-                    lee `--lead-ink` y elige el token según la superficie. Acá
-                    resuelve en `muted-dark`, 7.48:1.
+                    lee `--lead-ink` y elige el token según la superficie. Con
+                    la tarjeta en `teal600` el `<section>` declara ese valor en
+                    `paper`, así que acá resuelve en blanco, 4.59:1. Sigue
+                    siendo la misma clase: el que cambió de opinión fue el
+                    fondo, no el párrafo.
                 */}
                 {/*
                   ⚠️ CENTRADO CONTRA LOS CAMPOS, NO CONTRA LA TARJETA. Pedido

@@ -156,16 +156,22 @@
    * `tomato-soft` — el rojo de error PARA SUPERFICIE OSCURA. Es el par de
    * `terra` del otro lado del sitio.
    *
-   * Existe porque el formulario de newsletter se mudó adentro del footer, a una
-   * tarjeta `deeper`, y sus mensajes de error iban en `terra`: medido, 1.16:1
-   * sobre esa tarjeta, o sea texto invisible. `tomato`, el otro rojo de la
-   * paleta, tampoco alcanza: 3.51:1, por debajo del 4.5 que pide un texto de
-   * 13px.
+   * Nació para el formulario de newsletter cuando se mudó adentro del footer, a
+   * una tarjeta `deeper`: sus errores iban en `terra` y ahí median 1.16:1, o
+   * sea texto invisible. `tomato`, el otro rojo de la paleta, tampoco alcanzaba:
+   * 3.51:1, por debajo del 4.5 que pide un texto de 13px.
    *
-   * ⚠️ El BORDE rojo del campo sigue siendo `tomato`: ese borde cae sobre el
+   * ⚠️ EL NEWSLETTER YA NO LO USA. Esa tarjeta pasó a `teal600` y sobre ese
+   * verde `tomato-soft` cae a 2.07:1 — ningún rojo de la paleta sobrevive ahí,
+   * así que sus errores quedaron en `paper`. Ver la nota del componente.
+   *
+   * El token SIGUE VIVO y no es un huérfano: lo usa `PendingData` en su
+   * variante oscura, que es la que corre sobre `deep`.
+   *
+   * ⚠️ El BORDE rojo de un campo sigue siendo `tomato`: ese borde cae sobre el
    * campo, que es blanco, y no sobre la tarjeta.
    *
-   * Medido: 6.14:1 sobre `deeper` · 4.88:1 sobre `deep`.
+   * Medido: 6.14:1 sobre `deeper` · 4.88:1 sobre `deep` · 2.07:1 sobre `teal600`.
    */
   --color-tomato-soft: #ff8f7a;
   --color-plum: #402639;
