@@ -9,6 +9,7 @@ import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import PlateHero from '@/components/shared/PlateHero';
 import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
+import SoftWave from '@/components/shared/SoftWave';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { PACKAGES, GAMES_TOTAL, SCREENS } from '@/content/game-truck';
 import {
@@ -23,6 +24,7 @@ import {
   RENTAL_MINIMUM_HOURS,
 } from '@/content/events-pricing';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
+import { getVenue } from '@/lib/venue';
 
 export const metadata: Metadata = pageMeta({
   route: '/events',
@@ -148,7 +150,8 @@ export const metadata: Metadata = pageMeta({
  * («color seguido: bone→bone»).
  * ══════════════════════════════════════════════════════════════════════════
  */
-export default function EventsPage() {
+export default async function EventsPage() {
+  const venue = await getVenue();
   return (
     <>
       <script
@@ -276,128 +279,134 @@ export default function EventsPage() {
         `<Section tone>` y `<section class="bg-…">`, no los `div`.
         ══════════════════════════════════════════════════════════════════
       */}
-      <Section band="lg" labelledBy="cost-title">
-        {/*
-          ⚠️ EL PANEL NO LLEVA `grano` Y EL BANNER DE `/food-trucks`, QUE ES LA
-          MISMA PIEZA, SÍ. El de acá es el que está bien: el grano va en los
-          fondos y no en los objetos —«los elementos no deben tener noise
-          effect, sólo los fondos»— y un panel dentro de una sección clara es un
-          objeto, no una superficie. `npm run check:grano` mide exactamente eso
-          y lo marcó acá.
+      {/*
+        ⚠️ LA OLA DE ENTRADA SE DIBUJA DEL COLOR DE ARRIBA, que es el crema de
+        «what comes with every space». Es el mismo corte que `/food-trucks` hace
+        entre su banda menta y su losa oscura.
+      */}
+      <SoftWave from="cream" to="deep" className="relative -mb-px" />
 
-          TODO: el banner de rotación de `/food-trucks` arrastra el mismo
-          `grano` de más. No se ve porque esa ruta no está en las `RUTAS` del
-          guardia, que todavía apunta a `/the-yard`, `/about` y
-          `/private-dining`, tres páginas que ya no existen.
-        */}
-        <div className="relative rounded-frame bg-cream px-5 py-12 sm:px-10 lg:px-16 lg:py-16">
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
-          />
+      <Section tone="deep" band="lg" labelledBy="cost-title">
+        <div className="mx-auto max-w-[46rem] text-center">
+          <Eyebrow tone="cream" className="justify-center">
+            What it costs
+          </Eyebrow>
+          <h2
+            id="cost-title"
+            className="m-0 mx-auto mt-gap-kicker max-w-[16ch] font-display text-banda font-extrabold uppercase"
+          >
+            <span className="text-paper">The numbers,</span>{' '}
+            <span className="text-sunset">up front</span>
+          </h2>
+          <p className="mx-auto mt-gap-bajada max-w-[56ch] font-body text-lead font-light text-paper/85">
+            Renting the second floor, the three ways to feed everyone, and the fees that ride along.
+            No quote needed to read this.
+          </p>
+        </div>
 
-          <div className="relative">
-            <SectionHead
-              align="center"
-              eyebrow="What it costs"
-              eyebrowTone="deep"
-              id="cost-title"
-              title="The numbers, up front"
-              lead="Renting the second floor, the three ways to feed everyone, and the fees that ride along. No quote needed to read this."
-            />
+        <StaggerGroup as="ul" className="mt-bloque grid list-none gap-5 p-0 lg:grid-cols-2">
+          {/* 1 · EL ALQUILER. Las dos tarifas son el dato más buscado de la
+              página, así que van en `d2` y en el naranja de marca. */}
+          <RevealItem as="li" className="h-full">
+            <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
+              <Heading level={3} role="label" className="text-cream">
+                Renting the second floor
+              </Heading>
+              <dl className="m-0 mt-6 grid gap-5 sm:grid-cols-2">
+                {RENTAL.map((r) => (
+                  <div key={r.days} className="border-t border-dashed border-bone/25 pt-4">
+                    <dt className="font-body text-caption font-medium uppercase tracking-eyebrow text-muted-dark">
+                      {r.days}
+                    </dt>
+                    <dd className="m-0 mt-2 font-display text-d2 font-extrabold leading-none tabular-nums text-sunset">
+                      ${r.perHour.toLocaleString('en-US')}
+                      <span className="ml-1.5 font-body text-caption font-medium tracking-normal text-paper/80">
+                        / hour
+                      </span>
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="m-0 mt-auto pt-6 font-body text-base font-light leading-[1.6] text-bone/85">
+                {RENTAL_MINIMUM_HOURS} hour minimum
+                {RENTAL_DEPOSIT ? ', and a deposit holds the date' : ''}. That is the second floor:
+                the rooftop bar, the patio, or both.
+              </p>
+            </article>
+          </RevealItem>
 
-            {/* Las dos tarifas de alquiler. */}
-            <div className="mt-bloque grid gap-6 sm:grid-cols-2">
-              {RENTAL.map((r) => (
-                /* ⚠️ LA SOMBRA NO ES DECORACIÓN. `bg-paper` es un color de
-                   superficie, así que sin nada que lo delimite `check:grano` lo
-                   lee como un «suplente de fondo» —una pieza pintada del color
-                   del fondo para desaparecer en él— y pide grano. Estas placas
-                   son lo contrario: están sobre el crema para despegarse. La
-                   sombra lo dice, y es lo que el guardia acepta como «esto es
-                   un objeto». */
-                <div
-                  key={r.days}
-                  className="rounded-shell bg-paper sombra-card px-6 py-7 text-center"
-                >
-                  <p className="font-display text-d2 font-extrabold uppercase leading-none tabular-nums text-sunset-deep lg:text-d1">
-                    ${r.perHour.toLocaleString('en-US')}
-                  </p>
-                  <p className="mt-2.5 font-body text-base text-body/80">per hour, {r.days}</p>
-                </div>
-              ))}
-            </div>
-
-            <p className="mx-auto mt-6 max-w-[54ch] text-center font-body text-base leading-[1.7] text-body/80">
-              {RENTAL_MINIMUM_HOURS} hour minimum
-              {RENTAL_DEPOSIT ? ', and a deposit holds the date' : ''}. That is the second floor:
-              the rooftop bar, the patio, or both.
-            </p>
-
-            {/* Cómo come la gente: tres filas de precio. */}
-            <div className="mt-14">
-              <Heading level={3} role="label" className="text-center">
+          {/* 2 · LA COMIDA. Tres filas: nombre, una línea y el precio. */}
+          <RevealItem as="li" className="h-full">
+            <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
+              <Heading level={3} role="label" className="text-cream">
                 Three ways to feed everyone
               </Heading>
-              <ul className="mt-5 flex list-none flex-col p-0">
+              <ul className="m-0 mt-2 flex list-none flex-col p-0">
                 {FOOD_OPTIONS.map((f) => (
                   <li
                     key={f.slug}
-                    className="flex flex-col gap-1.5 border-b border-dashed border-ink/20 py-5 sm:flex-row sm:items-baseline sm:gap-6"
+                    className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-dashed border-bone/25 py-4 last:border-b-0 last:pb-0"
                   >
-                    <div className="sm:flex-1">
-                      <p className="font-display text-d6 font-bold uppercase leading-none lg:text-d5">
-                        {f.name}
-                      </p>
-                      <p className="mt-2 max-w-[58ch] font-body text-base font-light leading-[1.7] text-body/80">
-                        {f.body}
-                      </p>
-                    </div>
-                    <p className="shrink-0 font-display text-d6 font-bold uppercase leading-none tabular-nums text-sunset-deep lg:text-d5">
+                    <p className="m-0 flex-1 font-display text-d6 font-bold uppercase leading-none text-paper">
+                      {f.name}
+                    </p>
+                    <p className="m-0 shrink-0 font-display text-d6 font-bold leading-none tabular-nums text-sunset">
                       {f.price ?? 'Ask'}
+                    </p>
+                    <p className="m-0 basis-full font-body text-base font-light leading-[1.55] text-bone/85">
+                      {f.body}
                     </p>
                   </li>
                 ))}
               </ul>
-            </div>
+            </article>
+          </RevealItem>
 
-            {/* Fees y add-ons, uno al lado del otro. */}
-            <div className="mt-11 grid gap-8 lg:grid-cols-[1fr_1.2fr] lg:gap-12">
-              <div>
-                <Heading level={3} role="label">
-                  On top of that
-                </Heading>
-                <ul className="mt-4 flex list-none flex-col gap-2 p-0">
-                  {FEES.map((f) => (
-                    <li key={f.label} className="flex justify-between gap-4 font-body text-base">
-                      <span className="text-body/80">{f.label}</span>
-                      <span className="font-bold tabular-nums">{f.amount}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          {/* 3 · LOS FEES. En cuerpo chico pero a la vista: 22 % sobre una hora
+              de $1.250 son $275, y enterarse después es la peor manera. */}
+          <RevealItem as="li" className="h-full">
+            <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
+              <Heading level={3} role="label" className="text-cream">
+                On top of that
+              </Heading>
+              <dl className="m-0 mt-5 flex list-none flex-col p-0">
+                {FEES.map((f) => (
+                  <div
+                    key={f.label}
+                    className="flex items-baseline justify-between gap-4 border-b border-dashed border-bone/25 py-3.5 last:border-b-0"
+                  >
+                    <dt className="font-body text-base font-light text-bone/85">{f.label}</dt>
+                    <dd className="m-0 font-display text-d6 font-bold leading-none tabular-nums text-sunset">
+                      {f.amount}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </article>
+          </RevealItem>
 
-              <div>
-                <Heading level={3} role="label">
-                  Add-ons
-                </Heading>
-                <ul className="mt-4 flex list-none flex-wrap gap-x-2 gap-y-2.5 p-0">
-                  {ENHANCEMENTS.map((e) => (
-                    <li
-                      key={e.name}
-                      className="rounded-pill bg-paper px-4 py-1.5 font-body text-caption font-medium"
-                    >
-                      {e.name}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 max-w-[52ch] font-body text-caption leading-[1.6] text-body/75">
-                  {ENHANCEMENTS_NOTE}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+          {/* 4 · LOS ADD-ONS. Sin precio: el PDF del cliente no los publica. */}
+          <RevealItem as="li" className="h-full">
+            <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
+              <Heading level={3} role="label" className="text-cream">
+                Add-ons
+              </Heading>
+              <ul className="m-0 mt-5 flex list-none flex-wrap gap-2 p-0">
+                {ENHANCEMENTS.map((e) => (
+                  <li
+                    key={e.name}
+                    className="rounded-pill bg-paper/10 px-4 py-1.5 font-body text-caption font-medium text-paper ring-1 ring-paper/20 ring-inset"
+                  >
+                    {e.name}
+                  </li>
+                ))}
+              </ul>
+              <p className="m-0 mt-auto pt-5 font-body text-base font-light leading-[1.6] text-bone/85">
+                {ENHANCEMENTS_NOTE}
+              </p>
+            </article>
+          </RevealItem>
+        </StaggerGroup>
       </Section>
 
       {/*
@@ -539,56 +548,81 @@ export default function EventsPage() {
       </Section>
 
       {/*
-        ══════════════════════════════════════════════════════════════════
-        EL CIERRE Y EL FORMULARIO, EN LA MISMA BANDA.
+        ══════════════════════════════════════════════════════════════════════
+        EL CIERRE Y EL FORMULARIO, EN DOS COLUMNAS.
 
-        ⚠️ ERAN DOS SECCIONES: una losa naranja con «One screen, two minutes»
-        y, abajo, el formulario en `bone`. El CTA de esa losa apuntaba a
-        `#inquire`, o sea al formulario que empieza 80px más abajo: un botón
-        para bajar una pantalla hasta lo que ya se está viendo. Ahora el
-        titular encabeza el formulario y no hay botón intermedio.
+        ⚠️ LA ESTRUCTURA ES LA DEL FORMULARIO DE CONTACTO DE defoodtruckclub.nl,
+        que Camila pasó: «quiero que tenga esta estructura y estilo». De ahí
+        salen las tres cosas que la definen:
 
-        ⚠️ TODOS LOS CTA DEL SITIO SIGUEN APUNTANDO A `/events/inquire`, que
-        redirige con 301 a `/events#inquire`. No hay que tocar ningún call
-        site, y un link viejo del cliente sigue cayendo donde tiene que caer.
+          · dos columnas, con el titular, la bajada, un filete y los datos de
+            contacto en la angosta de la izquierda;
+          · un PANEL grande a la derecha, con el formulario adentro;
+          · y un FILETE PUNTEADO por dentro del panel, separado del borde, que
+            es lo que lo vuelve una etiqueta troquelada y no una caja.
 
-        ⚠️ `width="prose"` ES EL MISMO ANCHO QUE TENÍA. Un formulario de ocho
-        campos a 1168px deja los campos tan largos que dejan de leerse como
-        campos.
-        ══════════════════════════════════════════════════════════════════
-      */}
-      {/*
-        ⚠️ EL CIERRE ENTRA CON ARCO, que es lo único del vocabulario del
-        rediseño que a esta página le faltaba. `banda-arco` redondea las dos
-        esquinas de arriba con `--radius-band` y se monta sobre la sección
-        anterior con un margen negativo del mismo valor; el hueco que necesita
-        la galería para no quedar tapada lo pone la regla
-        `:has(+ .banda-arco)` de globals.css, sin tocar nada acá. Es el mismo
-        remate con el que `MenuSheets` cierra `/sunset-bar`, también en `bone`.
+        El troquel no hubo que inventarlo: es el mismo `inset-3.5` +
+        `rounded-shell` de `CompareSlab`, de la losa de happy hour y de las
+        tarjetas de tipo de esta misma página.
 
-        ⚠️ EL `z-[2]` NO SOBRA: sin él la sección anterior, que viene antes en
-        el DOM pero pinta su fondo `paper`, se dibuja encima de la parte del
-        arco que se monta.
+        ⚠️ LO QUE NO SE COPIA ES EL FORMULARIO-ORACIÓN. En la referencia los
+        campos van embebidos en una frase —«Mijn naam is [nombre] van
+        [empresa]»— y funciona porque son CUATRO campos. Éste tiene quince, con
+        fechas, horas, un desplegable de tipo, casillas de áreas y tres radios
+        de comida: la misma frase escrita con quince huecos no se lee, y perder
+        los `<label>` de cada campo rompe la accesibilidad que este formulario
+        sí tiene hoy. Se copia la estructura, no el truco.
+
+        ⚠️ LOS DATOS DE CONTACTO SUBEN A LA COLUMNA IZQUIERDA y se van del pie
+        del formulario, donde estaban como «Prefer email?». Es el lugar que les
+        da la referencia y además resuelve algo real: quien no quiere llenar
+        quince campos tiene la salida A LA VISTA antes de empezar, no después
+        de scrollear el formulario entero.
+
+        ⚠️ `banda-arco` ENTRA CON EL ARCO sobre la galería. El hueco que ésta
+        necesita para no quedar tapada lo pone la regla `:has(+ .banda-arco)` de
+        globals.css. El `z-[2]` no sobra: sin él la sección anterior, que viene
+        antes en el DOM, pinta su fondo encima de la parte del arco que se monta.
+        ══════════════════════════════════════════════════════════════════════
       */}
       <Section
         id="inquire"
         tone="bone"
         band="lg"
-        width="prose"
         className="banda-arco z-[2] scroll-mt-24"
       >
-        <div className="text-center">
-          <Eyebrow tone="terra">Next step</Eyebrow>
-          <Heading level={2} className="mt-gap-kicker text-d4 lg:text-d3">
-            One screen, two minutes
-          </Heading>
-          <p className="mx-auto mt-gap-bajada max-w-[52ch] font-body text-lead font-light text-body/80">
-            Tell us the date and the headcount. We answer within one business day, with numbers.
-          </p>
-        </div>
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.5fr)] lg:items-start lg:gap-16">
+          <div>
+            <Eyebrow tone="terra">Next step</Eyebrow>
+            <Heading level={2} className="mt-gap-kicker text-d4 lg:text-d3">
+              One screen, two minutes
+            </Heading>
+            <p className="mt-gap-bajada max-w-[42ch] font-body text-lead font-light text-body/80">
+              Tell us the date and the headcount. We answer within one business day, with numbers.
+            </p>
 
-        <div className="mt-bloque">
-          <InquiryForm />
+            <hr className="mt-9 w-full border-0 border-t border-ink/15" />
+
+            <div className="mt-6 flex flex-col gap-1.5">
+              <p className="eyebrow text-body/75">Or skip the form</p>
+              <a href={`mailto:${venue.emailEvents}`} className="link-texto font-body text-base">
+                {venue.emailEvents}
+              </a>
+              <a href={venue.phoneHref} className="link-texto font-body text-base">
+                {venue.phone}
+              </a>
+            </div>
+          </div>
+
+          <div className="relative rounded-frame bg-paper px-5 py-9 sm:px-9 sm:py-11">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
+            />
+            <div className="relative">
+              <InquiryForm />
+            </div>
+          </div>
         </div>
       </Section>
     </>

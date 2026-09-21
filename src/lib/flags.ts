@@ -50,6 +50,11 @@ export const PAGINAS_PUBLICADAS: readonly string[] = [
   '/sunset-bar',
   '/food-trucks',
   '/whats-on',
+  /* ⚠️ `/events` SE ABRIÓ EL 2026-09-21, con su rediseño terminado. Es la
+     quinta y es la vertical que más factura, así que el botón «Plan an Event»
+     del header —que es el CTA más visible del sitio— deja de ser un botón que
+     no lleva a ningún lado. */
+  '/events',
 ];
 
 /**

@@ -42,9 +42,8 @@
  * El número se importa del propio `CompareSlab` para que viva en un solo lado.
  * ══════════════════════════════════════════════════════════════════════════
  */
-import Image from 'next/image';
 import { PADDING_CRUCE } from '@/components/shared/CompareSlab';
-import { MapPin, MusicNote, Truck, UserCircle } from '@/components/shared/Icon';
+import { MapPin, Martini, MusicNote, Truck, UserCircle } from '@/components/shared/Icon';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { PendingBlock } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
@@ -159,109 +158,67 @@ export default function EventSpaces() {
           <span className="text-sunset-deep">every space</span>
         </h2>
 
+        {/*
+          ══════════════════════════════════════════════════════════════════════
+          CINCO TARJETAS IGUALES, SIN DESTACADA Y SIN FOTO.
+
+          ⚠️ HUBO UNA CELDA GRANDE EN `deep` CON LA FOTO DE LA BARRA Y SE FUE.
+          Camila, 2026-09-21: «no debería tener una imagen o resaltar tanto, las
+          5 deben tener mismo nivel de lectura».
+
+          Tiene razón y el contenido lo respalda: los cinco puntos responden la
+          MISMA pregunta —qué viene incluido cuando alquilás— y ninguno es la
+          respuesta principal. Darle a uno el doble de alto, una foto y fondo
+          oscuro lo convertía en el titular de la sección y a los otros cuatro en
+          su letra chica. El argumento que yo había usado para destacarlo —que
+          el bar es lo único que factura el venue— es cierto pero es de otra
+          conversación: eso lo cuenta la comparativa, no esta lista.
+
+          ⚠️ Y CON LA DESTACADA SE VA LA ÚNICA FOTO de la sección. No hace falta:
+          lo que esta banda enumera son servicios, no lugares, y una foto de la
+          barra al lado de cuatro tarjetas de texto volvía a romper la paridad
+          por otro lado.
+
+          ⚠️ LA GRILLA VA DE 1 A 5 COLUMNAS Y SALTEA EL 4. Con cinco ítems, una
+          fila de cuatro deja uno solo colgando abajo, que es la peor de las
+          repartijas. Los cortes son 1 · 2 · 3 · 5: en `desk` entran las cinco en
+          una línea —(1288 menos 4x20)/5 = 241px por tarjeta— y abajo de eso van
+          3+2, que se lee como dos filas y no como una fila rota.
+          ══════════════════════════════════════════════════════════════════════
+        */}
         <StaggerGroup
           as="ul"
-          className="mt-bloque grid list-none grid-cols-1 gap-x-5 gap-y-14 p-0 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-bloque grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 md:grid-cols-3 desk:grid-cols-5"
         >
-          {/*
-            ══════════════════════════════════════════════════════════════════
-            LA CELDA GRANDE, AHORA EN `deep`.
-
-            ⚠️ ERA UNA TARJETA BLANCA MÁS y ése era el segundo problema: la
-            sección entera eran cinco rectángulos blancos sobre crema, sin un
-            solo color de la marca. Acá el naranja y el teal estaban ausentes en
-            una página que los usa en todas las otras bandas.
-
-            ⚠️ ES UNA TARJETA OSCURA, NO UNA SECCIÓN OSCURA, y la diferencia
-            importa para la ley del color: el tope de una superficie `deep` por
-            página ya se lo llevó el `CompareSlab`. `check:surfaces` cuenta
-            `<Section tone>` y `<section class="bg-…">`, no los `div`. El
-            precedente es la losa `bg-deep` que `TruckCards` mete adentro de una
-            sección clara.
-
-            ⚠️ NO LLEVA `grano`, aunque la losa oscura de `TruckCards` —que es
-            la misma pieza en /food-trucks— sí lo lleve. El grano va en los
-            FONDOS y no en los objetos, y una tarjeta adentro de una sección
-            clara es un objeto. `npm run check:grano` mide exactamente eso y lo
-            marcó acá; allá no se ve porque esa ruta no está en sus `RUTAS`.
-
-            ⚠️ `on-dark` NO ES DECORATIVO: invierte el anillo de foco y cambia
-            la sombra por la variante para superficies oscuras. Ver globals.css.
-            ══════════════════════════════════════════════════════════════════
-          */}
-          <RevealItem as="li" className="sm:col-span-2 lg:col-span-1 lg:row-span-2">
-            <article className="on-dark group flex h-full flex-col overflow-hidden rounded-shell bg-deep sombra-card">
-              {/* La foto crece con `flex-1` para llenar lo que sobre: si fijara
-                  proporción, su alto se lo impondría a las cuatro tarjetas
-                  chicas, que abarcan las mismas dos filas. */}
-              <div className="relative aspect-[4/3] w-full bg-deeper lg:aspect-auto lg:min-h-[240px] lg:flex-1">
-                <Image
-                  src="/images/venue/wall-bartender.jpg"
-                  alt="A bartender making drinks at the Sunset Bar"
-                  fill
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 100vw, 100vw"
-                  className="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
-                />
-              </div>
-              <div className="flex flex-col gap-2.5 p-7 lg:p-8">
-                <Eyebrow tone="cream">The only one that&rsquo;s ours</Eyebrow>
-                <h3 className="m-0 font-display text-d4 font-bold uppercase leading-none text-paper">
-                  The Sunset Bar
-                </h3>
-                <p className="m-0 font-body text-base font-light leading-[1.6] text-bone/85">
-                  The rooftop bar and our own team running it. Open bar, drink tickets or
-                  consumption, however you want to pour it.
-                </p>
-              </div>
-            </article>
-          </RevealItem>
-
-          {/*
-            ══════════════════════════════════════════════════════════════════
-            LAS CUATRO CHICAS, CON EL SELLO PISANDO EL BORDE.
-
-            ⚠️ EL TILE DE 44px DE LA REFERENCIA SE FUE Y EN SU LUGAR ESTÁ EL
-            SELLO DE LA CASA: los tres anillos concéntricos —papel, naranja,
-            crema— montados a caballo del borde de arriba, mitad adentro y
-            mitad afuera. Es la misma construcción que los pasos 01/02/03 de la
-            home y que los dos stickers de `CompareSlab`, con la clase
-            `.sticker` que les da la sombra de dos pasadas y que comparte con
-            el logo del header.
-
-            Un cuadradito gris en la esquina de una tarjeta blanca no es de
-            este sitio; el sello sí, y es lo que mete el naranja de la marca en
-            una sección que no tenía ninguno.
-
-            ⚠️ EL ICONO VA ADENTRO DEL SELLO, donde en la home va el número. En
-            `deep` sobre el crema del anillo interior: 9.44:1, el mismo ratio
-            que el lockup del header contra su plancha.
-
-            ⚠️ LA GEOMETRÍA: el sello mide 56px y el `-translate-y-1/2` lo parte
-            exacto en el filo, así que asoma 28 por arriba. El `pt-11` de la
-            tarjeta son 44px, que dejan 16 de aire entre el sello y el rótulo.
-            Y el `gap-y-14` de la grilla —56px— es lo que evita que el sello de
-            una fila pise la tarjeta de la fila de arriba.
-            ══════════════════════════════════════════════════════════════════
-          */}
           {INCLUIDO.map((item) => (
-            <RevealItem as="li" key={item.label}>
-              <article className="group relative flex h-full flex-col items-center gap-2.5 rounded-ticket bg-paper px-6 pt-11 pb-8 text-center sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1.5">
-                <span
-                  aria-hidden="true"
-                  className="sticker absolute top-0 left-1/2 z-10 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-pill bg-paper p-1"
-                >
-                  <span className="grid size-full place-items-center rounded-pill bg-sunset p-1.25">
-                    <span className="grid size-full place-items-center rounded-pill bg-cream text-deep">
-                      <item.Icon className="size-5" />
-                    </span>
-                  </span>
-                </span>
+            <RevealItem as="li" key={item.label} className="h-full">
+              {/*
+                ⚠️ EL ICONO VA SUELTO ADENTRO DE LA TARJETA Y NO EN UN SELLO.
+                Camila: «que los iconos no estén en los circulitos, que estén
+                integrados en cada card».
 
-                <Eyebrow tone="terra">{item.label}</Eyebrow>
-                <h3 className="m-0 max-w-[18ch] font-display text-d6 font-bold uppercase leading-[1.05] text-ink">
+                Antes eran los tres anillos concéntricos de la home montados a
+                caballo del borde de arriba. Esa pieza está pensada para
+                DESTACAR —numera los tres pasos del yard, rotula las dos
+                columnas de la comparativa— y acá multiplicada por cinco pedía
+                más atención que el texto que acompaña, además de obligar a un
+                `pt` de 44px y a un `gap-y` de 56 en la grilla para que un sello
+                no pisara la fila de arriba.
+
+                Suelto y en `sunset-deep` hace el mismo trabajo de color con una
+                pieza en vez de cuatro capas. `sunset-deep` y no `sunset`: sobre
+                claro el naranja de marca da 2.54:1 y no pasa; este da 3.54:1,
+                que es la barra de texto grande, y un icono de 32px la cumple.
+              */}
+              <article className="flex h-full flex-col gap-2.5 rounded-ticket bg-paper p-6 sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1.5">
+                <item.Icon aria-hidden="true" className="size-8 text-sunset-deep" />
+                <Eyebrow tone="terra" className="mt-1.5">
+                  {item.label}
+                </Eyebrow>
+                <h3 className="m-0 font-display text-d6 font-bold uppercase leading-[1.05] text-ink">
                   {item.title}
                 </h3>
-                <p className="m-0 max-w-[30ch] font-body text-base font-light leading-[1.6] text-body/80">
+                <p className="m-0 font-body text-base font-light leading-[1.6] text-body/80">
                   {item.body}
                 </p>
               </article>
@@ -290,6 +247,12 @@ export default function EventSpaces() {
  * etiqueta HTML literal y no como componente.
  */
 const INCLUIDO = [
+  {
+    label: 'The bar',
+    title: 'The Sunset Bar is ours',
+    body: 'Our own team pours it. Open bar, drink tickets or consumption.',
+    Icon: Martini,
+  },
   {
     label: 'The trucks',
     title: 'We coordinate the kitchens',

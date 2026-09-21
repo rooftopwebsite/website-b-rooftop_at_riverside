@@ -296,12 +296,15 @@ export default function InquiryForm() {
         <p aria-live="polite" className="min-h-[20px] text-[15px] text-body/75">
           {state.status === 'error' && errorKeys.length === 0 ? state.message : ''}
         </p>
-        <p className="text-[15px] text-body/75">
-          Prefer email?{' '}
-          <a href={`mailto:${venue.emailEvents}`} className="link-texto">
-            {venue.emailEvents}
-          </a>
-        </p>
+        {/*
+          ⚠️ ACÁ DECÍA «Prefer email? …» Y SE MUDÓ A LA COLUMNA IZQUIERDA de la
+          sección, junto al teléfono. Camila pidió para el cierre la estructura
+          del formulario de contacto de defoodtruckclub, donde los datos de
+          contacto van AL LADO del panel y no adentro.
+
+          Y ahí sirven más: quien no quiere llenar quince campos ve la salida
+          antes de empezar, no después de scrollear el formulario entero.
+        */}
       </div>
     </form>
   );
