@@ -1,5 +1,5 @@
-import { ArrowSquareOut } from '@/components/shared/Icon';
-import { formatTime, isTicketed, type VenueEvent } from '@/content/events';
+import { Ticket } from '@/components/shared/Icon';
+import { formatTime, isTicketed, standsOut, type VenueEvent } from '@/content/events';
 import { dayNumber, weekdayShort } from '@/lib/calendar';
 import { colorKey, eventDot } from '@/lib/event-color';
 
@@ -54,6 +54,16 @@ const WEEKDAY_HEADERS = [
   { corto: 'Sat', largo: 'Saturday' },
 ] as const;
 
+/**
+ * El renglón de la referencia, que ahora lo usan tres entradas distintas.
+ *
+ * ⚠️ ESTÁ EN UNA CONSTANTE Y NO REPETIDO TRES VECES: las tres son la misma
+ * fila y tienen que verse igual. Si un día una se separa, que sea por una
+ * decisión y no porque alguien tocó una y se olvidó de las otras.
+ */
+const LEYENDA =
+  'flex items-center gap-[7px] text-caption font-bold uppercase tracking-[0.08em] text-body/70';
+
 interface DayEvents {
   readonly date: string;
   readonly events: readonly { readonly event: VenueEvent }[];
@@ -75,6 +85,13 @@ export default function MonthCalendar({
 }) {
   const delMes = [...eventsByDate.values()].flatMap((l) => l.map((o) => o.event));
   const referencia = colorKey(delMes);
+  /*
+   * ⚠️ CADA MARCA SE EXPLICA SÓLO SI ESTE MES LA USA, que es la regla que ya
+   * traía la referencia de colores: explicar algo que no está en pantalla es
+   * ruido. Ver `colorKey()`.
+   */
+  const hayDestacados = delMes.some(standsOut);
+  const hayEntradas = delMes.some(isTicketed);
 
   /*
    * La agenda del celular: los días con algo, en orden. Sale del MISMO mapa
@@ -189,17 +206,41 @@ export default function MonthCalendar({
         ⚠️ SÓLO LOS TIPOS QUE ESTE MES TIENE. Ver `colorKey()`. Y con un solo
         color no se dibuja: una referencia de un ítem no explica nada.
       */}
-      {referencia.length > 1 ? (
+      {/*
+        ⚠️ LA GRILLA TIENE TRES MARCAS Y CADA UNA DICE UNA COSA DISTINTA: el
+        punto dice de qué TIPO es el evento, el fondo crema dice que no va a
+        estar siempre y el ticket dice que se paga. Sin esta fila, dos de las
+        tres son adorno.
+      */}
+      {referencia.length > 1 || hayDestacados ? (
         <ul className="mt-[16px] flex list-none flex-wrap gap-x-[18px] gap-y-[8px]">
-          {referencia.map((c) => (
-            <li
-              key={c.id}
-              className="flex items-center gap-[7px] text-caption font-bold uppercase tracking-[0.08em] text-body/70"
-            >
-              <span className={`size-[9px] shrink-0 rounded-pill ${c.dot}`} aria-hidden="true" />
-              {c.label}
+          {referencia.length > 1
+            ? referencia.map((c) => (
+                <li key={c.id} className={LEYENDA}>
+                  <span className={`size-[9px] shrink-0 rounded-pill ${c.dot}`} aria-hidden="true" />
+                  {c.label}
+                </li>
+              ))
+            : null}
+
+          {hayDestacados ? (
+            <li className={LEYENDA}>
+              {/* La muestra ES un chip chiquito: se reconoce porque se parece a
+                  lo que hay que reconocer, no porque lo diga el texto. */}
+              <span
+                className="h-[14px] w-[22px] shrink-0 rounded-[5px] bg-cream"
+                aria-hidden="true"
+              />
+              Limited run or ticketed
             </li>
-          ))}
+          ) : null}
+
+          {hayEntradas ? (
+            <li className={LEYENDA}>
+              <Ticket className="size-[13px] shrink-0" aria-hidden="true" />
+              Tickets on Eventbrite
+            </li>
+          ) : null}
         </ul>
       ) : null}
 
@@ -255,6 +296,31 @@ export default function MonthCalendar({
  * ⚠️ `suelto` ES LA VERSIÓN DE LA AGENDA, donde hay ancho de sobra: la hora y
  * el título van en dos renglones y el título en la display. En la celda de la
  * grilla van en uno solo y truncados, que es lo único que entra.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EL FONDO CREMA MARCA LO QUE NO VA A ESTAR SIEMPRE. Camila, 2026-09-21:
+ * «quiero que las que son únicas se destaquen con fondito». Quién decide cuáles
+ * es `standsOut()`, no este componente, y el porqué de sus dos condiciones está
+ * entero en su nota: la regla es «tiene fin cargado o tiene entrada».
+ *
+ * ⚠️ EL PADDING LO LLEVAN TODOS LOS CHIPS Y EL FONDO SÓLO EL DESTACADO. Si el
+ * padding viniera junto con el fondo, en una celda con dos eventos el destacado
+ * arrancaría 5px más adentro que el otro y la columna se vería desprolija. Con
+ * el padding parejo, lo único que cambia entre un chip y otro es el color.
+ *
+ * ⚠️ `cream` ES EL COLOR DE PÍLDORA DEL BRAND BOOK y acá es exactamente eso: un
+ * chip. Da 14.9:1 con la tinta y 9.4:1 con `deep`, que es el color del título
+ * cuando el evento linkea. Contra el blanco de la celda es 1.15:1 —poco como
+ * número, evidente como amarillo—: alcanza para que salte y no tanto como para
+ * taparle el trabajo al punto de color, que sigue diciendo de qué TIPO es.
+ *
+ * ⚠️ EL ICONO ES UN TICKET Y ERA LA FLECHA DE «ABRE EN OTRA PESTAÑA». Camila, el
+ * mismo día: «si tiene entrada debe mostrarse eso de alguna forma, quizá un
+ * iconito de ticket». La flecha decía cómo se abre el link; el ticket dice qué
+ * hay del otro lado, que es el dato que sirve al elegir a qué ir. Que abre en
+ * otra pestaña lo sigue diciendo el texto `sr-only` de más abajo, que es donde
+ * esa advertencia tiene que estar.
+ * ══════════════════════════════════════════════════════════════════════════
  */
 function Chip({ event, suelto = false }: { readonly event: VenueEvent; readonly suelto?: boolean }) {
   const cuerpo = (
@@ -270,15 +336,18 @@ function Chip({ event, suelto = false }: { readonly event: VenueEvent; readonly 
         </span>
       </span>
       {isTicketed(event) ? (
-        <ArrowSquareOut className="mt-[4px] size-[12px] shrink-0" aria-hidden="true" />
+        <Ticket className="mt-[3px] size-[13px] shrink-0" aria-hidden="true" />
       ) : null}
     </>
   );
 
   const clases = [
-    'flex gap-[6px] text-[12px] leading-[1.35]',
+    'flex gap-[6px] rounded-[5px] px-[5px] py-[3px] text-[12px] leading-[1.35]',
+    standsOut(event) ? 'bg-cream' : '',
     isTicketed(event) ? 'text-deep underline underline-offset-2 hover:text-terra' : 'text-ink',
-  ].join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   if (!isTicketed(event) || !event.ticketUrl) return <span className={clases}>{cuerpo}</span>;
 

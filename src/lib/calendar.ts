@@ -60,6 +60,37 @@ export function parseMonth(param: string | undefined): { year: number; month: nu
   return { year: now.getUTCFullYear(), month: now.getUTCMonth() + 1 };
 }
 
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * LAS DOS VISTAS DEL CALENDARIO.
+ *
+ * ⚠️ HUBO UN `&view=` ANTES, SE SACÓ EL 2026-09-17 Y VUELVE EL 2026-09-21.
+ * Vale saber por qué, porque no es una marcha atrás.
+ *
+ * El viejo conmutaba entre «List» —días apilados, todo texto, sin una sola
+ * imagen— y «Month», y su opción POR DEFECTO era la lista: o sea que el
+ * calendario de una página que se llama «the calendar» estaba escondido a un
+ * clic. Se sacó y las dos cosas pasaron a mostrarse apiladas.
+ *
+ * El de ahora conmuta entre dos vistas COMPLETAS del mismo mes —tarjetas con
+ * afiche, y la grilla— con la barra fija siempre a la vista, y el default es
+ * el grid, que es lo que la página ya mostraba primero. Camila, 2026-09-21:
+ * «que haya dos vistas pero que el usuario pueda switchear entre una u otra».
+ *
+ * ⚠️ VIAJA EN LA URL Y NO EN ESTADO DE CLIENTE, igual que `month` y `type`.
+ * Es lo que hace que cada vista sea una URL que se comparte, que el servidor
+ * resuelve entera y que funciona con JavaScript apagado. Toda la página sigue
+ * siendo server: no hay un solo `use client` en este camino.
+ *
+ * ⚠️ UN VALOR DESCONOCIDO CAE EN `grid` Y NO TIRA. Es un query string: lo
+ * escribe cualquiera.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export type CalendarView = 'grid' | 'calendar';
+
+export const parseView = (param: string | undefined): CalendarView =>
+  param === 'calendar' ? 'calendar' : 'grid';
+
 export const monthKey = (year: number, month: number) =>
   `${year}-${String(month).padStart(2, '0')}`;
 
@@ -69,6 +100,26 @@ export function monthLabel(year: number, month: number): string {
     year: 'numeric',
     timeZone: 'UTC',
   });
+}
+
+/**
+ * `SEP 2026`, para el renglón de la barra en un teléfono.
+ *
+ * ⚠️ EXISTE POR UN PROBLEMA DE ANCHO MEDIDO, no por gusto. En la barra fija
+ * conviven las dos flechas, el nombre del mes y el conmutador de vistas. A
+ * 360px de pantalla quedan 300px útiles y «SEPTEMBER 2026» se los come: el
+ * conmutador cae a un segundo renglón y la barra crece 40px, que sobre un
+ * header de 78 es media pantalla de controles.
+ *
+ * ⚠️ NO REEMPLAZA A `monthLabel`: conviven. El largo es el que se lee desde
+ * `sm` y el que escucha un lector de pantalla siempre; el corto es sólo el
+ * dibujo del teléfono. Es el mismo reparto que los encabezados de día de
+ * `MonthCalendar` («Sun» a la vista, «Sunday» para quien escucha).
+ */
+export function monthLabelShort(year: number, month: number): string {
+  return new Date(Date.UTC(year, month - 1, 1))
+    .toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })
+    .toUpperCase();
 }
 
 export function shiftMonth(year: number, month: number, delta: number) {
@@ -219,81 +270,54 @@ export function occurrencesByDate(
   return map;
 }
 
-export interface NextUp {
-  readonly event: VenueEvent;
-  /** La PRIMERA fecha del evento dentro de la ventana. */
-  readonly date: string;
-  /** Las otras fechas del mismo evento dentro de la ventana, en orden. */
-  readonly alsoOn: readonly string[];
-}
-
 /**
- * LO QUE VIENE, UNA TARJETA POR EVENTO.
+ * EL MES QUE VIENE, OCURRENCIA POR OCURRENCIA.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ NO ES `upcomingOccurrences` CON OTRO NOMBRE, y la diferencia es el
- * motivo por el que existe. Aquella devuelve OCURRENCIAS: si el horizonte
- * abarca dos jueves, Ross Brown sale dos veces. Eso está bien en el carrusel
- * de la home, que es una tira corta de «las próximas ocho fechas», y está mal
- * en un muro de tarjetas con afiche: la misma foto grande repetida dos veces
- * en la misma pantalla se lee como un error de carga, no como un evento que
- * se repite.
+ * ⚠️ ES `occurrencesInMonth` RECORTADO POR `from`, Y ESE RECORTE ES TODO EL
+ * PUNTO. La vista grid de `/whats-on` publica una tarjeta CON AFICHE por cada
+ * fecha del mes elegido. En un mes futuro eso es el mes entero; en el mes en
+ * curso, un afiche grande del bingo del martes pasado es ruido en una sección
+ * que promete lo que viene.
  *
- * Pedido de Camila, 2026-09-17, al rediseñar `/whats-on`: «yo creo que debería
- * estar una sola vez cada evento de los próximos 15 días, si se repiten estar
- * una sola vez y que en la card debería entenderse que también está este mismo
- * evento esta x fecha».
+ * Pedido de Camila, 2026-09-21: «en grid no mostraremos solo los próximos 15
+ * días, mostraremos todos los próximos y repetiremos los eventos cada día que
+ * corresponda; solo separaremos por mes».
  *
- * ⚠️ POR ESO LAS REPETICIONES NO SE TIRAN, SE GUARDAN. Van en `alsoOn`, y la
- * tarjeta las publica. Descartarlas sería mentir por omisión: alguien que no
- * puede el jueves 17 necesita saber que hay otro el 24, y ése es justamente el
- * dato que una lista de ocurrencias da gritando y una lista deduplicada
- * perdería.
+ * ⚠️ LA COMPARACIÓN ES DE STRINGS Y ESTÁ BIEN. Las fechas son `YYYY-MM-DD`
+ * ISO, o sea que el orden lexicográfico ES el cronológico. No hay `Date` de
+ * por medio y por lo tanto no hay huso que corra un día.
  *
- * ⚠️ LA VENTANA SE CUENTA EN DÍAS, NO EN CANTIDAD DE EVENTOS. Son 15 días
- * corridos desde hoy: lo que la persona puede planear. El `limit` es un tope
- * de seguridad para que un mes de festival no publique treinta tarjetas, no el
- * criterio de corte.
+ * ⚠️ UN MES YA PASADO DEVUELVE VACÍO, a propósito: el grid no tiene nada que
+ * ofrecer de agosto. La grilla del calendario sí sigue dibujando el mes
+ * entero, porque ahí la pregunta es «qué hubo el 12» y no «qué puedo hacer».
+ * Quien navegue hacia atrás en grid ve un vacío que lo dice y lo devuelve al
+ * mes en curso. Ver el bloque de vacíos en `/whats-on`.
  *
- * ⚠️ `from` TIENE QUE SER `todayInVenue()`. Ver la nota de esa función: con
- * `toISOString()` el servidor de Vercel, que corre en UTC, borra el evento de
- * esta noche cuatro horas antes de que empiece.
+ * ⚠️ `from` TIENE QUE SER `todayInVenue()`. Con `toISOString()` el servidor de
+ * Vercel, que corre en UTC, borra el evento de esta noche cuatro horas antes
+ * de que empiece.
  * ══════════════════════════════════════════════════════════════════════════
+ *
+ * ⚠️ ACÁ ABAJO VIVÍA `nextByEvent()` —y su tipo `NextUp`— Y SE FUE EL
+ * 2026-09-21. Devolvía UNA tarjeta POR EVENTO dentro de una ventana de 15
+ * días, con las repeticiones guardadas en `alsoOn` para que la tarjeta las
+ * anunciara en un renglón. Su único consumidor era la vista de tarjetas de
+ * `/whats-on`, que ahora es una de las dos vistas del mes y repite el evento
+ * cada día que pasa.
+ *
+ * El «Also on» se fue con ella y no se perdió nada: dentro del mes, cada
+ * repetición ES una tarjeta con su fecha. Lo que sí cambia es que una
+ * repetición que cae en el mes siguiente ya no se anuncia acá; se la ve
+ * cambiando de mes en la barra, que es el gesto que la página pide ahora.
  */
-export function nextByEvent(
+export function upcomingInMonth(
   events: readonly VenueEvent[],
+  year: number,
+  month: number,
   from: string,
-  days: number,
-  limit: number,
-): readonly NextUp[] {
-  const porSlug = new Map<string, { event: VenueEvent; date: string; alsoOn: string[] }>();
-  const orden: string[] = [];
-  const day = new Date(`${from}T12:00:00Z`);
-
-  for (let i = 0; i < days; i++) {
-    const date = day.toISOString().slice(0, 10);
-
-    // Dentro de un mismo día manda la hora: el happy hour de las 3 va antes
-    // que el bingo de las 7, igual que en la grilla del mes.
-    const delDia = events
-      .filter((e) => happensOn(e, date))
-      .sort((a, b) => a.startTime.localeCompare(b.startTime));
-
-    for (const event of delDia) {
-      const ya = porSlug.get(event.slug);
-      if (ya) ya.alsoOn.push(date);
-      else {
-        porSlug.set(event.slug, { event, date, alsoOn: [] });
-        orden.push(event.slug);
-      }
-    }
-
-    day.setUTCDate(day.getUTCDate() + 1);
-  }
-
-  // `orden` ya está por fecha y hora de la PRIMERA aparición, que es el orden
-  // en que se recorrió la ventana. No hace falta volver a ordenar.
-  return orden.slice(0, limit).map((slug) => porSlug.get(slug)!);
+): readonly Occurrence[] {
+  return occurrencesInMonth(events, year, month).filter((o) => o.date >= from);
 }
 
 /**

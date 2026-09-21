@@ -561,3 +561,43 @@ export const activeFilters = (events: readonly VenueEvent[]): readonly EventFilt
  * ningún botón de compra, que es lo honesto.
  */
 export const isTicketed = (e: VenueEvent): boolean => e.ticketUrl !== null;
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * ¿ESTO SE TERMINA? Una fecha única, o una temporada con fecha de fin.
+ *
+ * ⚠️ `until === null` SIGNIFICA «hasta que alguien lo saque», o sea que el
+ * evento corre para siempre: el bingo de los miércoles, el happy hour del fin
+ * de semana. Ésos no se pierden, y por eso no se destacan.
+ *
+ * ⚠️ TODO LO QUE NO ES RECURRENTE ES, POR DEFINICIÓN, ACOTADO: un `one-off` o
+ * un festival son una fecha y nada más.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export const isLimitedRun = (e: VenueEvent): boolean =>
+  e.kind !== 'recurring' || e.until !== null;
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * LO QUE EL CALENDARIO DESTACA CON FONDO.
+ *
+ * Camila, 2026-09-21: «quiero que las que son únicas se destaquen con fondito;
+ * bingo queda como ahora, happy hour también, pero la del DJ va destacadita;
+ * las que si no asistís ahora, que tiene fechas después, no están más».
+ *
+ * ⚠️ SON DOS CONDICIONES Y ES UNA DECISIÓN TOMADA, NO UN DESCUIDO. La regla que
+ * Camila describió es la de arriba —lo que tiene fin—, pero al verificarla
+ * contra la base apareció que HOY NINGÚN EVENTO TIENE `endDate` CARGADO: La
+ * Noche, que era su ejemplo, está como semanal sin fin y sigue apareciendo en
+ * septiembre de 2027. Con la regla sola, su ejemplo no se habría destacado.
+ *
+ * Elección de Camila con ese dato a la vista: «ambas». Así que el fondo marca
+ * lo que se termina Y lo que se paga, que son las dos formas que tiene un
+ * evento de pedir que vayas a ése y no al de la semana que viene.
+ *
+ * ⚠️ EL DÍA QUE EL CLIENTE CARGUE LOS FINES DE TEMPORADA, ESTO NO SE TOCA: los
+ * eventos entran solos. Ver el bloque de huecos de datos en
+ * `docs/pedido-al-cliente.md`.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export const standsOut = (e: VenueEvent): boolean => isLimitedRun(e) || isTicketed(e);

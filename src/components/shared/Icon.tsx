@@ -323,3 +323,106 @@ export function Balloons(props: IconProps) {
     </Svg>
   );
 }
+
+/* ── El conmutador de vistas de `/whats-on` ──────────────────────────────
+   Los dos son la misma caja de 24 con el mismo margen, para que al alternar
+   entre ellos nada se mueva de lugar dentro del botón. */
+
+/**
+ * La vista de tarjetas: cuatro celdas.
+ *
+ * ⚠️ NO SON SEIS CELDAS aunque la grilla real tenga tres columnas. A 20px, una
+ * matriz de 2×3 deja celdas de 6px con 2 de aire y se lee como una trama gris.
+ * Cuatro cuadrados grandes dicen «tarjetas» de un vistazo, que es lo único que
+ * el icono tiene que decir.
+ */
+export function GridFour(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.6" />
+      <rect x="13" y="3.5" width="7.5" height="7.5" rx="1.6" />
+      <rect x="3.5" y="13" width="7.5" height="7.5" rx="1.6" />
+      <rect x="13" y="13" width="7.5" height="7.5" rx="1.6" />
+    </Svg>
+  );
+}
+
+/**
+ * La vista de calendario: la hoja con las dos anillas y el filete del
+ * encabezado, que es lo que la distingue de un rectángulo cualquiera.
+ */
+export function CalendarGrid(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="3.2" y="5" width="17.6" height="16" rx="2.2" />
+      <path d="M3.2 9.6h17.6M8 3.2v3.6M16 3.2v3.6" />
+      {/* Dos marcas de día. Sin ellas la hoja se lee como una ventana. */}
+      <path d="M7.6 13.4h2M12 13.4h2M16.4 13.4h.01M7.6 17h2M12 17h.01" />
+    </Svg>
+  );
+}
+
+/**
+ * La entrada, para el calendario.
+ *
+ * ⚠️ REEMPLAZA A `ArrowSquareOut` EN LOS CHIPS DEL MES y no en el resto del
+ * sitio. Camila, 2026-09-21: «si tiene entrada debe mostrarse eso de alguna
+ * forma, quizá un iconito de ticket». La flecha de «abre en otra pestaña» dice
+ * cómo se abre el link; el ticket dice QUÉ hay del otro lado, que es el dato
+ * que sirve cuando alguien está eligiendo a qué ir.
+ *
+ * ⚠️ LA PERFORACIÓN ES LO QUE LO HACE LEGIBLE A 12px. Sin los tres trazos del
+ * medio, las dos muescas laterales no alcanzan y queda un rectángulo redondeado
+ * como cualquier otro.
+ */
+export function Ticket(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M3.4 9.3V7.5a1.9 1.9 0 0 1 1.9-1.9h13.4a1.9 1.9 0 0 1 1.9 1.9v1.8a2.7 2.7 0 0 0 0 5.4v1.8a1.9 1.9 0 0 1-1.9 1.9H5.3a1.9 1.9 0 0 1-1.9-1.9v-1.8a2.7 2.7 0 0 0 0-5.4Z" />
+      <path d="M14.3 7.2v1.6M14.3 11.2v1.6M14.3 15.2v1.6" />
+    </Svg>
+  );
+}
+
+/**
+ * Chincheta de mapa. El icono del estacionamiento.
+ *
+ * ⚠️ ES LA UBICACIÓN Y NO UN AUTO, y la diferencia es de contenido: lo que la
+ * página promete no es que haya cocheras propias —no las hay— sino DÓNDE se
+ * estaciona: la calle Old 41 y las playas públicas de Riverside Park. Un auto
+ * diría «tenemos parking»; la chincheta dice «está acá».
+ *
+ * ⚠️ EL AGUJERO VA HUECO. Relleno se lee como una gota a 20px y pierde el
+ * parentesco con el resto del set, que es todo de trazo.
+ */
+export function MapPin(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 21.2c4.2-4.1 6.3-7.3 6.3-9.9a6.3 6.3 0 1 0-12.6 0c0 2.6 2.1 5.8 6.3 9.9Z" />
+      <circle cx="12" cy="11" r="2.4" />
+    </Svg>
+  );
+}
+
+/**
+ * Persona en un círculo. El icono del «un solo contacto».
+ *
+ * ⚠️ EL PRIMER DIBUJO FUE UN GLOBO DE DIÁLOGO CON UNA PERSONA ADENTRO y se
+ * cayó al verlo en página: a 20px —el tamaño al que se usa, dentro del tile de
+ * 44— la cola del globo, la cabeza y los hombros quedaban a tres trazos de
+ * distancia y se leían como una mancha. Un icono que hay que agrandar para
+ * entender no es un icono.
+ *
+ * ⚠️ EL NOMBRE SIGUE AL DIBUJO, que es la regla de este archivo: se llamaba
+ * `ContactPerson` por lo que significaba y ahora se llama por lo que es. Lo
+ * que significa lo dice el texto que tiene al lado.
+ */
+export function UserCircle(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="10" r="2.6" />
+      <path d="M6.9 18.6a6 6 0 0 1 10.2 0" />
+    </Svg>
+  );
+}

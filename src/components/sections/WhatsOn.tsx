@@ -1,18 +1,15 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
-import { PhotoPending } from '@/components/shared/PendingData';
-import { TAG } from '@/lib/tag';
+import { EventPhoto, EventWhen, SpacePill } from '@/components/shared/EventCardParts';
 import { activeTrucks } from '@/content/trucks';
 import {
   type VenueEvent,
   type Weekday,
   shortDate,
-  timeRange,
 } from '@/content/events';
 
 /**
@@ -245,98 +242,30 @@ function EventCard({
         volvería a quedar en «VE».
         ══════════════════════════════════════════════════════════════════
       */}
-      <div className="relative aspect-[7/5] w-full shrink-0 overflow-hidden">
-        <div className="absolute inset-x-0 top-0 aspect-[4/5] overflow-hidden">
-          {event.image === null ? (
-            /* ⚠️ El brief va en INGLÉS. Es texto VISIBLE, no un comentario: el
-               hueco se publica marcado a propósito para que no pase callado. El
-               borde punteado es lo que distingue «acá va algo» de «esto falló».
+      {/*
+        ⚠️ LA VENTANA Y LA PÍLDORA SALEN DE `EventCardParts` Y ESTABAN ESCRITAS
+        ACÁ. La tarjeta de `/whats-on` tenía la misma ventana copiada, con el
+        costo clásico: se arregló dos veces y el segundo arreglo no era igual al
+        primero.
 
-               ⚠️ El `pb-[42%]` no es aire: es la parte de la caja que la
-               ventana no muestra. El hueco ocupa la caja entera y centra su
-               texto, así que sin esto el brief quedaba centrado en los 500px y
-               la mitad de abajo caía fuera de cuadro. */
-            <PhotoPending
-              brief={`${event.title} en ${event.space}, de noche, con gente.`}
-              ratio=""
-              tone="dark"
-              className="absolute inset-0 h-full rounded-none border-0 border-dashed pb-[42%]"
-            />
-          ) : (
-            <Image
-              src={event.image}
-              alt={event.imageAlt ?? ''}
-              fill
-              sizes="(min-width: 1024px) 400px, 260px"
-              className="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
-            />
-          )}
-        </div>
+        Lo que quedó acá es lo que SÍ es de esta tarjeta: el hueco punteado en
+        tono oscuro, porque va sobre la banda `deep`, y el zoom en hover, que es
+        del carrusel y no de la grilla.
 
-        {/*
-          ══════════════════════════════════════════════════════════════════
-          ⚠️ ACÁ ESTABA EL TAG «TONIGHT» Y AHORA ESTÁ EL ESPACIO. Pedido de
-          Camila, 2026-09-16: «donde tenemos el tag de Tonight saquémoslo y
-          pongamos allí The Yard, Sunset Bar o la zona que corresponda».
-
-          ⚠️ EL ESPACIO SE MUDÓ, NO SE DUPLICÓ. Vivía abajo, como rótulo en
-          micro gris encima del CTA. Dejarlo en los dos lugares sería decir
-          «The Yard» dos veces en una tarjeta de 400px.
-
-          Y gana con la mudanza: arriba lo lee todo el mundo antes que el
-          título, que es como funciona —primero dónde, después qué—, mientras
-          que abajo era la línea más chica y más apagada de la tarjeta.
-
-          ⚠️ LA PÍLDORA APARECE EN LAS CUATRO, y el tag anterior sólo en la
-          de hoy. Por eso el naranja acá ya no significa «esto es hoy»: es el
-          color de la etiqueta y nada más. Qué pasó con la marca de hoy está
-          anotado abajo, en el renglón del día.
-
-          ══════════════════════════════════════════════════════════════════
-          ⚠️ Y POR ESO MISMO DEJÓ DE SER NARANJA MACIZA. Camila, 2026-09-16:
-          «estos tags que sean suaves, no naranjas sólidos». Con el tag de
-          hoy, el naranja era una alarma en una tarjeta de cuatro; repetido en
-          las cuatro y diciendo un dato de ubicación, competía con lo único
-          que tiene que gritar en esta sección, que es el horario.
-
-          Ahora es un CRISTAL OSCURO: `deep` al 85 % con desenfoque detrás y
-          un filete de crema al 25. Es el mismo gesto que una etiqueta sobre
-          una foto en cualquier lado —recede, no tapa— y encima funciona mejor
-          que el naranja sobre material que no controlamos.
-
-          ⚠️ EL 85 % NO ES DECORATIVO, es el piso de contraste, y el peor caso
-          es la píldora sobre una zona BLANCA del afiche —que existe: los
-          flyers del local tienen fondos claros—. Medido:
-
-              opacidad    sobre blanco      sobre la tarjeta
-                 85 %       6,16:1              9,84:1
-                 80 %       5,36:1              9,84:1
-                 70 %       4,03:1             10,12:1
-
-          O sea que el número que importa es la columna del medio, y 70 ya no
-          pasa AA. Si alguna vez se toca la opacidad, se toca mirando esa
-          columna y no cómo se ve sobre el verde, que siempre da bien.
-
-          ══════════════════════════════════════════════════════════════════
-          ⚠️ LA LETRA Y EL TAMAÑO NO SON DE ACÁ: SALEN DE `TAG`. Este tag pasó
-          por dos pedidos seguidos el mismo día —primero «dales el tamaño de
-          estos» señalando los chips de `YardSteps`, después «si los tags serán
-          con letra minúscula que lo sean todos, debemos unificar»— y de ahí
-          salió el molde común de `lib/tag.ts`. Lo que quedó acá es lo que sí
-          es de este contexto: el cristal oscuro, el filete y el desenfoque.
-
-          ⚠️ POR ESO YA NO VA EN CAJA ALTA. Era `uppercase tracking-eyebrow`,
-          que en este sitio es el tratamiento de los rótulos de sección y de
-          los CTA: un tag en mayúsculas con tracking se lee como un rótulo o
-          como un botón, y esto no es ninguna de las dos.
-          ══════════════════════════════════════════════════════════════════
-        */}
-        <span
-          className={`absolute top-4 left-4 z-20 rounded-pill bg-deep/85 ${TAG} text-cream ring-1 ring-cream/25 backdrop-blur-[3px]`}
-        >
-          {event.space}
-        </span>
-      </div>
+        ⚠️ LAS NOTAS DE POR QUÉ LA VENTANA ES 7:5 CON CAJA DE RECORTE 4:5 —las
+        tres proporciones que se probaron, el afiche que quedaba en «VE»— se
+        mudaron con el componente, igual que las de la píldora de cristal y su
+        opacidad medida. Están en `shared/EventCardParts.tsx`.
+      */}
+      <EventPhoto
+        event={event}
+        sizes="(min-width: 1024px) 400px, 260px"
+        brief={`${event.title} en ${event.space}, de noche, con gente.`}
+        tone="dark"
+        imgClassName="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
+      >
+        <SpacePill>{event.space}</SpacePill>
+      </EventPhoto>
 
       {/*
         ══════════════════════════════════════════════════════════════════
@@ -437,20 +366,19 @@ function EventCard({
           directamente falso. «Today» es cierto a cualquier hora.
           ══════════════════════════════════════════════════════════════════
         */}
-        <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-          <span className="font-body text-dato font-bold uppercase tracking-eyebrow text-cream">
-            {/*
-              ⚠️ LA FECHA REAL, Y ANTES ERA EL NOMBRE DEL DÍA. La tarjeta ya
-              no representa «los miércoles» sino un miércoles: el 30 de
-              septiembre. Con el nombre del día suelto, dos ocurrencias del
-              mismo evento en la lista de ocho salían idénticas.
-            */}
-            {isToday ? 'Today' : shortDate(date)}
-          </span>
-          <span className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-caption font-bold whitespace-nowrap text-deep">
-            {timeRange(event)}
-          </span>
-        </span>
+        {/*
+          ⚠️ ESTE RENGLÓN SALE DE `EventCardParts` Y LO COMPARTE CON LA TARJETA
+          DE `/whats-on`. Camila, 2026-09-21: «las cards de la grilla deberían
+          ser iguales o similares a las de la home, casi que hermanas o derivadas
+          del mismo componente».
+
+          La jerarquía que ella misma pidió acá —«resaltar horario en cards
+          events, pasa muy desapercibido el día y hora y es de lo más
+          importante»— y el porqué de «Today» en el lugar del día viajaron con el
+          componente. Lo único que quedó de esta tarjeta es el color de la fecha,
+          que sobre la banda oscura es `cream`.
+        */}
+        <EventWhen event={event} date={date} isToday={isToday} fecha="text-cream" />
 
         <h3 className="m-0 mt-3.5 font-display text-d4 font-bold uppercase leading-none text-paper">
           {event.title}
@@ -476,8 +404,19 @@ function EventCard({
           ignora y la tarjeta se comporta como antes: se degrada sola.
           ══════════════════════════════════════════════════════════════════
         */}
+        {/*
+          ⚠️ SI LA BAJADA ES EL TÍTULO, EL PÁRRAFO VA VACÍO Y NO CON EL TÍTULO
+          OTRA VEZ. `summary` cae en `r.title` cuando el evento no tiene
+          descripción cargada (ver `content/events.ts`), y desde que se cargaron
+          los 36 eventos del calendario de Google —que no trae descripciones—
+          eso es la mayoría. La tarjeta decía su propio título dos veces.
+
+          ⚠️ EL `min-h-[2lh]` ES LO QUE HACE QUE ESTO NO ROMPA NADA: el hueco
+          sigue midiendo dos renglones, así que las cuatro tarjetas del carrusel
+          se siguen alineando aunque una tenga texto y la otra no.
+        */}
         <p className="m-0 mt-3 line-clamp-2 min-h-[2lh] font-body text-base font-light text-paper/92">
-          {event.summary}
+          {event.summary === event.title ? '' : event.summary}
         </p>
 
         {/*

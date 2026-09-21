@@ -1,13 +1,12 @@
-import Image from 'next/image';
+import { EventPhoto, EventWhen, SpacePill } from '@/components/shared/EventCardParts';
 import {
   cuerpoSinPrecios,
   dealsNombrados,
   type FeaturedDeal,
 } from '@/components/shared/FeaturedEventCard';
 import { ArrowSquareOut } from '@/components/shared/Icon';
-import { PhotoPending } from '@/components/shared/PendingData';
-import { isTicketed, timeRange } from '@/content/events';
-import { dayNumber, monthDay, monthShort, weekdayShort, type NextUp } from '@/lib/calendar';
+import { isTicketed } from '@/content/events';
+import type { Occurrence } from '@/lib/calendar';
 import { eventDot, eventTypeLabel } from '@/lib/event-color';
 
 /**
@@ -20,13 +19,27 @@ import { eventDot, eventTypeLabel } from '@/lib/event-color';
  * 2026-09-11. Camila, 2026-09-17: «quiero que el calendario sea más visual, no
  * en una lista como tenemos ahora, necesito que sea más fácil de visualizar».
  *
- * ⚠️ ARRIBA VAN LAS CARAS Y ABAJO EL MAPA. Este bloque contesta «¿qué puedo
- * hacer estos días?» y la grilla del mes contesta «¿qué hay el 28?». Son dos
- * preguntas distintas y por eso son dos bloques y no dos pestañas: el
- * conmutador `List | Month` obligaba a elegir una y esconder la otra.
+ * ⚠️ ES LA VISTA «GRID» DEL MES, Y ANTES ERA «LOS PRÓXIMOS 15 DÍAS». Camila,
+ * 2026-09-21: «en grid no mostraremos solo los próximos 15 días, mostraremos
+ * todos los próximos y repetiremos los eventos cada día que corresponda; solo
+ * separaremos por mes». Quién arma la lista es `upcomingInMonth()`; acá sólo
+ * se dibuja.
  *
- * ⚠️ UN EVENTO, UNA TARJETA. Quién decide eso es `nextByEvent()`, no este
- * componente; acá sólo se publica `alsoOn`. El porqué está en su nota.
+ * ⚠️ UNA TARJETA POR FECHA, Y ANTES ERA UNA POR EVENTO. Si Ross Brown toca
+ * cuatro jueves, salen cuatro tarjetas. Es lo contrario de lo que decidimos el
+ * 2026-09-17 —«la misma foto grande repetida dos veces se lee como un error de
+ * carga»— y el cambio es deliberado: con la placa de fecha en cada tarjeta y un
+ * solo mes por pantalla, la repetición se lee como agenda. Lo que la hace
+ * legible es la placa, así que no se saca.
+ *
+ * ⚠️ CON ESO SE FUE EL RENGLÓN «ALSO ON», y no se perdió el dato: dentro del
+ * mes cada repetición ES una tarjeta. Las del mes siguiente se ven cambiando de
+ * mes en la barra. Ver `MonthBar`.
+ *
+ * ⚠️ LA OTRA VISTA ES LA GRILLA DEL CALENDARIO, y ahora son dos vistas y no dos
+ * bloques apilados. Contestan preguntas distintas —«¿qué puedo hacer?» contra
+ * «¿qué hay el 28?»— y la barra fija deja pasar de una a la otra sin perder el
+ * mes ni el filtro.
  *
  * ⚠️ LA TARJETA ENTERA NO ES UN LINK, y es a propósito. La regla del
  * calendario es que algo sea clickeable SÓLO si hay entrada que comprar, y en
@@ -38,10 +51,21 @@ import { eventDot, eventTypeLabel } from '@/lib/event-color';
  */
 export default function UpcomingCards({
   items,
+  today,
   deals,
   dealsLabel,
 }: {
-  readonly items: readonly NextUp[];
+  readonly items: readonly Occurrence[];
+  /**
+   * Hoy en el huso del venue, para que la tarjeta de hoy diga «Today» en vez de
+   * su fecha, igual que en el carrusel de la home.
+   *
+   * ⚠️ VIENE POR PROP Y NO SE CALCULA ACÁ. Ver `todayInVenue()`: el servidor de
+   * Vercel corre en UTC, así que a las 9 de la noche en Bonita Springs un
+   * `new Date()` de acá ya diría mañana y «Today» aparecería en la tarjeta
+   * equivocada. La página lo resuelve una vez y lo reparte.
+   */
+  readonly today: string;
   /**
    * Las promos con precio que puede llegar a publicar una tarjeta.
    *
@@ -86,39 +110,20 @@ export default function UpcomingCards({
       ══════════════════════════════════════════════════════════════════════
     */
     <ul className="mt-[28px] grid list-none grid-cols-1 gap-[20px] p-0 sm:grid-cols-2 lg:grid-cols-3">
+      {/*
+        ⚠️ LA KEY LLEVA LA FECHA Y NO SÓLO EL SLUG. Desde que la lista es de
+        ocurrencias, el mismo evento aparece varias veces en el mismo mes: con
+        `key={slug}` React ve cuatro hermanos con la misma key y en desarrollo
+        avisa, pero en producción lo que hace es peor —reusa el nodo equivocado
+        al cambiar de mes y la placa de fecha queda pegada de la tarjeta vieja—.
+      */}
       {items.map((item) => (
-        <li key={item.event.slug}>
-          <UpcomingCard item={item} deals={deals} dealsLabel={dealsLabel} />
+        <li key={`${item.event.slug}-${item.date}`}>
+          <UpcomingCard item={item} today={today} deals={deals} dealsLabel={dealsLabel} />
         </li>
       ))}
     </ul>
   );
-}
-
-/**
- * Las otras fechas, escritas como las escribiría una persona.
- *
- * ⚠️ NO ES UN `join(' and ')`. Con eso, el happy hour del fin de semana
- * publicaba «Also on Sun, Sep 20 and Sat, Sep 26 and Sun, Sep 27»: tres «and»
- * seguidos y el renglón más largo de la tarjeta. Van comas y un solo «and»
- * antes de la última.
- *
- * ⚠️ Y SIN EL DÍA DE LA SEMANA. `shortDate()` devuelve «Sun, Sep 20», y su
- * coma choca con las comas del enumerado: «Sun, Sep 20, Sat, Sep 26» son
- * cuatro fechas a simple vista. La fecha de arriba, la de la placa, ya dice
- * qué día de la semana es; acá alcanza con el número.
- *
- * ⚠️ TRES Y EL RESTO CONTADO. Un evento diario llenaría el renglón con catorce
- * fechas. Tres se leen; a la cuarta ya nadie las cuenta, y decir cuántas
- * quedan es más honesto que cortar la lista y no avisar.
- */
-function repeticiones(fechas: readonly string[]): string {
-  const partes: string[] = fechas.slice(0, 3).map(monthDay);
-  const resto = fechas.length - partes.length;
-  if (resto > 0) partes.push(`${resto} more ${resto === 1 ? 'date' : 'dates'}`);
-
-  if (partes.length === 1) return partes[0];
-  return `${partes.slice(0, -1).join(', ')} and ${partes[partes.length - 1]}`;
 }
 
 /**
@@ -227,14 +232,16 @@ function preciosDelCuerpo(parrafos: readonly string[]): {
 
 function UpcomingCard({
   item,
+  today,
   deals,
   dealsLabel,
 }: {
-  readonly item: NextUp;
+  readonly item: Occurrence;
+  readonly today: string;
   readonly deals?: readonly FeaturedDeal[];
   readonly dealsLabel?: string;
 }) {
-  const { event, date, alsoOn } = item;
+  const { event, date } = item;
   const tipo = eventTypeLabel(event);
 
   /*
@@ -276,71 +283,63 @@ function UpcomingCard({
     <article className="grano flex h-full flex-col overflow-hidden rounded-card border border-ink/12 bg-paper transition-colors hover:border-ink/30">
       {/*
         ══════════════════════════════════════════════════════════════════
-        EL AFICHE.
+        EL AFICHE, CON LAS DOS PÍLDORAS ENCIMA.
 
-        ⚠️ VENTANA 7:5 CON CAJA DE RECORTE 4:5, igual que en la tarjeta del
-        carrusel de la home (`WhatsOn.tsx`), y por el mismo motivo que está
-        anotado allá: los afiches llegan en 1920×1080 con el arte vertical
-        pegado en el medio, así que una caja vertical anclada arriba es la
-        única que los devuelve enteros. Poner la foto directo en la ventana
-        con `object-cover` recorta por los costados y parte los títulos.
+        ⚠️ LA VENTANA YA NO ESTÁ ESCRITA ACÁ: SALE DE `EventPhoto`, que es la
+        misma que usa el carrusel de la home. Camila, 2026-09-21: «las cards de
+        la grilla deberían ser iguales o similares a las de la home, casi que
+        hermanas o derivadas del mismo componente». Estaba copiada entre los dos
+        archivos, con el costo clásico: la ventana se arregló dos veces y el
+        segundo arreglo no era igual al primero. El porqué de la proporción está
+        en `shared/EventCardParts.tsx`.
+
+        ⚠️ EL ESPACIO PASÓ A SER UNA PÍLDORA SOBRE LA FOTO, y vivía abajo como
+        letra chica al lado del horario. Es el mismo movimiento que Camila pidió
+        en la home el 2026-09-16 —«pongamos allí The Yard, Sunset Bar o la zona
+        que corresponda»— y gana por lo mismo: arriba se lee antes que el
+        título, que es como funciona —primero dónde, después qué—.
+
+        ⚠️ EL TIPO SE MUDÓ A LA SEGUNDA PÍLDORA y era un renglón propio con el
+        punto de color encima del título. En la anatomía de la home ese lugar lo
+        ocupa la fecha, así que el tipo habría quedado como un segundo rótulo
+        peleando con ella. Arriba, al otro lado de la foto, dice lo mismo sin
+        gastar un renglón.
+
+        ⚠️ Y EL PUNTO DE COLOR SE QUEDA DENTRO DE LA PÍLDORA. Es el mismo código
+        que la grilla del mes y su referencia: si acá el tipo se dijera sólo con
+        palabras, la página tendría dos lenguajes para el mismo dato.
         ══════════════════════════════════════════════════════════════════
       */}
-      <div className="relative aspect-[7/5] w-full shrink-0 overflow-hidden bg-bone">
-        <div className="absolute inset-x-0 top-0 aspect-[4/5] overflow-hidden">
-          {event.image === null ? (
-            <PhotoPending
-              brief={`Afiche de ${event.title} en ${event.space}.`}
-              ratio=""
-              className="absolute inset-0 h-full rounded-none border-0 border-dashed pb-[42%]"
-            />
-          ) : (
-            <Image
-              src={event.image}
-              alt={event.imageAlt ?? ''}
-              fill
-              sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
-              className="object-cover"
-            />
-          )}
-        </div>
-
-        {/*
-          LA PLACA DE FECHA.
-
-          ⚠️ LLEVA EL MES, no sólo el día. La ventana son 15 días corridos, así
-          que una de cada dos semanas cruza el fin de mes y «THU 2» sin el mes
-          es una fecha que hay que adivinar. Ver `weekdayShort` y `monthShort`.
-        */}
-        {/* ⚠️ `shadow-btn`, el token del sistema, y no una sombra a mano: es
-            una placa chica sobre una foto y ésa es la escala que le toca. Ver
-            `--shadow-btn` en `globals.css`. */}
-        <p className="absolute top-[12px] right-[12px] z-10 flex flex-col items-center rounded-btn bg-paper px-[12px] py-[8px] text-center leading-none shadow-btn">
-          <span className="eyebrow text-body/70">{weekdayShort(date)}</span>
-          <span className="my-[3px] font-display text-d4 font-semibold tabular-nums text-ink">
-            {dayNumber(date)}
-          </span>
-          <span className="eyebrow text-body/70">{monthShort(date)}</span>
-        </p>
-      </div>
+      <EventPhoto
+        event={event}
+        sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+        brief={`Afiche de ${event.title} en ${event.space}.`}
+        fondo="bg-bone"
+      >
+        <SpacePill>{event.space}</SpacePill>
+        {tipo ? (
+          <SpacePill lado="der">
+            <span className={`size-[8px] shrink-0 rounded-pill ${eventDot(event)}`} aria-hidden="true" />
+            {tipo}
+          </SpacePill>
+        ) : null}
+      </EventPhoto>
 
       <div className="flex grow flex-col p-[18px] lg:p-[20px]">
-        {/* El punto de color y, al lado, el nombre del tipo. Ver `event-color.ts`. */}
-        {tipo ? (
-          <p className="flex items-center gap-[7px] text-caption font-bold uppercase tracking-[0.1em] text-body/70">
-            <span className={`size-[9px] shrink-0 rounded-pill ${eventDot(event)}`} aria-hidden="true" />
-            {tipo}
-          </p>
-        ) : null}
+        {/*
+          ⚠️ ACÁ ARRIBA HABÍA UNA PLACA DE FECHA APILADA sobre la esquina de la
+          foto —«THU / 30 / OCT» en tres renglones— y se fue el 2026-09-21 con
+          la unificación. El dato no se perdió: lo dice este renglón, que es el
+          de la home, y encima ahora la hora va en píldora maciza, que era
+          justamente lo que Camila pedía destacar —«resaltar horario en cards
+          events, pasa muy desapercibido el día y hora»— y que la placa no
+          hacía: la placa gritaba el día y dejaba la hora en letra chica.
+        */}
+        <EventWhen event={event} date={date} isToday={date === today} />
 
-        <h3 className="mt-[8px] font-display text-d5 font-semibold uppercase leading-[1.05] text-ink lg:text-d4">
+        <h3 className="mt-3.5 font-display text-d5 font-semibold uppercase leading-[1.05] text-ink lg:text-d4">
           {event.title}
         </h3>
-
-        <p className="mt-[8px] text-caption font-bold tabular-nums text-body/75">
-          {timeRange(event)}
-          <span className="ml-[8px] font-normal">{event.space}</span>
-        </p>
 
         {/*
           ⚠️ EL CUERPO SE DIBUJA EN EL ORDEN EN QUE EL CLIENTE LO ESCRIBIÓ, y
@@ -444,61 +443,38 @@ function UpcomingCard({
 
         {/*
           ══════════════════════════════════════════════════════════════════
-          LAS OTRAS VECES QUE PASA DENTRO DE LA VENTANA.
+          EL PIE DE LA TARJETA: EL CTA, PEGADO ABAJO.
 
-          ⚠️ ES LO QUE PAGA LA DEDUPLICACIÓN. Sin este renglón, mostrar cada
-          evento una sola vez le esconde a alguien que no puede el jueves 17
-          que hay otro el 24. Pedido de Camila, 2026-09-17: «si se repiten
-          estar una sola vez y que en la card debería entenderse que también
-          está este mismo evento esta x fecha».
+          ⚠️ ACÁ ARRIBA VIVÍA EL RENGLÓN «ALSO ON <fechas>» y se fue el
+          2026-09-21, junto con `nextByEvent()`. Existía porque la lista mostraba
+          cada evento UNA vez en una ventana de quince días y había que avisar
+          que se repetía; ahora la lista es el mes entero con una tarjeta por
+          fecha, así que la repetición no se anuncia: se ve.
 
-          ⚠️ SON FECHAS CONCRETAS Y NO «every Thursday». El evento tiene
-          temporada: se repite entre `from` y `until` y no para siempre (ver
-          `happensOn`). «Every Thursday» seguiría prometiendo jueves después
-          de que la temporada cierre; «Also on Thu, Sep 24» no puede mentir.
-          ══════════════════════════════════════════════════════════════════
-        */}
-        {/*
-          ══════════════════════════════════════════════════════════════════
-          EL PIE DE LA TARJETA: LAS OTRAS FECHAS Y EL CTA, PEGADOS ABAJO.
-
-          ⚠️ EL `mt-auto` ESTÁ ACÁ Y NO EN EL CTA, y ése es el arreglo. Camila,
+          ⚠️ EL `mt-auto` SE QUEDA Y SIGUE SIENDO OBLIGATORIO. Camila,
           2026-09-21, con una línea cruzando las tres tarjetas de una fila: «haz
-          que esto esté siempre abajo alineado». Lo tenía sólo el botón de
-          entradas, así que la tarjeta CON botón apoyaba su pie en el piso y las
-          que no lo tienen dejaban el «Also on» flotando donde terminara el
-          texto: en la misma fila, los tres renglones caían a tres alturas.
+          que esto esté siempre abajo alineado». Empuja el pie al fondo de SU
+          tarjeta; que ese fondo sea el mismo para las tres lo hace la grilla,
+          que empareja por fila. Las dos cosas van juntas: si alguna vez se
+          vuelve a `items-start`, esto deja de alinear.
 
-          ⚠️ Y SE ALINEAN ENTRE TARJETAS PORQUE LA FILA YA LAS EMPAREJA. El
-          `mt-auto` empuja el pie al fondo de SU tarjeta; que ese fondo sea el
-          mismo para las tres lo hace la grilla. Las dos cosas van juntas: si
-          alguna vez se vuelve a `items-start`, esto deja de alinear.
-
-          ⚠️ EL BLOQUE NO SE DIBUJA VACÍO. Sin fechas repetidas y sin entrada no
-          hay pie, y el `pt` no deja un colchón al final de la tarjeta.
+          ⚠️ EL BLOQUE NO SE DIBUJA VACÍO. Sin entrada que comprar no hay pie, y
+          el `pt` no deja un colchón al final de la tarjeta.
           ══════════════════════════════════════════════════════════════════
         */}
-        {alsoOn.length > 0 || (isTicketed(event) && event.ticketUrl) ? (
-          <div className="mt-auto pt-[14px]">
-            {alsoOn.length > 0 ? (
-              <p className="m-0 text-caption font-bold text-body/70">Also on {repeticiones(alsoOn)}</p>
-            ) : null}
-
-            {isTicketed(event) && event.ticketUrl ? (
-              <p className={alsoOn.length > 0 ? 'm-0 mt-[12px]' : 'm-0'}>
-                <a
-                  href={event.ticketUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-[7px] rounded-pill bg-sunset px-[16px] py-[8px] text-caption font-bold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-sunset-hover"
-                >
-                  Get tickets
-                  <ArrowSquareOut className="size-[14px] shrink-0" aria-hidden="true" />
-                  <span className="sr-only">for {event.title} on Eventbrite (opens in a new tab)</span>
-                </a>
-              </p>
-            ) : null}
-          </div>
+        {isTicketed(event) && event.ticketUrl ? (
+          <p className="m-0 mt-auto pt-[14px]">
+            <a
+              href={event.ticketUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-[7px] rounded-pill bg-sunset px-[16px] py-[8px] text-caption font-bold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-sunset-hover"
+            >
+              Get tickets
+              <ArrowSquareOut className="size-[14px] shrink-0" aria-hidden="true" />
+              <span className="sr-only">for {event.title} on Eventbrite (opens in a new tab)</span>
+            </a>
+          </p>
         ) : null}
       </div>
     </article>

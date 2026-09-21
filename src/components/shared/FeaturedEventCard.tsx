@@ -48,7 +48,25 @@ function nombraPrecio(texto: string, precio: string) {
 }
 
 /** Los párrafos del evento, con `summary` como red por si no hay cuerpo. */
-const parrafosDe = (event: VenueEvent) => (event.body.length > 0 ? event.body : [event.summary]);
+/**
+ * Los párrafos del evento, con el respaldo de la bajada.
+ *
+ * ⚠️ SI LA BAJADA ES EL TÍTULO, NO HAY CUERPO. `summary` cae en `r.title`
+ * cuando el evento no tiene descripción cargada (ver `content/events.ts`), así
+ * que este respaldo publicaba el título DOS VECES en la misma tarjeta: una en
+ * el `<h3>` y otra como párrafo debajo. Se veía como un error de carga.
+ *
+ * Apareció el 2026-09-21, al cargar los 36 eventos del calendario de Google:
+ * el calendario del cliente no trae descripciones, así que de golpe hubo 36
+ * tarjetas repitiendo su propio título. Antes no se notaba porque los ocho
+ * eventos que había estaban todos escritos a mano en el dashboard.
+ *
+ * ⚠️ UNA TARJETA SIN TEXTO ES LO CORRECTO ACÁ, no un defecto: sigue teniendo
+ * título, fecha, horario y espacio. Y el hueco es la señal de que falta pedirle
+ * la descripción al cliente, que es justo lo que no queremos que pase callado.
+ */
+const parrafosDe = (event: VenueEvent) =>
+  event.body.length > 0 ? event.body : event.summary === event.title ? [] : [event.summary];
 
 /**
  * Cuáles de esas promos están REALMENTE nombradas en el texto del evento.

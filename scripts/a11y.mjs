@@ -37,7 +37,10 @@ const PAGES = [
   '/food-trucks',
   '/food-trucks/el-chilango',
   '/whats-on',
-  '/whats-on?view=month',
+  // La vista calendario: la otra mitad de `/whats-on`. Decía `?view=month`,
+  // que es el nombre que tenía el parámetro antes del 2026-09-17 y que hoy no
+  // existe, así que esta línea venía auditando la vista grid dos veces.
+  '/whats-on?view=calendar',
   '/events',
   '/whats-on?type=music',
   '/game-truck',

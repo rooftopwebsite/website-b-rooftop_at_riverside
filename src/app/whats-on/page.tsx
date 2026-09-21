@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import MonthBar from '@/components/sections/MonthBar';
 import MonthCalendar from '@/components/sections/MonthCalendar';
 import UpcomingCards from '@/components/sections/UpcomingCards';
 import { ButtonLink } from '@/components/shared/Button';
 import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
-import { Heading, SectionHead } from '@/components/shared/Type';
+import { Heading } from '@/components/shared/Type';
 import {
   activeFilters,
   getVenueEvents,
@@ -16,15 +16,18 @@ import { GAME_DAY_DEALS, GAME_DAY_LABEL } from '@/content/game-day';
 import { fraseEntretenimiento } from '@/content/entertainment';
 import { getVenue, venueAddressLine } from '@/lib/venue';
 import {
+  type CalendarView,
   monthGrid,
   monthKey,
   monthLabel,
-  nextByEvent,
+  monthLabelShort,
   occurrencesByDate,
   occurrencesInMonth,
   parseMonth,
+  parseView,
   shiftMonth,
   todayInVenue,
+  upcomingInMonth,
 } from '@/lib/calendar';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
@@ -47,11 +50,18 @@ export const metadata: Metadata = pageMeta({
 export default async function WhatsOnPage({
   searchParams,
 }: {
-  searchParams: Promise<{ month?: string; type?: string }>;
+  searchParams: Promise<{ month?: string; type?: string; view?: string }>;
 }) {
   const sp = await searchParams;
   const { year, month } = parseMonth(sp.month);
   const type = sp.type ?? null;
+  /*
+   * ⚠️ LA VISTA VIAJA EN LA URL COMO EL MES Y EL FILTRO, y por el mismo motivo:
+   * cada combinación tiene que ser una dirección que se comparte y que el
+   * servidor resuelve entera. Ver `parseView()`, donde está anotado por qué
+   * este `&view=` no es la marcha atrás del que se sacó el 2026-09-17.
+   */
+  const view = parseView(sp.view);
   /*
    * ⚠️ HOY EN EL HUSO DEL VENUE Y NO EN EL DEL SERVIDOR. Lo necesitan las dos
    * mitades de la página: la ventana de 15 días de las tarjetas y el círculo
@@ -97,20 +107,28 @@ export default async function WhatsOnPage({
 
   /*
    * ══════════════════════════════════════════════════════════════════════
-   * LO QUE VIENE, QUE AHORA ES LO PRIMERO DE LA PÁGINA.
+   * LA VISTA GRID: EL MES ENTERO, UNA TARJETA POR FECHA.
    *
-   * ⚠️ EL MISMO FILTRO QUE LA GRILLA. Los filtros son cinco píldoras arriba
-   * de todo y gobiernan la pantalla entera: si alguien toca «Sports» y las
-   * tarjetas de arriba no se mueven, el filtro parece roto. La única lista
-   * que NO se filtra sigue siendo la programación semanal de más abajo, y el
-   * motivo está anotado en su bloque.
+   * ⚠️ ERA UNA VENTANA DE 15 DÍAS CON UN EVENTO UNA SOLA VEZ, y cambió el
+   * 2026-09-21. Camila: «en grid no mostraremos solo los próximos 15 días,
+   * mostraremos todos los próximos y repetiremos los eventos cada día que
+   * corresponda; solo separaremos por mes». Se fue con eso el tope de 8
+   * tarjetas, que era una red contra un mes de festival: ahora el recorte lo
+   * hace el mes, que es un límite real y no un número elegido.
    *
-   * ⚠️ 15 DÍAS Y UN EVENTO UNA SOLA VEZ. El tope de 8 es una red por si un
-   * mes de festival carga veinte fechas distintas, no el criterio de corte.
-   * Ver `nextByEvent()`.
+   * ⚠️ EL MISMO FILTRO QUE LA GRILLA, y ahora es obligatorio y no una decisión:
+   * son dos vistas del MISMO recorte. Si tocar «Sports» moviera una y no la
+   * otra, el conmutador parecería estar cambiando de datos y no de forma.
+   *
+   * ⚠️ ARRANCA EN HOY Y NO EL DÍA 1. Ver `upcomingInMonth()`: en el mes en
+   * curso, un afiche grande del bingo del martes pasado es ruido en una sección
+   * que promete lo que viene. La grilla del calendario sí dibuja el mes entero,
+   * porque ahí la pregunta es otra.
    * ══════════════════════════════════════════════════════════════════════
    */
-  const proximos = nextByEvent(eventos, hoy, 15, 8).filter((o) => matchesFilter(o.event, type));
+  const delGrid = upcomingInMonth(eventos, year, month, hoy).filter((o) =>
+    matchesFilter(o.event, type),
+  );
 
   const prev = shiftMonth(year, month, -1);
   const next = shiftMonth(year, month, 1);
@@ -123,8 +141,40 @@ export default async function WhatsOnPage({
    * tarjetas dicen «qué puedo hacer estos días» y la grilla dice «qué hay el
    * 28». El parámetro viejo en una URL guardada simplemente se ignora.
    */
-  const href = (m: { year: number; month: number }, t: string | null = type) =>
-    `/whats-on?month=${monthKey(m.year, m.month)}${t ? `&type=${t}` : ''}`;
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * LA URL DE CUALQUIER COMBINACIÓN.
+   *
+   * ⚠️ LOS TRES PARÁMETROS VIAJAN JUNTOS SIEMPRE. Cambiar de mes tiene que
+   * conservar la vista y el filtro, y cambiar de vista tiene que conservar el
+   * mes: un conmutador que devuelve a septiembre cuando alguien estaba mirando
+   * noviembre se lee como un botón roto.
+   *
+   * ⚠️ `grid` NO SE ESCRIBE EN LA URL. Es el default de `parseView()`, así
+   * que ponerlo sólo agrega ruido y —lo que importa— crea DOS direcciones para
+   * la misma página: `/whats-on` y `/whats-on?view=grid`. Para Google eso es
+   * contenido duplicado, que es justo lo que esta página vino a arreglar.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  const href = (
+    m: { year: number; month: number },
+    t: string | null = type,
+    v: CalendarView = view,
+  ) =>
+    `/whats-on?month=${monthKey(m.year, m.month)}${t ? `&type=${t}` : ''}${
+      v === 'calendar' ? '&view=calendar' : ''
+    }`;
+
+  /*
+   * ⚠️ EL VACÍO LO DECIDE LA VISTA QUE SE ESTÁ MIRANDO Y NO LA OTRA. En grid
+   * puede no haber nada aunque la grilla del calendario tenga medio mes lleno:
+   * pasa en el mes en curso, cuando lo que quedaba ya pasó. Preguntarle a
+   * `occurrences` en las dos vistas dibujaba una grilla de cero tarjetas sin
+   * una palabra que dijera por qué.
+   */
+  const vacio = view === 'grid' ? delGrid.length === 0 : occurrences.length === 0;
+  /** El mes entero quedó atrás: es el único vacío que no se arregla filtrando. */
+  const mesPasado = view === 'grid' && occurrences.length > 0 && delGrid.length === 0;
 
   return (
     <>
@@ -297,295 +347,199 @@ export default async function WhatsOnPage({
         ══════════════════════════════════════════════════════════════════
       */}
 
-      <Section band="md" labelledBy="proximos-title">
-        {/*
-          ══════════════════════════════════════════════════════════════
-          LOS FILTROS. Son LINKS y no botones: cada filtro es una URL que se
-          puede compartir, que el servidor resuelve, que funciona con
-          JavaScript desactivado y que se puede medir en analítica.
+      {/*
+        ══════════════════════════════════════════════════════════════════════
+        ⚠️ ACÁ ARRIBA VIVÍA UN ENCABEZADO DE SECCIÓN —rótulo «Month by month»,
+        titular «What is coming up» y una bajada de dos renglones— Y SE FUE EL
+        2026-09-21. Camila, con una cruz sobre las tres líneas: «no debería
+        tener título, bajada y eso, ir directo al contenido post hero».
 
-          ⚠️ SÓLO SE DIBUJAN LOS QUE TIENEN EVENTOS. `activeFilters()` los
-          calcula sobre la programación real: un filtro que al apretarlo da
-          cero resultados es una promesa incumplida.
+        Tiene razón y el argumento es que el hero YA hizo ese trabajo: abre con
+        la pregunta, con el H1 y con una bajada que nombra la música, el bingo y
+        el día de los perros. Debajo venía un segundo titular igual de grande
+        diciendo lo mismo con otras palabras, y entre el hero y el primer evento
+        había una pantalla entera de texto de relleno.
 
-          ⚠️ `aria-current` marca el activo. El color no alcanza.
-          ══════════════════════════════════════════════════════════════
-        */}
-        {filtros.length > 1 ? (
-          /*
-            ⚠️ LOS FILTROS VAN CENTRADOS Y CON COLOR DESDE EL 2026-09-21.
-            Camila: «esta información la quiero centrada y con color, le falta
-            vida y estilo rooftop; centrá el contenido del título y su bajada y
-            todo, y los tags también centrados y que no sean con negro».
+        ⚠️ LO ÚNICO QUE ESA BAJADA DECÍA Y NO SE DICE EN OTRO LADO ERA QUE HAY
+        DOS VISTAS. No hizo falta reponerlo: el conmutador está a la vista, con
+        sus dos nombres escritos, en la barra que ahora abre la sección.
 
-            Iban pegados a la izquierda con el activo en `ink`, o sea una
-            píldora negra: el único negro macizo de una página cuya paleta es
-            verde, naranja y crema. Ahora el activo es el naranja de marca con
-            tinta oscura encima —que es la regla del token, el blanco sobre
-            `sunset` da 2.54:1— y los inactivos son filete y letra en verde.
-          */
-          /*
-            ══════════════════════════════════════════════════════════════
-            ⚠️ UNA SOLA FILA QUE SE ARRASTRA, Y ANTES SE ENVOLVÍAN. Camila,
-            2026-09-21, con la captura de mobile donde los seis filtros caían en
-            tres renglones: «que estos tags estén en única línea scrolleables
-            horizontalmente como en los otros proyectos en los menús».
+        ⚠️ Y CON EL TITULAR SE FUE EL ÚLTIMO `h2` FIJO DE LA PÁGINA, así que el
+        `<h2>` pasa a ser el mes, dentro de la barra. La sección cuelga de él por
+        `aria-labelledby`. Ver la nota en `MonthBar`.
 
-            Es el mismo recurso que ya usa el sitio en la tira de categorías de
-            la carta del bar y en el carrusel de la home: `overflow-x-auto` con
-            la barra de scroll oculta y el gutter ADENTRO, para que la primera
-            píldora arranque en el margen y la última se pueda arrastrar hasta
-            el borde.
+        ⚠️ ACÁ TAMBIÉN VIVÍAN LOS FILTROS, CENTRADOS, y se mudaron adentro de la
+        barra el mismo día: «en la barra fija como segunda línea». Siguen siendo
+        LINKS y siguen dibujándose sólo si hay más de uno, que lo calcula
+        `activeFilters()` sobre la programación real: un filtro que al apretarlo
+        da cero resultados es una promesa incumplida.
+        ══════════════════════════════════════════════════════════════════════
+      */}
 
-            ⚠️ LA SANGRÍA NO ES DECORACIÓN: sin ella, la tira termina en el
-            margen del contenedor y la píldora que sobra queda cortada contra
-            un borde invisible. Con la sangría, el corte cae en el borde de la
-            pantalla, que es donde el ojo espera que siga habiendo cosas.
+      {/*
+        ══════════════════════════════════════════════════════════════════════
+        ⚠️ ESTE `<div>` NO ES UN ENVOLTORIO DE ESTILO: ES LO QUE DEFINE HASTA
+        DÓNDE SE PEGA LA BARRA. Un elemento `sticky` se pega DENTRO DE SU PADRE,
+        y acá hacen falta las dos cosas a la vez:
 
-            ⚠️ LA SANGRÍA VA EN `gutter` Y NO EN `borde`, Y ES EL PUNTO MÁS
-            FÁCIL DE ERRAR DE TODO EL BLOQUE. Una sangría negativa tiene que
-            valer EXACTAMENTE el padding del contenedor que la envuelve, o la
-            tira se sale de la página. Acá el contenedor es una `Section`, que
-            pega `px-gutter md:px-gutter-lg`: 16px fijos en celular y 32 desde
-            `md`. `borde`, en cambio, es `clamp(16px, 4vw, 56px)`.
+          · un padre ALTO, o la barra no tiene recorrido y scrollea como si el
+            `sticky` no existiera. Pasó: estuvo envuelta en un `<div>` que la
+            contenía sólo a ella y no se pegaba nunca;
+          · un padre que TERMINE con el calendario, o la barra se quedaría
+            pegada sobre el newsletter y el footer.
 
-            Los dos coinciden sólo hasta 400px de ancho. Arriba de eso `borde`
-            crece con la pantalla y `gutter` no, así que la tira se iba de la
-            página y arrastraba scroll horizontal a TODO el documento: 1px a
-            430, 8 a 600 y 15 a 767, que es donde más se separan. Medido en el
-            navegador.
+        Es el par barra + sección, y por eso van juntos acá adentro.
 
-            La tira de la carta del bar y el carrusel de la home sí usan
-            `borde`, y está bien: sus contenedores están paginados con `borde`.
-            Esta se copió de allá sin mirar en qué caja caía.
-
-            ⚠️ `w-max min-w-full` ES LO QUE PERMITE CENTRARLAS SIN ROMPER EL
-            SCROLL. Con `justify-center` a secas, en cuanto el contenido
-            desborda, los navegadores dejan la primera píldora fuera de alcance:
-            no se puede scrollear hacia atrás del inicio. Así, la lista mide lo
-            que mide su contenido —y entonces el centrado no aplica y se puede
-            arrastrar entera— o el ancho del contenedor, y ahí sí se centra.
-
-            ⚠️ NO LLEVA `tabIndex`, y otras regiones scrolleables del repo sí.
-            La regla de axe pide que una región con scroll sea alcanzable por
-            teclado; ésta lo es porque adentro hay LINKS, que ya reciben foco y
-            arrastran el scroll solos. Donde el repo agrega `tabIndex` es en
-            tablas y tarjetas de puro texto.
-            ══════════════════════════════════════════════════════════════
-          */
-          <nav
-            aria-label="Filter events by type"
-            className="-mx-gutter mb-[28px] overflow-x-auto px-gutter [scrollbar-width:none] md:-mx-gutter-lg md:px-gutter-lg [&::-webkit-scrollbar]:hidden"
-          >
-            <ul className="m-0 flex w-max min-w-full list-none flex-nowrap justify-center gap-[8px] p-0">
-              {[{ id: null as string | null, label: 'Everything' }, ...filtros].map((f) => {
-                const activo = (f.id ?? null) === type;
-                return (
-                  <li key={f.id ?? 'all'}>
-                    <Link
-                      href={href({ year, month }, f.id ?? null)}
-                      aria-current={activo ? 'true' : undefined}
-                      className={[
-                        /* `whitespace-nowrap` porque en la tira de una sola
-                           línea una píldora de dos palabras se partiría en dos
-                           renglones y rompería el alto de la fila. */
-                        'inline-block whitespace-nowrap rounded-pill px-[16px] py-[7px] text-caption font-bold uppercase tracking-[0.1em] transition-colors',
-                        activo
-                          ? 'bg-sunset text-ink shadow-btn'
-                          : 'border border-teal600/35 text-deep hover:border-teal600 hover:bg-mint/50',
-                      ].join(' ')}
-                    >
-                      {f.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        ) : null}
-
-        {/*
-          ══════════════════════════════════════════════════════════════
-          BLOQUE 1: LO QUE VIENE, EN TARJETAS CON AFICHE.
-
-          ⚠️ OCUPA EL LUGAR DE LA VISTA «LIST», que era lo primero que veía
-          quien abría el calendario: días apilados, todo texto, sin una sola
-          imagen, aunque los eventos traen afiche desde el 2026-09-11.
-
-          ⚠️ LAS CARAS ARRIBA Y EL MAPA ABAJO. Son dos preguntas distintas y
-          por eso son dos bloques y no dos pestañas. Ver `UpcomingCards`.
-          ══════════════════════════════════════════════════════════════
-        */}
-        {/*
-          ⚠️ CENTRADO Y CON UNA PALABRA EN COLOR. Camila, 2026-09-21: «centrá el
-          contenido del título y su bajada y todo», «le falta vida y estilo
-          rooftop». El encabezado iba alineado a la izquierda y entero en tinta,
-          que es la forma más plana que tiene el kit.
-
-          ⚠️ «COMING UP» EN `sunset-deep` NO ES UN ADORNO: es la misma ley que
-          rige los heros del sitio —«recordá siempre al menos una palabra en los
-          heros destacar con color»— aplicada al encabezado que abre el
-          calendario. Y es `sunset-deep` y no `sunset` porque acá el fondo es
-          claro: el naranja de marca como tinta sobre claro da 2.35:1.
-
-          ⚠️ EL RÓTULO VA EN `deep`, QUE ES EL TONO DE LA CASA. Estuvo un rato
-          en `magenta` y Camila lo frenó: «cuidado con el The next 15 days, ese
-          color no lo usamos nunca creo; que tenga lógica con los demás, debe
-          seguir la misma estética». Tenía razón y el número lo dice: de los 26
-          rótulos del sitio, 12 van en `deep`, 9 en `plum`, 5 en `terra` y el
-          magenta era ÉSTE, o sea el único. Un color que aparece una sola vez no
-          es un acento, es un error de tipeo.
-        */}
-        <SectionHead
-          eyebrow="The next 15 days"
-          eyebrowTone="deep"
-          align="center"
-          id="proximos-title"
-          title={
-            <>
-              What is <span className="text-sunset-deep">coming up</span>
-            </>
-          }
-          lead="Everything on the books for the next two weeks. What runs more than once says so on the card."
+        ⚠️ LA BARRA VA FUERA DE LA `Section` Y NO ADENTRO, y es lo que le permite
+        llegar al borde de la pantalla: la `Section` pagina con `gutter` y
+        encierra todo en una `caja` con ancho máximo. La barra se pagina sola.
+        Ver su nota.
+        ══════════════════════════════════════════════════════════════════════
+      */}
+      <div>
+        <MonthBar
+          label={label}
+          labelShort={monthLabelShort(year, month)}
+          titleId="cal-title"
+          prev={{ href: href(prev), label: `Previous month, ${monthLabel(prev.year, prev.month)}` }}
+          next={{ href: href(next), label: `Next month, ${monthLabel(next.year, next.month)}` }}
+          view={view}
+          viewHref={(v) => href({ year, month }, type, v)}
+          filters={[{ id: null as string | null, label: 'Everything' }, ...filtros].map((f) => ({
+            id: f.id ?? null,
+            label: f.label,
+            href: href({ year, month }, f.id ?? null),
+            current: (f.id ?? null) === type,
+          }))}
         />
 
-        {proximos.length > 0 ? (
-          /*
-            ⚠️ LAS PROMOS DE FÚTBOL TAMBIÉN VIAJAN ACÁ, y es el tercer lugar
-            que las recibe por prop —los otros dos son la card grande de esta
-            misma página y `/sunset-bar`—. Camila, 2026-09-21: «debe mostrar
-            toda la info». La tarjeta filtra sola contra el texto de cada
-            evento, así que esto no le pone precios al bingo.
-
-            ⚠️ ESTA LÍNEA SE BORRA CON LA TEMPORADA, junto con las otras dos y
-            `content/game-day.ts`.
-          */
-          <UpcomingCards items={proximos} deals={GAME_DAY_DEALS} dealsLabel={GAME_DAY_LABEL} />
-        ) : (
-          /*
-            ⚠️ EL VACÍO DE LAS TARJETAS NO ES EL DEL MES. Acá el motivo es
-            siempre el mismo —no hay nada en quince días— o el filtro, y en
-            los dos casos la grilla de abajo sigue teniendo qué mostrar, así
-            que la salida es mirar el mes, no cambiar de mes.
-          */
-          <p className="mt-[24px] max-w-[58ch] text-[16px] leading-[1.7] text-body/80">
-            {type
-              ? 'Nothing of that kind in the next two weeks. Clear the filter above, or look at the month below.'
-              : 'Nothing on the books for the next two weeks yet. The calendar for the coming month usually lands around the 10th.'}
-          </p>
-        )}
+        {/*
+          ⚠️ `bandTop="sm"` Y NO EL `md` DE ANTES. La sección ya no abre con un
+          encabezado sino con la barra apoyada encima, y el colchón de una banda
+          entera dejaba el contenido flotando lejos de su control. Abajo se
+          conserva el aire de siempre, que es lo que la separa del newsletter.
+        */}
+        <Section band="md" bandTop="sm" labelledBy="cal-title">
 
         {/*
-          ══════════════════════════════════════════════════════════════
-          BLOQUE 2: EL MES. Ver `MonthCalendar`.
-          ══════════════════════════════════════════════════════════════
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ LOS DOS VACÍOS SON EL MISMO BLOQUE Y ANTES ERAN DOS, uno por bloque
+          de la página. Con las dos vistas mostrando el MISMO mes, el motivo por
+          el que no hay nada es siempre uno de tres, y la salida cambia con cada
+          uno:
+
+            · el mes ya pasó y estamos en grid, que sólo publica lo que viene;
+            · el filtro no tiene resultados este mes;
+            · el mes no tiene nada cargado todavía.
+
+          Un «no hay eventos» a secas deja a la persona sin salida, que es
+          justamente lo que este bloque evita desde que existe.
+          ══════════════════════════════════════════════════════════════════
         */}
-        {/*
-          ══════════════════════════════════════════════════════════════
-          ⚠️ EL MES VA ADENTRO DE UNA CARD GIGANTE Y ANTES IBA SUELTO SOBRE LA
-          PÁGINA. Camila, 2026-09-21: «¿podemos este calendario meterlo en una
-          card gigante o separarlo de alguna manera de las cards anteriores?».
-
-          El problema era de lectura, no de estética: arriba hay una grilla de
-          tarjetas con borde y abajo empezaba otra grilla —la del mes— sin nada
-          que dijera dónde termina una y empieza la otra. Dos grillas pegadas
-          se leen como una sola que cambió de forma a mitad de camino.
-
-          ⚠️ LA CARD ES DEL COLOR DE LA PÁGINA Y LA SEPARAN EL FILETE, LA
-          SOMBRA Y EL AIRE: NO UN COLOR. La primera versión fue `bone`, que es
-          el escalón de 1.08:1 que el sitio usa para cortar dos bloques, y sobre
-          una página `paper` se leía como una plancha amarilla. Camila,
-          2026-09-21: «necesito que el color de esta card sea muchísimo más
-          sutil, casi como el fondo; no quiero que se vea amarilla».
-
-          Y tiene razón de fondo: el amarillo del brand book —`cream`— es color
-          de píldora, no de superficie grande, y `bone` tirado a 900px de ancho
-          empieza a leerse como su pariente. Con el mismo `paper` de la página,
-          lo único que dice dónde empieza la card es su borde, que es
-          exactamente lo que hacía falta: separar, no pintar.
-
-          ⚠️ SIN `grano`, Y NO ES UN OLVIDO: `check:grano` lo marca. La regla
-          del repo es que el grano va en los FONDOS, no en los objetos, y esto
-          es un objeto —una card con filete y sombra— aunque mida 900px. Como
-          además es del mismo color que la sección, no hay parche que disimular.
-          ══════════════════════════════════════════════════════════════
-        */}
-        <div className="mt-[56px] rounded-frame border border-ink/12 bg-paper p-[18px] sombra-card lg:mt-[80px] lg:p-[32px]">
-        {/* ── Barra de navegación del mes ─────────────────────────────── */}
-        <div className="flex flex-col gap-[16px] border-b border-ink/15 pb-[16px] sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-[12px]">
-            <Link
-              href={href(prev)}
-              rel="prev"
-              className="grid h-[40px] w-[40px] place-items-center rounded-btn border border-ink/20 transition-colors hover:border-ink hover:bg-ink hover:text-paper"
-            >
-              <span className="sr-only">Previous month, {monthLabel(prev.year, prev.month)}</span>
-              <svg width="9" height="14" viewBox="0 0 9 14" fill="none" aria-hidden="true">
-                <path d="M8 1L2 7l6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
-            <Heading level={2} id="cal-title" className="text-d5 lg:text-d4">
-              {label}
-            </Heading>
-            <Link
-              href={href(next)}
-              rel="next"
-              className="grid h-[40px] w-[40px] place-items-center rounded-btn border border-ink/20 transition-colors hover:border-ink hover:bg-ink hover:text-paper"
-            >
-              <span className="sr-only">Next month, {monthLabel(next.year, next.month)}</span>
-              <svg width="9" height="14" viewBox="0 0 9 14" fill="none" aria-hidden="true">
-                <path d="M1 1l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
-          </div>
-
-          {/*
-            ⚠️ ACÁ ESTABA EL CONMUTADOR «LIST | MONTH» y se fue el 2026-09-17.
-            Obligaba a elegir entre las dos mitades de la respuesta y escondía
-            la otra, y su opción por defecto era la lista de texto: o sea que
-            el calendario de una página que se llama «the calendar» estaba a
-            un clic de distancia y apagado. Ahora las dos cosas están, una
-            arriba de la otra, y no hay nada que elegir.
-          */}
-        </div>
-
-        {occurrences.length === 0 ? (
-          /*
-            ⚠️ EL VACÍO DICE QUÉ HACER, y distingue los dos motivos: que no
-            haya nada cargado ese mes, o que el filtro no tenga resultados. Un
-            «no hay eventos» a secas deja a la persona sin salida.
-          */
+        {vacio ? (
           <div className="mt-bloque max-w-[58ch]">
             <Heading level={3} role="card">
-              {type ? 'Nothing of that kind this month' : `Nothing on the books for ${label} yet`}
+              {mesPasado
+                ? `${label} has already been and gone`
+                : type
+                  ? 'Nothing of that kind this month'
+                  : `Nothing on the books for ${label} yet`}
             </Heading>
             <p className="mt-[10px] text-[16px] leading-[1.7] text-body/80">
-              {type
-                ? `Clear the filter to see everything on in ${label}. The standing weekly lineup below runs every week regardless.`
-                : 'The calendar for the coming month usually lands around the 10th. The standing weekly lineup below runs every week regardless.'}
+              {mesPasado
+                ? 'The grid only shows what is still to come. Switch to the calendar to look back at the month, or jump forward with the arrows.'
+                : type
+                  ? `Clear the filter to see everything on in ${label}.`
+                  : 'The calendar for the coming month usually lands around the 10th.'}
             </p>
             <div className="mt-[20px] flex flex-wrap gap-[12px]">
+              {/*
+                ⚠️ `scroll={false}` ACÁ TAMBIÉN, por la misma razón que en la
+                barra: son los mismos tres parámetros y quien los toca está
+                mirando este bloque, no el hero. Ver la nota de `MonthBar`.
+              */}
               {type ? (
-                <ButtonLink href={href({ year, month }, null)} variant="primary">
+                <ButtonLink href={href({ year, month }, null)} variant="primary" scroll={false}>
                   See everything
                 </ButtonLink>
               ) : null}
-              <ButtonLink href={href(next)} variant="secondary">
+              <ButtonLink href={href(next)} variant="secondary" scroll={false}>
                 Try {monthLabel(next.year, next.month)}
               </ButtonLink>
             </div>
           </div>
-        ) : (
-          <MonthCalendar
-            grid={grid}
-            eventsByDate={eventsByDate}
-            label={label}
+        ) : view === 'grid' ? (
+          /*
+            ══════════════════════════════════════════════════════════════
+            LA VISTA GRID: UNA TARJETA POR FECHA.
+
+            ⚠️ SIN CARD ENVOLVENTE, y la del calendario sí la tiene. No es una
+            distracción: acá el contenido YA son tarjetas con filete, así que
+            meterlas dentro de otra card es una grilla adentro de una caja que
+            no separa nada de nada. La grilla del mes, en cambio, es una tabla
+            suelta que necesitaba algo que dijera dónde empieza.
+
+            ⚠️ ACÁ HUBO UN `<h3 class="sr-only">` CON EL MES y se fue el
+            2026-09-21. Existía porque el mes en la barra era un `<p>`, así que
+            quien navegaba por encabezados llegaba a veinte tarjetas sin saber de
+            qué mes eran. Ahora el mes ES el `<h2>` de la sección: repetirlo
+            invisible acá abajo sería decirlo dos veces.
+
+            ⚠️ LAS PROMOS DE FÚTBOL VIAJAN ACÁ POR PROP, y es el tercer lugar
+            que las recibe —los otros dos son la card grande y `/sunset-bar`—.
+            Camila, 2026-09-21: «debe mostrar toda la info». La tarjeta filtra
+            sola contra el texto de cada evento, así que esto no le pone precios
+            al bingo. ESTA LÍNEA SE BORRA CON LA TEMPORADA, junto con las otras
+            dos y `content/game-day.ts`.
+            ══════════════════════════════════════════════════════════════
+          */
+          <UpcomingCards
+            items={delGrid}
             today={hoy}
-            venueName={venue.name}
+            deals={GAME_DAY_DEALS}
+            dealsLabel={GAME_DAY_LABEL}
           />
+        ) : (
+          /*
+            ══════════════════════════════════════════════════════════════
+            ⚠️ EL MES VA ADENTRO DE UNA CARD GIGANTE Y ANTES IBA SUELTO SOBRE LA
+            PÁGINA. Camila, 2026-09-21: «¿podemos este calendario meterlo en una
+            card gigante o separarlo de alguna manera de las cards anteriores?».
+
+            El problema era de lectura, no de estética: una grilla sin nada que
+            dijera dónde empieza se lee pegada a lo que tiene arriba.
+
+            ⚠️ LA CARD ES DEL COLOR DE LA PÁGINA Y LA SEPARAN EL FILETE, LA
+            SOMBRA Y EL AIRE: NO UN COLOR. La primera versión fue `bone`, el
+            escalón de 1.08:1 que el sitio usa para cortar dos bloques, y sobre
+            una página `paper` se leía como una plancha amarilla. Camila,
+            2026-09-21: «necesito que el color de esta card sea muchísimo más
+            sutil, casi como el fondo; no quiero que se vea amarilla». El
+            amarillo del brand book es color de píldora, no de superficie
+            grande.
+
+            ⚠️ SIN `grano`, Y NO ES UN OLVIDO: `check:grano` lo marca. La regla
+            del repo es que el grano va en los FONDOS, no en los objetos, y esto
+            es un objeto —una card con filete y sombra— aunque mida 900px. Como
+            además es del mismo color que la sección, no hay parche que
+            disimular.
+
+            ⚠️ EL `pt` ES MÁS CHICO QUE EL `p`: la barra fija ya apoya encima y
+            un colchón parejo dejaría la grilla flotando lejos de su control.
+            ══════════════════════════════════════════════════════════════
+          */
+          <div className="mt-[20px] rounded-frame border border-ink/12 bg-paper p-[18px] pt-[8px] sombra-card lg:mt-[28px] lg:p-[32px] lg:pt-[16px]">
+            <MonthCalendar
+              grid={grid}
+              eventsByDate={eventsByDate}
+              label={label}
+              today={hoy}
+              venueName={venue.name}
+            />
+          </div>
         )}
-        </div>
-      </Section>
+        </Section>
+      </div>
 
       {/*
         ══════════════════════════════════════════════════════════════════
