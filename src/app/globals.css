@@ -2865,3 +2865,24 @@ main:has(+ .banda-arco) > :last-child {
     animation: none;
   }
 }
+
+/* ==========================================================================
+   LOS LINKS QUE HOY NO LLEVAN A NINGÚN LADO
+
+   ⚠️ TEMPORAL, y se va con `NavLock`. Mientras las páginas internas se
+   terminan, los links que apuntan a una ruta que no está en
+   `PAGINAS_PUBLICADAS` (`lib/flags.ts`) siguen a la vista y en su lugar, pero
+   no navegan. El atributo lo pone `NavLock` al pasar el mouse por encima.
+
+   Lo único que cambia es el CURSOR. Un botón que no hace nada no puede
+   mostrar la manito: con la manito el cliente cree que el sitio está roto, y
+   sin ella lee lo que es, algo que todavía no está.
+
+   ⚠️ EL HOVER NO SE APAGA a propósito. El color y el texto rodante son parte
+   de cómo se ve el diseño terminado, que es justo lo que se está mostrando.
+   ========================================================================== */
+
+a[data-sin-destino],
+a[data-sin-destino] * {
+  cursor: default;
+}

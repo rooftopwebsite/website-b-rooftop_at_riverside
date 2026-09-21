@@ -133,10 +133,11 @@ export default async function RootLayout({ children }: { readonly children: Reac
         <Preloader />
         <PageTransition />
 
-        {/* ⚠️ TEMPORAL. Bloquea la navegación a las otras páginas mientras el
-            rediseño está en revisión: la home ya está y las 22 internas
-            todavía no. Se apaga poniendo `SOLO_HOME` en `false` dentro de
-            `lib/flags.ts`, que es donde está el razonamiento completo. */}
+        {/* ⚠️ TEMPORAL. Deja navegar sólo las páginas terminadas —hoy home,
+            Sunset Bar, Food Trucks y What's On—: los links a las otras seis
+            siguen a la vista pero no llevan a ningún lado. Una página se abre
+            sumándola a `PAGINAS_PUBLICADAS` en `lib/flags.ts`, que es donde
+            está el razonamiento completo. */}
         <NavLock />
 
         {/* ⚠️ ACÁ ARRIBA VIVÍA EL `PromoBar` —los cuatro hechos del lugar—.
