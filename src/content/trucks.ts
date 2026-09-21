@@ -237,7 +237,21 @@ export const TRUCKS: readonly Truck[] = [
     gallery: [],
     // El cliente lo pasó como «posiblemente Reggae Kitchen». Ver la nota del campo.
     nameConfirmed: false,
-    active: true,
+    /*
+      ⚠️ SALIÓ DEL ROSTER EL 2026-09-21 Y NO ES UN TRUCK QUE SE FUE: NUNCA FUE
+      ESTE TRUCK. El cuarto lugar del yard lo ocupa Tropical Fusion, que estaba
+      acá abajo marcado como retirado. Camila, sobre la tarjeta que publicaba
+      «Name unconfirmed»: «el de name unconfirmed es Tropical Fusion,
+      actualizalo». Lo confirma la base: las cuatro cartas que el cliente subió
+      el mismo día son El Chilango MX, Sea me on wheels, Prime Carvery y
+      Tropical Fusion. Reggae Kitchen no tiene ninguna.
+
+      ⚠️ LA FICHA NO SE BORRA. El nombre salió del listado viejo de Wix como
+      «posiblemente Reggae Kitchen» y estuvo publicado como hueco todo este
+      tiempo; si mañana aparece, vuelve con `active: true` y su 301 nunca dejó
+      de existir.
+    */
+    active: false,
   },
 
   /* ── Retirados ──────────────────────────────────────────────────────────
@@ -295,11 +309,17 @@ export const TRUCKS: readonly Truck[] = [
     instagram: null,
     photo: '/images/trucks/tropical-1.jpg',
     photoAlt: 'A plated dish from the Tropical Fusion food truck',
-    photoBrief: "El truck por fuera. Ya no está en el roster.",
+    photoBrief: 'El truck por fuera, con el cartel legible y un plato servido.',
     menuImage: null,
     gallery: [],
     nameConfirmed: true,
-    active: false,
+    /*
+      ⚠️ VUELVE AL ROSTER EL 2026-09-21, y ocupa el lugar que hasta hoy tenía
+      «Name unconfirmed». Camila: «el de name unconfirmed es Tropical Fusion,
+      actualizalo». Su carta está cargada en la base desde el mismo día, así que
+      la tarjeta abre el PDF como las otras tres. Ver `menuDeTruck`.
+    */
+    active: true,
   },
 ];
 
@@ -356,3 +376,49 @@ export function retiredTruckRedirects() {
     statusCode: 301,
   }));
 }
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * LA CARTA DE CADA TRUCK, DESDE LA BASE.
+ *
+ * ⚠️ EL EMPAREJAMIENTO ES POR NOMBRE Y NO POR UN ID, y es a propósito: el
+ * dashboard no tiene campo para atar una carta a un truck —los `menus` son del
+ * RESTAURANTE— así que lo único que las relaciona es cómo las nombró el
+ * cliente. Es el mismo criterio que ya usa `content/happy-hour.ts` con el
+ * evento del happy hour: el dato manda sobre la etiqueta.
+ *
+ * ⚠️ SE COMPARA NORMALIZANDO, que es lo que hace que funcione de verdad: el
+ * cliente cargó «Sea me on wheels» y el roster dice «Sea Me on Wheels». Se
+ * bajan mayúsculas, se sacan acentos y todo lo que no sea letra o número, así
+ * que «El Chilango MX» y «el-chilango mx.» son la misma carta.
+ *
+ * ⚠️ SI NADIE COINCIDE, DEVUELVE `null` Y LA TARJETA CAE A `menuImage`, el JPG
+ * bajado a mano. Y si tampoco hay, el botón queda deshabilitado, que es el
+ * comportamiento que ya tenía. Nada de esto rompe si la base no contesta.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const normalizar = (s: string) =>
+  s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+
+/**
+ * La ficha del roster que corresponde a un nombre de carta.
+ *
+ * ⚠️ BUSCA EN TODOS LOS TRUCKS, ACTIVOS Y RETIRADOS. Desde que las tarjetas las
+ * decide el dashboard —ver `content/menus.ts`—, que un truck esté marcado como
+ * activo en este archivo ya no es lo que lo publica: lo publica tener una carta
+ * cargada. Si el cliente sube la carta de un truck que acá figura retirado, la
+ * tarjeta sale igual y con su foto, que es lo correcto: el dato de que está
+ * sirviendo es más fresco que este archivo.
+ */
+export const truckPorNombre = (nombre: string): Truck | undefined =>
+  TRUCKS.find((t) => normalizar(t.name) === normalizar(nombre));
+
+export const menuDeTruck = (
+  t: Truck,
+  cartas: readonly { readonly name: string; readonly pdfUrl: string }[],
+): string | null =>
+  cartas.find((c) => normalizar(c.name) === normalizar(t.name))?.pdfUrl ?? t.menuImage;

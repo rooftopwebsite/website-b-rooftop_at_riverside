@@ -3,7 +3,9 @@ import { ArrowUpRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { SectionHead } from '@/components/shared/Type';
-import { activeTrucks, nombreVisible } from '@/content/trucks';
+import MenuPdfDialog from '@/components/shared/MenuPdfDialog';
+import { cartasDeTrucks } from '@/content/menus';
+import { nombreVisible } from '@/content/trucks';
 import { HOURS } from '@/content/hours';
 
 /**
@@ -30,13 +32,18 @@ import { HOURS } from '@/content/hours';
  * tres datos cada una son una página completa.
  * ══════════════════════════════════════════════════════════════════════════
  *
- * ⚠️ EL CTA VA A UNA IMAGEN Y NO A UN PDF, y el pedido decía PDF. El motivo es
- * que el PDF no existe: el sitio vigente publica cada carta como IMAGEN dentro
- * de la página del truck, y los únicos tres PDF que tiene son el mapa de
- * estacionamiento, el del game lounge y el de eventos. Están bajadas en
- * `public/menus/`. Una carta de una página como imagen abre en cualquier
- * teléfono y se hace zoom con dos dedos; el día que el cliente mande PDF se
- * cambia la ruta en `trucks.ts` y esta sección no se entera.
+ * ⚠️ EL CTA ABRE EL PDF DE LA BASE, Y DURANTE CINCO DÍAS ABRIÓ UN JPG. El
+ * pedido original —2026-09-16— decía PDF y no había ninguno: el sitio vigente
+ * publica cada carta como IMAGEN dentro de la página del truck, así que se
+ * bajaron a `public/menus/` y el CTA abría eso, en dos de los cuatro trucks. El
+ * 2026-09-21 el cliente subió las cuatro cartas al dashboard: «en la base de
+ * datos ya actualicé los menús, están subidos los PDF, conectá cada card con su
+ * menú de la base de datos».
+ *
+ * Ahora la fuente es la base —ver `getMenuPdfs` y `menuDeTruck`— y el JPG queda
+ * de respaldo para el caso en que la base no conteste. Y el PDF se abre en un
+ * diálogo sobre la página, no en una pestaña: «debe abrirse cada PDF como se
+ * abre el de Sunset Bar». Ver `shared/MenuPdfDialog`.
  *
  * ⚠️ NO HAY CTA A INSTAGRAM, aunque de El Chilango lo tengamos. Pedido de
  * Camila: la tarjeta cierra con una sola acción. Dos links juntos al pie —uno
@@ -45,153 +52,156 @@ import { HOURS } from '@/content/hours';
  * cuando haga falta.
  */
 /**
- * EL TOLDO que corona la foto de cada tarjeta.
+ * ══════════════════════════════════════════════════════════════════════════
+ * EL TOLDO que corona cada tarjeta de truck.
  *
  * Pedido de Camila, 2026-09-17: que las tarjetas lleven «un tildito, típico de
  * los íconos que representan una tienda», y que no dé sensación de aniñado. El
- * ícono que mandó de referencia es el de Google Business: una casilla con el
- * toldo a rayas arriba. Esto es ese toldo, y con él la tarjeta de un negocio
- * que no tiene local pasa a tener frente.
+ * ícono de referencia es el de Google Business: una casilla con el toldo
+ * arriba. Con él, la tarjeta de un negocio que no tiene local pasa a tener
+ * frente.
  *
- * ⚠️ VA ARRIBA DE LA FOTO Y NO ABAJO. La primera versión lo puso al pie, como
- * remate; Camila mandó la referencia y marcó el borde de arriba: «con toldito
- * me refería a algo así». Y tiene razón por dibujo: un toldo cuelga, no se
- * apoya. Al pie los mismos dientes se leen como un recorte ondulado cualquiera.
+ * ⚠️ EL 2026-09-21 PASÓ DE SER UN RECORTE A SER UNA PIEZA, en tres pedidos
+ * seguidos de Camila sobre la página:
  *
- * ⚠️ NO ES EL FESTÓN QUE SE BORRÓ. `Scallop.tsx` murió porque pretendía ser el
- * SEPARADOR de marca, y el brand book tiene olas para eso. Eso no cambia: la
- * cenefa entre dos superficies de la página sigue siendo `WaveBorder` y esto no
- * compite con ella. Es otra pieza y otra escala: no corta la página, corona una
- * foto adentro de una tarjeta de 266px.
+ *   1. «que el toldo esté por fuera de la card, como sobre ella no dentro de
+ *      ella, y que tenga color, para que sean vistosos» → salió del `article`,
+ *      que es `overflow-hidden`, y pasó a colgar del `<li>`.
+ *   2. «que sea más alto y no recto, arriba más angosto, y el alto debe tapar
+ *      el radius de las esquinas superiores» → trapecio de 60px.
+ *   3. «que tenga dos colores, usemos los verdes; que las puntas sean
+ *      redonditas y que las esquinas derechas no se corten» → esto.
  *
- * ⚠️ EL ARCO ES CHATO A PROPÓSITO. 10px de hondo contra 13 de medio período es
- * 0,77 de un semicírculo. El semicírculo entero es la forma de una guirnalda de
- * cumpleaños, que era exactamente lo que había que esquivar; achatado se lee
- * como la caída de una lona tensada.
+ * ⚠️ LAS RAYAS SON DOS VERDES DE LA PALETA, `deep` y `teal600`. Las rayas
+ * estuvieron descartadas hasta hoy —«cuatro toldos a rayas son una calesita»—
+ * y lo que las hace funcionar ahora es el par elegido: dos tonos del MISMO
+ * color, uno oscuro y uno medio, que a distancia se leen como un toldo con
+ * volumen y no como una guirnalda. El naranja quedó libre para el CTA, que es
+ * lo único que hay que apretar en la tarjeta.
  *
- * ⚠️ VA DEL COLOR DE LA TARJETA Y NO A RAYAS. El ícono de referencia tiene el
- * toldo rayado, y rayas es justo por donde esto se vuelve infantil: cuatro
- * tarjetas con cuatro toldos a rayas es una calesita. Del color del cuerpo es
- * el CUERPO el que baja sobre la foto, y la tarjeta se lee como una sola pieza
- * recortada en vez de como una foto con un adorno encima.
+ * ⚠️ LAS RAYAS SE ESTIRAN, NO SE RECORTAN, y ése es el arreglo de «las esquinas
+ * derechas no se cortan». Antes el dibujo era un patrón de 26px recortado con
+ * `slice` a lo ancho de la tarjeta: la última punta caía donde caía y quedaba
+ * cortada al medio contra el borde derecho. Ahora son SIEMPRE diez rayas
+ * iguales con `preserveAspectRatio="none"`, así que la primera empieza exacta
+ * en el borde izquierdo y la décima termina exacta en el derecho, en cualquier
+ * ancho de pantalla.
  *
- * ⚠️ SÓLO VA DONDE HAY FOTO DE VERDAD. Sobre el placeholder de «falta la foto»
- * cortaría su filete punteado por arriba, que es la misma razón por la que el
- * `bg-fog` tampoco va ahí.
+ * ⚠️ Y POR ESO LAS PUNTAS SON REDONDAS SIEMPRE: el alto del SVG está fijo en
+ * píxeles, así que el estirado es sólo horizontal y la profundidad del arco no
+ * cambia. Una raya más ancha da una punta más ancha, no una punta chata.
+ * ══════════════════════════════════════════════════════════════════════════
  */
 const TOLDO = {
-  /** Cada cuánto se repite el diente. Fijo en px: el tamaño no depende del
-      ancho de la tarjeta, porque es textura y no grilla. */
-  periodo: 26,
   /**
-   * La banda lisa de arriba, antes de que empiecen los dientes.
+   * Cuántas rayas tiene el toldo, siempre.
    *
-   * ⚠️ SIN ELLA NO HAY TOLDO. La primera versión eran los dientes pelados
-   * colgando del borde, y ahí dos dientes vecinos sólo se tocan en un punto:
-   * se leía como una fila de medialunas, no como una lona. La banda es lo que
-   * los une en UNA pieza, y es lo que tiene el ícono de la tienda.
+   * ⚠️ ES UN NÚMERO PAR A PROPÓSITO. Con impar, la primera y la última raya son
+   * del mismo color y el toldo se ve desbalanceado contra la tarjeta.
+   *
+   * ⚠️ Y SON DIEZ PORQUE ES LO QUE DA UNA RAYA DE ~28px en la tarjeta de
+   * desktop, que es el ancho al que la punta se lee redonda. En mobile la
+   * tarjeta mide más y la raya llega a ~37: más gorda, pero entera.
    */
-  banda: 7,
-  /** Cuánto baja el diente por debajo de la banda. */
-  alto: 10,
-  /** Ancho del `viewBox`. Más que cualquier tarjeta, así el dibujo se recorta
-      en vez de estirarse. Ver `preserveAspectRatio` abajo. */
-  ancho: 1600,
+  rayas: 10,
+  /** El alto de la lona, sin contar las puntas. */
+  lona: 48,
+  /**
+   * Cuánto baja la punta por debajo de la lona.
+   *
+   * ⚠️ SUBIÓ DE 10 A 12 CON EL TOLDO ALTO. La punta se mide contra la lona que
+   * la sostiene: colgando de 48px, los 10 de antes se leían como un borde
+   * ondulado y no como la caída de una lona.
+   */
+  punta: 12,
+  /**
+   * Cuánto entra la lona por cada lado ARRIBA: es lo que la hace trapecio.
+   *
+   * ⚠️ VA EN PÍXELES FIJOS Y NO EN PORCENTAJE. Con porcentaje, la tarjeta ancha
+   * de mobile tendría el doble de caída que la angosta de desktop y los cuatro
+   * toldos de la fila no se parecerían entre sí.
+   */
+  entrada: 18,
+  /**
+   * Cuánto vuela por cada lado, fuera de la tarjeta.
+   *
+   * ⚠️ ESTÁ ATADO AL `gap` DE LA GRILLA, QUE ES 24px. Camila: «tené cuidado que
+   * en ningún device se toquen los toldos entre sí ni toquen la card que no le
+   * pertenece». Con 8 de vuelo quedan 8px de aire entre dos toldos vecinos
+   * (24 − 8 − 8). Si cambia el `gap`, cambia esto.
+   */
+  vuelo: 8,
+  /**
+   * Cuánto asoma por encima del borde de la tarjeta.
+   *
+   * ⚠️ EL OTRO LADO DE LA MISMA CUENTA, y el que obliga a que la grilla tenga
+   * `gap-y` propio: hacia arriba el toldo invade el espacio de la FILA de
+   * arriba. Con 26 de asomo, la grilla necesita 48 de aire vertical para dejar
+   * 22px entre el toldo y la tarjeta de arriba. Ver la nota de la grilla.
+   */
+  asomo: 26,
 } as const;
 
-/**
- * El camino, armado una vez al cargar el módulo y no una vez por tarjeta.
- *
- * Va por el borde de arriba hacia la derecha, baja el alto de la banda y
- * vuelve hacia la izquierda en arcos: cada arco es un diente.
- *
- * ⚠️ SE DIBUJAN LOS ARCOS UNO POR UNO Y NO CON UN `<pattern>`, que es como lo
- * resuelve `WaveBorder`. Un `pattern` necesita un `id`, y acá el mismo SVG se
- * repite cuatro veces en la misma página: cuatro `id` iguales es HTML inválido.
- * Sin `id` no hay nada que pueda chocar.
- *
- * ⚠️ EL `sweep-flag` VA EN 1 Y NO EN 0, y es al revés de lo que pide la
- * intuición. Los arcos se recorren de DERECHA A IZQUIERDA, y en esa dirección
- * el que sale hacia abajo es el 1. Con 0 los dientes muerden hacia arriba y el
- * toldo queda dado vuelta.
- */
-/**
- * ⚠️ EL CAMINO YA NO TRAE LA BANDA LISA, Y NO ES QUE SE HAYA PERDIDO: desde que
- * el toldo se montó ENCIMA de la tarjeta, la banda es un `<span>` con fondo y
- * esquinas redondeadas arriba —que un `<path>` no puede redondear sin volverse
- * ilegible— y acá quedan sólo los dientes, colgando de su borde inferior.
- *
- * Las dos piezas se solapan un píxel (`-mt-px`) porque entre dos elementos
- * pintados del mismo color, en pantallas con DPR fraccional, el redondeo deja
- * una línea del fondo asomando en la junta.
- */
-const TOLDO_D = (() => {
-  const { periodo: p, alto: a, ancho } = TOLDO;
-  const dientes = Math.ceil(ancho / p);
-  const w = dientes * p;
-  let d = `M0 0L${w} 0`;
-  for (let i = dientes; i >= 1; i -= 1) d += ` A${p / 2} ${a} 0 0 1 ${(i - 1) * p} 0`;
-  return `${d}Z`;
-})();
+/** Los dos verdes de la raya, en orden. Salen de los tokens, no de un hex. */
+const TOLDO_RAYAS = ['var(--color-deep)', 'var(--color-teal600)'] as const;
 
 /**
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ EL TOLDO SE MONTÓ ENCIMA DE LA TARJETA Y ESTABA ADENTRO. Camila,
- * 2026-09-21, con el dibujo hecho sobre la captura: «quiero que el toldo esté
- * por fuera de la card, como sobre ella no dentro de ella, así como dibujo en
- * la imagen, y que tenga color, para que sean vistosos y no pasen
- * desapercibidos».
+ * Una raya con su punta: el rectángulo de la lona y el arco que le cuelga.
  *
- * Los tres cambios que pide el dibujo, y son tres cosas distintas:
+ * ⚠️ EL `sweep-flag` VA EN 1 Y NO EN 0, y es al revés de lo que pide la
+ * intuición: el arco se recorre de DERECHA A IZQUIERDA y en esa dirección el
+ * que sale hacia abajo es el 1. Con 0 la punta muerde hacia arriba.
  *
- *   · SOBRESALE POR LOS COSTADOS. Antes medía exactamente el ancho de la foto,
- *     así que era un recorte del borde superior y no una pieza apoyada encima.
- *     Un toldo real vuela sobre la vereda: sobresale 10px por lado.
- *   · ASOMA POR ARRIBA. La lona sube 12px por encima del borde de la tarjeta,
- *     que es lo que lo despega de la foto y lo convierte en frente.
- *   · VA EN COLOR. En `paper` era el cuerpo de la tarjeta bajando sobre la
- *     foto —deliberado entonces, invisible ahora—.
- *
- * ⚠️ POR ESO VIVE FUERA DEL `article` Y NO ADENTRO: la tarjeta es
- * `overflow-hidden` para recortar la foto en sus esquinas, y ahí adentro nada
- * puede sobresalir. Cuelga del `<li>`, que es `relative` justamente para esto.
- *
- * ⚠️ LOS 10px DE VUELO NO SON UN NÚMERO SUELTO: el `gap` de la grilla es 24, así
- * que dos toldos vecinos se acercan a 4px sin tocarse. Si cambia el `gap`,
- * cambia esto.
- *
- * ⚠️ EL COLOR ES `sunset` Y NO UNA RAYA. La referencia del ícono de tienda
- * tiene el toldo rayado y eso se descartó desde el principio: cuatro toldos a
- * rayas son una calesita. Liso y en el naranja de marca es la misma pieza con
- * el volumen que faltaba, y cierra con el CTA naranja al pie de la tarjeta: la
- * tarjeta queda enmarcada arriba y abajo por el mismo color.
- *
- * ⚠️ AHORA VA EN LAS CUATRO TARJETAS, incluida la del placeholder. Antes se
- * salteaba esa porque el dibujo le cortaba el filete punteado por arriba; fuera
- * de la tarjeta no toca nada, y un roster donde tres tienen frente y una no se
- * lee como un error de carga.
- * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SE DIBUJA RAYA POR RAYA Y NO CON UN `<pattern>`, que es como lo resuelve
+ * `WaveBorder`. Un `pattern` necesita un `id`, y acá el mismo SVG se repite
+ * cuatro veces en la misma página: cuatro `id` iguales es HTML inválido.
  */
+const rayaD = (i: number) => {
+  const { lona, punta } = TOLDO;
+  const x = i;
+  return `M${x} 0H${x + 1}V${lona}A0.5 ${punta} 0 0 1 ${x} ${lona}Z`;
+};
+
 function ToldoEdge() {
+  const { rayas, lona, punta, entrada, vuelo, asomo } = TOLDO;
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute -top-[12px] -right-[10px] -left-[10px] z-10 block"
+      className="pointer-events-none absolute z-10 block"
+      style={{
+        top: -asomo,
+        left: -vuelo,
+        right: -vuelo,
+        /*
+          El trapecio se recorta sobre el contenedor y no se dibuja adentro del
+          SVG: así la inclinación se mide en píxeles reales de pantalla —los 18
+          de `entrada`— y no en unidades de un `viewBox` que se estira.
+
+          ⚠️ EL `clip-path` VA EN `style` Y NO COMO CLASE porque lleva un
+          `calc()` con porcentaje y píxeles adentro de un `polygon()`: como
+          utilidad arbitraria de Tailwind hay que codificar cada espacio con un
+          guión bajo y queda ilegible para lo que es.
+        */
+        clipPath: `polygon(${entrada}px 0, calc(100% - ${entrada}px) 0, 100% 100%, 0 100%)`,
+      }}
     >
-      {/* La lona: el lomo liso que se apoya sobre el borde de la tarjeta. */}
-      <span className="block h-[13px] rounded-t-[10px] bg-sunset" />
       <svg
         role="presentation"
         width="100%"
-        height={TOLDO.alto}
-        viewBox={`0 0 ${TOLDO.ancho} ${TOLDO.alto}`}
-        /* `slice` recorta lo que sobra a la derecha en vez de escalar: así el
-           diente mide 26px igual en la tarjeta angosta de desktop que en la
-           ancha de mobile, que es lo que lo mantiene leyéndose como toldo. */
-        preserveAspectRatio="xMinYMin slice"
-        className="-mt-px block"
+        height={lona + punta}
+        viewBox={`0 0 ${rayas} ${lona + punta}`}
+        /*
+          ⚠️ `none` Y NO `slice`: es lo que garantiza que la última raya termine
+          EXACTA en el borde derecho en cualquier ancho. El estirado es sólo
+          horizontal —el alto va fijo en píxeles— así que la punta se ensancha
+          pero no se achata.
+        */
+        preserveAspectRatio="none"
+        className="block"
       >
-        <path d={TOLDO_D} fill="var(--color-sunset)" />
+        {Array.from({ length: rayas }, (_, i) => (
+          <path key={i} d={rayaD(i)} fill={TOLDO_RAYAS[i % TOLDO_RAYAS.length]} />
+        ))}
       </svg>
     </span>
   );
@@ -218,7 +228,7 @@ function tramosDeTrucks() {
   return out;
 }
 
-export default function TruckCards({
+export default async function TruckCards({
   id = 'roster-title',
   tone = 'paper',
   head = true,
@@ -241,7 +251,19 @@ export default function TruckCards({
    */
   readonly head?: boolean;
 }) {
-  const trucks = activeTrucks();
+  /*
+    ══════════════════════════════════════════════════════════════════════════
+    ⚠️ LA LISTA DE TARJETAS LA DECIDE EL DASHBOARD, NO ESTE ARCHIVO NI EL
+    ROSTER. Camila, 2026-09-21: «hagamos que las cards sean dinámicas, que si yo
+    elimino uno de los menús se borre la card en la web».
+
+    Una consulta para toda la sección, y quién es cada carta —de qué truck, con
+    qué foto, y cuál de todas es la de la barra, que acá no va— lo resuelve
+    `content/menus.ts`. Si la base no contesta, esa misma función cae al roster
+    y la página se sirve igual.
+    ══════════════════════════════════════════════════════════════════════════
+  */
+  const cartas = await cartasDeTrucks();
   const tramos = tramosDeTrucks();
 
   /*
@@ -317,10 +339,24 @@ export default function TruckCards({
         no se revela, se muestra.
       */}
       <ul
-        className={`grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4 ${head ? 'mt-bloque' : ''}`}
+        /*
+          ⚠️ EL AIRE VERTICAL ES EL DOBLE QUE EL HORIZONTAL, Y LO PIDE EL TOLDO.
+          Camila, 2026-09-21: «tené cuidado que en ningún device se toquen los
+          toldos entre sí ni toquen la card que no le pertenece».
+
+          El toldo asoma 26px por ENCIMA de su tarjeta, o sea que invade el
+          espacio de la fila de arriba. Con `gap-6` —24px— en un layout de dos
+          columnas, el toldo de la segunda fila se montaba 2px sobre la tarjeta
+          de la primera. Con 48 quedan 22px de aire, y como el `gap-x` sigue en
+          24 y el vuelo lateral es de 8 por lado, entre dos toldos vecinos
+          quedan 8px. Los tres números viven en `TOLDO` y están anotados ahí.
+        */
+        className={`grid list-none grid-cols-1 gap-x-6 gap-y-12 p-0 sm:grid-cols-2 lg:grid-cols-4 ${head ? 'mt-bloque' : ''}`}
       >
-        {trucks.map((t) => (
-          <li key={t.slug} className="relative h-full">
+        {cartas.map((carta) => {
+          const t = carta.truck;
+          return (
+          <li key={carta.name} className="relative h-full">
             <ToldoEdge />
             <article className="flex h-full flex-col overflow-hidden rounded-shell bg-paper sombra-card">
               {/* ⚠️ EL `bg-fog` VA SÓLO DETRÁS DE UNA FOTO REAL, donde tapa el hueco
@@ -328,29 +364,41 @@ export default function TruckCards({
                   placeholder es `ink` al 6 %, o sea que se compone sobre lo que
                   tenga atrás, y sobre `fog` daba #d1cdbd. Ahí su propio rótulo
                   caía a 4.38:1 y axe lo marcó. */}
-              <div className={`relative aspect-[3/2] ${t.photo ? 'bg-fog' : ''}`}>
-                {t.photo ? (
+              <div className={`relative aspect-[3/2] ${t?.photo ? 'bg-fog' : ''}`}>
+                {t?.photo ? (
                   <>
                     <Image
                       src={t.photo}
-                      alt={t.photoAlt ?? t.name}
+                      alt={t.photoAlt ?? carta.name}
                       fill
                       sizes="(min-width: 1024px) 280px, (min-width: 640px) 46vw, 92vw"
                       className="object-cover"
                     />
                   </>
                 ) : (
-                  <PhotoPending brief={t.photoBrief} ratio="aspect-[3/2]" className="h-full" />
+                  /* Sin ficha en el roster no hay brief escrito, así que el
+                     placeholder pide lo mínimo: el truck y un plato. */
+                  <PhotoPending
+                    brief={t?.photoBrief ?? `El truck de ${carta.name} y un plato servido.`}
+                    ratio="aspect-[3/2]"
+                    className="h-full"
+                  />
                 )}
               </div>
 
               <div className="flex flex-1 flex-col p-5">
-                <p className="m-0 font-body text-micro font-bold uppercase tracking-cta text-muted">
-                  {t.cuisine}
-                </p>
+                {/* La cocina sale del roster: una carta nueva no la trae, y en
+                    ese caso la tarjeta abre directamente por el nombre. */}
+                {t ? (
+                  <p className="m-0 font-body text-micro font-bold uppercase tracking-cta text-muted">
+                    {t.cuisine}
+                  </p>
+                ) : null}
 
-                <h3 className="m-0 mt-1.5 font-display text-d5 font-bold uppercase leading-none text-ink">
-                  {nombreVisible(t)}
+                <h3
+                  className={`m-0 font-display text-d5 font-bold uppercase leading-none text-ink ${t ? 'mt-1.5' : ''}`}
+                >
+                  {t ? nombreVisible(t) : carta.name}
                 </h3>
 
                 {/*
@@ -363,9 +411,9 @@ export default function TruckCards({
                   El respaldo a `story` queda para un truck que todavía no tenga
                   bajada propia: es mejor una frase cortada que ninguna.
                 */}
-                {t.blurb ?? t.story ? (
+                {carta.description ? (
                   <p className="m-0 mt-3 font-body text-dato font-light leading-[1.5] text-body">
-                    {t.blurb ?? t.story}
+                    {carta.description}
                   </p>
                 ) : null}
 
@@ -387,17 +435,16 @@ export default function TruckCards({
                     del tabulador y lo anuncia como no disponible.
                     ══════════════════════════════════════════════════════════
                   */}
-                  {t.menuImage ? (
-                    <a
-                      href={t.menuImage}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-dato font-semibold uppercase tracking-cta text-ink transition-colors duration-200 hover:bg-sunset-hover"
-                    >
-                      See the menu
-                      <ArrowUpRight className="size-3.5 shrink-0" />
-                      <span className="sr-only">(opens in a new tab)</span>
-                    </a>
+                  {carta.pdfUrl ? (
+                    /*
+                      ⚠️ LA CARTA ABRE EN UN DIÁLOGO Y YA NO EN UNA PESTAÑA.
+                      Camila: «debe abrirse cada PDF como se abre el de Sunset
+                      Bar». Lo que se copia es el mecanismo —`<dialog>` nativo,
+                      telón que cierra al clic, Escape— y está todo en el
+                      componente, con el link a la pestaña como salida por si el
+                      visor embebido no dibuja.
+                    */
+                    <MenuPdfDialog url={carta.pdfUrl} label={t ? nombreVisible(t) : carta.name} />
                   ) : (
                     <button
                       type="button"
@@ -412,7 +459,8 @@ export default function TruckCards({
               </div>
             </article>
           </li>
-        ))}
+          );
+        })}
       </ul>
 
       {/*
@@ -459,6 +507,14 @@ export default function TruckCards({
         quedaba un hueco muerto después de cada horario. Ahora el `1fr` lo toma
         el título y la `<dl>` mide lo que mide su contenido.
 
+        ⚠️ EN EL CELULAR LOS CUATRO TRAMOS VAN UNO ABAJO DEL OTRO. Camila,
+        2026-09-21: «en mobile esto debe ir en una única fila uno sobre otro».
+        Con dos columnas a 375px cada tramo medía ~150px y ahí «Wednesday to
+        Thursday» se partía en dos renglones y «12:00 PM – 11:00 PM» en tres:
+        la misma desprolijidad que las cuatro columnas causaban en escritorio,
+        pero peor. Una sola columna deja cada rótulo y cada horario en su
+        renglón. Las dos columnas vuelven desde `sm`.
+
         ⚠️ LOS DÍAS CERRADOS NO SE LISTAN. Es la misma decisión que el cliente
         pidió para la barra de horarios del encabezado: se comunica por cuándo
         ABRE, no por cuándo no.
@@ -488,7 +544,7 @@ export default function TruckCards({
             </p>
           </div>
 
-          <dl className="m-0 grid grid-cols-2 gap-x-8 gap-y-6 lg:gap-x-14 lg:gap-y-7">
+          <dl className="m-0 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2 sm:gap-y-6 lg:gap-x-14 lg:gap-y-7">
             {tramos.map((t) => (
               <div key={t.label} className="border-t border-paper/20 pt-4">
                 <dt className="font-body text-micro font-bold uppercase tracking-cta text-cream">

@@ -180,6 +180,70 @@ export async function getHours(location: string): Promise<readonly Hours[] | nul
 }
 
 /* ==========================================================================
+   LAS CARTAS COMO PDF
+
+   ⚠️ DESDE EL 2026-09-21 CADA CARTA TIENE SU PDF EN LA BASE. Camila: «en la
+   base de datos ya actualicé los menús, están subidos los PDF, conectá cada
+   card con su menú de la base de datos». Son cinco filas de `menus` con
+   `pdf_url` apuntando al storage de Supabase: las cuatro de los trucks y la del
+   Sunset Bar.
+
+   ⚠️ ESTO REEMPLAZA A `menuImage` DE `content/trucks.ts`, que eran dos JPG
+   bajados a mano del sitio viejo el 2026-09-16 y que sólo cubrían dos de los
+   cuatro trucks. El campo queda en el archivo como respaldo —si la base no
+   contesta, la tarjeta sigue teniendo algo que abrir— pero la fuente ahora es
+   la base, que es lo que el cliente puede actualizar solo.
+   ========================================================================== */
+
+/** Una carta publicada como archivo: el nombre que le puso el cliente y su PDF. */
+export interface MenuPdf {
+  readonly name: string;
+  /**
+   * La bajada que el cliente escribe en el dashboard.
+   *
+   * ⚠️ ES LO QUE PUBLICA LA TARJETA DEL TRUCK. Camila, 2026-09-21: «cada
+   * descripción agregala en la descripción de cada menú en la base de datos».
+   * Antes el texto de la tarjeta vivía en `content/trucks.ts`, o sea que
+   * cambiarlo era un commit. Ahora lo cambia el cliente.
+   */
+  readonly description: string | null;
+  readonly pdfUrl: string;
+}
+
+/**
+ * Las cartas con PDF cargado, tal como están en el dashboard.
+ *
+ * ⚠️ NO FILTRA POR NOMBRE NI ADIVINA A QUÉ TRUCK PERTENECE CADA UNA: devuelve
+ * lo que hay y el emparejamiento lo hace `content/trucks.ts`, que es donde vive
+ * el roster. Acá no se sabe qué es un truck.
+ *
+ * ⚠️ FILTRA `is_active` y las que no tienen PDF. Una carta desactivada en el
+ * dashboard es una carta que el cliente sacó, y publicarla es ofrecer algo que
+ * no existe.
+ *
+ * ⚠️ EL `pdf_url` YA VIENE CON `?v=` —el sello de la última subida— y se
+ * conserva tal cual: es lo que hace que al reemplazar el archivo el navegador
+ * no siga mostrando el viejo de su caché.
+ */
+export async function getMenuPdfs(): Promise<readonly MenuPdf[]> {
+  const rows = await query<{
+    name: string;
+    description: string | null;
+    pdf_url: string | null;
+    is_active: boolean;
+  }>(
+    `menus?restaurant_id=eq.${RESTAURANT_ID}&select=name,description,pdf_url,is_active&order=sort_order,name`,
+  );
+  return rows
+    .filter((r) => r.is_active && r.pdf_url)
+    .map((r) => ({
+      name: r.name,
+      description: sinEmDash(r.description),
+      pdfUrl: r.pdf_url as string,
+    }));
+}
+
+/* ==========================================================================
    EL MENÚ DE LA BARRA
 
    ⚠️ ESTÁ CARGADO ENTERO EN LA BASE, y el repo lo tenía transcrito a mano.

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import SoftWave from '@/components/shared/SoftWave';
+import BarMenuPdf from '@/components/sections/BarMenuPdf';
 import MenuSheets from '@/components/sections/MenuSheets';
 import FeaturedEventCard, { dealsNombrados } from '@/components/shared/FeaturedEventCard';
 import PlateHero from '@/components/shared/PlateHero';
@@ -8,6 +9,7 @@ import Section from '@/components/shared/Section';
 import { Heading } from '@/components/shared/Type';
 import { getVenueEvents } from '@/content/events';
 import { GAME_DAY_DEALS, GAME_DAY_LABEL, GAME_DAY_NOTE } from '@/content/game-day';
+import { cartaDelBar } from '@/content/menus';
 import { getHappyHour } from '@/content/happy-hour';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
@@ -62,6 +64,25 @@ export default async function SunsetBarPage() {
    * ══════════════════════════════════════════════════════════════════════════
    */
   const happyHour = await getHappyHour();
+
+  /*
+   * ══════════════════════════════════════════════════════════════════════════
+   * ⚠️ LA CARTA SALE DE LA BASE DESDE EL 2026-09-21, y son las dos láminas JPG
+   * del sitio viejo las que pasan a ser el respaldo. Camila: «tomá el PDF de ese
+   * menú para la página correspondiente, actualizalo para que el menú se tome de
+   * ahí y no sean las imágenes subidas desde el repo».
+   *
+   * ⚠️ EL RESPALDO NO ES DECORATIVO: si la base no contesta o si alguien borra
+   * esa carta del dashboard, la página sigue publicando la carta que tenemos en
+   * `public/menus/` en vez de quedarse sin menú, que es lo único que esta
+   * página no puede hacer.
+   *
+   * ⚠️ CUÁL DE LAS CINCO CARTAS ES LA DEL BAR lo decide `content/menus.ts` por
+   * el nombre, que es lo mismo que la deja FUERA de las tarjetas de
+   * `/food-trucks`. Las dos reglas son la misma línea.
+   * ══════════════════════════════════════════════════════════════════════════
+   */
+  const carta = await cartaDelBar();
 
   /*
    * ══════════════════════════════════════════════════════════════════════════
@@ -640,7 +661,7 @@ export default async function SunsetBarPage() {
         todos los ítems de una, la carta no se renderiza vacía.
         ══════════════════════════════════════════════════════════════════
       */}
-      <MenuSheets />
+      {carta ? <BarMenuPdf url={carta.pdfUrl} /> : <MenuSheets />}
 
       {/*
         ══════════════════════════════════════════════════════════════════════
