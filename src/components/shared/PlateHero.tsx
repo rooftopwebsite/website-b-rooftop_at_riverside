@@ -179,7 +179,7 @@ export default function PlateHero({
 
         <h1
           id={titleId}
-          className="relative z-10 mx-auto mt-5 mb-[-0.94em] w-fit max-w-full rounded-b-frame bg-bone grano px-[0.3em] pb-[0.12em] text-center font-display text-banda font-extrabold uppercase text-ink lg:mt-7"
+          className="relative z-10 mx-auto mt-5 mb-[-0.94em] w-fit max-w-[calc(100%-2*var(--radius-frame))] rounded-b-frame bg-bone grano px-[0.3em] pb-[0.12em] text-center font-display text-banda font-extrabold uppercase text-ink lg:mt-7"
         >
           {title}
 
@@ -203,6 +203,20 @@ export default function PlateHero({
             el viewport y con si la display ya cargó. Metidas en la caja de la
             foto habría que medirlo en JS como hace la home con su recorte;
             colgadas de `left-full` y `right-full` se acomodan solas.
+
+            ⚠️ Y POR ESO LA PLACA SE TOPA EN `100% − 2×--radius-frame` Y NO EN
+            `max-w-full`, que es lo que tenía. Colgadas del costado, las dos
+            esquinas no cuentan para el ancho de la placa: si la placa llega al
+            borde del contenedor, las esquinas quedan directamente afuera de la
+            página. Pasaba en /sunset-bar a 360px —el titular medía 275 y el
+            hueco que quedaba era de 43, uno menos que los 44 de la pieza— y
+            arrastraba 1px de scroll horizontal a todo el documento; a 320px
+            eran 16. Reservando los dos anchos de esquina, el titular parte un
+            renglón antes en celular y las piezas caen siempre adentro de la
+            caja de la foto, que es donde tienen que morder.
+
+            Decisión de Camila, 2026-09-21, sobre las tres opciones: recortar
+            el hero, angostar el titular o dejar el píxel. Eligió angostar.
 
             ⚠️ LA ALTURA ES `100% − 0.94em`, QUE ES EL MISMO NÚMERO DEL
             `mb-[-0.94em]` de esta placa, o sea exactamente donde arranca la

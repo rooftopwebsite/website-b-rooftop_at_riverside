@@ -160,7 +160,14 @@ export default function FoodTrucksPage() {
         ══════════════════════════════════════════════════════════════════
       */}
       <Section band="md" bandTop="none" labelledBy="rota-title" innerClassName={PADDING_CRUCE}>
-        <div className="relative rounded-frame bg-cream grano px-7 pt-14 pb-20 text-center sm:px-16 sm:pt-16 sm:pb-16 lg:px-24">
+        {/*
+          ⚠️ EL COSTADO DE LA LOSA BAJÓ DE 28px A 20px EN CELULAR. A 360px
+          —la pantalla Android más común— entre el margen de 16px de la página
+          y los 28px de la losa quedaban 272px de hueco para un CTA que mide
+          278: se pasaba por 6px. Con 20px el hueco es de 288 y el botón entra
+          con aire. De `sm` en adelante no cambia nada.
+        */}
+        <div className="relative rounded-frame bg-cream grano px-5 pt-14 pb-20 text-center sm:px-16 sm:pt-16 sm:pb-16 lg:px-24">
           {/* El filete punteado, separado del borde. `inset-3.5` son los 14px
               que lo despegan, igual que en los huecos de foto de `WhatsOn`. */}
           <span
@@ -202,9 +209,19 @@ export default function FoodTrucksPage() {
               The lineup changes. We announce which kitchens are coming, and from when, on
               Instagram.
             </p>
+            {/*
+              ⚠️ EL CTA DECÍA «Follow for the new trucks» Y SE ACORTÓ. Camila,
+              2026-09-21: «cuidado con los CTA largos, nunca deben quedar CTA
+              con texto en dos líneas». Eran 25 caracteres más el ícono de
+              enlace externo, y en celular no entraban en una línea.
+
+              La frase de arriba ya dice QUÉ se anuncia —los camiones nuevos y
+              desde cuándo—, así que el botón sólo tiene que decir dónde. Ver
+              el presupuesto de caracteres en `BASE`, en `shared/Button.tsx`.
+            */}
             <div className="mt-8 flex justify-center">
               <ButtonLink href={BRAND.social.instagram} variant="dark" external>
-                Follow for the new trucks
+                Follow on Instagram
               </ButtonLink>
             </div>
           </div>

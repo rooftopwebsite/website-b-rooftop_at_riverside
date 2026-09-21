@@ -162,7 +162,7 @@ export default function ContactForm() {
           <p className="mt-[18px]">
             <Link
               href={redirect.href}
-              className="inline-flex h-10.5 items-center justify-center rounded-pill bg-sunset px-[28px] font-body text-cta font-bold tracking-cta text-ink transition-colors hover:bg-sunset-hover"
+              className="inline-flex h-10.5 items-center justify-center whitespace-nowrap rounded-pill bg-sunset px-[28px] font-body text-cta font-bold tracking-cta text-ink transition-colors hover:bg-sunset-hover"
             >
               {redirect.cta}
             </Link>

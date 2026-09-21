@@ -112,6 +112,35 @@ export type ButtonVariant = keyof typeof VARIANTS;
 const BASE = [
   'inline-flex items-center justify-center gap-2.25',
   /*
+    ══════════════════════════════════════════════════════════════════════════
+    ⚠️ LA ETIQUETA NUNCA SE PARTE EN DOS RENGLONES. Camila, 2026-09-21:
+    «cuidado con los CTA largos, nunca deben quedar CTA con texto en dos
+    líneas». Lo disparó «Follow for the new trucks» en /food-trucks, que a
+    375px partía en «FOLLOW FOR THE NEW / TRUCKS» y dejaba la píldora con
+    forma de losa.
+
+    Y hay un motivo mecánico además del visual: el `Rodillo` del hover apila
+    dos caras del mismo texto y las desplaza una altura de línea. Con dos
+    renglones, esa altura deja de ser la del bloque y el texto rodado queda a
+    mitad de camino. O sea que un CTA en dos líneas no sólo se ve mal: también
+    rompe la animación de todo el sistema.
+
+    ⚠️ ESTO CONVIERTE EL PROBLEMA EN DESBORDE, y es a propósito. Sin
+    `nowrap` una etiqueta larga se acomoda sola en dos renglones y nadie se
+    entera; con `nowrap` la píldora se pasa del ancho del contenedor y salta a
+    la vista en la primera revisión en celular. El error ruidoso se arregla, el
+    silencioso queda publicado.
+
+    ⚠️ EL PRESUPUESTO ES DE ~20 CARACTERES. En el contenedor más angosto del
+    sitio —una losa con `px-7` dentro del margen de 16px, o sea ~287px a
+    375px— la píldora gasta 44px de `px-5.5`, y 21 más si el CTA es externo y
+    lleva el ícono. Quedan ~222px para la etiqueta, que a 16px semibold en caja
+    alta son unos 20 caracteres. Si no entra, se acorta el copy: no se achica
+    el botón ni se le pone `text-wrap`.
+    ══════════════════════════════════════════════════════════════════════════
+  */
+  'whitespace-nowrap',
+  /*
     ⚠️ PESO 600 Y NO 700, y es un cambio pedido: «los veo muy pesados».
 
     La Jost es variable 100–900, así que 600 es un peso real de la fuente y no

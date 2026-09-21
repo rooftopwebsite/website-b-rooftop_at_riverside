@@ -422,7 +422,7 @@ export function SubmitButton({ idle, busy }: { readonly idle: string; readonly b
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex h-10.5 items-center justify-center rounded-pill bg-sunset px-[28px] font-body text-cta font-bold tracking-cta text-ink transition-colors hover:bg-sunset-hover disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex h-10.5 items-center justify-center whitespace-nowrap rounded-pill bg-sunset px-[28px] font-body text-cta font-bold tracking-cta text-ink transition-colors hover:bg-sunset-hover disabled:cursor-not-allowed disabled:opacity-60"
     >
       {pending ? busy : idle}
     </button>

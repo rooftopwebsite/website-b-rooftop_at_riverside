@@ -10,7 +10,6 @@ import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowSquareOut } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
 import { EVENT_FAMILIES } from '@/content/spaces';
 import {
@@ -478,19 +477,31 @@ export default function EventsPage() {
                 to whoever signs off on it.
               </p>
             </div>
-            <a
-              href={EVENTS_PDF.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-10.5 shrink-0 items-center gap-[8px] rounded-pill bg-ink px-[24px] font-body text-cta font-bold tracking-cta text-paper transition-colors hover:bg-ink/85"
-            >
-              {EVENTS_PDF.label}
-              <span className="font-normal opacity-80">
+            {/*
+              ⚠️ EL FORMATO Y EL PESO SALIERON DE ADENTRO DEL BOTÓN. Camila,
+              2026-09-21: «cuidado con los CTA largos, nunca deben quedar CTA
+              con texto en dos líneas». «Events Packages PDF, 13 MB» más la
+              flecha no entra en un renglón en ningún celular: partía en dos y
+              el texto se salía de una píldora de 42px de alto.
+
+              ⚠️ NO CONTRADICE EL PEDIDO ANTERIOR —«que diga nombre, peso y
+              formato»—: los tres datos siguen a la vista antes de tocar, que
+              es para lo que estaban. Lo único que cambia es que dos de ellos
+              se leen al lado del botón y no adentro.
+
+              ⚠️ Y DE PASO DEJA DE SER UN CTA ESCRITO A MANO. Era el único que
+              quedaba fuera de `ButtonLink`; con la etiqueta en una sola pieza
+              ya entra en el componente, que pone el ícono de enlace externo,
+              el aviso para lectores de pantalla y el `nowrap` de la casa.
+            */}
+            <div className="shrink-0">
+              <ButtonLink href={EVENTS_PDF.href} variant="dark" size="lg" external>
+                {EVENTS_PDF.label}
+              </ButtonLink>
+              <p className="mt-[8px] font-body text-micro font-medium text-body/70">
                 {EVENTS_PDF.format}, {EVENTS_PDF.size}
-              </span>
-              <ArrowSquareOut className="size-4" aria-hidden="true" />
-              <span className="sr-only">(opens in a new tab)</span>
-            </a>
+              </p>
+            </div>
           </div>
         </div>
       </Section>

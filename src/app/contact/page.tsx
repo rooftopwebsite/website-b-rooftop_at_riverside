@@ -308,7 +308,7 @@ export default async function ContactPage() {
             href={BRAND.giftCards}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-10.5 shrink-0 items-center gap-[8px] rounded-pill bg-sunset px-[28px] font-body text-cta font-bold tracking-cta text-ink transition-colors hover:bg-sunset-hover"
+            className="inline-flex h-10.5 shrink-0 items-center gap-[8px] whitespace-nowrap rounded-pill bg-sunset px-[28px] font-body text-cta font-bold tracking-cta text-ink transition-colors hover:bg-sunset-hover"
           >
             Buy a gift card
             <ArrowSquareOut className="size-4" aria-hidden="true" />
