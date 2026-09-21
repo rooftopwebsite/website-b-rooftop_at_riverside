@@ -267,6 +267,16 @@ const TICKETS: Readonly<Record<string, string>> = {
     : {}),
 };
 
+/** Un renglón que es ítem de lista y no prosa: «1. …», «2) …» o «$8 …». */
+const ES_ITEM = /^(?:\d+[.)]|\$\d)/;
+
+/** La primera frase del primer renglón que no sea un ítem. Ver `summary`. */
+function bajadaDe(parrafos: readonly string[]): string | null {
+  const prosa = parrafos.find((p) => !ES_ITEM.test(p.trim()));
+  if (!prosa) return parrafos[0] ?? null;
+  return prosa.split(/(?<=\.)\s/)[0] ?? prosa;
+}
+
 function adapt(r: RawEvent): VenueEvent {
   const weekdays = r.isRecurring ? parseWeekdays(r.recurrenceDays) : [];
   const start = hhmm(r.startTime);
@@ -289,8 +299,24 @@ function adapt(r: RawEvent): VenueEvent {
     slug,
     title: r.title,
     kind: r.isRecurring ? 'recurring' : 'one-off',
-    // La bajada es la primera frase; el cuerpo, todo.
-    summary: (paragraphs[0] ?? '').split(/(?<=\.)\s/)[0] ?? r.title,
+    /*
+      ⚠️ LA BAJADA ES LA PRIMERA FRASE QUE SEA UNA FRASE, y no el primer renglón
+      a secas. Camila, 2026-09-21, sobre el sorteo de los domingos: «el primer
+      párrafo previo a los pasos se puede quitar». Sacado ése, el primer renglón
+      de ese evento pasó a ser «1. Everyone at the table gets a ticket…», y la
+      bajada se publica en dos lugares donde un paso suelto no tiene sentido: la
+      tarjeta del carrusel de la home y la `description` del JSON-LD que lee
+      Google.
+
+      Así que se saltean los renglones que son ÍTEM y no prosa: los numerados
+      —«1.», «2)»— y los que arrancan con un precio, que es como el cliente
+      carga las ofertas del happy hour. Es la misma lectura que hace la tarjeta
+      de `/whats-on` para dibujarlos como lista.
+
+      ⚠️ SI TODO EL TEXTO SON ÍTEMS, cae al primero igual: una bajada rara es
+      mejor que ninguna, y el título del evento sigue estando arriba.
+    */
+    summary: bajadaDe(paragraphs) ?? r.title,
     body: paragraphs,
     weekdays,
     date: r.isRecurring ? null : r.startDate,

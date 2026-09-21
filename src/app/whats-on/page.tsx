@@ -8,7 +8,6 @@ import Section from '@/components/shared/Section';
 import { Heading, SectionHead } from '@/components/shared/Type';
 import {
   activeFilters,
-  featuredEvent,
   getVenueEvents,
   isTicketed,
   matchesFilter,
@@ -77,13 +76,6 @@ export default async function WhatsOnPage({
    * mes pero no encendía su filtro, así que «Festivals» no se dibujaba nunca.
    */
   const filtros = activeFilters(eventos);
-
-  /*
-   * QUIÉN VA EN GRANDE. Sale del tag de la base, no de acá: es el evento que
-   * el cliente marca como destacado en el dashboard. Lo único que hace la
-   * página es pasar su slug a la grilla, que le da el doble de ancho.
-   */
-  const destacado = await featuredEvent();
 
   /*
    * ⚠️ EL FILTRO SE APLICA AL CALENDARIO ENTERO —las tarjetas de arriba y la
@@ -332,8 +324,60 @@ export default async function WhatsOnPage({
             tinta oscura encima —que es la regla del token, el blanco sobre
             `sunset` da 2.54:1— y los inactivos son filete y letra en verde.
           */
-          <nav aria-label="Filter events by type" className="mb-[28px]">
-            <ul className="m-0 flex list-none flex-wrap justify-center gap-[8px] p-0">
+          /*
+            ══════════════════════════════════════════════════════════════
+            ⚠️ UNA SOLA FILA QUE SE ARRASTRA, Y ANTES SE ENVOLVÍAN. Camila,
+            2026-09-21, con la captura de mobile donde los seis filtros caían en
+            tres renglones: «que estos tags estén en única línea scrolleables
+            horizontalmente como en los otros proyectos en los menús».
+
+            Es el mismo recurso que ya usa el sitio en la tira de categorías de
+            la carta del bar y en el carrusel de la home: `overflow-x-auto` con
+            la barra de scroll oculta y el gutter ADENTRO, para que la primera
+            píldora arranque en el margen y la última se pueda arrastrar hasta
+            el borde.
+
+            ⚠️ LA SANGRÍA NO ES DECORACIÓN: sin ella, la tira termina en el
+            margen del contenedor y la píldora que sobra queda cortada contra
+            un borde invisible. Con la sangría, el corte cae en el borde de la
+            pantalla, que es donde el ojo espera que siga habiendo cosas.
+
+            ⚠️ LA SANGRÍA VA EN `gutter` Y NO EN `borde`, Y ES EL PUNTO MÁS
+            FÁCIL DE ERRAR DE TODO EL BLOQUE. Una sangría negativa tiene que
+            valer EXACTAMENTE el padding del contenedor que la envuelve, o la
+            tira se sale de la página. Acá el contenedor es una `Section`, que
+            pega `px-gutter md:px-gutter-lg`: 16px fijos en celular y 32 desde
+            `md`. `borde`, en cambio, es `clamp(16px, 4vw, 56px)`.
+
+            Los dos coinciden sólo hasta 400px de ancho. Arriba de eso `borde`
+            crece con la pantalla y `gutter` no, así que la tira se iba de la
+            página y arrastraba scroll horizontal a TODO el documento: 1px a
+            430, 8 a 600 y 15 a 767, que es donde más se separan. Medido en el
+            navegador.
+
+            La tira de la carta del bar y el carrusel de la home sí usan
+            `borde`, y está bien: sus contenedores están paginados con `borde`.
+            Esta se copió de allá sin mirar en qué caja caía.
+
+            ⚠️ `w-max min-w-full` ES LO QUE PERMITE CENTRARLAS SIN ROMPER EL
+            SCROLL. Con `justify-center` a secas, en cuanto el contenido
+            desborda, los navegadores dejan la primera píldora fuera de alcance:
+            no se puede scrollear hacia atrás del inicio. Así, la lista mide lo
+            que mide su contenido —y entonces el centrado no aplica y se puede
+            arrastrar entera— o el ancho del contenedor, y ahí sí se centra.
+
+            ⚠️ NO LLEVA `tabIndex`, y otras regiones scrolleables del repo sí.
+            La regla de axe pide que una región con scroll sea alcanzable por
+            teclado; ésta lo es porque adentro hay LINKS, que ya reciben foco y
+            arrastran el scroll solos. Donde el repo agrega `tabIndex` es en
+            tablas y tarjetas de puro texto.
+            ══════════════════════════════════════════════════════════════
+          */
+          <nav
+            aria-label="Filter events by type"
+            className="-mx-gutter mb-[28px] overflow-x-auto px-gutter [scrollbar-width:none] md:-mx-gutter-lg md:px-gutter-lg [&::-webkit-scrollbar]:hidden"
+          >
+            <ul className="m-0 flex w-max min-w-full list-none flex-nowrap justify-center gap-[8px] p-0">
               {[{ id: null as string | null, label: 'Everything' }, ...filtros].map((f) => {
                 const activo = (f.id ?? null) === type;
                 return (
@@ -342,7 +386,10 @@ export default async function WhatsOnPage({
                       href={href({ year, month }, f.id ?? null)}
                       aria-current={activo ? 'true' : undefined}
                       className={[
-                        'inline-block rounded-pill px-[16px] py-[7px] text-caption font-bold uppercase tracking-[0.1em] transition-colors',
+                        /* `whitespace-nowrap` porque en la tira de una sola
+                           línea una píldora de dos palabras se partiría en dos
+                           renglones y rompería el alto de la fila. */
+                        'inline-block whitespace-nowrap rounded-pill px-[16px] py-[7px] text-caption font-bold uppercase tracking-[0.1em] transition-colors',
                         activo
                           ? 'bg-sunset text-ink shadow-btn'
                           : 'border border-teal600/35 text-deep hover:border-teal600 hover:bg-mint/50',
@@ -413,12 +460,7 @@ export default async function WhatsOnPage({
             ⚠️ ESTA LÍNEA SE BORRA CON LA TEMPORADA, junto con las otras dos y
             `content/game-day.ts`.
           */
-          <UpcomingCards
-            items={proximos}
-            deals={GAME_DAY_DEALS}
-            dealsLabel={GAME_DAY_LABEL}
-            featuredSlug={destacado?.slug ?? null}
-          />
+          <UpcomingCards items={proximos} deals={GAME_DAY_DEALS} dealsLabel={GAME_DAY_LABEL} />
         ) : (
           /*
             ⚠️ EL VACÍO DE LAS TARJETAS NO ES EL DEL MES. Acá el motivo es
