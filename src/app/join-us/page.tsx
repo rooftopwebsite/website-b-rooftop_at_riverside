@@ -16,7 +16,7 @@ import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 export const metadata: Metadata = pageMeta({
   route: '/join-us',
   image: {
-    url: '/images/venue/join-stage-day-wide.jpg',
+    url: '/images/venue/join-stage-day-wide.webp',
     width: 2576,
     height: 1364,
     alt: 'A singer on the stage in the yard at Rooftop at Riverside in the afternoon',
@@ -153,7 +153,7 @@ export default async function JoinUsPage({
             <span className="block text-sunset-deep">play here</span>
           </>
         }
-        photo="/images/venue/join-stage-day-wide.jpg"
+        photo="/images/venue/join-stage-day-wide.webp"
         photoAlt="A singer on the stage in the yard at Rooftop at Riverside in the afternoon"
       />
 

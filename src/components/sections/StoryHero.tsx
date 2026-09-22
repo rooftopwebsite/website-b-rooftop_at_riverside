@@ -49,11 +49,11 @@ import { STORY_LEAD } from '@/content/people';
  * camión rojo llamado «The Food Stop» con un pizarrón en portugués.
  */
 const ROOF = {
-  src: '/images/venue/wall-cocktails-rooftop.jpg',
+  src: '/images/venue/wall-cocktails-rooftop.webp',
   alt: 'Four drinks on a table on the rooftop at Rooftop at Riverside, with the tables and the bar behind them in late afternoon light',
 };
 const YARD = {
-  src: '/images/venue/venue-aerial.jpg',
+  src: '/images/venue/venue-aerial.webp',
   alt: 'The yard at Rooftop at Riverside seen from the rooftop, with the food trucks parked along the back and umbrellas over the picnic tables',
 };
 

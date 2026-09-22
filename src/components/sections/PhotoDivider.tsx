@@ -122,12 +122,12 @@ import Image from 'next/image';
  * las tres renderiza en la home.
  */
 const PHOTOS = [
-  { src: '/images/venue/wall-cocktails-rooftop.jpg', alt: 'The rooftop bar at sunset', w: 'w-85 md:w-122.5', h: 'h-65 md:h-95' },
-  { src: '/images/venue/wall-food-platter.jpg', alt: 'A plate from one of the kitchens', w: 'w-70 md:w-100', h: 'h-90 md:h-130' },
-  { src: '/images/venue/wall-bartender.jpg', alt: 'Cocktails at the Sunset Bar', w: 'w-105 md:w-150', h: 'h-60 md:h-87.5' },
-  { src: '/images/venue/wall-truck-window-day.jpg', alt: 'A truck window in the yard', w: 'w-75 md:w-107.5', h: 'h-82.5 md:h-120' },
-  { src: '/images/venue/wall-live-music-tent.jpg', alt: 'Live music in the yard', w: 'w-95 md:w-137.5', h: 'h-67.5 md:h-97.5' },
-  { src: '/images/venue/wall-yard-night-table.jpg', alt: 'A table in the yard at night', w: 'w-65 md:w-92.5', h: 'h-85 md:h-122.5' },
+  { src: '/images/venue/wall-cocktails-rooftop.webp', alt: 'The rooftop bar at sunset', w: 'w-85 md:w-122.5', h: 'h-65 md:h-95' },
+  { src: '/images/venue/wall-food-platter.webp', alt: 'A plate from one of the kitchens', w: 'w-70 md:w-100', h: 'h-90 md:h-130' },
+  { src: '/images/venue/wall-bartender.webp', alt: 'Cocktails at the Sunset Bar', w: 'w-105 md:w-150', h: 'h-60 md:h-87.5' },
+  { src: '/images/venue/wall-truck-window-day.webp', alt: 'A truck window in the yard', w: 'w-75 md:w-107.5', h: 'h-82.5 md:h-120' },
+  { src: '/images/venue/wall-live-music-tent.webp', alt: 'Live music in the yard', w: 'w-95 md:w-137.5', h: 'h-67.5 md:h-97.5' },
+  { src: '/images/venue/wall-yard-night-table.webp', alt: 'A table in the yard at night', w: 'w-65 md:w-92.5', h: 'h-85 md:h-122.5' },
 ] as const;
 
 export default function PhotoDivider() {
@@ -214,7 +214,7 @@ export default function PhotoDivider() {
           `object-cover` dejaría de funcionar. El archivo llega ya apaisado.
         */}
         <Image
-          src="/images/venue/leaf-backdrop.jpg"
+          src="/images/venue/leaf-backdrop.webp"
           alt=""
           fill
           sizes="100vw"

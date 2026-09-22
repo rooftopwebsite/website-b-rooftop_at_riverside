@@ -192,7 +192,7 @@ Ordenado por lo que más bloquea.
 
 | 3 bis | **Fotos propias del Neighborhood Market.** Los puestos armados, la gente recorriendo, algún detalle de producto. Seis u ocho alcanzan, y sirve tanto horizontal como vertical. | El hero y el muro de `/market` | **No bloquea, pero sí es prestado.** Hoy las siete que usa la página se bajaron de la galería del sitio Wix del propio cliente (ver §2 bis), o sea que son de él pero no nos las dio: no tenemos el original, están a 2048px de lado largo y por eso el hero sale una medida por debajo del resto. De las 36 fotos de la entrega no hay **ni una** del market. |
 
-| 4 | **El gaming truck, abierto y de frente.** Horizontal y bien apaisada (17:9), con las pantallas encendidas y gente jugando adentro. | El hero de `/game-truck` | Es el **único hueco de foto que queda en un hero** de todo el sitio. De las 36 fotos no hay ni una del camión, y las dos cosas que parecen serlo no lo son: `/images/game-truck.jpg` es el flyer de Instagram con el logo quemado, y `Gaming Truck.mp4` es el reel. Al rediseñar la página (2026-09-22) se revisó el reel cuadro por cuadro buscando un fotograma servible: los planos del exterior están desenfocados —el foco es la presentadora que pasa delante—, los del interior son pantallas de juego llenando el cuadro, y el archivo mide 1440px contra los 2576 del marco. |
+| 4 | **El gaming truck, abierto y de frente.** Horizontal y bien apaisada (17:9), con las pantallas encendidas y gente jugando adentro. | El hero de `/game-truck` | Es el **único hueco de foto que queda en un hero** de todo el sitio. De las 36 fotos no hay ni una del camión, y las dos cosas que parecen serlo no lo son: `/images/game-truck.webp` es el flyer de Instagram con el logo quemado, y `Gaming Truck.mp4` es el reel. Al rediseñar la página (2026-09-22) se revisó el reel cuadro por cuadro buscando un fotograma servible: los planos del exterior están desenfocados —el foco es la presentadora que pasa delante—, los del interior son pantallas de juego llenando el cuadro, y el archivo mide 1440px contra los 2576 del marco. |
 
 ### Lo que mejoraría lo que ya hay
 
@@ -214,7 +214,81 @@ Ordenado por lo que más bloquea.
 
 ---
 
-## 4. Los scripts
+## 4. El formato: WebP, y las quince que no
+
+Camila, 2026-09-22: «una optimización de todas las imágenes utilizadas en el
+proyecto, para que estén en formato WebP, sin perder la calidad». Las imágenes
+que sirve el sitio pasaron de **17,95 MB a 15,24 MB (−15 %)** sin que ninguna
+baje de la fidelidad que ya tenía. Quince siguen en JPEG a propósito y el
+porqué está más abajo.
+
+### ⚠️ Esto NO es lo que hace que el visitante reciba WebP
+
+Eso ya pasaba: `next.config.ts` declara `formats: ['image/avif', 'image/webp']`,
+así que todo lo que va por `next/image` se sirve en AVIF o WebP convertido al
+vuelo, sea cual sea el formato del archivo. Lo que cambia acá es **el archivo
+fuente**: el peso del repo y del deploy, la base desde la que `next/image`
+convierte, y —esto sí se ve— los archivos que se sirven crudos, como las
+láminas del bar en el visor ampliado de `MenuSheets`, que usan un `<img>`.
+
+### ⚠️ La medición que decidió todo, y la que casi la arruina
+
+La primera comparación fue la obvia: convertir el JPEG publicado a WebP y
+comparar. Dio que el WebP necesitaba calidad 95 y **pesaba el doble**, y que
+56 de 81 archivos engordaban. Con ese dato el cambio se descartaba entero.
+
+Estaba mal medido. Comparar contra el JPEG obliga al WebP a reproducir el ruido
+de compresión del JPEG, que no es la foto: lo mide contra los defectos del rival,
+no contra el original. Rehecha contra el **recorte sin comprimir** —la única
+referencia honesta— la respuesta se da vuelta: a igual fidelidad medida por SSIM,
+el WebP ahorra hasta un 27 %, y 16 % en el conjunto del pipeline.
+
+Por eso la calidad de cada archivo está **medida una por una**, no elegida a ojo:
+es la mínima cuyo SSIM contra el original iguala o supera al del JPEG que se
+publicaba. Va de 60 a 92 y no sigue al `q` del JPEG — `join-stage-day-wide`
+bajaba de 78 a 68 sin perder nada y `contact-bar-day-wide` necesitaba 86 para no
+perder. Las tablas están en `build-media.mjs` y en `import-assets.mjs`.
+
+### Por grupo
+
+| grupo | de dónde sale | resultado |
+|---|---|---|
+| 52 del pipeline | originales de cámara del cliente | todas a WebP, **−16 %** |
+| 25 del sitio viejo | lo que Wix ya recomprimió | 17 a WebP **−12 %**, 6 se quedan |
+| 4 láminas de menú | bajadas del sitio viejo | 3 a WebP, **−67 %** la de Sea Me on Wheels |
+| 4 pósters de video | primer frame con ffmpeg | los 2 del pipeline a WebP |
+
+### ⚠️ Las quince que siguen en JPEG, y por qué no es un olvido
+
+Son las que **no tienen original**: lo mejor que hay de ellas ya es un JPEG que
+Wix recomprimió. Cuando ese JPEG salió casi idéntico a su fuente (SSIM de 0,998
+para arriba), igualarlo en WebP exige reproducir también el ruido de compresión
+que Wix ya le había metido, y ahí el WebP pesa **más** que el JPEG. Convertirlas
+sería cambiar el formato a cambio de peso, de una segunda pasada con pérdida y de
+nada a favor — o sea, exactamente lo contrario del pedido.
+
+Se buscó el original de cada una en las 118 fotos de `_interno/fotos/banco/` por
+huella perceptual. Ninguna lo tiene: las candidatas más cercanas son fotos
+distintas. Si el cliente entrega esos originales, se regeneran y entran.
+
+### ⚠️ Lo que quedó fuera a propósito
+
+- **`public/brand/greca.png`** (6 KB) se usa como `mask-image` en CSS. Ahorraba
+  1 KB y un enmascarado es más delicado que una foto: no se tocó.
+- **Los diez originales sueltos de `public/images/venue/`** (40,5 MB en `DSC*`,
+  `_RCZ*` y `WhatsApp*`) no los sirve ninguna página: sólo aparecen nombrados en
+  comentarios, como registro de qué derivada salió de cuál. Recomprimirlos
+  destruiría la fuente de la que se regeneran los derivados. Su lugar es
+  `public/multimedia/`, que está en `.gitignore`.
+
+### Cómo verificar que no se rompió nada
+
+Se recorrieron las 17 rutas del sitio pidiendo cada imagen que declaran: 50
+archivos distintos, ninguno roto. Y se compararon lado a lado los tres recortes
+de calidad más agresiva (`seafood-2` bajó de 82 a 60): indistinguibles, incluso
+en la espuma del mar y en el cuadro escocés de una camisa, que es donde primero
+se nota una recompresión.
+## 5. Los scripts
 
 | comando | qué hace |
 |---|---|

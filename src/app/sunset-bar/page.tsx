@@ -15,7 +15,7 @@ import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 export const metadata: Metadata = pageMeta({
   route: '/sunset-bar',
   image: {
-    url: '/images/venue/wall-cocktails-rooftop.jpg',
+    url: '/images/venue/wall-cocktails-rooftop.webp',
     width: 540,
     height: 720,
     alt: 'Drinks on a table on the rooftop at Rooftop at Riverside',
@@ -194,7 +194,7 @@ export default async function SunsetBarPage() {
             <span className="block text-sunset-deep">rooftop</span>
           </>
         }
-        photo="/images/venue/bar-cocktails-wide.jpg"
+        photo="/images/venue/bar-cocktails-wide.webp"
         photoAlt="Four cocktails on a table on the rooftop at golden hour, with the bar and the umbrellas behind"
       />
 

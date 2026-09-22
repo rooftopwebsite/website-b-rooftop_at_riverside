@@ -17,7 +17,7 @@ import { getVenue } from '@/lib/venue';
 export const metadata: Metadata = pageMeta({
   route: '/our-story',
   image: {
-    url: '/images/venue/story-yard-day-wide.jpg',
+    url: '/images/venue/story-yard-day-wide.webp',
     width: 2576,
     height: 1364,
     alt: 'The yard at Rooftop at Riverside seen from the rooftop, with the picnic tables and the umbrellas',
@@ -215,7 +215,7 @@ export default async function OurStoryPage() {
             <span className="block text-sunset-deep">family project</span>
           </>
         }
-        photo="/images/venue/story-yard-day-wide.jpg"
+        photo="/images/venue/story-yard-day-wide.webp"
         photoAlt="The yard at Rooftop at Riverside seen from the rooftop: picnic tables and umbrellas on the turf, with the building's roof edge on the right"
       />
 

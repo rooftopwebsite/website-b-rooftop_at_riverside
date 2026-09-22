@@ -86,12 +86,12 @@ import { Heading } from '@/components/shared/Type';
  */
 const PAGINAS = [
   {
-    src: '/menus/sunset-bar-1.jpg',
+    src: '/menus/sunset-bar-1.webp',
     rotulo: 'Cocktails and specials',
     alt: 'Page one of the Sunset Bar menu: signature cocktails with their ingredients and prices, and the specials.',
   },
   {
-    src: '/menus/sunset-bar-2.jpg',
+    src: '/menus/sunset-bar-2.webp',
     rotulo: 'Beer, wine and happy hour',
     alt: 'Page two of the Sunset Bar menu: bottled beer, draft beer, seltzers and canned beer, wine by the glass, and the happy hour box.',
   },

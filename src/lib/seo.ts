@@ -22,7 +22,7 @@ interface OgImage {
 }
 
 const OG_IMAGE: OgImage = {
-  url: '/images/venue/venue-aerial.jpg',
+  url: '/images/venue/venue-aerial.webp',
   width: 2400,
   height: 1600,
   alt: 'A band playing to a crowd at dusk at Rooftop at Riverside in Bonita Springs',

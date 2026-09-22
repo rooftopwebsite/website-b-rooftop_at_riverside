@@ -27,7 +27,7 @@
  */
 import sharp from 'sharp';
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, statSync } from 'node:fs';
 import { dirname } from 'node:path';
 
 const IN = 'public/multimedia';
@@ -61,7 +61,7 @@ const FOTOS = [
     ['_RCZ4528.JPG', 'sandwich'],
   ].map(([src, name]) => ({
     src,
-    out: `public/images/venue/wall-${name}.jpg`,
+    out: `public/images/venue/wall-${name}.webp`,
     w: 540,
     h: 720,
     q: 72,
@@ -147,7 +147,7 @@ const FOTOS = [
      pasó a `wall-food-platter.jpg`. Ver la nota de `PHOTOS` en ese archivo. */
   {
     src: '_RCZ8185.jpg',
-    out: 'public/images/venue/hero-truck-window.jpg',
+    out: 'public/images/venue/hero-truck-window.webp',
     w: 2576,
     h: 1200,
     foco: 0.38,
@@ -205,7 +205,7 @@ const FOTOS = [
      rehace en una corrida. */
   {
     src: '_RCZ4830.jpg',
-    out: 'public/images/venue/bar-cocktails-wide.jpg',
+    out: 'public/images/venue/bar-cocktails-wide.webp',
     w: 2576,
     h: 1364,
     foco: 0.56,
@@ -238,7 +238,7 @@ const FOTOS = [
      las mesas abajo, y ninguna cara queda cortada por el borde. */
   {
     src: 'DSC04091.JPG',
-    out: 'public/images/venue/whats-on-yard-wide.jpg',
+    out: 'public/images/venue/whats-on-yard-wide.webp',
     w: 2576,
     h: 1364,
     foco: 0.5,
@@ -279,7 +279,7 @@ const FOTOS = [
      pierde la escena. */
   {
     src: '_RCZ7372.JPG',
-    out: 'public/images/events/events-hero-wide.jpg',
+    out: 'public/images/events/events-hero-wide.webp',
     w: 2576,
     h: 1364,
     foco: 0.46,
@@ -316,7 +316,7 @@ const FOTOS = [
      `/whats-on`. */
   {
     src: '_RCZ7197.JPG',
-    out: 'public/images/venue/contact-bar-day-wide.jpg',
+    out: 'public/images/venue/contact-bar-day-wide.webp',
     w: 2576,
     h: 1364,
     foco: 0.422,
@@ -349,7 +349,7 @@ const FOTOS = [
      entera con aire. */
   {
     src: '_RCZ5702.JPG',
-    out: 'public/images/venue/join-stage-day-wide.jpg',
+    out: 'public/images/venue/join-stage-day-wide.webp',
     w: 2576,
     h: 1364,
     foco: 0.345,
@@ -392,7 +392,7 @@ const FOTOS = [
      de la izquierda, que es lo que hace leer la planta. */
   {
     src: '_RCZ8015.jpg',
-    out: 'public/images/venue/story-yard-day-wide.jpg',
+    out: 'public/images/venue/story-yard-day-wide.webp',
     w: 2576,
     h: 1364,
     foco: 0.44,
@@ -414,13 +414,13 @@ const FOTOS = [
      Lo único que hay que mirar antes de colgarla es si la sección que la pida
      tolera una foto de luz 37, que es la más oscura de la entrega. Ver la nota
      de la portada, más arriba. */
-  { src: '_RCZ5847.JPG', out: 'public/images/venue/truck-window-night.jpg', w: 900, h: 1125, q: 78 },
+  { src: '_RCZ5847.JPG', out: 'public/images/venue/truck-window-night.webp', w: 900, h: 1125, q: 78 },
 
   /* ── What's on ──────────────────────────────────────────────────────────
      La de HOY va a 4:3 y las dos chicas a 16:10. */
-  { src: '_RCZ5702.JPG', out: 'public/images/venue/event-live-music.jpg', w: 1200, h: 900, q: 78 },
-  { src: '_RCZ5757.JPG', out: 'public/images/venue/event-yard-night.jpg', w: 800, h: 500, q: 78 },
-  { src: '_RCZ4382.JPG', out: 'public/images/venue/event-dj-night.jpg', w: 800, h: 500, q: 78 },
+  { src: '_RCZ5702.JPG', out: 'public/images/venue/event-live-music.webp', w: 1200, h: 900, q: 78 },
+  { src: '_RCZ5757.JPG', out: 'public/images/venue/event-yard-night.webp', w: 800, h: 500, q: 78 },
+  { src: '_RCZ4382.JPG', out: 'public/images/venue/event-dj-night.webp', w: 800, h: 500, q: 78 },
 
   /* ── Los FLYERS de los dos recurrentes que el cliente sí publica ─────────
      ⚠️ ESTOS DOS NO SALEN DE LA ENTREGA DE FOTOS: se bajaron del calendario
@@ -446,8 +446,8 @@ const FOTOS = [
      Publicado en el sitio nuevo, el evento promociona la web que estamos
      reemplazando. Hay que pedirle al cliente la pieza sin esa línea, o con
      el dominio nuevo. Está anotado en `docs/pedido-al-cliente.md`. */
-  { src: 'calendar-la-noche.jpg', out: 'public/images/venue/event-la-noche.jpg', w: 900, h: 1125, q: 80 },
-  { src: 'calendar-ross-brown.jpg', out: 'public/images/venue/event-ross-brown.jpg', w: 900, h: 1125, q: 80 },
+  { src: 'calendar-la-noche.jpg', out: 'public/images/venue/event-la-noche.webp', w: 900, h: 1125, q: 80 },
+  { src: 'calendar-ross-brown.jpg', out: 'public/images/venue/event-ross-brown.webp', w: 900, h: 1125, q: 80 },
 
   /* ══════════════════════════════════════════════════════════════════════
      EL MATERIAL DEL MARKET: EL HERO Y EL MURO DE SEIS.
@@ -488,7 +488,7 @@ const FOTOS = [
      carpa azul: superficie vacía, ninguna cara debajo. Bajando el centro entra
      más adoquín y se pierde la carpa, que es lo que hace leer «feria» de un
      vistazo. */
-  { src: 'market-yard.jpg', out: 'public/images/market/hero-yard-wide.jpg', w: 2048, h: 1084, q: 78 },
+  { src: 'market-yard.jpg', out: 'public/images/market/hero-yard-wide.webp', w: 2048, h: 1084, q: 78 },
 
   /* ── EL MURO DE SEIS ────────────────────────────────────────────────────
      ⚠️ SON DOS MEDIDAS Y NO UNA, y es el muro el que las pide: tres verticales
@@ -506,17 +506,17 @@ const FOTOS = [
      14px del borde —el mismo de `PhotoDivider`— y los artefactos de bloque del
      JPEG se ven justo contra ese trazo fino. Dos puntos de calidad cuestan
      ~8 KB por foto y son los que lo sacan. */
-  { src: 'market-jewelry.jpg', out: 'public/images/market/stall-jewelry.jpg', w: 880, h: 1100, q: 76 },
-  { src: 'market-picnic.jpg', out: 'public/images/market/stall-picnic.jpg', w: 900, h: 675, q: 76 },
-  { src: 'market-art.jpg', out: 'public/images/market/stall-art.jpg', w: 880, h: 1100, q: 76 },
-  { src: 'market-flowers.jpg', out: 'public/images/market/stall-flowers.jpg', w: 900, h: 675, q: 76 },
+  { src: 'market-jewelry.jpg', out: 'public/images/market/stall-jewelry.webp', w: 880, h: 1100, q: 76 },
+  { src: 'market-picnic.jpg', out: 'public/images/market/stall-picnic.webp', w: 900, h: 675, q: 76 },
+  { src: 'market-art.jpg', out: 'public/images/market/stall-art.webp', w: 880, h: 1100, q: 76 },
+  { src: 'market-flowers.jpg', out: 'public/images/market/stall-flowers.webp', w: 900, h: 675, q: 76 },
   /* ⚠️ `foco` ALTO EN LA VERTICAL DE RETRATO. El recorte de 2:3 a 4:5 se come
      340px de alto, y centrado se los saca por igual arriba y abajo: acá eso
      pasa el corte justo por el mentón de la vendedora. Subiendo el centro
      entra la cara entera y el delantal con el logo de su puesto, que es lo
      único que dice de qué es el puesto. */
-  { src: 'market-boba.jpg', out: 'public/images/market/vendor-boba.jpg', w: 880, h: 1100, foco: 0.42, q: 76 },
-  { src: 'market-home.jpg', out: 'public/images/market/stall-home.jpg', w: 900, h: 675, q: 76 },
+  { src: 'market-boba.jpg', out: 'public/images/market/vendor-boba.webp', w: 880, h: 1100, foco: 0.42, q: 76 },
+  { src: 'market-home.jpg', out: 'public/images/market/stall-home.webp', w: 900, h: 675, q: 76 },
 
   /* ── El fondo del Events banner ─────────────────────────────────────────
      ⚠️ VA CHICO A PROPÓSITO: el componente lo pinta con `blur-[22px]`, así que
@@ -525,7 +525,7 @@ const FOTOS = [
      entero, que es exactamente lo que vende «we close the whole place». */
   {
     src: 'WhatsApp Image 2026-06-11 at 22.58.56 (1).jpeg',
-    out: 'public/images/venue/venue-aerial.jpg',
+    out: 'public/images/venue/venue-aerial.webp',
     w: 1000,
     h: 667,
     q: 70,
@@ -560,7 +560,7 @@ const FOTOS = [
      4,95:1. El ajuste vertical las saca sin perder el barrido. */
   {
     src: '_RCZ8192.jpg',
-    out: 'public/images/venue/doors-band.jpg',
+    out: 'public/images/venue/doors-band.webp',
     w: 2080,
     h: 420,
     foco: 0.564,
@@ -581,7 +581,7 @@ const FOTOS = [
 
      Reemplaza a `wall-yard-night-crowd.jpg`, que era un tile del muro de
      540×720 servido a pantalla completa. Ver la nota del componente. */
-  { src: 'fondo-hojas.jpg', out: 'public/images/venue/leaf-backdrop.jpg', girar: 90, w: 1800, h: 760, q: 68 },
+  { src: 'fondo-hojas.jpg', out: 'public/images/venue/leaf-backdrop.webp', girar: 90, w: 1800, h: 760, q: 68 },
   /* ══════════════════════════════════════════════════════════════════════
      LA SEGUNDA TANDA DEL SITIO VIGENTE — 2026-09-22
 
@@ -623,7 +623,7 @@ const FOTOS = [
      ⚠️ `foco: 0.33` porque el camión vive en el tercio de ARRIBA del
      original: centrado, el recorte de 3:4 a 17:9 deja media pantalla de
      adoquines y le corta el techo. Medido contra el archivo, no estimado. */
-  { src: 'gt-yard.jpg', out: 'public/images/game-truck/truck-wide.jpg', w: 2048, h: 1084, foco: 0.33, q: 78 },
+  { src: 'gt-yard.jpg', out: 'public/images/game-truck/truck-wide.webp', w: 2048, h: 1084, foco: 0.33, q: 78 },
 
   /* El banner de `/events`, 4:3. Acá la que sirve es la de NOCHE con dos
      personas jugando: el banner no tiene que explicar qué es un gaming truck
@@ -631,14 +631,14 @@ const FOTOS = [
 
      ⚠️ `foco: 0.42` deja adentro las dos pantallas encendidas Y las cabezas.
      Centrado corta justo a la altura de los hombros y se pierde el punto. */
-  { src: 'gt-inside.jpg', out: 'public/images/game-truck/truck-night.jpg', w: 1400, h: 1050, foco: 0.42, q: 78 },
+  { src: 'gt-inside.jpg', out: 'public/images/game-truck/truck-night.webp', w: 1400, h: 1050, foco: 0.42, q: 78 },
 
   /* El lateral rotulado, 3:4. Es la que lista lo que el camión hace —«daily
      play, private parties, watch parties, tournaments»— escrito en la chapa. */
-  { src: 'gt-exterior.jpg', out: 'public/images/game-truck/truck-side.jpg', w: 900, h: 1200, q: 78 },
+  { src: 'gt-exterior.jpg', out: 'public/images/game-truck/truck-side.webp', w: 900, h: 1200, q: 78 },
 
   /* Alguien jugando, 3:2. La única apaisada de las cuatro. */
-  { src: 'gt-player.jpg', out: 'public/images/game-truck/truck-player.jpg', w: 1400, h: 933, q: 78 },
+  { src: 'gt-player.jpg', out: 'public/images/game-truck/truck-player.webp', w: 1400, h: 933, q: 78 },
 
   /* ── EL PERRO ───────────────────────────────────────────────────────────
      ⚠️ ES EL ÍTEM 1 DEL PEDIDO AL CLIENTE Y ESTABA MARCADO COMO BLOQUEANTE
@@ -649,8 +649,8 @@ const FOTOS = [
      ⚠️ SON DOS Y NO UNA, porque son para dos lugares distintos: la del
      pomerania es un retrato y entra en una card 4:5; la del golden es una
      escena y sirve apaisada. */
-  { src: 'dog-pomeranian.jpg', out: 'public/images/venue/dog-pomeranian.jpg', w: 900, h: 1125, q: 78 },
-  { src: 'dog-golden-market.jpg', out: 'public/images/venue/dog-yard-day.jpg', w: 1400, h: 933, q: 78 },
+  { src: 'dog-pomeranian.jpg', out: 'public/images/venue/dog-pomeranian.webp', w: 900, h: 1125, q: 78 },
+  { src: 'dog-golden-market.jpg', out: 'public/images/venue/dog-yard-day.webp', w: 1400, h: 933, q: 78 },
 
   /* ── LA FACHADA DE NOCHE ────────────────────────────────────────────────
      El edificio entero desde la calle, con las sombrillas encendidas y el
@@ -659,8 +659,8 @@ const FOTOS = [
 
      ⚠️ SALE EN DOS MEDIDAS: 17:9 para usar de hero y 3:2 para una card. El
      original es 4032×3024, así que las dos son reducción y ninguna upscale. */
-  { src: 'venue-front-night.jpg', out: 'public/images/venue/front-night-wide.jpg', w: 2048, h: 1084, foco: 0.52, q: 78 },
-  { src: 'venue-front-night.jpg', out: 'public/images/venue/front-night.jpg', w: 1400, h: 933, q: 78 },
+  { src: 'venue-front-night.jpg', out: 'public/images/venue/front-night-wide.webp', w: 2048, h: 1084, foco: 0.52, q: 78 },
+  { src: 'venue-front-night.jpg', out: 'public/images/venue/front-night.webp', w: 1400, h: 933, q: 78 },
 
   /* ── MÚSICA EN VIVO ─────────────────────────────────────────────────────
      ⚠️ CUATRO ESCENAS DISTINTAS Y NO CUATRO VECES LA MISMA. El sitio tenía
@@ -682,25 +682,25 @@ const FOTOS = [
      En su lugar entra `dj-decks.jpg`, que es un DJ de verdad en las bandejas y
      era la única foto de DJ del banco. La necesitaba el calendario: hay dos
      eventos de DJ y ninguno tenía imagen propia. */
-  { src: 'dj-decks.jpg', out: 'public/images/venue/dj-decks.jpg', w: 900, h: 1125, foco: 0.42, q: 78 },
-  { src: 'live-bass.jpg', out: 'public/images/venue/live-bass.jpg', w: 900, h: 1125, foco: 0.42, q: 78 },
-  { src: 'live-drums.jpg', out: 'public/images/venue/live-drums.jpg', w: 1400, h: 933, q: 78 },
-  { src: 'live-steel-drums.jpg', out: 'public/images/venue/live-steel-drums.jpg', w: 900, h: 1125, foco: 0.45, q: 78 },
+  { src: 'dj-decks.jpg', out: 'public/images/venue/dj-decks.webp', w: 900, h: 1125, foco: 0.42, q: 78 },
+  { src: 'live-bass.jpg', out: 'public/images/venue/live-bass.webp', w: 900, h: 1125, foco: 0.42, q: 78 },
+  { src: 'live-drums.jpg', out: 'public/images/venue/live-drums.webp', w: 1400, h: 933, q: 78 },
+  { src: 'live-steel-drums.jpg', out: 'public/images/venue/live-steel-drums.webp', w: 900, h: 1125, foco: 0.45, q: 78 },
 
   /* ── EL BAR Y SU GENTE ──────────────────────────────────────────────────
      `bar-game-day` es el salón lleno mirando los televisores: es LA foto del
      domingo de fútbol y hasta hoy ese evento se publicaba sin ninguna.
      `bar-flight` es alguien sirviendo un flight a tres clientas en la barra. */
-  { src: 'bar-game-day.jpg', out: 'public/images/venue/bar-game-day.jpg', w: 1400, h: 933, q: 78 },
-  { src: 'bar-flight.jpg', out: 'public/images/venue/bar-flight.jpg', w: 900, h: 1125, foco: 0.45, q: 78 },
+  { src: 'bar-game-day.jpg', out: 'public/images/venue/bar-game-day.webp', w: 1400, h: 933, q: 78 },
+  { src: 'bar-flight.jpg', out: 'public/images/venue/bar-flight.webp', w: 900, h: 1125, foco: 0.45, q: 78 },
 
   /* ── EL PATIO Y LA GENTE ────────────────────────────────────────────────
      ⚠️ `yard-night-friends` ES LA MÁS CHICA DE TODA LA TANDA: el original es
      un PNG de 1023×1051, o sea que a 900 de ancho ya estamos al límite. Se
      usa igual porque es la única foto de una mesa de amigos comiendo de
      noche, que es exactamente lo que el patio vende. No agrandarla. */
-  { src: 'yard-night-friends.jpg', out: 'public/images/venue/yard-night-friends.jpg', w: 900, h: 900, q: 80 },
-  { src: 'guests-group-day.jpg', out: 'public/images/venue/guests-group-day.jpg', w: 1400, h: 933, q: 78 },
+  { src: 'yard-night-friends.jpg', out: 'public/images/venue/yard-night-friends.webp', w: 900, h: 900, q: 80 },
+  { src: 'guests-group-day.jpg', out: 'public/images/venue/guests-group-day.webp', w: 1400, h: 933, q: 78 },
 
   /* ── EVENTOS ────────────────────────────────────────────────────────────
      ⚠️ ACÁ ESTUVO `event-table-set.jpg` UNA HORA Y SE FUE. La elegí como «la
@@ -719,8 +719,8 @@ const FOTOS = [
 
      El yoga y el 4 de julio sí son formatos que el venue hace y no se ven en
      ninguna otra foto. */
-  { src: 'yard-yoga.jpg', out: 'public/images/events/yard-yoga.jpg', w: 1400, h: 933, foco: 0.55, q: 78 },
-  { src: 'street-fourth.jpg', out: 'public/images/events/street-fourth.jpg', w: 900, h: 1125, foco: 0.45, q: 78 },
+  { src: 'yard-yoga.jpg', out: 'public/images/events/yard-yoga.webp', w: 1400, h: 933, foco: 0.55, q: 78 },
+  { src: 'street-fourth.jpg', out: 'public/images/events/street-fourth.webp', w: 900, h: 1125, foco: 0.45, q: 78 },
 
   /* ── OCN SEAFOOD ────────────────────────────────────────────────────────
      ⚠️ ESTA SÍ SE PUEDE ATRIBUIR A UN TRUCK, y es la única de la tanda que
@@ -733,7 +733,7 @@ const FOTOS = [
      los dos tuvo página en el sitio viejo, así que asignarles cualquiera de
      las fotos de comida sueltas sería inventar de quién es el plato. Los dos
      siguen con su `PhotoPending` y su brief. */
-  { src: 'ocn-crab-boil.jpg', out: 'public/images/trucks/ocn-seafood-1.jpg', w: 800, h: 1000, q: 80 },
+  { src: 'ocn-crab-boil.jpg', out: 'public/images/trucks/ocn-seafood-1.webp', w: 800, h: 1000, q: 80 },
 ];
 
 /**
@@ -775,6 +775,90 @@ const VIDEOS = [
   { src: 'GABRIEL KEY 2.mp4', out: 'public/videos/live-music.mp4', desde: 6, dur: 6 },
 ];
 
+/**
+ * LA CALIDAD WEBP DE CADA FOTO, MEDIDA UNA POR UNA.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ESTOS NÚMEROS NO SON UN GUSTO: SALEN DE UNA MEDICIÓN. Camila, 2026-09-22:
+ * «una optimización de todas las imágenes para que estén en WebP, sin perder
+ * la calidad». La segunda mitad de esa frase es la que manda, así que la
+ * calidad de cada archivo se eligió comprobando que NO baje.
+ *
+ * Para cada foto se generó el recorte SIN COMPRIMIR y se midió el SSIM contra
+ * él de dos cosas: el JPEG que el sitio publicaba, y el WebP a cada calidad.
+ * El número que quedó es la calidad MÍNIMA de WebP cuyo SSIM iguala o supera
+ * al del JPEG. El comentario al lado es lo que ese archivo adelgazó.
+ *
+ * ⚠️ LA REFERENCIA ES EL ORIGINAL, NO EL JPEG, Y CAMBIA EL RESULTADO ENTERO.
+ * Medido contra el JPEG publicado, el WebP parecía necesitar q95 y PESAR EL
+ * DOBLE — pero eso mide otra cosa: lo obliga a reproducir fielmente el ruido
+ * de compresión del JPEG, que no es la foto. Contra el original sin comprimir,
+ * que es la única referencia honesta, el WebP gana 16 % de peso a igual
+ * fidelidad. La primera medición habría hecho descartar el cambio entero.
+ *
+ * ⚠️ POR ESO NO HAY UNA CALIDAD ÚNICA PARA TODAS. Va de 60 a 86 y no sigue al
+ * `q` del JPEG: `join-stage-day-wide` bajaba de 78 a 68 sin perder nada, y
+ * `contact-bar-day-wide` necesitaba 86 para no perder. Depende del grano y
+ * del detalle fino de cada foto, no del tamaño.
+ *
+ * Si se agrega una foto nueva sin su medición, cae al `f.q + 4` del final:
+ * es conservador —paga algo de peso— pero nunca publica peor de lo que había.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const WEBP = {
+  'public/images/venue/wall-cocktails-rooftop.webp': 78,  // −15 %
+  'public/images/venue/wall-live-music-tent.webp': 68,    // −20 %
+  'public/images/venue/wall-yard-night-crowd.webp': 78,   // −7 %
+  'public/images/venue/wall-food-platter.webp': 70,       // −20 %
+  'public/images/venue/wall-yard-night-table.webp': 64,   // −20 %
+  'public/images/venue/wall-truck-window-day.webp': 60,   // −19 %
+  'public/images/venue/wall-bartender.webp': 80,          // −10 %
+  'public/images/venue/wall-dancing-night.webp': 80,      // −9 %
+  'public/images/venue/wall-guests-yard-day.webp': 64,    // −21 %
+  'public/images/venue/wall-sandwich.webp': 82,           // −5 %
+  'public/images/venue/hero-truck-window.webp': 78,       // −18 %
+  'public/images/venue/bar-cocktails-wide.webp': 74,      // −13 %
+  'public/images/venue/whats-on-yard-wide.webp': 78,      // −18 %
+  'public/images/events/events-hero-wide.webp': 80,       // −18 %
+  'public/images/venue/contact-bar-day-wide.webp': 86,    // −8 %
+  'public/images/venue/join-stage-day-wide.webp': 68,     // −17 %
+  'public/images/venue/story-yard-day-wide.webp': 78,     // −16 %
+  'public/images/venue/truck-window-night.webp': 78,      // −15 %
+  'public/images/venue/event-live-music.webp': 80,        // −8 %
+  'public/images/venue/event-yard-night.webp': 80,        // −12 %
+  'public/images/venue/event-dj-night.webp': 84,          // −4 %
+  'public/images/venue/event-la-noche.webp': 74,          // −27 %
+  'public/images/venue/event-ross-brown.webp': 84,        // −18 %
+  'public/images/market/hero-yard-wide.webp': 80,         // −19 %
+  'public/images/market/stall-jewelry.webp': 76,          // −23 %
+  'public/images/market/stall-picnic.webp': 64,           // −18 %
+  'public/images/market/stall-art.webp': 72,              // −22 %
+  'public/images/market/stall-flowers.webp': 70,          // −22 %
+  'public/images/market/vendor-boba.webp': 84,            // −12 %
+  'public/images/market/stall-home.webp': 74,             // −22 %
+  'public/images/venue/venue-aerial.webp': 60,            // −20 %
+  'public/images/venue/doors-band.webp': 70,              // −21 %
+  'public/images/venue/leaf-backdrop.webp': 72,           // −14 %
+  'public/images/game-truck/truck-wide.webp': 80,         // −16 %
+  'public/images/game-truck/truck-night.webp': 82,        // −9 %
+  'public/images/game-truck/truck-side.webp': 68,         // −24 %
+  'public/images/game-truck/truck-player.webp': 82,       // +1 %
+  'public/images/venue/dog-pomeranian.webp': 82,          // −10 %
+  'public/images/venue/dog-yard-day.webp': 80,            // −15 %
+  'public/images/venue/front-night-wide.webp': 78,        // −11 %
+  'public/images/venue/front-night.webp': 68,             // −21 %
+  'public/images/venue/dj-decks.webp': 82,                // −8 %
+  'public/images/venue/live-bass.webp': 82,               // −8 %
+  'public/images/venue/live-drums.webp': 86,              // −9 %
+  'public/images/venue/live-steel-drums.webp': 84,        // −10 %
+  'public/images/venue/bar-game-day.webp': 82,            // −18 %
+  'public/images/venue/bar-flight.webp': 68,              // −25 %
+  'public/images/venue/yard-night-friends.webp': 82,      // −15 %
+  'public/images/venue/guests-group-day.webp': 82,        // −15 %
+  'public/images/events/yard-yoga.webp': 68,              // −19 %
+  'public/images/events/street-fourth.webp': 68,          // −20 %
+  'public/images/trucks/ocn-seafood-1.webp': 68,          // −16 %
+};
 const asegurar = (p) => mkdirSync(dirname(p), { recursive: true });
 
 let entrada = 0;
@@ -818,7 +902,7 @@ for (const f of FOTOS) {
 
   await pipe
     .resize(f.w, f.h, { fit: 'cover', position: f.position ?? 'centre' })
-    .jpeg({ quality: f.q, mozjpeg: true, progressive: true })
+    .webp({ quality: WEBP[f.out] ?? f.q + 4, effort: 6 })
     .toFile(f.out);
   entrada += kb(src);
   salida += kb(f.out);
@@ -860,13 +944,23 @@ for (const v of VIDEOS) {
 
   /* El póster: el primer frame, para que el tile muestre algo antes de que
      cargue el video y con `prefers-reduced-motion`. */
-  const poster = v.out.replace(/\.mp4$/, '.jpg');
+  /*
+     ⚠️ EL PÓSTER LO SACA FFMPEG PERO LO ESCRIBE SHARP, y el rodeo tiene
+     motivo: va en WebP como el resto de las imágenes, y el `-q:v` de ffmpeg
+     no es la misma escala de calidad que la de `WEBP`. Pasando por un PNG
+     sin pérdida, el único paso con pérdida es el de sharp y la calidad se
+     elige en la misma escala que la de todas las fotos. */
+  const poster = v.out.replace(/\.mp4$/, '.webp');
+  const crudo = v.out.replace(/\.mp4$/, '.frame.png');
   execFileSync(
     'ffmpeg',
     ['-y', '-loglevel', 'error', '-ss', String(v.desde + 1), '-i', src,
-     '-vf', 'crop=iw:iw*4/3,scale=480:640', '-frames:v', '1', '-q:v', '5', poster],
+     '-vf', 'crop=iw:iw*4/3,scale=480:640', '-frames:v', '1', crudo],
     { stdio: ['ignore', 'ignore', 'inherit'] },
   );
+
+  await sharp(crudo).webp({ quality: 80, effort: 6 }).toFile(poster);
+  rmSync(crudo);
 
   entrada += kb(src);
   salida += kb(v.out) + kb(poster);

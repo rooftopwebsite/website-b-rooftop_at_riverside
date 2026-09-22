@@ -297,7 +297,7 @@ export default async function WhatsOnPage({
           </>
         }
         lead={`${musicaLarga}, Bingo on Wednesdays, and one Wednesday a month that belongs to the dogs.`}
-        photo="/images/venue/whats-on-yard-wide.jpg"
+        photo="/images/venue/whats-on-yard-wide.webp"
         photoAlt="A full yard on an event afternoon: long table, tent and people under the umbrellas"
       />
 

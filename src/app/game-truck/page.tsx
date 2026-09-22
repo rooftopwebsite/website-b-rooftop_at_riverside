@@ -66,7 +66,7 @@ export const metadata: Metadata = pageMeta({ route: '/game-truck' });
  * ──────────────────────────────────────────────────────────────────────────
  * ⚠️ LA TIRA DE CUATRO FOTOS SE FUE, Y ERAN TRES HUECOS Y UNA FOTO DE STOCK.
  * Del gaming truck no hay una sola foto en la entrega del cliente: la única
- * imagen usable es el joystick de stock, y `/images/game-truck.jpg` es el
+ * imagen usable es el joystick de stock, y `/images/game-truck.webp` es el
  * flyer de Instagram con el logo quemado. Cuatro casillas de las que tres eran
  * rectángulos grises no marcan un pendiente, se leen como una página a medio
  * terminar.
@@ -213,7 +213,7 @@ export default async function GameTruckPage() {
         ⚠️ EL HERO VA SIN FOTO Y CON EL HUECO MARCADO, y es el único de las
         siete internas que abre así. No es una omisión: de las 36 fotos y los 5
         videos que entregó el cliente no hay NINGUNA del gaming truck. La única
-        imagen del repo que lo nombra, `/images/game-truck.jpg`, es el flyer de
+        imagen del repo que lo nombra, `/images/game-truck.webp`, es el flyer de
         Instagram con el logo y el texto quemados encima, o sea lo que
         `docs/media.md` lista como material que no sirve.
 
@@ -280,7 +280,7 @@ export default async function GameTruckPage() {
           camión es del venue.
           ══════════════════════════════════════════════════════════════════
         */
-        photo="/images/game-truck/truck-wide.jpg"
+        photo="/images/game-truck/truck-wide.webp"
         photoAlt="The Rooftop gaming truck parked in the yard with its window and awning open"
       />
 

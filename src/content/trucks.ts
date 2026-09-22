@@ -154,7 +154,7 @@ export const TRUCKS: readonly Truck[] = [
       sería decir de quién es un plato que no sabemos. Los dos siguen con su
       `photoBrief` y su hueco marcado.
     */
-    photo: '/images/trucks/ocn-seafood-1.jpg',
+    photo: '/images/trucks/ocn-seafood-1.webp',
     photoAlt: 'A seafood boil with crab legs, corn, potatoes and clams from OCN Seafood Co.',
     photoBrief:
       "El truck de OCN Seafood Co. abierto y atendiendo, al atardecer, con la ventanilla iluminada y gente pidiendo.",
@@ -226,18 +226,18 @@ export const TRUCKS: readonly Truck[] = [
       archivo.
       ══════════════════════════════════════════════════════════════════════
     */
-    photo: '/images/trucks/el-chilango-3.jpg',
+    photo: '/images/trucks/el-chilango-3.webp',
     photoAlt: 'Chilaquiles with pulled pork, avocado and crema from El Chilango MX',
     photoBrief: "El truck por fuera, con el cartel legible.",
     // Bajada de su propia página del sitio vigente. Ver la nota del campo.
     menuImage: '/menus/el-chilango-mx.jpg',
     gallery: [
       {
-        src: '/images/trucks/el-chilango-2.jpg',
+        src: '/images/trucks/el-chilango-2.webp',
         alt: 'A rice bowl with shrimp, black beans, corn and guacamole from El Chilango MX',
       },
       {
-        src: '/images/trucks/el-chilango-1.jpg',
+        src: '/images/trucks/el-chilango-1.webp',
         alt: 'The El Chilango MX truck artwork, a flowered calavera over the truck name',
       },
     ],
@@ -334,7 +334,7 @@ export const TRUCKS: readonly Truck[] = [
     photoAlt: 'A poke bowl with fresh fish and vegetables from Sea Me on Wheels',
     photoBrief: "El truck por fuera, con el cartel legible, abierto y atendiendo.",
     // Bajada de su propia página del sitio vigente. 13 platos con precio.
-    menuImage: '/menus/sea-me-on-wheels.jpg',
+    menuImage: '/menus/sea-me-on-wheels.webp',
     gallery: [],
     nameConfirmed: true,
     active: true,

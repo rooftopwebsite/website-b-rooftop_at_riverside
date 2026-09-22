@@ -30,7 +30,7 @@ import { getVenue } from '@/lib/venue';
 export const metadata: Metadata = pageMeta({
   route: '/events',
   image: {
-    url: '/images/events/events-hero-wide.jpg',
+    url: '/images/events/events-hero-wide.webp',
     width: 2576,
     height: 1364,
     alt: 'Guests with name badges seated along the bar at a private event at Rooftop at Riverside',
@@ -207,7 +207,7 @@ export default async function EventsPage({
           </>
         }
         lead="A rooftop bar, a gated yard and four independent kitchens in downtown Bonita Springs, across from Riverside Park."
-        photo="/images/events/events-hero-wide.jpg"
+        photo="/images/events/events-hero-wide.webp"
         photoAlt="Guests with name badges seated along the bar at a private event at Rooftop at Riverside"
       >
         {/*
@@ -631,7 +631,7 @@ export default async function EventsPage({
                 la imagen es lo que dice de qué habla antes de leer nada. */}
             <div className="relative aspect-[4/3] overflow-hidden rounded-shell sombra-card">
               <Image
-                src="/images/game-truck/truck-night.jpg"
+                src="/images/game-truck/truck-night.webp"
                 alt="Two guests in Rooftop shirts playing on the gaming truck screens at night"
                 fill
                 sizes="(min-width: 1024px) 40vw, (min-width: 640px) 45vw, 100vw"

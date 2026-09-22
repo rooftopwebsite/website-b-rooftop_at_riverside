@@ -13,7 +13,7 @@ import { breadcrumbJsonLd, jsonLdScript, pageMeta, venueJsonLd } from '@/lib/seo
 export const metadata: Metadata = pageMeta({
   route: '/contact',
   image: {
-    url: '/images/venue/contact-bar-day-wide.jpg',
+    url: '/images/venue/contact-bar-day-wide.webp',
     width: 2576,
     height: 1364,
     alt: 'Guests at the bar at Rooftop at Riverside on a weekday afternoon',
@@ -163,7 +163,7 @@ export default async function ContactPage() {
           </>
         }
         lead="Three inboxes, so your message lands with the person who can answer it instead of a shared one. If it is urgent, the phone is faster than all of it."
-        photo="/images/venue/contact-bar-day-wide.jpg"
+        photo="/images/venue/contact-bar-day-wide.webp"
         photoAlt="Guests at the bar at Rooftop at Riverside on a weekday afternoon"
       >
         {/*

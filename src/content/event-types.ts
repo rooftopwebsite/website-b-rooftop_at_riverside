@@ -76,7 +76,7 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
   eyebrow: "Corporate",
   title: "Take the team somewhere they'll actually want to go",
   lead: "The second floor closes to the public and the four kitchens serve at once, so nobody gets handed a plate they did not choose.",
-  image: "/images/events/event-b.jpg",
+  image: "/images/events/event-b.webp",
   imageAlt: "A corporate group gathered on the rooftop at Rooftop at Riverside",
   highlights: [
     { title: "Four menus, zero dietary drama", body: "Tacos, seafood, smashburgers and Caribbean, all in one yard. Vegetarians, picky eaters and the person who only eats chicken all get sorted without a single email." },
@@ -104,7 +104,7 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
   eyebrow: "Celebrations",
   title: "Every milestone deserves a view",
   lead: "Birthdays, engagements, showers and reunions, upstairs and private. The bar faces west, so the toast lands with the sky behind it.",
-  image: "/images/events/event-d.jpg",
+  image: "/images/events/event-d.webp",
   imageAlt: "Guests raising glasses at a celebration at Rooftop at Riverside",
   highlights: [
     // ⚠️ DECÍA «faces west over the Imperial River», que afirma una vista que
@@ -131,7 +131,7 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
   eyebrow: "Fundraisers",
   title: "Charity nights, right on Old 41",
   lead: "The yard gates close, so a ticketed door works and you can count who comes through it. The stage and the sound are already there.",
-  image: "/images/venue/wall-guests-yard-day.jpg",
+  image: "/images/venue/wall-guests-yard-day.webp",
   imageAlt: "Guests in the yard at Rooftop at Riverside during the day",
   highlights: [
     { title: "Downtown foot traffic", body: "Riverside Park is across the street and Old 41 runs right past the gate. People find your event without a single ad." },
@@ -152,7 +152,7 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
   eyebrow: "Holiday parties",
   title: "Trade the ballroom for the rooftop",
   lead: "December through April is high season here and the holiday dates go first. Outdoors, under lights, with four kitchens running at once.",
-  image: "/images/events/event-c.jpg",
+  image: "/images/events/event-c.webp",
   imageAlt: "A large group celebrating at Rooftop at Riverside",
   highlights: [
     { title: "The whole place, gates closed", body: "A full buyout gives you the rooftop, the yard, the patio and the trucks, with the public locked out for the night." },

@@ -51,7 +51,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     name: 'Sunset Bar',
     floor: 'Second floor',
     body: 'The bar on the roof, facing west over Riverside Park. The only thing here we make ourselves, and the one tab in the building that is ours.',
-    photo: '/images/venue/wall-bartender.jpg',
+    photo: '/images/venue/wall-bartender.webp',
     photoAlt: 'A bartender making a drink behind the bar at Rooftop at Riverside',
     photoBrief:
       "La barra de arriba entera al atardecer, con la vista al oeste detrás.",
@@ -76,7 +76,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     // ⚠️ El número de noches se saca del texto: no está confirmado. Ver
     // `content/entertainment.ts`.
     body: 'Live music down in the yard where the trucks are. Sound and stage are already there, so a band, an auction or a speaker rents nothing in.',
-    photo: '/images/venue/wall-live-music-tent.jpg',
+    photo: '/images/venue/wall-live-music-tent.webp',
     photoAlt: 'A musician playing under the tent in the yard',
     photoBrief:
       "El escenario armado con una banda tocando y gente mirando.",
@@ -87,7 +87,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     name: 'The Yard',
     floor: 'Ground floor',
     body: 'The open yard that holds the trucks, the stage and the tables. It is being gated, turning an open lot into a room you can sell a ticket to.',
-    photo: '/images/venue/wall-yard-night-table.jpg',
+    photo: '/images/venue/wall-yard-night-table.webp',
     photoAlt: 'A group at a table in the yard at night, with the food trucks lit up behind them',
     photoBrief:
       "El patio cerrado con la reja puesta, de noche, durante un show con entrada.",
@@ -97,7 +97,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     name: 'The food truck park',
     floor: 'Ground floor',
     body: 'Four kitchens, four independent businesses. Each sets its own menu and keeps its own register. We give them the yard and the crowd.',
-    photo: '/images/venue/wall-truck-window-day.jpg',
+    photo: '/images/venue/wall-truck-window-day.webp',
     photoAlt: 'People ordering at a food truck window in the yard during the day',
     photoBrief:
       "Los cuatro trucks estacionados en fila, con los carteles legibles.",

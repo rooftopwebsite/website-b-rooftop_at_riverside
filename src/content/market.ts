@@ -166,32 +166,32 @@ export interface MarketShot {
 
 export const SHOTS: readonly MarketShot[] = [
   {
-    src: '/images/market/stall-jewelry.jpg',
+    src: '/images/market/stall-jewelry.webp',
     alt: 'Three vendors standing behind a table of handmade necklaces and earrings',
     ratio: 'aspect-[4/5]',
   },
   {
-    src: '/images/market/stall-picnic.jpg',
+    src: '/images/market/stall-picnic.webp',
     alt: 'A vendor beside a low table set for a picnic, with cushions and baskets on the turf',
     ratio: 'aspect-[4/3]',
   },
   {
-    src: '/images/market/stall-art.jpg',
+    src: '/images/market/stall-art.webp',
     alt: 'Two vendors at a stand of framed paintings and prints of the coast',
     ratio: 'aspect-[4/5]',
   },
   {
-    src: '/images/market/stall-flowers.jpg',
+    src: '/images/market/stall-flowers.webp',
     alt: 'Two vendors at a flower stand, with buckets of cut stems and potted plants',
     ratio: 'aspect-[4/3]',
   },
   {
-    src: '/images/market/vendor-boba.jpg',
+    src: '/images/market/vendor-boba.webp',
     alt: 'A vendor in an apron handing an order across her counter',
     ratio: 'aspect-[4/5]',
   },
   {
-    src: '/images/market/stall-home.jpg',
+    src: '/images/market/stall-home.webp',
     alt: 'A long table laid with plates, candles and dried flowers at a homeware stand',
     ratio: 'aspect-[4/3]',
   },

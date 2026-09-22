@@ -891,7 +891,7 @@ Forma medida en `superside.com/our-creative-talent` («OUR GLOBAL TEAM»): card 
 
 ⚠️ **La card va `deep` DENTRO de una `Section tone="paper"`**, no como `Section tone="deep"`. `check:surfaces` permite una sola sección `deep` por página y hay que dejarla libre; es el mismo truco que usaba `ForEventPlanners` con su card `sunset`.
 
-- Imagen: `/images/events/event-a.jpg`.
+- Imagen: `/images/events/event-a.webp`.
 - Titular con `<Accent on="dark">` (`sunset`, 4.26:1 sobre `deep`).
 - Los tres items son los ya confirmados: coordinamos los trucks, la barra es nuestra, el espacio es tuyo. Cada uno en una barra `bg-deeper` de una línea.
 - Un CTA a `/events`.

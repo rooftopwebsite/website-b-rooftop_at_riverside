@@ -26,7 +26,7 @@ export const metadata: Metadata = pageMeta({
     medios critica en el hero viejo de la home.
   */
   image: {
-    url: '/images/market/hero-yard-wide.jpg',
+    url: '/images/market/hero-yard-wide.webp',
     width: 2048,
     height: 1084,
     alt: 'Stalls and pop-up tents set up in the yard on a market day',
@@ -127,7 +127,7 @@ export default async function MarketPage() {
           </>
         }
         lead="An afternoon of handmade things in the yard, with the trucks cooking and the bar open upstairs. And if you are the one who makes the thing, this is where you set up a table."
-        photo="/images/market/hero-yard-wide.jpg"
+        photo="/images/market/hero-yard-wide.webp"
         photoAlt="Stalls and pop-up tents in the yard on a market day, with racks of clothes and two vendors at their stand"
       >
         <ButtonLink href="#apply" variant="primary" size="lg">

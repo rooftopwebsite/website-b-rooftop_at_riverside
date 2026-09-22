@@ -31,16 +31,16 @@ export type Slot =
   | { readonly tipo: 'foto'; readonly src: string };
 
 export const WALL: readonly Slot[] = [
-  { tipo: 'foto', src: '/images/venue/wall-cocktails-rooftop.jpg' },
-  { tipo: 'foto', src: '/images/venue/wall-truck-window-day.jpg' },
-  { tipo: 'video', src: '/videos/latin-night.mp4', poster: '/videos/latin-night.jpg' },
-  { tipo: 'foto', src: '/images/venue/wall-food-platter.jpg' },
-  { tipo: 'foto', src: '/images/venue/wall-live-music-tent.jpg' },
-  { tipo: 'foto', src: '/images/venue/wall-yard-night-table.jpg' },
-  { tipo: 'video', src: '/videos/live-music.mp4', poster: '/videos/live-music.jpg' },
-  { tipo: 'foto', src: '/images/venue/wall-guests-yard-day.jpg' },
-  { tipo: 'foto', src: '/images/venue/wall-dancing-night.jpg' },
-  { tipo: 'foto', src: '/images/venue/wall-bartender.jpg' },
-  { tipo: 'foto', src: '/images/venue/wall-yard-night-crowd.jpg' },
-  { tipo: 'foto', src: '/images/venue/wall-sandwich.jpg' },
+  { tipo: 'foto', src: '/images/venue/wall-cocktails-rooftop.webp' },
+  { tipo: 'foto', src: '/images/venue/wall-truck-window-day.webp' },
+  { tipo: 'video', src: '/videos/latin-night.mp4', poster: '/videos/latin-night.webp' },
+  { tipo: 'foto', src: '/images/venue/wall-food-platter.webp' },
+  { tipo: 'foto', src: '/images/venue/wall-live-music-tent.webp' },
+  { tipo: 'foto', src: '/images/venue/wall-yard-night-table.webp' },
+  { tipo: 'video', src: '/videos/live-music.mp4', poster: '/videos/live-music.webp' },
+  { tipo: 'foto', src: '/images/venue/wall-guests-yard-day.webp' },
+  { tipo: 'foto', src: '/images/venue/wall-dancing-night.webp' },
+  { tipo: 'foto', src: '/images/venue/wall-bartender.webp' },
+  { tipo: 'foto', src: '/images/venue/wall-yard-night-crowd.webp' },
+  { tipo: 'foto', src: '/images/venue/wall-sandwich.webp' },
 ];
