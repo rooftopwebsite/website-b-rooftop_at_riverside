@@ -630,11 +630,22 @@ export default async function SunsetBarPage() {
                       </p>
                     ) : null}
 
+                    {/*
+                      ⚠️ ACÁ LA CARD NO ES UN LINK Y NO DIBUJA «See the night».
+                      Camila, 2026-09-22, sobre la captura: «elimina ese CTA».
+
+                      En `/whats-on` el CTA baja al calendario, que es la razón
+                      de esa página. Acá la card ya cuenta el domingo entero
+                      —día, horario, el texto del cliente y las tres promos con
+                      su precio— así que el link no agregaba información: sacaba
+                      a alguien de la carta del bar que vino a leer.
+                    */}
                     <FeaturedEventCard
                       event={ev}
                       deals={GAME_DAY_DEALS}
                       dealsLabel={GAME_DAY_LABEL}
                       headingLevel={3}
+                      linkToCalendar={false}
                     />
                   </div>
                 );

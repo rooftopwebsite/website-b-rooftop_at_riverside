@@ -582,6 +582,158 @@ const FOTOS = [
      Reemplaza a `wall-yard-night-crowd.jpg`, que era un tile del muro de
      540×720 servido a pantalla completa. Ver la nota del componente. */
   { src: 'fondo-hojas.jpg', out: 'public/images/venue/leaf-backdrop.jpg', girar: 90, w: 1800, h: 760, q: 68 },
+  /* ══════════════════════════════════════════════════════════════════════
+     LA SEGUNDA TANDA DEL SITIO VIGENTE — 2026-09-22
+
+     ⚠️ MISMA PROCEDENCIA QUE EL MARKET Y LOS DOS FLYERS: no salen de la
+     entrega de 36 fotos, sino de `eatdrinkparadise.com`. Camila: «baja todas
+     las fotos de la web original y ponlas en una carpeta del repo». Las 81
+     quedaron en `_interno/fotos/_originales-web/` —que no se versiona— y
+     estas diecinueve son las que el sitio nuevo necesitaba.
+
+     Las baja `node scripts/fetch-old-site-media.mjs`. Los originales pasan a
+     `public/multimedia/` con nombre legible, que es el trato que ya tenían
+     `calendar-la-noche.jpg` y las siete del market.
+
+     ⚠️ TRES CIERRAN PENDIENTES QUE ESTABAN ESCRITOS EN EL CÓDIGO:
+
+       · el camión de gaming — el `TODO: pedir al cliente las fotos del
+         gaming truck` estaba en `/game-truck` DOS veces y en `/events` una.
+         Las dos páginas ilustraban con un joystick de stock;
+       · un perro en el patio — el ítem 1 de `docs/pedido-al-cliente.md`, el
+         que bloqueaba la card de Wooftop Wednesdays. En las 36 fotos de la
+         entrega no hay ni un perro;
+       · la fachada de noche — no teníamos una sola foto del edificio.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* ── EL CAMIÓN DE GAMING ────────────────────────────────────────────────
+     ⚠️ VAN A `public/images/game-truck/` Y NO A `images/venue/`, por lo mismo
+     que el market tiene su carpeta: `venue/` es la derivada de la entrega del
+     cliente y mezclarle archivos de otra procedencia rompe lo único que hace
+     legible el árbol de medios.
+
+     ⚠️ LAS CUATRO SON VERTICALES EN ORIGEN salvo `gt-player`. Están sacadas
+     con teléfono y en vertical, así que cada recorte apaisado se come alto:
+     por eso cada una lleva su `foco` medido y no el centro por defecto. */
+
+  /* El hero de `/game-truck`, 17:9. Es el trailer entero, rotulado, abierto y
+     con el cornhole delante: de las cuatro es la única que dice QUÉ ES de un
+     vistazo, que es lo que un hero tiene que hacer.
+
+     ⚠️ `foco: 0.33` porque el camión vive en el tercio de ARRIBA del
+     original: centrado, el recorte de 3:4 a 17:9 deja media pantalla de
+     adoquines y le corta el techo. Medido contra el archivo, no estimado. */
+  { src: 'gt-yard.jpg', out: 'public/images/game-truck/truck-wide.jpg', w: 2048, h: 1084, foco: 0.33, q: 78 },
+
+  /* El banner de `/events`, 4:3. Acá la que sirve es la de NOCHE con dos
+     personas jugando: el banner no tiene que explicar qué es un gaming truck
+     —el titular ya lo dice— sino por qué querés uno en tu fiesta.
+
+     ⚠️ `foco: 0.42` deja adentro las dos pantallas encendidas Y las cabezas.
+     Centrado corta justo a la altura de los hombros y se pierde el punto. */
+  { src: 'gt-inside.jpg', out: 'public/images/game-truck/truck-night.jpg', w: 1400, h: 1050, foco: 0.42, q: 78 },
+
+  /* El lateral rotulado, 3:4. Es la que lista lo que el camión hace —«daily
+     play, private parties, watch parties, tournaments»— escrito en la chapa. */
+  { src: 'gt-exterior.jpg', out: 'public/images/game-truck/truck-side.jpg', w: 900, h: 1200, q: 78 },
+
+  /* Alguien jugando, 3:2. La única apaisada de las cuatro. */
+  { src: 'gt-player.jpg', out: 'public/images/game-truck/truck-player.jpg', w: 1400, h: 933, q: 78 },
+
+  /* ── EL PERRO ───────────────────────────────────────────────────────────
+     ⚠️ ES EL ÍTEM 1 DEL PEDIDO AL CLIENTE Y ESTABA MARCADO COMO BLOQUEANTE
+     de la home. El brief pedía «alguien con su perro en una mesa, o un perro
+     en la fila de un truck»; la del market es un golden en el patio entre los
+     puestos, que es lo mismo con otra ropa.
+
+     ⚠️ SON DOS Y NO UNA, porque son para dos lugares distintos: la del
+     pomerania es un retrato y entra en una card 4:5; la del golden es una
+     escena y sirve apaisada. */
+  { src: 'dog-pomeranian.jpg', out: 'public/images/venue/dog-pomeranian.jpg', w: 900, h: 1125, q: 78 },
+  { src: 'dog-golden-market.jpg', out: 'public/images/venue/dog-yard-day.jpg', w: 1400, h: 933, q: 78 },
+
+  /* ── LA FACHADA DE NOCHE ────────────────────────────────────────────────
+     El edificio entero desde la calle, con las sombrillas encendidas y el
+     balcón del segundo piso. Es la única foto que muestra el LUGAR como lo ve
+     alguien que llega.
+
+     ⚠️ SALE EN DOS MEDIDAS: 17:9 para usar de hero y 3:2 para una card. El
+     original es 4032×3024, así que las dos son reducción y ninguna upscale. */
+  { src: 'venue-front-night.jpg', out: 'public/images/venue/front-night-wide.jpg', w: 2048, h: 1084, foco: 0.52, q: 78 },
+  { src: 'venue-front-night.jpg', out: 'public/images/venue/front-night.jpg', w: 1400, h: 933, q: 78 },
+
+  /* ── MÚSICA EN VIVO ─────────────────────────────────────────────────────
+     ⚠️ CUATRO ESCENAS DISTINTAS Y NO CUATRO VECES LA MISMA. El sitio tenía
+     una sola foto de música —la del hero de `/join-us`— y el calendario
+     publica música todas las semanas. Son: la banda con el público bailando,
+     un bajista, la batería contra el público, y un percusionista de steel
+     drums. Cuatro fotos que no se pueden confundir entre sí, que es la
+     condición para que sirvan de imagen por evento. */
+  /* ⚠️ ACÁ ESTUVO `live-band-crowd.jpg` Y SE BORRÓ A LOS DIEZ MINUTOS DE
+     generarlo: es la MISMA ESCENA que `wall-yard-night-crowd.jpg`, que ya
+     estaba en el repo desde la entrega del cliente —el cantante de sombrero de
+     espaldas contra el público, misma noche, otro encuadre—. Dos derivados de
+     lo mismo con dos nombres distintos es exactamente cómo termina una foto
+     repetida en dos lugares de la misma página.
+
+     ⚠️ EL COMPARADOR NUMÉRICO NO LO AGARRA: un hash perceptual de 16×16 da
+     «distintas» porque el encuadre cambió. Esto se ve, no se mide.
+
+     En su lugar entra `dj-decks.jpg`, que es un DJ de verdad en las bandejas y
+     era la única foto de DJ del banco. La necesitaba el calendario: hay dos
+     eventos de DJ y ninguno tenía imagen propia. */
+  { src: 'dj-decks.jpg', out: 'public/images/venue/dj-decks.jpg', w: 900, h: 1125, foco: 0.42, q: 78 },
+  { src: 'live-bass.jpg', out: 'public/images/venue/live-bass.jpg', w: 900, h: 1125, foco: 0.42, q: 78 },
+  { src: 'live-drums.jpg', out: 'public/images/venue/live-drums.jpg', w: 1400, h: 933, q: 78 },
+  { src: 'live-steel-drums.jpg', out: 'public/images/venue/live-steel-drums.jpg', w: 900, h: 1125, foco: 0.45, q: 78 },
+
+  /* ── EL BAR Y SU GENTE ──────────────────────────────────────────────────
+     `bar-game-day` es el salón lleno mirando los televisores: es LA foto del
+     domingo de fútbol y hasta hoy ese evento se publicaba sin ninguna.
+     `bar-flight` es alguien sirviendo un flight a tres clientas en la barra. */
+  { src: 'bar-game-day.jpg', out: 'public/images/venue/bar-game-day.jpg', w: 1400, h: 933, q: 78 },
+  { src: 'bar-flight.jpg', out: 'public/images/venue/bar-flight.jpg', w: 900, h: 1125, foco: 0.45, q: 78 },
+
+  /* ── EL PATIO Y LA GENTE ────────────────────────────────────────────────
+     ⚠️ `yard-night-friends` ES LA MÁS CHICA DE TODA LA TANDA: el original es
+     un PNG de 1023×1051, o sea que a 900 de ancho ya estamos al límite. Se
+     usa igual porque es la única foto de una mesa de amigos comiendo de
+     noche, que es exactamente lo que el patio vende. No agrandarla. */
+  { src: 'yard-night-friends.jpg', out: 'public/images/venue/yard-night-friends.jpg', w: 900, h: 900, q: 80 },
+  { src: 'guests-group-day.jpg', out: 'public/images/venue/guests-group-day.jpg', w: 1400, h: 933, q: 78 },
+
+  /* ── EVENTOS ────────────────────────────────────────────────────────────
+     ⚠️ ACÁ ESTUVO `event-table-set.jpg` UNA HORA Y SE FUE. La elegí como «la
+     mesa montada para un evento privado», que era justo lo que le faltaba a
+     `/events`… y `scripts/build-photo-bank.mjs` la marcó como repetida de
+     `market-home.jpg`, que ya se publica en `/market` como el puesto de
+     decoración del hogar.
+
+     Mirada de nuevo con ese dato, la foto es lo segundo: es una mesa montada
+     en un STAND, sobre césped artificial y entre carpas. O sea que publicarla
+     en `/events` habría sido usar el puesto de un artesano para ilustrar un
+     evento privado del venue, y además la misma imagen dos veces en el sitio
+     con dos significados distintos.
+
+     `/events` sigue sin una foto de una mesa preparada. No se inventa.
+
+     El yoga y el 4 de julio sí son formatos que el venue hace y no se ven en
+     ninguna otra foto. */
+  { src: 'yard-yoga.jpg', out: 'public/images/events/yard-yoga.jpg', w: 1400, h: 933, foco: 0.55, q: 78 },
+  { src: 'street-fourth.jpg', out: 'public/images/events/street-fourth.jpg', w: 900, h: 1125, foco: 0.45, q: 78 },
+
+  /* ── OCN SEAFOOD ────────────────────────────────────────────────────────
+     ⚠️ ESTA SÍ SE PUEDE ATRIBUIR A UN TRUCK, y es la única de la tanda que
+     puedo: sale de `/seameonwheels` Y de `/ocn`, que son la misma página —
+     `/ocn` es un 301 a la otra—. O sea que es el marisco que el cliente
+     asocia a OCN Seafood Co., que es uno de los cuatro trucks vigentes y el
+     único de los tres sin foto que tiene material propio.
+
+     ⚠️ NO HAY NADA PARA BUTCHER’S BLVD NI PARA REGGAE KITCHEN. Ninguno de
+     los dos tuvo página en el sitio viejo, así que asignarles cualquiera de
+     las fotos de comida sueltas sería inventar de quién es el plato. Los dos
+     siguen con su `PhotoPending` y su brief. */
+  { src: 'ocn-crab-boil.jpg', out: 'public/images/trucks/ocn-seafood-1.jpg', w: 800, h: 1000, q: 80 },
 ];
 
 /**

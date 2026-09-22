@@ -81,6 +81,7 @@ export default function FormSlab({
   titleId,
   lead,
   aside,
+  footer,
   children,
 }: {
   readonly id?: string;
@@ -105,6 +106,27 @@ export default function FormSlab({
    * empezar, no después de scrollear los quince campos.
    */
   readonly aside?: ReactNode;
+  /**
+   * Una línea DENTRO del panel, debajo del formulario.
+   *
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ NACIÓ EL 2026-09-22 PARA `/join-us`. Camila, sobre la captura del
+   * carril de trabajo: «el main ponlo dentro de la card de formulario».
+   *
+   * Ese mail vivía en la columna izquierda, bajo un rótulo «Or skip the
+   * form» que ella tachó en la misma captura. La nota de `aside` defiende
+   * justamente esa posición —la salida a la vista ANTES de llenar campos— y
+   * sigue valiendo para el teléfono y los buzones de `/contact` y `/events`.
+   * No vale para éste: no es una alternativa al formulario, es la vía para
+   * mandar un CV adjunto, que es un archivo que el formulario no recibe.
+   * Adentro del panel y debajo del botón es donde alguien se entera de eso
+   * en el momento en que lo necesita.
+   *
+   * ⚠️ NO ES UN `<p>` HECHO ACÁ CON EL TEXTO POR PROP: es un `ReactNode`
+   * entero, porque adentro va un link y cada losa escribe su frase.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  readonly footer?: ReactNode;
   readonly children: ReactNode;
 }) {
   return (
@@ -154,7 +176,16 @@ export default function FormSlab({
             aria-hidden="true"
             className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
           />
-          <div className="relative">{children}</div>
+          <div className="relative">
+            {children}
+            {footer ? (
+              /* El filete lo separa del botón de enviar sin sacarlo del panel:
+                 es parte del formulario, no una sección aparte. */
+              <p className="mt-7 border-t border-ink/12 pt-6 font-body text-base font-light leading-[1.6] text-body/80">
+                {footer}
+              </p>
+            ) : null}
+          </div>
         </div>
       </div>
     </Section>

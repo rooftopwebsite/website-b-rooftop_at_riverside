@@ -152,10 +152,10 @@ alguien lo usa para decidir.
 | # | qué | dónde cae | qué se ve hoy |
 |---|---|---|---|
 | 12 bis | ~~**Qué días es el happy hour: ¿martes o miércoles?**~~ **RESUELTO el 2026-09-17, y ninguna de las dos opciones era la buena.** El cliente pasó el dato real: **Weekend Happy Hour, sábado y domingo de 12 a 6, en todo el venue**, con `$1 off` en drafts, bottles y cans, `$8` Tito's, Captain y Crown's, `$10` margaritas y Superior Light Beer como marca destacada. Lo que publicábamos («Wednesday – Friday, 3–6 PM, $4 drafts, $5 house wines, $6 house drinks») salía del footer del sitio Wix y estaba mal de punta a punta. **Queda abierta una sola pregunta: ¿existe además un happy hour de semana, o el de fin de semana es el único?** | `/sunset-bar`, `/whats-on` y la píldora del hero de la home | El dato nuevo, leído del evento de la base |
-| 13 | **Capacidad de pie** del Sunset Bar, The Yard, The Patio y Full Buyout | `/events/spaces`, la tabla de cada espacio | `TBD` con borde punteado |
-| 14 | **Capacidad sentada** de los mismos cuatro | ídem | `TBD` |
-| 15 | **Mínimo de invitados** de los mismos cuatro | ídem | `TBD` |
-| 16 | **Planos de planta**, si existen | `/events/spaces` | un bloque «Pending» que lo explica |
+| 13 | **Capacidad de pie** del Sunset Bar, The Yard, The Patio y Full Buyout | Ya no cae en ninguna pantalla: ver el aviso de abajo | **Nada.** El sitio no menciona aforos |
+| 14 | **Capacidad sentada** de los mismos cuatro | ídem | ídem |
+| 15 | **Mínimo de invitados** de los mismos cuatro | ídem. El único mínimo publicado es el de 12 de `/hostanevent`, que sí está en el sitio | ídem |
+| 16 | **Planos de planta**, si existen | ídem | ídem |
 | 17 | **Cuántas consolas** hay en el game truck | `/events/game-truck` | `TBD` |
 | 18 | **Cuántas consolas y cuántas pantallas** en el game lounge | `/the-experience` | `TBD` ×2 — **y acá hay un conflicto**: el brief y el sitio actual dan números distintos, así que no alcanza con elegir uno |
 | 19 | **Próximas fechas del market** | `/market` | `TBD` |
@@ -164,6 +164,24 @@ alguien lo usa para decidir.
 
 Los cuatro espacios están en `src/content/spaces.ts` y los trucks en
 `src/content/trucks.ts`: los números entran ahí y los `TBD` se van solos.
+
+> ### ⚠️ Los ítems 13 a 16 ya no se ven en el sitio — 2026-09-22
+>
+> La sección que los mostraba, «Pick your footprint» de `/events`, **se
+> eliminó**. Camila: «esta parte se puede contar mucho mejor; de hecho ya se
+> está contando en "Lo que viene con cada espacio", ¿por qué no la sacamos?».
+>
+> Eso cambia una sola cosa y conviene tenerla escrita: **estos cuatro ítems
+> dejaron de tener marcador en pantalla.** Hasta ahora el sitio los pedía solo
+> —el bloque naranja estaba a la vista de cualquiera que abriera `/events`— y
+> desde hoy el único lugar donde constan es este documento. Si llegan los
+> números y se quiere volver a publicar aforos, hay que **rediseñar dónde
+> van**: ya no existe la tabla que los esperaba.
+>
+> Lo que sí sigue publicado es el mínimo de 12 invitados, que es el único dato
+> de capacidad que el cliente publica hoy (`/hostanevent`: «*For parties less
+> than 12 people contact: 239-268-0080»). Vive en `SMALL_PARTY_MAX` y se lee
+> al lado del formulario.
 
 > ⚠️ **El detalle del 12 bis, porque ahora se ve en la misma pantalla.** El
 > cliente publica el happy hour en dos lugares y no dicen lo mismo:

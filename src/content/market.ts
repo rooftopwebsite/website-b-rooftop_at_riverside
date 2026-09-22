@@ -84,24 +84,51 @@ export interface MarketStep {
   readonly tags: readonly string[];
 }
 
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LOS TRES PASOS PERDIERON SUS ETIQUETAS EL 2026-09-22, y los títulos se
+ * emparejaron a UN renglón. Camila, sobre la captura: «elimina de cada paso
+ * los tags, y además haz que los títulos o tengan todos dos líneas o todos una
+ * para que no quede con espacios en blanco y desproporcionados».
+ *
+ * LAS ETIQUETAS. Eran ocho chips al pie de las tres tarjetas y los ocho decían
+ * lo mismo que el párrafo que tenían arriba: «What you make» debajo de «tell us
+ * what you make», «Ten by ten» debajo de «set up your ten by ten». Un resumen
+ * de dos renglones no se resume en tres chips.
+ *
+ * LOS TÍTULOS. «Start with the form» era el único de los tres que se partía en
+ * dos renglones, así que las otras dos tarjetas compensaban con un piso de
+ * `min-h` calculado en `em` — un parche escrito para un desfase de 35px. Ahora
+ * los tres entran en uno solo («Fill in the form», «We write back», «Bring your
+ * table») y el piso se fue del JSX.
+ *
+ * ⚠️ SI ALGUNO VUELVE A DOS RENGLONES, VUELVEN LOS TRES O VUELVE EL PISO. Es la
+ * regla que dejó Camila y es la que evita el escalón. El techo medido a este
+ * cuerpo son ~19 caracteres.
+ *
+ * ⚠️ `tags` SIGUE EN EL TIPO `MarketStep` y las tres lo traen vacío. Se deja el
+ * campo porque el tipo lo comparten otros bloques del kit; lo que se sacó es el
+ * contenido y el renderizado.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
 export const STEPS: readonly MarketStep[] = [
   {
     kicker: 'Two minutes',
-    title: 'Start with the form',
+    title: 'Fill in the form',
     body: 'Tell us what you make, where we can see it, and which market days you are after. That is the whole thing.',
-    tags: ['What you make', 'Where to see it', 'The days you want'],
+    tags: [],
   },
   {
     kicker: 'One business day',
     title: 'We write back',
     body: 'A person reads it and answers within one business day, with what is open and who else is set up that day.',
-    tags: ['A person reads it', 'Within a day'],
+    tags: [],
   },
   {
     kicker: 'On the day',
     title: 'Bring your table',
     body: 'Pull in, check in with us and set up your ten by ten. The booth is $30 and spots go first come, so the earlier you write the better.',
-    tags: ['Your table and tent', 'Ten by ten', 'First come'],
+    tags: [],
   },
 ];
 

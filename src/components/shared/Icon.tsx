@@ -82,7 +82,7 @@ function Svg({ className = 'size-5', ...rest }: SvgProps) {
 }
 
 /* ── Flechas y cursores ──────────────────────────────────────────────────
-   Las cuatro flechas comparten la misma punta (un chevron de 45°) para que
+   Las flechas comparten la misma punta (un chevron de 45°) para que
    girar una no cambie el peso del dibujo. */
 
 export function ArrowRight(props: IconProps) {
@@ -101,10 +101,42 @@ export function ArrowLeft(props: IconProps) {
   );
 }
 
+/**
+ * La flecha hacia arriba. Es la del botón «Back to top» y nada más.
+ *
+ * ⚠️ NO es un dibujo nuevo: es `ArrowRight` girada 90° sobre el centro de la
+ * grilla, punto por punto — `M4 12h15` queda `M12 20V5`, y la punta
+ * `M13 6l6 6-6 6` queda `M6 11l6-6 6 6`. Por eso pesa exactamente igual que
+ * las otras, que es de lo que se trata el set.
+ */
+export function ArrowUp(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 20V5M6 11l6-6 6 6" />
+    </Svg>
+  );
+}
+
 export function ArrowUpRight(props: IconProps) {
   return (
     <Svg {...props}>
       <path d="M7 17 17 7M8 7h9v9" />
+    </Svg>
+  );
+}
+
+/**
+ * La cruz de cerrar.
+ *
+ * ⚠️ NACIÓ EL 2026-09-22 CON EL DIÁLOGO DE EVENTO. Es el primer cierre del
+ * sitio: hasta ahora nada se abría encima de nada. Las dos diagonales son la
+ * misma punta de 45° que comparten las flechas, así que a `1.7` de
+ * trazo pesa exactamente lo mismo que el resto del set.
+ */
+export function X(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M6 6l12 12M18 6 6 18" />
     </Svg>
   );
 }
@@ -400,6 +432,30 @@ export function Ticket(props: IconProps) {
  * ⚠️ EL AGUJERO VA HUECO. Relleno se lee como una gota a 20px y pierde el
  * parentesco con el resto del set, que es todo de trazo.
  */
+/**
+ * Un auto de frente tres cuartos, para el renglón de cómo llegar.
+ *
+ * ⚠️ REEMPLAZA A `MapPin` EN LA TARJETA DE ESTACIONAMIENTO. Camila,
+ * 2026-09-22, sobre la captura de `/events`: «cambia el icono, no representa
+ * estacionamiento». Tenía razón: un alfiler de mapa dice «acá queda esto», que
+ * es lo que contesta el mapa de la página de contacto, no «dejá el auto acá».
+ *
+ * ⚠️ `MapPin` NO SE BORRA: lo usa el pie de `/market` y es el pin genérico del
+ * set.
+ */
+export function Car(props: IconProps) {
+  return (
+    <Svg {...props}>
+      {/* El capó y el techo, en una sola polilínea. */}
+      <path d="M4.5 12.5 6 7.8A2 2 0 0 1 7.9 6.4h8.2A2 2 0 0 1 18 7.8l1.5 4.7" />
+      {/* La carrocería. */}
+      <path d="M3.4 12.5h17.2v4.1a1 1 0 0 1-1 1H4.4a1 1 0 0 1-1-1z" />
+      {/* Las dos ruedas, apoyadas por fuera de la caja. */}
+      <path d="M6.6 17.6v1.4M17.4 17.6v1.4" />
+    </Svg>
+  );
+}
+
 export function MapPin(props: IconProps) {
   return (
     <Svg {...props}>

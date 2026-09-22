@@ -90,6 +90,16 @@ const VENTANILLAS: readonly Ventanilla[] = [
 export default function HowToOrder({ id = 'order-title' }: { readonly id?: string }) {
   return (
     <Section tone="paper" band="lg" labelledBy={id}>
+      {/*
+        ⚠️ LA BAJADA TERMINA EN LA PRIMERA ORACIÓN. Camila, 2026-09-22, tachó
+        la segunda sobre la captura: «knowing which counter does what is the
+        only thing worth reading before you come».
+
+        Decía dos cosas y sólo una era información. La segunda era una
+        instrucción de lectura —esto es lo único que vale la pena leer— y encima
+        una que se contradice sola: si de verdad fuera lo único que vale la pena
+        leer, el resto de la página no tendría por qué existir.
+      */}
       <Reveal>
         <SectionHead
           eyebrow="How it works"
@@ -100,7 +110,7 @@ export default function HowToOrder({ id = 'order-title' }: { readonly id?: strin
             </>
           }
           id={id}
-          lead="It looks like one restaurant and it is not. Knowing which counter does what is the only thing worth reading before you come."
+          lead="It looks like one restaurant and it is not."
         />
       </Reveal>
 

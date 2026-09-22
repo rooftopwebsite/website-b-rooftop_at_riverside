@@ -1183,6 +1183,35 @@
 }
 
 /* ==========================================================================
+   EL CONTRATO DE LO QUE SE FIJA AL PIE
+
+   `--aviso-pie` — cuánto espacio se está comiendo, AHORA MISMO, lo que esté
+   pegado al borde inferior de la pantalla. Vale 0 mientras no haya nada.
+
+   Quién la escribe: el elemento fijo, no quien la lee. Hoy no hay ninguno; el
+   primero va a ser el banner de cookies (la skill `paginas-legales` lo monta
+   `fixed inset-x-0 bottom-0`, y este sitio todavía no lo tiene — ver la nota
+   de `LEGALES` en `Footer.tsx`). Cuando se monte, tiene que publicar su alto:
+
+     const alto = ref.current.offsetHeight;
+     document.documentElement.style.setProperty('--aviso-pie', alto + 'px');
+
+   y devolverla a `0px` al cerrarse.
+
+   ⚠️ NO SE INVIERTE LA DIRECCIÓN. Es tentador que el que flota mida al aviso
+   con un `getBoundingClientRect`, y no funciona: un banner de consentimiento
+   decide si aparece DESPUÉS de leer su cookie, o sea más tarde que quien lo
+   mediría, y cuando se cierra nadie avisa. Publicada por el aviso, la variable
+   llega siempre a tiempo y a todos los que la lean.
+
+   Quién la lee hoy: `BackToTop`, que la suma a su piso de 72px.
+   ========================================================================== */
+
+:root {
+  --aviso-pie: 0px;
+}
+
+/* ==========================================================================
    Base
    ========================================================================== */
 
@@ -3058,4 +3087,65 @@ main:has(+ .banda-arco) > :last-child {
   letter-spacing: 0.005em;
   color: var(--color-ink);
   max-width: 72ch;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LA FICHA DE EVENTO DEL CALENDARIO
+
+   ⚠️ NACIÓ EL 2026-09-22. Camila, sobre la captura de `/whats-on`: «de cada
+   evento haz una vista previa tipo pop up». El componente es
+   `sections/EventDialog.tsx` y es un `<dialog>` nativo; acá va lo que Tailwind
+   no puede escribir, que es el pseudo-elemento del fondo y el centrado del top
+   layer.
+
+   ⚠️ EL `::backdrop` NO SE PUEDE PINTAR CON UNA CLASE. No es un hijo del
+   diálogo ni de nadie: es un pseudo-elemento que el navegador dibuja en el top
+   layer, y sólo se alcanza desde CSS. Un `<div>` overlay propio quedaría
+   DEBAJO del top layer y habría que pelearle el `z-index` a algo que ni
+   siquiera está en el flujo del documento.
+
+   ⚠️ EL CENTRADO TAMBIÉN VA ACÁ. Un `<dialog>` abierto con `showModal()` se
+   posiciona con los márgenes `auto` del UA, y `margin: auto` en los cuatro
+   lados es lo que lo clava en el medio de la ventana en los dos ejes. Con las
+   clases de Tailwind sobre el elemento habría que pisar ese default con
+   `!important`. */
+dialog.ficha-evento {
+  margin: auto;
+  max-height: calc(100dvh - 2 * var(--spacing-borde));
+  overflow-y: auto;
+}
+
+dialog.ficha-evento::backdrop {
+  /* La tinta del sitio al 55 %. No es `backdrop-filter`: el desenfoque sobre
+     una página entera cuesta caro en un teléfono y acá no agrega nada que el
+     oscurecimiento no diga ya. */
+  background: rgb(26 26 24 / 0.55);
+}
+
+/* ⚠️ LA ENTRADA ES `opacity` Y `transform`, las dos únicas propiedades que el
+   repo anima (ver `docs/layout-motion.md`). `allow-discrete` es lo que hace
+   que la transición corra aunque `display` pase de `none` a `block` en el
+   mismo frame, que es exactamente lo que hace `showModal()`. */
+@media (prefers-reduced-motion: no-preference) {
+  dialog.ficha-evento {
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 180ms var(--ease-brand),
+      transform 180ms var(--ease-brand),
+      overlay 180ms allow-discrete,
+      display 180ms allow-discrete;
+  }
+
+  dialog.ficha-evento[open] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @starting-style {
+    dialog.ficha-evento[open] {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
 }

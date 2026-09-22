@@ -163,6 +163,48 @@ async function tonosCrudos(file) {
 }
 
 /** Expande los componentes de sección que la página importa y usa. */
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * LOS PARES QUE LA PÁGINA CRUZA CON UNA OLA.
+ *
+ * ⚠️ NACIÓ EL 2026-09-22 CON UN FALSO POSITIVO. `/our-story` quedó en rojo por
+ * «color seguido: cream→deep» cuando la cita de Chris Magnus pasó a ser su
+ * propia banda crema, arriba de la banda oscura del equipo. Entre las dos hay
+ * un `<SoftWave from="cream" to="deep" />`, que es exactamente el mecanismo
+ * con el que este sitio cruza de un color a otro.
+ *
+ * ⚠️ Y EL PRECEDENTE YA ESTABA, escondido por un accidente de este mismo
+ * script: `/events` tiene el MISMO par —la banda crema de `EventSpaces` y la
+ * losa oscura de precios, con su ola en medio— y figura en verde. No porque
+ * cumpla la regla, sino porque el parser lee la crema desde el componente y la
+ * concatena al final, con lo cual las dos nunca quedan pegadas en la lista.
+ *
+ * O sea: el patrón ya se usaba y el guard lo dejaba pasar por el motivo
+ * equivocado. Esto lo reconoce a propósito.
+ *
+ * ⚠️ QUÉ NO AFLOJA. La regla existe para que no haya un bloque de 1.400px de
+ * color seguido, y una ola no es una excusa para eso: sigue habiendo un techo
+ * de oscuras (§ `techoDeep`) y un máximo de dos cremas, y los dos cuentan
+ * igual. Lo único que esto dice es que DOS BANDAS SEPARADAS POR UNA OLA no son
+ * el mismo bloque, que es lo que se ve en pantalla.
+ *
+ * ⚠️ SE LEE SÓLO DEL `page.tsx`, no de los componentes. Una ola escrita adentro
+ * de un componente no dice nada del orden de la página que lo usa, y adivinarlo
+ * sería la clase de heurística que ya metió a este script en problemas dos
+ * veces.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+async function olasDe(file) {
+  const src = await fs.readFile(file, 'utf8');
+  const pares = new Set();
+  for (const m of src.matchAll(/<SoftWave\b([^>]*)\/>/g)) {
+    const from = m[1].match(/from="(\w+)"/)?.[1];
+    const to = m[1].match(/to="(\w+)"/)?.[1];
+    if (from && to) pares.add(`${BG_A_TONO[from] ?? from}→${BG_A_TONO[to] ?? to}`);
+  }
+  return pares;
+}
+
 async function pageTones(file) {
   const src = await fs.readFile(file, 'utf8');
   const own = await tonesIn(file);
@@ -269,11 +311,20 @@ for (const file of files.sort()) {
   const cream = norm.filter((t) => t === 'cream').length;
   const deep = norm.filter((t) => t === 'deep').length;
 
+  /*
+   * ⚠️ UN PAR CRUZADO POR UNA OLA NO ES UNA ADYACENCIA. Ver `olasDe()`: la
+   * ola es el corte, así que las dos bandas no se leen como un solo bloque de
+   * color aunque estén una al lado de la otra en el DOM.
+   */
+  const olas = await olasDe(file);
+
   const adjacent = [];
   for (let i = 1; i < norm.length; i++) {
     const a = norm[i - 1];
     const b = norm[i];
-    if (a !== 'paper' && b !== 'paper') adjacent.push(`${tones[i - 1]}→${tones[i]} (posición ${i})`);
+    if (a === 'paper' || b === 'paper') continue;
+    if (olas.has(`${a}→${b}`)) continue;
+    adjacent.push(`${tones[i - 1]}→${tones[i]} (posición ${i})`);
   }
 
   /*

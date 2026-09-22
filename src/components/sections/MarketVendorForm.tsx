@@ -117,7 +117,6 @@ export default function MarketVendorForm() {
         <CheckboxGroup
           name="needs"
           legend={LABELS.needs}
-          hint="Optional"
           options={VENDOR_NEEDS.map((n) => ({ value: n.value, label: n.label }))}
         />
         <SelectField
@@ -130,7 +129,7 @@ export default function MarketVendorForm() {
             { value: 'no', label: 'No, I do not' },
           ]}
         />
-        <TextAreaField name="message" label={LABELS.message} rows={3} hint="Optional" />
+        <TextAreaField name="message" label={LABELS.message} rows={3} />
       </fieldset>
 
       <div className="flex flex-wrap items-center gap-[16px]">

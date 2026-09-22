@@ -140,7 +140,6 @@ export default function ContactForm() {
             label={FRASE.phone}
             type="tel"
             autoComplete="tel"
-            hint="optional"
           />
         </SentenceRow>
       </div>

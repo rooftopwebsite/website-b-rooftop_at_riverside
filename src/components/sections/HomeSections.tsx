@@ -184,11 +184,23 @@ export function HowThisPlaceWorks() {
             Sin `mt`: el `justify-between` de la celda pone ese aire, y un
             margen fijo encima pelearía con él.
           */}
+          {/*
+            ⚠️ EL DESTINO CAMBIÓ Y EL TEXTO CON ÉL. Iba a `/events` con la
+            etiqueta «See how the yard is laid out», o sea que prometía un
+            plano del patio y entregaba la página comercial de eventos.
+
+            Camila, sobre la captura: «que este CTA mejor invite a conocernos,
+            o sea que lleve al Google Maps o la info de cómo llegar». Ahora
+            baja a `#find-us`, que es el cierre de esta misma home: la
+            dirección, el mapa, los horarios y el botón de indicaciones. El
+            párrafo de arriba termina de explicar cómo funciona el lugar y la
+            salida natural de eso es venir, no cotizar un evento.
+          */}
           <Link
-            href="/events"
+            href="#find-us"
             className="group inline-flex w-fit items-center gap-2.5 border-b-2 border-sunset pb-1 font-body text-dato font-medium text-ink transition-colors duration-200 hover:border-ink"
           >
-            See how the yard is laid out
+            Come see it for yourself
             <ArrowRight className="size-3.75 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
         </RevealItem>

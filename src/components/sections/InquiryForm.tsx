@@ -165,7 +165,6 @@ export default function InquiryForm({
             name="company"
             label={LABELS.company}
             autoComplete="organization"
-            hint="Optional"
           />
         </div>
       </fieldset>
@@ -186,7 +185,7 @@ export default function InquiryForm({
             arriba: eran cuatro campos en una grilla de tres. */}
         <div className="grid gap-[16px] sm:grid-cols-2">
           <DateField name="date" label={LABELS.date} required />
-          <DateField name="altDate" label={LABELS.altDate} hint="Optional" />
+          <DateField name="altDate" label={LABELS.altDate} />
         </div>
         <div className="grid gap-[16px] sm:grid-cols-2">
           <TextField name="startTime" label={LABELS.startTime} type="time" />
@@ -255,7 +254,6 @@ export default function InquiryForm({
           name="barTier"
           label={LABELS.barTier}
           placeholder="Choose one"
-          hint="Optional"
           options={BAR_TIERS.map((o) => ({ value: o, label: o }))}
         />
       </fieldset>

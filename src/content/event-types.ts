@@ -15,8 +15,37 @@
  * repartían en cuatro URLs un único argumento de venta. Quien está evaluando
  * cerrar el lugar necesita verlo entero de una vez.
  *
- * ⚠️ EL TEXTO NO SE TOCÓ. Es exactamente el mismo de las cuatro páginas, campo
- * por campo. Lo único que cambia es dónde se renderiza.
+ * ⚠️ EL TEXTO VENÍA TAL CUAL DE LAS CUATRO PÁGINAS, campo por campo, y las
+ * bajadas SE REESCRIBIERON EL 2026-09-22. Camila, sobre la captura: «revisa
+ * los títulos y bajadas de cada una de estas cards, que cada bajada haga real
+ * sentido a lo que se está vendiendo; es preferible que cuente menos antes de
+ * que diga cosas sin sentido o prometa cosas que no son».
+ *
+ * Qué decían y por qué se fueron:
+ *
+ *   · celebrations — «a party that starts at sunset and does not really have a
+ *     plan for when it ends». El bar cierra a medianoche el viernes y a las 2
+ *     el sábado, y eso está en `content/hours.ts`. La frase prometía lo
+ *     contrario de lo que el propio sitio publica.
+ *   · fundraisers — «RAISE MORE, spend less on the room» y «that visibility is
+ *     half the job done». Las dos afirman un resultado de recaudación que
+ *     ninguna fuente sostiene. El título pasa a nombrar lo que el evento ES;
+ *     la bajada, lo que el lugar TIENE: el portón, el escenario y el sonido.
+ *   · holiday-parties — «If you are reading this in the fall, you are on time.
+ *     Barely». Urgencia inventada, y encima no describe nada de lo que se
+ *     alquila.
+ *   · corporate — la bajada hablaba sólo de comida. Ahora nombra primero lo que
+ *     se contrata, que es el piso cerrado al público.
+ *
+ * ⚠️ SE CONTRASTÓ CONTRA `eatdrinkparadise.com/hostanevent`, que es lo que
+ * Camila pidió mirar. Esa página agrupa lo mismo en tres familias —social,
+ * corporate y entertainment— y no promete ningún resultado: describe «an
+ * upstairs space… private setting» con «breathtaking views, delicious food and
+ * handcrafted beverages». Las bajadas nuevas se mueven en ese registro.
+ *
+ * ⚠️ LOS `highlights` NO SE TOCARON Y TAMPOCO SE PUBLICAN: `EventTypes` dejó
+ * de renderizarlos el 2026-09-21. Están acá por si vuelven, y sus dos notas de
+ * corrección de datos siguen valiendo.
  *
  * ⚠️ EL `id` ES EL ANCLA Y ES LO QUE SOSTIENE LOS REDIRECTS. Las cuatro rutas
  * viejas redirigen con 301 a `/events#<id>`, así que renombrar un `id` rompe
@@ -46,7 +75,7 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
     id: 'corporate',
   eyebrow: "Corporate",
   title: "Take the team somewhere they'll actually want to go",
-  lead: "Four kitchens means nobody gets handed a plate they did not choose. That alone solves the hardest part of feeding a room of colleagues.",
+  lead: "The second floor closes to the public and the four kitchens serve at once, so nobody gets handed a plate they did not choose.",
   image: "/images/events/event-b.jpg",
   imageAlt: "A corporate group gathered on the rooftop at Rooftop at Riverside",
   highlights: [
@@ -74,7 +103,7 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
     id: 'celebrations',
   eyebrow: "Celebrations",
   title: "Every milestone deserves a view",
-  lead: "Fortieths, engagements, showers, reunions. The rooftop holds a party that starts at sunset and does not really have a plan for when it ends.",
+  lead: "Birthdays, engagements, showers and reunions, upstairs and private. The bar faces west, so the toast lands with the sky behind it.",
   image: "/images/events/event-d.jpg",
   imageAlt: "Guests raising glasses at a celebration at Rooftop at Riverside",
   highlights: [
@@ -100,8 +129,8 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
   {
     id: 'fundraisers',
   eyebrow: "Fundraisers",
-  title: "Raise more, spend less on the room",
-  lead: "The yard sits on Old 41 in the middle of downtown, across from Riverside Park. For a community fundraiser that visibility is half the job done.",
+  title: "Charity nights, right on Old 41",
+  lead: "The yard gates close, so a ticketed door works and you can count who comes through it. The stage and the sound are already there.",
   image: "/images/venue/wall-guests-yard-day.jpg",
   imageAlt: "Guests in the yard at Rooftop at Riverside during the day",
   highlights: [
@@ -122,7 +151,7 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
     id: 'holiday-parties',
   eyebrow: "Holiday parties",
   title: "Trade the ballroom for the rooftop",
-  lead: "High season here runs December through April, and the holiday calendar goes before anything else. If you are reading this in the fall, you are on time. Barely.",
+  lead: "December through April is high season here and the holiday dates go first. Outdoors, under lights, with four kitchens running at once.",
   image: "/images/events/event-c.jpg",
   imageAlt: "A large group celebrating at Rooftop at Riverside",
   highlights: [

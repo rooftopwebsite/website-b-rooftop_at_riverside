@@ -5,7 +5,8 @@ import { ArtistForm, JobForm } from '@/components/sections/JoinForms';
 import { ButtonLink } from '@/components/shared/Button';
 import FormSlab from '@/components/shared/FormSlab';
 import PlateHero from '@/components/shared/PlateHero';
-import Section from '@/components/shared/Section';
+import Section, { GUTTER } from '@/components/shared/Section';
+import SoftWave from '@/components/shared/SoftWave';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import { fraseEntretenimiento } from '@/content/entertainment';
 import { getJobPostings } from '@/lib/restoexp';
@@ -152,14 +153,62 @@ export default async function JoinUsPage({
             <span className="block text-sunset-deep">play here</span>
           </>
         }
-        lead={`We are hiring when we are hiring, and we book ${musicaLarga.toLowerCase()}. Pick which one you are here for, and a person reads what comes in.`}
         photo="/images/venue/join-stage-day-wide.jpg"
         photoAlt="A singer on the stage in the yard at Rooftop at Riverside in the afternoon"
       />
 
-      {/* ══ El selector ══════════════════════════════════════════════════ */}
+      {/* ══ El corte, el título y el selector ════════════════════════════ */}
+
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ TRES COSAS DEL MISMO PEDIDO, 2026-09-22. Camila, sobre la captura:
+        «separa el hero del contenido con una ola, saca la bajada del hero,
+        conviértela en un título y bajada que le siga un selector típico como
+        usamos en otros proyectos, y con él cambie el contenido de debajo».
+
+          1 · LA OLA, que va DEBAJO DEL SELECTOR y no entre el hero y el
+              título. El hero, su pregunta y el control son el mismo bloque —el
+              encabezado de la página— y el «contenido» que hay que separar es
+              el formulario. Ahí además la ola SE VE: corta de `bone` a `paper`.
+
+              ⚠️ ENTRE EL HERO Y EL TÍTULO ESTUVO PRIMERO Y NO SERVÍA: los dos
+              lados eran `bone`, así que una ola del mismo color contra el mismo
+              color no dibuja nada. Lo único que hacía era dejar 90px de hueco
+              en blanco debajo de la foto. Medido en el navegador.
+
+          2 · LA BAJADA DEL HERO SE VA Y VUELVE COMO TITULAR. Decía «we are
+              hiring when we are hiring, and we book <música>. Pick which one
+              you are here for, and a person reads what comes in»: tres ideas
+              en un renglón, y la del medio —elegí cuál— es una instrucción del
+              control que viene abajo. Ahora es un `h2` que hace la pregunta y
+              una bajada que dice las dos ofertas.
+
+          3 · EL SELECTOR. Ver `sections/JoinSwitch.tsx`: pasó de dos tarjetas
+              grandes a la fila de píldoras que el repo ya usa en el
+              calendario.
+
+        ⚠️ EL TITULAR ES UN `h2` Y NO REPITE AL `h1`. El `h1` del hero es «Work
+        here, play here», que es la marca de la página; éste es la pregunta que
+        el selector contesta. Dos titulares seguidos diciendo lo mismo era
+        justamente lo que había.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <div className={`grano bg-bone pt-[36px] lg:pt-[52px] ${GUTTER}`}>
+        <div className="caja">
+          <Heading level={2} id="apply-title" className="max-w-[16ch] text-d4 lg:text-d3">
+            What are you <span className="text-sunset-deep">here for</span>
+          </Heading>
+          <p className="bajada mt-gap-bajada max-w-[56ch] font-body text-lead font-light">
+            We hire when we hire, and we book {musicaLarga.toLowerCase()}. Either way a person
+            reads what comes in.
+          </p>
+        </div>
+      </div>
 
       <JoinSwitch lane={lane} />
+
+      {/* La ola: acá termina el encabezado y empieza el formulario. */}
+      <SoftWave from="bone" to="paper" className="relative -mb-px" />
 
       {/* ══ El carril elegido ════════════════════════════════════════════ */}
 
@@ -220,15 +269,21 @@ export default async function JoinUsPage({
                   </ul>
                 </div>
               ) : (
-                <div className="rounded-card border border-ink/15 bg-bone p-[24px]">
-                  <Heading level={3} role="card">
-                    No posted openings today
-                  </Heading>
-                  <p className="mt-[10px] max-w-[46ch] text-[16px] leading-[1.7] text-body/80">
-                    That happens most of the year, and we still read what comes in. Send it and it
-                    sits with us for when a shift opens up, which in season happens fast.
-                  </p>
-                </div>
+                /*
+                  ⚠️ SIN VACANTES NO SE DIBUJA NADA. Acá había una tarjeta —«No
+                  posted openings today»— y Camila la tachó sobre la captura.
+
+                  Era el primer bloque de la columna y lo primero que decía era
+                  que no hay trabajo, al lado de un formulario que pide veinte
+                  campos. Que la mayor parte del año no haya búsquedas
+                  publicadas es cierto y sigue siendo cierto; lo que no hace
+                  falta es anunciarlo antes de que alguien postule.
+
+                  ⚠️ LA RAMA SE QUEDA ESCRITA aunque no renderice: es el estado
+                  normal, no un error, y dejarla explícita evita que alguien
+                  «arregle» el ternario creyendo que falta algo.
+                */
+                null
               )}
 
               {/*
@@ -252,38 +307,69 @@ export default async function JoinUsPage({
                 lugar» sin decir dónde queda el lugar obliga a abrir otra página.
                 ══════════════════════════════════════════════════════════════
               */}
-              <div className="rounded-card border border-ink/15 bg-bone p-[24px]">
-                <Eyebrow tone="terra">Rather use a pen?</Eyebrow>
-                <Heading level={3} role="card" className="mt-gap-kicker">
+              {/*
+                ⚠️ ES LA MISMA TARJETA QUE EL PACKET DE `/events`, ADAPTADA.
+                Camila, 2026-09-22: «acorta el texto de la segunda y dale mismo
+                formato que a la card de PDF de eventos; deben ser mismo
+                componente adaptado a cada situación».
+
+                Lo que comparten, y que allá se decidió el mismo día: fondo
+                `mint`, rótulo, titular de tarjeta, un párrafo, y el botón
+                naranja al ANCHO de la tarjeta con el formato y el peso del
+                archivo debajo, centrados.
+
+                ⚠️ EL TEXTO BAJÓ DE TRES RENGLONES A UNO. Decía dónde
+                entregarlo, que también se puede mandar por mail y que pide
+                exactamente lo mismo que el formulario de al lado. La dirección
+                está en el footer y en `FindUs`; lo de «pide lo mismo» es la
+                razón de ser de la tarjeta y ya lo dice el titular.
+              */}
+              <div className="rounded-shell bg-mint p-6">
+                <Eyebrow tone="deep">Rather use a pen?</Eyebrow>
+                <Heading level={3} role="card" className="mt-2.5">
                   The same form, on paper
                 </Heading>
-                <p className="mt-[10px] max-w-[46ch] text-[16px] leading-[1.7] text-body/80">
-                  Print it, fill it in, attach your resume, and hand it to the management team at{' '}
-                  {venue.street}, {venue.locality}. Or email it to us. It asks for exactly what the
-                  form on this page asks for.
+                <p className="mt-2.5 max-w-[46ch] font-body text-base font-light leading-[1.7] text-ink/80">
+                  Print it, fill it in and hand it to the management team with your resume.
                 </p>
-                <div className="mt-[16px]">
-                  <ButtonLink href={PDF} variant="secondary" external>
+                <div className="mt-5">
+                  <ButtonLink
+                    href={PDF}
+                    variant="primary"
+                    size="md"
+                    external
+                    className="w-full justify-center"
+                  >
                     Download the form
                   </ButtonLink>
+                  <p className="mt-2 text-center font-body text-micro font-medium text-ink/70">
+                    PDF
+                  </p>
                 </div>
               </div>
 
               {/*
-                ⚠️ EL MAIL VA ACÁ Y NO AL PIE DEL FORMULARIO. Es la regla de
-                `FormSlab`: quien prefiere mandar un mail con el CV adjunto tiene
-                la salida a la vista ANTES de empezar a llenar campos.
+                ⚠️ ACÁ ESTABA EL MAIL, BAJO UN RÓTULO «OR SKIP THE FORM», Y LOS
+                DOS SE FUERON EL 2026-09-22. Camila, sobre la captura: tachó el
+                rótulo y marcó «el main ponlo dentro de la card de formulario».
+
+                El rótulo es el mismo que se sacó de `/events` y de `/market` el
+                mismo día, y por el mismo motivo: estaba al lado de un
+                formulario y lo primero que hacía era ofrecer no usarlo.
+
+                El mail no se pierde: `FormSlab` lo recibe ahora por `footer` y
+                lo dibuja adentro del panel, debajo del botón de enviar. Ver la
+                prop en ese componente.
               */}
-              <div className="flex flex-col gap-1.5">
-                <p className="eyebrow text-body/75">Or skip the form</p>
-                <a
-                  href={`mailto:${venue.emailHiring}`}
-                  className="link-texto break-all font-body text-base"
-                >
-                  {venue.emailHiring}
-                </a>
-              </div>
             </div>
+          }
+          footer={
+            <>
+              Prefer to send a resume by mail?{' '}
+              <a href={`mailto:${venue.emailHiring}`} className="link-texto break-words font-bold">
+                {venue.emailHiring}
+              </a>
+            </>
           }
         >
           <JobForm />
@@ -332,26 +418,35 @@ export default async function JoinUsPage({
                 </ul>
               </div>
 
+              {/*
+                ⚠️ ESTA TARJETA SE ACORTÓ A UNA FRASE. Camila, 2026-09-22: «en
+                esta card hazlo más acotado, pon algo así como "si ya tienes
+                fecha pero tienes alguna duda escríbenos a
+                info@eatdrinkparadise.com". NO digas que es más rápido ni nada
+                de eso».
+
+                Decía que el calendario tiene la fecha y el horario, y cerraba
+                con «is faster than this form» — o sea que la página misma
+                desaconsejaba el formulario que tiene al lado. Eso es lo que
+                Camila subrayó en mayúsculas.
+
+                ⚠️ SE FUE TAMBIÉN EL LINK AL CALENDARIO. Sin la frase que lo
+                introducía no tenía dónde colgarse, y el calendario está en el
+                header de todas las páginas.
+
+                ⚠️ `break-words` Y NO `break-all`. Iba con `break-all`, que parte
+                en CUALQUIER letra, y como el mail va embebido en una frase y la
+                columna es angosta, salía cortado al medio: «info@eatdrinkp /
+                aradise.com». Con `break-words` se va entero al renglón de abajo.
+              */}
               <div className="rounded-card border border-ink/15 bg-bone p-[20px]">
                 <Eyebrow tone="deep">Already on the calendar?</Eyebrow>
                 <p className="mt-[8px] max-w-[42ch] text-[16px] leading-[1.7] text-body/80">
-                  If you are playing here and want to check the date or the set time, the{' '}
-                  <Link href="/whats-on" className="link-texto font-bold">
-                    calendar
-                  </Link>{' '}
-                  has it, and{' '}
-                  {/*
-                    ⚠️ `break-words` Y NO `break-all`. Iba con `break-all`, que
-                    parte en CUALQUIER letra, y como acá el mail va embebido en
-                    una frase y la columna es angosta, salía cortado al medio:
-                    «info@eatdrinkp / aradise.com». Con `break-words` el mail se
-                    va entero al renglón de abajo y sólo se parte si no entra ni
-                    solo, que en esta columna no pasa.
-                  */}
+                  If you already have a date with us and something is unclear, write to{' '}
                   <a href={`mailto:${venue.email}`} className="link-texto font-bold break-words">
                     {venue.email}
-                  </a>{' '}
-                  is faster than this form.
+                  </a>
+                  .
                 </p>
               </div>
             </div>

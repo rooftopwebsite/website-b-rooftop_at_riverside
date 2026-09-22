@@ -93,6 +93,24 @@ function Label({
   readonly htmlFor: string;
   readonly children: ReactNode;
   readonly required?: boolean;
+  /**
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ EL `hint` NO SE USA PARA DECIR «OPTIONAL». Camila, 2026-09-22, sobre
+   * la captura del formulario de artistas: «del form quita el (opcional): si
+   * no tiene el asterisco, es obvio que es opcional».
+   *
+   * Tenía razón y el sistema ya lo decía: los obligatorios llevan el
+   * asterisco rojo que dibuja este mismo componente, más el `required` real
+   * en el campo. Un «Optional» al lado de los que NO lo llevan es la misma
+   * información escrita dos veces y al revés — y los doce que había hacían
+   * que la etiqueta de la mitad de los campos midiera el doble.
+   *
+   * Los doce se sacaron el 2026-09-22 de los cuatro formularios del sitio.
+   * Para lo que sí sirve el `hint` es para lo que el nombre del campo no
+   * alcanza a decir: «Both in one file is fine», «One or two sentences is
+   * plenty», «A link or an @username».
+   * ══════════════════════════════════════════════════════════════════════
+   */
   readonly hint?: string;
 }) {
   return (

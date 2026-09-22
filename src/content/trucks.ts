@@ -142,8 +142,20 @@ export const TRUCKS: readonly Truck[] = [
     blurb: null,
     schedule: null,
     instagram: null,
-    photo: null,
-    photoAlt: null,
+    /*
+      ⚠️ LA FOTO ES DEL SITIO VIGENTE Y SÍ SE PUEDE ATRIBUIR A ESTE TRUCK,
+      que es lo que la hace publicable. Sale de `/seameonwheels`, y `/ocn`
+      —la ruta del cliente para OCN— es un 301 a esa misma página: o sea que
+      es el marisco que él mismo asocia a este puesto.
+
+      ⚠️ DE LOS TRES TRUCKS VIGENTES SIN FOTO, ÉSTE ERA EL ÚNICO CON
+      MATERIAL PROPIO. Butcher’s Blvd y Reggae Kitchen no tuvieron página en
+      el sitio viejo, así que asignarles una de las fotos de comida sueltas
+      sería decir de quién es un plato que no sabemos. Los dos siguen con su
+      `photoBrief` y su hueco marcado.
+    */
+    photo: '/images/trucks/ocn-seafood-1.jpg',
+    photoAlt: 'A seafood boil with crab legs, corn, potatoes and clams from OCN Seafood Co.',
     photoBrief:
       "El truck de OCN Seafood Co. abierto y atendiendo, al atardecer, con la ventanilla iluminada y gente pidiendo.",
     menuImage: null,
@@ -185,19 +197,48 @@ export const TRUCKS: readonly Truck[] = [
     schedule: null,
     // Está impreso en su propia carta, junto con el teléfono (239) 595-5713.
     instagram: 'https://www.instagram.com/el_chilango_mx/',
-    photo: '/images/trucks/el-chilango-1.jpg',
-    photoAlt: 'Tacos being plated at the El Chilango truck window at Rooftop at Riverside',
+    /*
+      ══════════════════════════════════════════════════════════════════════
+      ⚠️ LA FOTO DE LA TARJETA ES UN PLATO, Y HASTA EL 2026-09-22 FUE EL ARTE
+      DEL TRUCK. Camila, sobre la captura de `/food-trucks`: «unifiquemos
+      criterio de imágenes para cada uno: o en todos los logos, o en todos
+      comida de cada uno».
+
+      Era el único de los cuatro que rompía el criterio. Los otros tres
+      publican un plato —una smashburger, un poke bowl, un jerk chicken— y
+      éste publicaba `el-chilango-1.jpg`, que es el arte de marca del truck:
+      la calavera con flores y el logotipo en rosa. Al lado de tres fotos de
+      comida no se leía como una cuarta tarjeta, se leía como un banner
+      metido en la fila.
+
+      ⚠️ SE UNIFICÓ HACIA COMIDA Y NO HACIA LOGO, que era la otra mitad de la
+      opción que dio Camila. Motivo: de los cuatro trucks tenemos el arte de
+      UNO. Unificar hacia logo obliga a conseguir tres piezas de marca que hoy
+      no existen en ninguna fuente nuestra, y hasta que lleguen la fila
+      quedaría peor que antes. Comida la tienen los cuatro.
+
+      ⚠️ EL ARTE NO SE TIRA: pasa a la galería, que es donde una pieza de
+      marca acompaña sin competir.
+
+      ⚠️ LOS `alt` DE LA GALERÍA ESTABAN CAMBIADOS. Decían «street tacos» y «el
+      truck estacionado en el patio»; las fotos son un rice bowl y unos
+      chilaquiles. Corregidos contra la imagen, no contra el nombre del
+      archivo.
+      ══════════════════════════════════════════════════════════════════════
+    */
+    photo: '/images/trucks/el-chilango-3.jpg',
+    photoAlt: 'Chilaquiles with pulled pork, avocado and crema from El Chilango MX',
     photoBrief: "El truck por fuera, con el cartel legible.",
     // Bajada de su propia página del sitio vigente. Ver la nota del campo.
     menuImage: '/menus/el-chilango-mx.jpg',
     gallery: [
       {
         src: '/images/trucks/el-chilango-2.jpg',
-        alt: 'Close-up of street tacos with fresh salsa and lime from El Chilango',
+        alt: 'A rice bowl with shrimp, black beans, corn and guacamole from El Chilango MX',
       },
       {
-        src: '/images/trucks/el-chilango-3.jpg',
-        alt: 'The El Chilango food truck parked in the yard at Rooftop at Riverside',
+        src: '/images/trucks/el-chilango-1.jpg',
+        alt: 'The El Chilango MX truck artwork, a flowered calavera over the truck name',
       },
     ],
     nameConfirmed: true,

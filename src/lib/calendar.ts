@@ -358,6 +358,17 @@ const parte = (date: string, opts: Intl.DateTimeFormatOptions) =>
 
 export const weekdayShort = (date: string) => parte(date, { weekday: 'short' }).toUpperCase();
 
+/**
+ * `2026-09-23` → `Wednesday`. El encabezado de cada día en la agenda de mobile.
+ *
+ * ⚠️ NACIÓ EL 2026-09-22 CON LA AGENDA NUEVA. Camila, sobre la captura del
+ * calendario: «en mobile la vista calendario no tendrá el calendario en sí,
+ * sino que enlistaremos cada uno de los eventos colocando día de la semana y
+ * debajo una card horizontal». El nombre entero, no las tres letras: es un
+ * título de grupo y no una etiqueta dentro de una celda de 48px.
+ */
+export const weekdayLong = (date: string) => parte(date, { weekday: 'long' });
+
 export const monthShort = (date: string) => parte(date, { month: 'short' }).toUpperCase();
 
 /** `2026-09-20` → `Sep 20`. Las repeticiones, en el renglón de la tarjeta. */

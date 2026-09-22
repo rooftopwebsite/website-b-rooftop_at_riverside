@@ -69,25 +69,41 @@ export function SpacePill({ children, lado = 'izq' }: { readonly children: React
  * LA VENTANA DE LA FOTO.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ VENTANA 7:5 CON CAJA DE RECORTE 4:5 ANCLADA ARRIBA, y esa asimetría es
- * todo el punto. Los afiches llegan del dashboard en 1920×1080 con el arte
- * VERTICAL pegado en el medio: poner la foto directo en la ventana con
- * `object-cover` recorta por los costados y parte los títulos —«LIVE» quedaba
- * en «VE»—. Una caja vertical anclada arriba los devuelve enteros y la ventana
- * muestra la parte de arriba, que es donde está el nombre del artista.
+ * ⚠️ VENTANA 16:9 Y NADA MÁS. Camila, 2026-09-22: «en las cards de evento
+ * cambia la proporción o lo que sea mejor para que las imágenes subidas en la
+ * base no se recorten tanto al centro, sino se pierde mucho el contexto de la
+ * imagen en sí y no se ven bien».
  *
- * ⚠️ PASÓ POR TRES PROPORCIONES antes de ésta. Está anotado en `WhatsOn`: fue
- * `aspect-video`, después `aspect-[4/5]`, y la mezcla de las dos es lo que
- * funciona. No volver a tocarlo sin mirar un afiche real.
+ * ⚠️ ACÁ HABÍA UNA VENTANA 7:5 CON UNA CAJA DE RECORTE 4:5 ANCLADA ARRIBA, y
+ * esa asimetría era exactamente lo que destruía el contexto. La cuenta: una
+ * foto de 16:9 metida en una caja de 4:5 con `object-cover` pierde el 55 % de
+ * su ancho, y después la ventana de 7:5 tapa la mitad de abajo de lo que
+ * quedó. De la foto original sobrevivía un recorte central de cerca de un
+ * tercio. Con un bajista sonriendo, lo que se veía era un mástil.
+ *
+ * ⚠️ LA CAJA VERTICAL TENÍA UN MOTIVO REAL Y HOY NO APLICA. Se puso cuando
+ * las imágenes eran AFICHES: arte vertical pegado en el medio de un lienzo de
+ * 1920×1080, donde `object-cover` en una ventana apaisada partía los títulos
+ * —«LIVE» quedaba en «VE»—. La caja los devolvía enteros.
+ *
+ * Lo que cambió es que ahora sabemos qué sube el dashboard. Se descargaron
+ * las nueve imágenes que hay cargadas y se midieron una por una: **las nueve
+ * son 16:9 exacto** (1.778), tanto los dos afiches —La Noche y Ross Brown,
+ * que llegan con el arte vertical y bandas a los costados— como las siete
+ * fotos. El dashboard normaliza todo a esa proporción.
+ *
+ * O sea que una ventana 16:9 con `object-cover` no recorta NADA de nada: ni
+ * un afiche ni una foto. El caso que la caja vertical venía a proteger se
+ * protege solo, y el 55 % de recorte se va.
+ *
+ * ⚠️ SI ALGÚN DÍA EL DASHBOARD DEJA DE NORMALIZAR A 16:9, esto hay que
+ * volver a mirarlo: la regla que sostiene esta ventana es esa medida, no el
+ * gusto. Se comprueba bajando las imágenes de `location_events.banner_url` y
+ * mirando el ratio.
  *
  * ⚠️ EL HUECO VA MARCADO Y EN INGLÉS. Es texto VISIBLE, no un comentario: si
  * falta el afiche, se publica el cartel punteado para que el hueco no pase
- * callado. Hoy importa más que nunca: de los 44 eventos de la base, 42 no
- * tienen imagen.
- *
- * ⚠️ EL `pb-[42%]` DEL HUECO NO ES AIRE: es la parte de la caja que la ventana
- * no muestra. Sin eso, el brief se centra en la caja entera y la mitad de abajo
- * cae fuera de cuadro.
+ * callado.
  * ══════════════════════════════════════════════════════════════════════════
  */
 export function EventPhoto({
@@ -112,25 +128,25 @@ export function EventPhoto({
   readonly children?: ReactNode;
 }) {
   return (
-    <div className={`relative aspect-[7/5] w-full shrink-0 overflow-hidden ${fondo}`}>
-      <div className="absolute inset-x-0 top-0 aspect-[4/5] overflow-hidden">
-        {event.image === null ? (
-          <PhotoPending
-            brief={brief}
-            ratio=""
-            tone={tone}
-            className="absolute inset-0 h-full rounded-none border-0 border-dashed pb-[42%]"
-          />
-        ) : (
-          <Image
-            src={event.image}
-            alt={event.imageAlt ?? ''}
-            fill
-            sizes={sizes}
-            className={imgClassName}
-          />
-        )}
-      </div>
+    <div className={`relative aspect-video w-full shrink-0 overflow-hidden ${fondo}`}>
+      {event.image === null ? (
+        /* ⚠️ SIN `pb-[42%]`. Ese padding compensaba la parte de la caja
+           vertical que la ventana no mostraba; sin caja, centra solo. */
+        <PhotoPending
+          brief={brief}
+          ratio=""
+          tone={tone}
+          className="absolute inset-0 h-full rounded-none border-0 border-dashed"
+        />
+      ) : (
+        <Image
+          src={event.image}
+          alt={event.imageAlt ?? ''}
+          fill
+          sizes={sizes}
+          className={imgClassName}
+        />
+      )}
       {children}
     </div>
   );

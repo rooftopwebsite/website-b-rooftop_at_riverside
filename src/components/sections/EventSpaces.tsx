@@ -1,5 +1,5 @@
 /**
- * Los espacios que se alquilan, como sección de `/events`.
+ * Lo que viene con cada espacio que se alquila, como sección de `/events`.
  *
  * ⚠️ ERA LA PÁGINA `/events/spaces` y se mudó acá entera. Camila, definiendo
  * qué tiene que tener la página de eventos: «quiero que esté la info de qué se
@@ -7,86 +7,61 @@
  * reservar».
  *
  * ⚠️ EL `id="spaces"` ES EL DESTINO DEL REDIRECT 301 de la ruta vieja, así que
- * no se renombra. Ver `next.config.ts`.
+ * no se renombra. Ver `next.config.ts`. También es donde cae el CTA «See the
+ * spaces» del hero de `/events`.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ QUÉ SE FUE EL 2026-09-21, con el rediseño de la página.
+ * ⚠️ LA LISTA DE LOS CUATRO ESPACIOS SE FUE EL 2026-09-22, y con ella la mitad
+ * de este archivo. Camila, sobre la captura de «Pick your footprint»: «esta
+ * parte se puede contar mucho mejor; de hecho creo que ya más o menos se está
+ * contando en "Lo que viene con cada espacio", ¿no lo crees? ¿por qué no la
+ * sacamos?».
  *
- * 1. LOS DOCE MARCADORES TBD. Cada tarjeta tenía un `<dl>` de tres columnas
- *    —standing, seated, minimum— y los tres valores están en `null` para los
- *    cuatro espacios, así que la sección renderizaba DOCE bloques de alarma
- *    naranja seguidos. El aviso no desaparece: sigue abajo, una vez, en el
- *    `PendingBlock`. Doce alarmas para un solo dato faltante dejan de leerse
- *    como alarma y pasan a leerse como maqueta rota.
+ * Tiene razón, y lo que quedaba de esas tarjetas lo explica: sin capacidades
+ * —los doce números están en `null`— y sin fotos —los cuatro `photo` también—,
+ * cada tarjeta era un título, un párrafo y cuatro píldoras de «best for». Es
+ * decir, la misma promesa que hace la banda que quedó, repartida en cuatro
+ * cajas que no podían decir lo único que las diferencia: cuánta gente entra en
+ * cada una.
  *
- * 2. LAS CUATRO FOTOS PENDIENTES. `photo` también es `null` en los cuatro, así
- *    que al lado de cada tarjeta había un hueco gris de 340px de alto. Los
- *    cuatro `photoBrief` siguen en `content/spaces.ts` —que es donde el
- *    fotógrafo los va a leer— y el pedido está nombrado en el mismo
- *    `PendingBlock`.
+ * QUÉ SE FUE CON ELLA:
  *
- * 3. LA LOSA NARANJA «DECEMBER FILLS FIRST». La página cerraba con DOS losas
- *    `bg-sunset` idénticas en forma: ésta y la de «One screen, two minutes»,
- *    separadas por la galería y el PDF. Queda una sola, la del cierre.
+ *   · `SpaceCard`, que no la usaba nadie más.
+ *   · El `PendingBlock` de «capacities, minimums and a photo of each space».
+ *     ⚠️ EL PEDIDO SIGUE ABIERTO: vive en `docs/pedido-al-cliente.md` y los
+ *     cuatro `photoBrief` siguen en `content/spaces.ts`, que es donde el
+ *     fotógrafo los lee. Lo que se fue es el cartel, no el faltante.
+ *   · `SPACES` deja de leerse acá. El archivo `content/spaces.ts` NO se borra:
+ *     de ahí sale `AREAS_OF_INTEREST`, que son las casillas del formulario.
  *
- * 4. LOS CUATRO BOTONES «ASK ABOUT <ESPACIO>». Uno por tarjeta, los cuatro
- *    apuntando al mismo `#inquire` que el CTA del hero y el del cierre. El
- *    formulario ya tiene el desplegable de áreas de interés (`AREAS_OF_INTEREST`
- *    en `content/spaces.ts`), así que el botón no llevaba el dato consigo: era
- *    el mismo salto cuatro veces.
+ * ⚠️ EL MÍNIMO DE 12 INVITADOS SÍ ESTÁ PUBLICADO, y es el único número de
+ * capacidad que el cliente publica hoy: `eatdrinkparadise.com/hostanevent`
+ * dice «*For parties less than 12 people contact: 239-268-0080» y nada más.
+ * Ese dato vive en `SMALL_PARTY_MAX` y lo escribe la columna del formulario.
+ * No hay máximos en ninguna fuente y no se estiman.
+ * ══════════════════════════════════════════════════════════════════════════
+ *
+ * ⚠️ QUÉ SE HABÍA IDO ANTES, EL 2026-09-21, y no vuelve: los doce marcadores
+ * TBD de aforo (uno por dato y por espacio), las cuatro fotos pendientes, la
+ * losa naranja «December fills first» —la página cerraba con DOS losas
+ * `bg-sunset` idénticas en forma— y los cuatro botones «Ask about <espacio>»,
+ * que apuntaban los cuatro al mismo `#inquire`.
  *
  * ⚠️ EL AIRE DE ARRIBA ES `PADDING_CRUCE` Y NO SE PUEDE SACAR. Arriba de esta
  * sección va el `CompareSlab` de la página, cuyas dos tarjetas se salen de la
  * losa oscura con un `-mb-32` y aterrizan acá. Sin este `pt` —y sin el
- * `bandTop="none"` que lo acompaña— las tarjetas caen encima del encabezado.
+ * `bandTop="none"` que lo acompaña— las tarjetas caen encima del titular.
  * El número se importa del propio `CompareSlab` para que viva en un solo lado.
- * ══════════════════════════════════════════════════════════════════════════
  */
 import { PADDING_CRUCE } from '@/components/shared/CompareSlab';
-import { MapPin, Martini, MusicNote, Truck, UserCircle } from '@/components/shared/Icon';
+import { Car, Martini, MusicNote, Truck, UserCircle } from '@/components/shared/Icon';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
-import { PendingBlock } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
-import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
-import { SPACES, type Space } from '@/content/spaces';
+import { Eyebrow, Heading } from '@/components/shared/Type';
 
 export default function EventSpaces() {
   return (
     <div id="spaces" className="scroll-mt-24">
-      <Section band="lg" bandTop="none" labelledBy="spaces-title" innerClassName={PADDING_CRUCE}>
-        <SectionHead
-          eyebrow="The rooms"
-          eyebrowTone="deep"
-          id="spaces-title"
-          title="Pick your footprint"
-          lead="Four footprints, from the rooftop bar on its own to the gates closed on the whole place."
-        />
-
-        <StaggerGroup as="ul" className="mt-bloque grid list-none gap-6 p-0 md:grid-cols-2">
-          {SPACES.map((s) => (
-            <RevealItem as="li" key={s.slug} className="h-full">
-              <SpaceCard space={s} />
-            </RevealItem>
-          ))}
-        </StaggerGroup>
-
-        {/*
-          El aviso general, UNA vez. Junta los dos faltantes —los números y las
-          fotos— porque los dos se resuelven con el mismo mail al cliente.
-        */}
-        <div className="mt-bloque">
-          <PendingBlock title="Capacities, minimums and a photo of each space">
-            Standing and seated capacities, guest minimums and a photograph of each of the four
-            spaces are still missing, and we&rsquo;re not going to estimate any of them. A capacity
-            on a venue page is a promise somebody has to keep on the night. The numbers drop into{' '}
-            <code className="rounded-btn bg-ink/5 px-1.25 py-px text-[13px]">
-              src/content/spaces.ts
-            </code>
-            , where each space already carries the brief for the shot we need.
-          </PendingBlock>
-        </div>
-      </Section>
-
       {/*
         ══════════════════════════════════════════════════════════════════════
         LO QUE VIENE CON CADA ESPACIO, EN BENTO.
@@ -123,16 +98,29 @@ export default function EventSpaces() {
         hace `eyebrow`. Meter una cuarta familia por cinco etiquetas es
         exactamente lo que la nota de `Type.tsx` evita.
 
-        ⚠️ LOS ICONOS SALEN DE `shared/Icon.tsx`, y dos son nuevos: `MapPin`
-        para el estacionamiento y `UserCircle` para el contacto único. El
-        repo dibuja su propio set en vez de instalar Phosphor —el porqué está
-        en la cabecera de ese archivo— así que sumar dos es el camino previsto,
-        no un atajo.
+        ⚠️ LOS ICONOS SALEN DE `shared/Icon.tsx`, y tres se dibujaron para esta
+        lista: `UserCircle` para el contacto único, `MapPin` para el
+        estacionamiento —reemplazado el 2026-09-22 por `Car`, ver la nota de esa
+        tarjeta— y el propio `Car`. El repo dibuja su propio set en vez de
+        instalar Phosphor —el porqué está en la cabecera de ese archivo— así que
+        sumar uno es el camino previsto, no un atajo.
         ══════════════════════════════════════════════════════════════════════
+      */}
+      {/*
+        ⚠️ ESTA BANDA HEREDÓ EL HUECO DE LAS TARJETAS CRUZADAS. Lo tenía la
+        sección de arriba —«Pick your footprint»— que se borró el 2026-09-22,
+        y sin el hueco las dos tarjetas del `CompareSlab`, que salen de la losa
+        oscura con un `-mb-32`, aterrizan encima de este titular.
+
+        ⚠️ VA EN `innerClassName` Y CON `bandTop="none"`, que es como el
+        componente pide que se haga: el porqué —dos `padding-top` peleando por
+        orden de compilación— está escrito en `PADDING_CRUCE`.
       */}
       <Section
         tone="cream"
         band="lg"
+        bandTop="none"
+        innerClassName={PADDING_CRUCE}
         labelledBy="incluye-title"
         className="banda-arco z-[2] pb-cierre"
       >
@@ -265,11 +253,32 @@ const INCLUIDO = [
     body: 'For live music or a DJ, on the stage that lives in the yard.',
     Icon: MusicNote,
   },
+  /*
+    ⚠️ ESTA TARJETA SE REESCRIBIÓ ENTERA EL 2026-09-22. Camila, sobre la
+    captura: «esta card está extraña: cambia el icono, no representa
+    estacionamiento; el "cómo llegar aquí" tampoco tiene mucho sentido que diga
+    "estacionamiento", y en el título mejor digamos algo como "vente en tu
+    vehículo"; y teniendo en cuenta estos cambios, modifica la bajada para que
+    esté acorde».
+
+    Los tres problemas eran el mismo: la tarjeta estaba escrita desde el dato
+    —dónde hay lugar para estacionar— y las otras cuatro están escritas desde
+    lo que el cliente RECIBE. «Street parking on Old 41» como título de una
+    lista que dice «la barra es nuestra», «coordinamos las cocinas» y «el
+    sonido ya está» sonaba a disculpa.
+
+    Ahora el título es una invitación, la bajada dice dónde se deja el auto y
+    el icono es un auto y no un alfiler de mapa.
+
+    ⚠️ NO PROMETE QUE SEA GRATIS. Nunca lo dijo y no lo va a decir: que los
+    lotes públicos no se paguen es de las cosas que el cliente todavía no
+    confirmó (ítem 51 de `docs/pedido-al-cliente.md`).
+  */
   {
     label: 'Getting here',
-    title: 'Street parking on Old 41',
-    body: 'Plus the public lots around Riverside Park, across the street.',
-    Icon: MapPin,
+    title: 'Come in your own car',
+    body: 'Street parking on Old 41, plus the public lots around Riverside Park.',
+    Icon: Car,
   },
   {
     label: 'The planning',
@@ -278,70 +287,3 @@ const INCLUIDO = [
     Icon: UserCircle,
   },
 ] as const;
-
-/**
- * ⚠️ LA TARJETA ES SÓLO TEXTO Y ANTES ERA UNA GRILLA DE DOS COLUMNAS con la
- * foto ocupando la mitad. Ver el punto 2 del encabezado: las cuatro fotos son
- * `null`, así que esa mitad era un hueco gris.
- *
- * ⚠️ `bone` SOBRE `paper` ES UN ESCALÓN DE 1.08:1, o sea que el borde de la
- * tarjeta se ve sin meter un campo de color ni un contorno. Es el mismo
- * recurso con el que la home separa sus bandas. No lleva `grano`: el grano es
- * de los fondos, no de los elementos.
- */
-function SpaceCard({ space }: { readonly space: Space }) {
-  return (
-    <article className="flex h-full flex-col rounded-shell bg-bone p-6 lg:p-8">
-      {/*
-        ⚠️ ES EL KICKER *O* LA CHAPA, NUNCA LOS DOS. Antes se dibujaban juntos y
-        en el patio decían lo mismo: su `kicker` es «Currently in renovation» y
-        al lado le quedaba una chapa que decía «In renovation». El mismo dato
-        dos veces, con dos tratamientos distintos, en la misma línea.
-
-        Gana la chapa porque es el dato más importante de esa tarjeta —el
-        espacio no se puede alquilar hoy— y porque se escanea. Los otros tres
-        kickers son ubicaciones («The rooftop», «The ground floor», «The whole
-        place») y siguen intactos.
-
-        TODO: si el cliente confirma dónde queda el patio, el `kicker` de
-        `content/spaces.ts` puede pasar a ser una ubicación como los otros tres
-        y entonces los dos conviven sin repetirse. Hoy no lo sabemos: la ficha
-        dice «between the yard and the bar» y la sección de tarifas lo cuenta
-        como parte del segundo piso.
-      */}
-      <div className="flex flex-wrap items-center gap-2.5">
-        {space.status === 'renovating' ? (
-          <span className="rounded-btn bg-cream px-2 py-0.5 font-body text-[11px] font-bold uppercase tracking-eyebrow text-plum">
-            In renovation
-          </span>
-        ) : (
-          <Eyebrow tone="deep">{space.kicker}</Eyebrow>
-        )}
-      </div>
-
-      <Heading level={3} className="mt-2 text-d5 lg:text-d4">
-        {space.name}
-      </Heading>
-
-      <p className="mt-3 max-w-[52ch] font-body text-base font-light leading-[1.65] text-body/80">
-        {space.description}
-      </p>
-
-      {/* `mt-auto` alinea las cuatro filas de píldoras aunque las descripciones
-          midan distinto. Mismo criterio que las tarjetas de `EventTypes`. */}
-      <div className="mt-auto pt-6">
-        <p className="eyebrow text-body/75">Best for</p>
-        <ul className="mt-2 flex list-none flex-wrap gap-2 p-0">
-          {space.bestFor.map((b) => (
-            <li
-              key={b}
-              className="rounded-pill border border-ink/20 px-3 py-1.25 font-body text-caption font-medium"
-            >
-              {b}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </article>
-  );
-}

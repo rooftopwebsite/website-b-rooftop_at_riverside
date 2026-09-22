@@ -252,29 +252,36 @@ export default async function GameTruckPage() {
           </>
         }
         /*
-          ⚠️ LA FOTO DEL HERO ES LA DEL JOYSTICK, Y ES UNA DECISIÓN DE CAMILA
-          DEL 2026-09-22: «la foto integrala al contenido o quitala,
-          colocándola directamente en el hero ya que no tenemos imagen aún».
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ YA HAY FOTO DEL CAMIÓN, Y ES ÉSTA. 2026-09-22: se bajaron las 81
+          fotos que el cliente publica en `eatdrinkparadise.com` y cuatro son
+          del gaming truck. El pendiente que esta página arrastraba desde que
+          existe —«pedir al cliente las fotos del gaming truck», escrito tres
+          veces entre acá y `/events`— estaba resuelto en su propia web.
 
-          Antes acá iba el hueco marcado y la foto estaba en la ficha técnica.
-          El motivo de aquello sigue anotado y sigue siendo cierto —en una
-          tarjeta una foto de stock ilustra, en un hero afirma—, pero la
-          alternativa medida era peor: la página abría con un rectángulo gris
-          de 1288×590, que es lo primero que se ve de la ruta.
+          Lo que había era un joystick de stock. La nota de entonces decía que
+          en un hero una foto de stock AFIRMA lo que no puede probar, y era
+          cierto: la página se llama «el primer gaming truck del sudoeste de
+          Florida» y abría con una mano sosteniendo un control.
 
-          ⚠️ EL `alt` DICE LO QUE SE VE Y NO LO QUE NOS GUSTARÍA. No afirma que
-          esté sacada adentro del camión, porque no lo sabemos: es un joystick
-          de stock, el mismo que usa `/events` en su franja del camión.
+          ⚠️ DE LAS CUATRO VA LA DEL TRAILER ENTERO, no la de la gente
+          jugando. Un hero tiene que decir QUÉ ES en un vistazo, y lo que esta
+          página vende es un objeto que se estaciona en tu fiesta: el camión
+          rotulado, abierto, con la ventanilla y el toldo desplegados. La de
+          noche con dos personas jugando vende la EXPERIENCIA y por eso está
+          en el banner de `/events`, que es donde alguien decide contratarlo.
 
-          ⚠️ EL ARCHIVO ES 3:2 Y EL MARCO 17:9, así que `object-cover` recorta
-          arriba y abajo: de 1201px de alto sobrevive la banda del medio, que
-          es donde está el joystick. Por los costados no se pierde nada, que es
-          lo que importa en esta toma.
-          TODO: pedir al cliente las fotos del gaming truck. Sigue siendo el
-          pendiente número uno de esta página.
+          ⚠️ EL ARCHIVO YA ES 17:9 —se recorta en `scripts/build-media.mjs`,
+          con el foco medido en el tercio de arriba del original— así que acá
+          `object-cover` no tiene nada que sacar.
+
+          ⚠️ EL `alt` DESCRIBE LO QUE SE VE Y NOMBRA EL ROTULADO, que es texto
+          dentro de la imagen: quien no la ve se pierde justo el dato de que el
+          camión es del venue.
+          ══════════════════════════════════════════════════════════════════
         */
-        photo="/images/game-controller.jpg"
-        photoAlt="Hands on a PlayStation controller in front of a screen"
+        photo="/images/game-truck/truck-wide.jpg"
+        photoAlt="The Rooftop gaming truck parked in the yard with its window and awning open"
       />
 
       {/* ══ 2. El relato ═════════════════════════════════════════════════ */}
@@ -399,8 +406,25 @@ export default async function GameTruckPage() {
                 mano. Es el mismo que usa `PlateHero` para el hueco del que
                 vienen.
               */}
+              {/*
+                ⚠️ «BOOK A PARTY» SALE DE LA PÁGINA Y ANTES BAJABA A
+                `#packages`. Camila, 2026-09-22: «todos los CTA que dicen
+                preguntar por una fiesta deben dirigir a la página de evento,
+                pero directamente al formulario».
+
+                Eran dos botones con la misma etiqueta y dos destinos
+                distintos: éste a la tabla de precios de más abajo y el de la
+                tarjeta oscura al formulario. O sea que la misma frase, en la
+                misma página, a veces mostraba un precio y a veces abría una
+                solicitud.
+
+                ⚠️ LLEVA `?area=game-truck` COMO EL OTRO, que es lo que hace
+                llegar tildada la casilla «The gaming truck» en el formulario
+                de quince campos del otro lado. El porqué largo está en
+                `InquiryForm`.
+              */}
               <div className="mt-gap-cta flex flex-wrap gap-3.5">
-                <ButtonLink href="#packages" variant="primary" size="lg">
+                <ButtonLink href="/events?area=game-truck#inquire" variant="primary" size="lg">
                   Book a party
                 </ButtonLink>
                 <ButtonLink href="#games" variant="secondary" size="lg">
@@ -727,7 +751,21 @@ export default async function GameTruckPage() {
                 ))}
               </dl>
 
-              <p className="m-0 mt-auto pt-8 font-body text-base font-light leading-[1.5] text-body/80">
+              {/*
+                ⚠️ SIN `mt-auto`. Camila, misma captura: «que la blanca no tenga
+                tanto espacio en blanco».
+
+                Las dos tarjetas de la fila miden lo mismo —`items-stretch`— y
+                la verde es más alta, así que el `mt-auto` empujaba este
+                renglón al piso de la tarjeta y dejaba un pozo de aire en el
+                medio de la blanca. Pegado a la tabla de tarifas, el pozo queda
+                abajo, que es donde no se lee como un error de maquetación.
+
+                ⚠️ Y CON LA LISTA VERDE RECORTADA EL DESFASE ES MUCHO MENOR,
+                así que lo que sobra ya casi no se nota. Los dos cambios son del
+                mismo pedido y se sostienen entre ellos.
+              */}
+              <p className="m-0 pt-8 font-body text-base font-light leading-[1.5] text-body/80">
                 No package, no booking, no minimum. Come up to the truck and get on.
               </p>
             </div>
@@ -747,8 +785,30 @@ export default async function GameTruckPage() {
                 Two hours, the whole trailer
               </Heading>
 
+              {/*
+                ══════════════════════════════════════════════════════════
+                ⚠️ LA LISTA SE RECORTÓ A LO QUE NO ESTABA DICHO. Camila,
+                2026-09-22, sobre la captura: «esta sección debe ser más chica;
+                que la card verde no repita info que ya se dio».
+
+                Publicaba los seis ítems de `PACKAGE_INCLUDES`, y cuatro ya se
+                habían leído dos veces en esta misma página: las tres consolas
+                y los televisores están en la ficha técnica, los más de 30
+                juegos también, y el aire acondicionado y el Game Coach están
+                en la prosa de «Inside the truck». Entre la ficha y esta
+                tarjeta hay media pantalla.
+
+                Lo que queda son los DOS ítems que sólo valen si reservás: que
+                son dos horas y que el trailer es tuyo. El resto se ve arriba.
+
+                ⚠️ `PACKAGE_INCLUDES` NO SE TOCA. Sigue siendo la lista del
+                cliente, entera, en `content/game-truck.ts`, y de ahí la lee la
+                ficha técnica. Lo que cambia es CUÁNTO publica esta tarjeta, no
+                el contenido.
+                ══════════════════════════════════════════════════════════
+              */}
               <ul className="m-0 mt-6 flex list-none flex-col gap-3.5 border-t border-paper/20 p-0 pt-6">
-                {PACKAGE_INCLUDES.map((i) => (
+                {PACKAGE_INCLUDES.slice(0, 2).map((i) => (
                   <li key={i} className="flex gap-3.5">
                     {/* El punto va a la altura de la primera línea del texto,
                         no centrado en el renglón. Es la misma viñeta que
@@ -760,6 +820,15 @@ export default async function GameTruckPage() {
                     <span className="font-body text-base font-light leading-[1.5]">{i}</span>
                   </li>
                 ))}
+                <li className="flex gap-3.5">
+                  <span
+                    aria-hidden="true"
+                    className="mt-2.25 size-1.5 shrink-0 rounded-pill bg-cream"
+                  />
+                  <span className="font-body text-base font-light leading-[1.5]">
+                    Nobody else on board: the screens and the games are all yours
+                  </span>
+                </li>
               </ul>
 
               <span className="mt-auto pt-8">
@@ -844,7 +913,24 @@ export default async function GameTruckPage() {
                   {pkg.name}
                 </Heading>
 
-                <p className="m-0 mt-6 font-display text-titan font-semibold uppercase leading-[0.85] tabular-nums text-ink">
+                {/*
+                  ⚠️ EL NÚMERO BAJÓ DE `titan` A `d1`. Camila, 2026-09-22: «que
+                  los precios de debajo no sean TAN grandes; me gusta el
+                  formato con las cards, pero no tiene sentido el tamaño de
+                  cada uno».
+
+                  `titan` es 144px y es el cuerpo del hero de la home: en una
+                  tarjeta de 500px de ancho, «$400» ocupaba un tercio del alto
+                  y se leía más fuerte que el titular de la sección. `d1` son
+                  72, o sea la mitad, y sigue siendo el elemento más grande de
+                  la tarjeta.
+
+                  ⚠️ EL `leading` SE VA CON ÉL: `d1` ya trae 0.94 de
+                  interlínea en la escala, y el 0.85 escrito a mano era la
+                  compensación de un cuerpo de 144. Ver la tabla de tokens en
+                  `docs/INVARIANTES.md` §3.
+                */}
+                <p className="m-0 mt-6 font-display text-d1 font-semibold uppercase tabular-nums text-ink">
                   ${pkg.price}
                 </p>
                 <p className="m-0 mt-2 font-body text-lead font-light text-body/80">
@@ -885,9 +971,7 @@ export default async function GameTruckPage() {
           la bifurcación, que es donde alguien decide si reserva. Ni un dato se
           perdió: los dos bloques leían el mismo `PACKAGE_INCLUDES`.
         */}
-      </Section>
-
-      {/* ══ 6. Los documentos ════════════════════════════════════════════ */}
+      {/* ══ 6. Los documentos, DENTRO de la banda de precios ═════════════ */}
 
       {/*
         ══════════════════════════════════════════════════════════════════
@@ -927,7 +1011,30 @@ export default async function GameTruckPage() {
         busca esto dentro de la página.
         ══════════════════════════════════════════════════════════════════
       */}
-      <Section band="md" labelledBy="policies-title" id="policies" className="scroll-mt-24">
+      {/*
+        ⚠️ Y DESDE EL 2026-09-22 NO ES UNA SECCIÓN, SINO EL PIE DE LA DE
+        PRECIOS. Camila: «integra las políticas a la sección anterior, así
+        quedan destacadas dado el cambio de fondo».
+
+        Tiene razón en las dos mitades. La de forma: era una banda `paper`
+        entre dos secciones claras, o sea un cambio de fondo que no cambiaba
+        nada, y encima la única sin titular de display — se leía como el pie de
+        la página, no como parte de ella. La de contenido: las reglas son la
+        letra chica de LO QUE SE ACABA DE COTIZAR, y leerlas pegadas a los dos
+        paquetes es leerlas donde importan.
+
+        Adentro de la banda `bone` de precios, el bloque queda sobre un fondo
+        que NO es el blanco del resto de la página, que es el «destacadas dado
+        el cambio de fondo» del pedido.
+
+        ⚠️ EL `id="policies"` SIGUE ESTANDO, ahora en este `div`: es a donde
+        apunta el link del pie de los paquetes.
+
+        ⚠️ EL `mt-bloque` REEMPLAZA A LA BANDA `md` QUE TENÍA. Es el token del
+        aire entre un encabezado y su contenido, que es exactamente la relación
+        que este bloque tiene ahora con los precios de arriba.
+      */}
+      <div id="policies" className="mt-bloque scroll-mt-24">
         <div className="grid gap-x-12 gap-y-7 border-t border-ink/15 pt-8 lg:grid-cols-[minmax(0,24ch)_1fr]">
           <div>
             <Eyebrow tone="terra">The paperwork</Eyebrow>
@@ -942,12 +1049,27 @@ export default async function GameTruckPage() {
               rol hoy no gana la especificidad contra la display: está
               anotado aparte y se arregla en `Type.tsx`, no acá.
             */}
-            <h2
+            {/*
+              ⚠️ ES UN `h3` Y ERA UN `h2`, y eso también es del pedido de
+              Camila del 2026-09-22: «revisa los tamaños de los H, algunos
+              parecen tener un tamaño que no se les corresponde».
+
+              Éste era el caso claro: un `h2` con cuerpo de `lead` —17 a 22px—
+              en una página donde los otros cuatro `h2` van a 46 y 58. Se veía
+              como un subtítulo porque ES un subtítulo: desde que el bloque
+              vive adentro de la banda de precios, cuelga de «Ten dollars, or
+              the whole truck», que es el `h2` de esa sección.
+
+              Como `h3`, el cuerpo chico deja de ser una excepción y pasa a ser
+              lo que le toca. El orden de encabezados de la página queda
+              correcto por primera vez en este bloque.
+            */}
+            <h3
               id="policies-title"
               className="mt-gap-kicker font-body text-lead font-semibold text-ink"
             >
               The rules, in full
-            </h2>
+            </h3>
           </div>
 
           <ul className="m-0 grid list-none gap-0 p-0 sm:grid-cols-3 sm:gap-x-8">
@@ -975,83 +1097,32 @@ export default async function GameTruckPage() {
             ))}
           </ul>
         </div>
+      </div>
       </Section>
-
-      {/* ══ 7. El cierre ═════════════════════════════════════════════════ */}
 
       {/*
         ══════════════════════════════════════════════════════════════════
-        EL BLOQUE K DEL KIT: el cierre, obligatorio en las nueve internas. Es
-        el cierre de la referencia —«Trek gekregen?» y «Vragen?», el llamado y
-        los datos de contacto uno debajo del otro— con la forma que
-        `/food-trucks` ya usa para su banner: panel de esquinas muy
-        redondeadas, filete punteado por dentro separado del borde, y el
-        isotipo apoyado en una esquina.
+        ⚠️ ACÁ IBA EL CIERRE «IT IS PARKED IN THE YARD» Y SE BORRÓ EL
+        2026-09-22. Camila, sobre la captura: «borra esta sección».
 
-        ⚠️ ANTES ERA UNA SEGUNDA BANDA `deep` Y POR ESO LA PÁGINA DABA ROJO en
-        `npm run check:surfaces`: con la ficha técnica en oscuro serían dos
-        oscuras, y el guard admite una sola cada tres secciones. La crema es la
-        otra superficie de color del sitio y acá no compite con nada: la
-        sección de arriba es blanca.
+        Era el bloque K del kit: panel crema con filete punteado, el isotipo
+        del camión en una esquina, titular, bajada, dos botones —«Book a party»
+        y «See the food trucks»— y la dirección con el teléfono. El kit lo
+        declara obligatorio en las nueve internas y se saca igual, por lo mismo
+        que en `/our-story` y `/market`, que recibieron el mismo pedido el mismo
+        día: lo que aportaba eran dos links a páginas que están en el header y
+        una dirección que está en el footer, después de una página que ya
+        contestó todo.
 
-        ⚠️ `banda-arco` SE AGREGÓ EL 2026-09-22 y monta este bloque sobre el de
-        las políticas con el radio grande de la casa. El hueco que la sección
-        anterior necesita lo pone la regla `:has(+ .banda-arco)` de
-        `globals.css`; el `z-[2]` no sobra, porque sin él la sección anterior
-        —que viene antes en el DOM— pinta su fondo encima de la parte del arco
-        que se monta. Es el mismo par que usan el cierre de `/events` y el de
-        `/our-story`.
+        ⚠️ ESO DEJA A LAS POLÍTICAS COMO ÚLTIMO BLOQUE, y está bien: son la
+        letra chica de los precios y ahora cierran su misma banda.
 
-        ⚠️ Y DE PASO PINTA LAS ESQUINAS DEL FOOTER. El footer también monta con
-        `banda-arco`, y lo que se ve en sus dos esquinas es el fondo del hermano
-        anterior: ahora es esta banda crema.
+        ⚠️ Y CAMBIA QUÉ PINTA LAS ESQUINAS DEL FOOTER. El footer monta con
+        `banda-arco` y lo que se ve en sus dos esquinas es el fondo del hermano
+        anterior: era esta banda crema y ahora es el `bone` de los precios.
         ══════════════════════════════════════════════════════════════════
       */}
-      <Section tone="cream" band="lg" labelledBy="gt-next" className="banda-arco z-[3]">
-        <div className="relative px-2 py-2 text-center sm:px-8 sm:py-6">
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-shell border border-dashed border-deep/35"
-          />
 
-          <Image
-            src="/brand/isotype-truck.svg"
-            alt=""
-            aria-hidden="true"
-            width={552}
-            height={390}
-            className="pointer-events-none absolute right-8 bottom-8 hidden w-24 opacity-30 sm:block lg:right-12 lg:bottom-10 lg:w-32"
-          />
-
-          <div className="relative px-4 py-10 sm:py-12">
-            <Heading
-              level={2}
-              id="gt-next"
-              className="mx-auto max-w-[20ch] text-balance text-d3 lg:text-d2"
-            >
-              It is parked <span className="text-sunset-deep">in the yard</span>
-            </Heading>
-            <p className="mx-auto mt-5 max-w-[52ch] font-body text-lead font-light leading-[1.5] text-ink">
-              Same address as everything else. Come up, play half an hour, and go get something to
-              eat from whichever truck smells best.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <ButtonLink href="/events?area=game-truck#inquire" variant="dark">
-                Book a party
-              </ButtonLink>
-              <ButtonLink href="/food-trucks" variant="outline">
-                See the food trucks
-              </ButtonLink>
-            </div>
-            <p className="mt-8 font-body text-base text-body/80">
-              {venueAddressLine(venue)} &middot;{' '}
-              <a href={venue.phoneHref} className="link-texto font-semibold">
-                {venue.phone}
-              </a>
-            </p>
-          </div>
-        </div>
-      </Section>
     </>
   );
 }

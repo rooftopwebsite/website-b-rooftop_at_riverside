@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { getVenue, venueAddressLine } from '@/lib/venue';
 import { ButtonLink } from '@/components/shared/Button';
 import HoursCard from '@/components/shared/HoursCard';
@@ -62,15 +61,36 @@ const SOCIAL = [
   { label: 'Google', href: BRAND.social.google, Icon: Google },
 ] as const;
 
-export default async function FindUs() {
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ESTE BLOQUE YA NO ES SÓLO DE LA HOME. Camila, 2026-09-22, sobre las
+ * capturas de `/our-story` y `/contact`: «duplica aquí el layout de la home,
+ * tráelo tal cual. Si en otra página también va, haz lo mismo».
+ *
+ * Las tres páginas cerraban con una versión distinta de la misma cosa —dónde
+ * queda, a qué hora abre, cómo se llega— y las dos internas lo resolvían con
+ * una columna de datos al lado de un `MapEmbed`. Ahora las tres montan ESTE
+ * componente, que es el de la home.
+ *
+ * ⚠️ EL TITULAR NO ES PROP, y es deliberado: «tráelo tal cual» quiere decir
+ * que las tres dicen lo mismo. Un titular parametrizable es la puerta para que
+ * dentro de dos semanas cada página vuelva a tener el suyo, que es de donde
+ * venimos.
+ *
+ * ⚠️ LO ÚNICO QUE CAMBIA ES EL `id`, porque cada página tiene su propio
+ * ancla: la home apunta acá desde el CTA de «Five businesses» y `/contact`
+ * desde el botón «Hours and map» del hero, que ya existía como `#find`.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export default async function FindUs({ id = 'find-us' }: { readonly id?: string } = {}) {
   const venue = await getVenue();
   const direccion = venueAddressLine(venue);
 
   return (
     <section
-      id="find-us"
+      id={id}
       aria-labelledby="find-us-title"
-      className="relative z-[3] banda-arco bg-bone grano pt-16 pb-cierre lg:pt-32"
+      className="relative z-[3] banda-arco bg-bone grano pt-16 pb-cierre scroll-mt-24 lg:pt-32"
     >
       {/*
         ⚠️ EL GUTTER DE MOBILE ES PROPIO Y MAYOR QUE EL DEL SITIO (24 contra
@@ -119,8 +139,8 @@ export default async function FindUs() {
           mitades del pedido se resuelven con lo mismo, sacarlas del flujo.
           ══════════════════════════════════════════════════════════════════
 
-          ⚠️ APILADO HASTA `desk`, y no es sólo el pedido de «en mobile y tablet
-          se apilan y ya»: arregla algo que el `flex-wrap` anterior no
+          ⚠️ APILADO HASTA `md`, y no es sólo el pedido de «en mobile se apilan
+          y ya»: arregla algo que el `flex-wrap` anterior no
           resolvía. El reparto dependía de si el `<ul>` entraba o no en el
           renglón, y no entraba igual en todos los anchos. Medido: a 390 las
           redes bajaban solas y el titular se quedaba con los 358px enteros,
@@ -130,7 +150,20 @@ export default async function FindUs() {
           crece es el síntoma de que el corte lo está decidiendo el wrap y no
           el diseño.
         */}
-        <Reveal className="relative flex flex-col items-start gap-6 desk:block desk:gap-0">
+        {/*
+          ⚠️ EL ANCLAJE ARRANCA EN `md` Y NO EN `desk`. Pedido de Camila sobre
+          la captura: «en tablet estos 3 CTA van igual que en desk, arriba».
+
+          Estaba en `desk` (1344px) por lo que cuenta la nota de abajo: en
+          teléfonos las redes en flujo se llevaban ancho del renglón y el
+          titular pasaba de dos a cuatro líneas. Eso sigue siendo cierto abajo
+          de `md`, y por eso el apilado se conserva ahí. Pero de 768 para
+          arriba el problema no existe: «Downtown,» mide ~290px a ese ancho y
+          los tres círculos de 52 más sus gaps suman 180, o sea que entran en
+          el hueco del primer renglón con 260px de sobra. No hacía falta
+          esperar hasta 1344.
+        */}
+        <Reveal className="relative flex flex-col items-start gap-6 md:block md:gap-0">
           {/*
             ⚠️ EL CUERPO SE TOPEA EN 88px Y NO EN LOS 112 DE `text-banda`.
             `--text-banda` es `clamp(2.8rem, 7vw, 7rem)`, o sea que abajo de
@@ -208,9 +241,9 @@ export default async function FindUs() {
               los dos bloques ópticamente al ras. Si el titular cambia de
               cuerpo, esto sigue solo.
 
-              ⚠️ El `absolute` arranca en `desk`. Abajo de ahí las redes van en
-              flujo, debajo del titular, que es lo que pidió Camila para mobile
-              y tablet. Ver el bloque de arriba. */}
+              ⚠️ El `absolute` arranca en `md`. Abajo de ahí las redes van en
+              flujo, debajo del titular, que es lo que pidió Camila para
+              mobile. Ver el bloque de arriba. */}
           {/*
             ⚠️ EL `w-full` ES LO QUE MANDA LAS REDES A LA DERECHA. El
             `justify-end` ya estaba, pero un `<ul>` con `display: flex` dentro
@@ -220,10 +253,11 @@ export default async function FindUs() {
             espacio sobrante que repartir. Con el ancho completo, los tres
             círculos se van al margen derecho, que es donde Camila los marcó.
 
-            ⚠️ En `desk` el `absolute` lo deja sin flujo y el `w-full` no
-            interviene: ahí la posición la fijan `top-0` y `right-0`.
+            ⚠️ De `md` para arriba el `absolute` lo deja sin flujo y el
+            `w-full` no interviene: ahí la posición la fijan `top-0` y
+            `right-0`.
           */}
-          <ul className="flex w-full list-none flex-wrap items-center justify-end gap-3 p-0 desk:absolute desk:top-0 desk:right-0 desk:w-auto">
+          <ul className="flex w-full list-none flex-wrap items-center justify-end gap-3 p-0 md:absolute md:top-0 md:right-0 md:w-auto">
             {SOCIAL.map(({ label, href, Icon }) => (
               <li key={label}>
                 <a
@@ -299,19 +333,20 @@ export default async function FindUs() {
               <span className="mb-2.5 block font-body text-caption font-medium uppercase tracking-eyebrow text-cream">
                 Parking
               </span>
+              {/*
+                ⚠️ ACÁ IBA UN LINK A `/contact#parking` Y SE FUE EL 2026-09-22,
+                junto con el mapa de estacionamiento dibujado que había del otro
+                lado. Camila, sobre la captura: «eliminemos por completo el mapa
+                de park».
+
+                El dato de texto se queda —es la respuesta corta a dónde se deja
+                el auto— pero ya no manda a ninguna parte: el mapa que
+                prometía no existe más en el sitio. Si el link vuelve, tiene
+                que volver con un destino real; un `#parking` apuntando a una
+                sección borrada es exactamente el bug que esto tuvo antes.
+              */}
               <p className="m-0 font-body text-dato font-light leading-[1.6] text-paper">
-                Street parking on Old 41 and public lots around Riverside Park.{' '}
-                {/*
-                  ⚠️ EL ANCLA `#parking` VOLVIÓ A EXISTIR el 2026-09-22. Estuvo
-                  rota un tiempo: el párrafo de estacionamiento se había caído
-                  de `/contact` por no tener fuente, y este link quedó apuntando
-                  a una sección que no estaba. Ahora del otro lado hay una
-                  sección propia con el mapa dibujado, así que el link cumple lo
-                  que promete.
-                */}
-                <Link href="/contact#parking" className="border-b border-cream text-cream">
-                  See the map
-                </Link>
+                Street parking on Old 41 and public lots around Riverside Park.
               </p>
             </div>
 

@@ -67,16 +67,42 @@ import { TAG } from '@/lib/tag';
 export default function EventTypes() {
   return (
     <Section tone="mint" band="lg" labelledBy="tipos-title">
+      {/*
+        ══════════════════════════════════════════════════════════════════════
+        ⚠️ EL TITULAR NO HABLABA DE LO QUE CUENTA LA SECCIÓN. Camila,
+        2026-09-22, sobre la captura: «este título de sección no va con lo que
+        cuenta la sección; debería hablar de los tipos de eventos que puedes
+        armar, siempre disfrutando de todos los espacios o algo así».
+
+        Decía «Four kinds of night. One yard», y abajo hay cuatro losas que son
+        corporativo, celebraciones, recaudaciones y fiestas navideñas. Ninguna
+        de las cuatro es «una noche»: dos de ellas pasan de día —un fundraiser
+        de escuela, un almuerzo de equipo— y ninguna es «el yard», porque lo que
+        se alquila es el segundo piso entero. El titular describía una cosa que
+        la sección no dice.
+
+        Ahora nombra lo que la sección sí tiene: cuatro clases de evento, y el
+        lugar completo en las cuatro.
+
+        ⚠️ «THE WHOLE PLACE» NO ES UNA PROMESA NUEVA: es lo que ya dice el
+        propio contenido del cliente en holiday-parties —«a full buyout gives
+        you the rooftop, the yard, the patio and the trucks»— y lo que publica
+        el bloque de alquiler de más abajo.
+
+        ⚠️ LA PALABRA EN COLOR SE CONSERVA. Ningún titular de esta casa va
+        monocromo; la regla vale para los heros y para las bandas.
+        ══════════════════════════════════════════════════════════════════════
+      */}
       <h2
         id="tipos-title"
         className="mx-auto max-w-[18ch] text-center font-display text-banda font-extrabold uppercase"
       >
-        <span className="text-ink">Four kinds of night.</span>{' '}
-        <span className="text-sunset-deep">One yard</span>
+        <span className="text-ink">Four kinds of event,</span>{' '}
+        <span className="text-sunset-deep">the whole place</span>
       </h2>
       <p className="mx-auto mt-6 max-w-[60ch] text-center font-body text-lead font-light text-ink">
-        Four ways the same place gets used. The room, the kitchens and the bar don&rsquo;t change.
-        How the night is built does.
+        Whatever you are throwing, you get the rooftop bar, the yard and the four kitchens. What
+        changes is how the day is built around them.
       </p>
 
       {/*

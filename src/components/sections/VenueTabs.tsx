@@ -6,7 +6,7 @@ import { useId, useState } from 'react';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
-import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
+import { SectionHead } from '@/components/shared/Type';
 import { VENUE_AREAS } from '@/content/venue-areas';
 
 /**
@@ -328,7 +328,44 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
                 no entra ni «The Yard»: queda el número. El nombre no se pierde
                 para quien no ve la pantalla: está en el `aria-label`.
               */}
-              {abierta ? null : (
+              {abierta ? (
+                /*
+                  ══════════════════════════════════════════════════════════
+                  ⚠️ LA PLACA DEL PANEL ABIERTO ENTRÓ EL 2026-09-22 y es la
+                  mitad de lo que acortó la sección. Camila: «necesitamos hacer
+                  más corta esta sección, así que el nombre del lugar pisará la
+                  imagen, sacaremos los CTA y la descripción irá pegada a la
+                  imagen».
+
+                  Antes el nombre y el piso vivían debajo del acordeón, en el
+                  bloque de texto: rótulo, h3 y párrafo, o sea tres alturas
+                  apiladas bajo una imagen que ya medía 440px. Con el nombre
+                  encima de la foto, abajo queda una sola línea de texto.
+
+                  ⚠️ VA SOBRE UN PLATO SÓLIDO Y NO SUELTO SOBRE LA FOTO. Es la
+                  regla de contraste del repo —nada de texto claro directo sobre
+                  una imagen— y además el panel abierto NO lleva velo, así que
+                  no hay nada que garantice qué hay detrás. El plato es bone con
+                  tinta deep: 10.03:1 medido, sin depender de la foto.
+
+                  ⚠️ ES EL MISMO MOLDE QUE EL CHIP DE LOS CERRADOS, un escalón
+                  más grande: mismo fondo, misma tinta, mismo radio. Los dos son
+                  el mismo objeto en dos estados, no dos piezas.
+
+                  ⚠️ ACÁ SÍ VA EL PISO Y EN LOS CERRADOS NO. Es el dato que la
+                  franja no tiene lugar para mostrar y el que contesta «¿esto
+                  dónde queda?», que es la pregunta de la sección entera.
+                  ══════════════════════════════════════════════════════════
+                */
+                <span className="pointer-events-none absolute bottom-3 left-3 flex max-w-[calc(100%-1.5rem)] flex-col gap-1 rounded-btn bg-bone px-3.5 py-2.5 lg:bottom-5 lg:left-5">
+                  <span className="font-body text-caption font-bold uppercase tracking-eyebrow text-deep/70">
+                    {a.floor}
+                  </span>
+                  <span className="truncate font-display text-d6 font-bold uppercase leading-none text-deep lg:text-d5">
+                    {a.name}
+                  </span>
+                </span>
+              ) : (
                 <span className="absolute bottom-3 left-3 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-btn bg-bone px-2.5 py-1">
                   <span className="font-body text-caption font-bold tabular-nums tracking-eyebrow text-deep">
                     {cifra(i + 1)}
@@ -344,72 +381,61 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
       </div>
 
       {/*
-        ── El panel: el texto de lo que está abierto ───────────────────
-        ⚠️ ES UNA SOLA DESCRIPCIÓN Y NO LAS CINCO. Es la misma decisión que
-        tenía la versión de pestañas y por el mismo motivo: las cinco juntas son
-        novecientas palabras apiladas en el medio de la página.
+        ══════════════════════════════════════════════════════════════════
+        ── EL PANEL: LA DESCRIPCIÓN DE LO QUE ESTÁ ABIERTO, Y NADA MÁS.
 
-        ⚠️ EL TEXTO Y LOS LINKS VAN EN UNA FILA, como en la referencia: el
-        párrafo a la izquierda y la acción a la derecha. Apilados, el link
-        quedaba a cuatro renglones del nombre de lo que manda a ver.
+        ⚠️ SE FUERON EL RÓTULO, EL TITULAR Y LOS DOS LINKS el 2026-09-22.
+        Camila: «necesitamos hacer más corta esta sección, así que el nombre del
+        lugar pisará la imagen, sacaremos los CTA y la descripción irá pegada a
+        la imagen».
+
+        Qué era cada cosa y adónde fue:
+
+          · el rótulo del piso y el `h3` con el nombre → la placa que ahora
+            pisa la foto del panel abierto. No se perdió el dato; cambió de
+            lugar y de paso dejó de haber una imagen enorme sin nada escrito.
+          · «Go to <lugar>» → se fue. Dos de los cinco lugares no tenían página
+            propia, así que el link aparecía y desaparecía según qué panel
+            estuviera abierto: un control que existe a veces.
+          · «Rent any of it» → se fue. Manda a `/events`, que está en el header
+            de todas las páginas y en el CTA naranja de la barra.
+
+        ⚠️ Y CON ELLOS SE FUE LA GRILLA DE DOS COLUMNAS: sin links a la derecha,
+        lo que queda es un párrafo. `mt-5` en vez de `mt-8` es el «pegada a la
+        imagen» del pedido.
+
+        ⚠️ EL `role="tabpanel"` SE QUEDA Y ES OBLIGATORIO. Las pestañas de
+        arriba lo apuntan con `aria-controls`, así que sin él el patrón ARIA
+        queda a medias: cinco `role="tab"` controlando un panel que no declara
+        serlo.
+
+        ⚠️ EL NOMBRE DEL LUGAR YA NO ESTÁ EN EL PANEL, y eso importa para quien
+        escucha: el panel se rotula con `aria-labelledby` contra la pestaña
+        activa, que lleva `aria-label="<nombre>, <piso>"`. El dato sigue
+        anunciándose al cambiar de panel.
+        ══════════════════════════════════════════════════════════════════
       */}
-      <div
-        role="tabpanel"
-        id={panelId}
-        aria-labelledby={tabId(activo)}
-        className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-12"
-      >
-        <div>
-          {/* El piso, que era la barra de arriba. Ver la nota del encabezado. */}
-          <Eyebrow tone="deep">{area.floor}</Eyebrow>
-          <Heading level={3} className="mt-gap-kicker">
-            {area.name}
-          </Heading>
-          {/*
-            ⚠️ VA EN `text-base` Y NO EN `text-lead`, o sea UN ESCALÓN POR DEBAJO
-            de la bajada del encabezado de la sección. Pedido de Camila,
-            2026-09-22: «hagamos más chica la font de bajada, creo que debería
-            ser más chica que la bajada del título principal de esta sección».
-            Iban las dos en `text-lead` —17 a 22px— y dos bajadas del mismo
-            cuerpo en la misma sección se leen como dos titulares de la misma
-            jerarquía. La de arriba presenta la sección entera; ésta describe
-            una de cinco piezas.
+      <div role="tabpanel" id={panelId} aria-labelledby={tabId(activo)} className="mt-5">
+        {/*
+          ⚠️ VA EN `text-base` Y NO EN `text-lead`, o sea UN ESCALÓN POR DEBAJO
+          de la bajada del encabezado de la sección. Pedido de Camila,
+          2026-09-22: «hagamos más chica la font de bajada, creo que debería ser
+          más chica que la bajada del título principal de esta sección». Iban
+          las dos en `text-lead` —17 a 22px— y dos bajadas del mismo cuerpo en
+          la misma sección se leen como dos titulares de la misma jerarquía.
 
-            ⚠️ EL COLOR SALE DE `bajada` Y NO DE UNA OPACIDAD. Es el token que
-            lee `--lead-ink`, que está medido sobre las tres superficies
-            (5.36:1 en `paper`, 4.96:1 en `bone`, 5.95:1 en `deep`); con
-            `text-body/85` el contraste real cambiaba con el fondo de atrás y
-            dejaba de poder auditarse.
+          ⚠️ EL COLOR SALE DE `bajada` Y NO DE UNA OPACIDAD. Es el token que lee
+          `--lead-ink`, que está medido sobre las tres superficies (5.36:1 en
+          `paper`, 4.96:1 en `bone`, 5.95:1 en `deep`); con `text-body/85` el
+          contraste real cambiaba con el fondo de atrás y dejaba de poder
+          auditarse.
 
-            ⚠️ Y LOS CINCO TEXTOS SE ACORTARON A DOS RENGLONES, en el mismo
-            pedido: «que el copy de cada uno no supere las dos líneas en desk».
-            A 62ch y en `text-base` eso son unos 140 caracteres, y los cinco
-            entran. Lo que se recortó está anotado en `content/venue-areas.ts`.
-          */}
-          <p className="bajada mt-3.5 max-w-[62ch] font-body text-base font-light">{area.body}</p>
-        </div>
-
-        {/* El primero es el del área abierta y cambia con ella; el segundo es
-            fijo. Dos de los cinco lugares no tienen página propia, así que ahí
-            queda sólo el fijo. */}
-        <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
-          {area.href ? (
-            <Link
-              href={area.href}
-              className="group inline-flex items-center gap-2.25 border-b-2 border-sunset pb-0.75 font-body text-base font-semibold whitespace-nowrap text-ink transition-colors duration-200 hover:text-sunset-deep"
-            >
-              Go to {area.name}
-              <ArrowRight className="size-3.5 text-sunset-deep transition-transform duration-200 group-hover:translate-x-1" />
-            </Link>
-          ) : null}
-          <Link
-            href="/events"
-            className="group inline-flex items-center gap-2.25 font-body text-base font-medium whitespace-nowrap text-muted transition-colors duration-200 hover:text-ink"
-          >
-            Rent any of it
-            <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-1" />
-          </Link>
-        </div>
+          ⚠️ Y LOS CINCO TEXTOS SE ACORTARON A DOS RENGLONES, en el mismo
+          pedido: «que el copy de cada uno no supere las dos líneas en desk». A
+          62ch y en `text-base` eso son unos 140 caracteres, y los cinco entran.
+          Lo que se recortó está anotado en `content/venue-areas.ts`.
+        */}
+        <p className="bajada m-0 max-w-[62ch] font-body text-base font-light">{area.body}</p>
       </div>
     </Section>
   );

@@ -1,16 +1,13 @@
 import type { Metadata } from 'next';
 import ContactForm from '@/components/sections/ContactForm';
+import FindUs from '@/components/sections/FindUs';
 import { ButtonLink } from '@/components/shared/Button';
 import FormSlab from '@/components/shared/FormSlab';
-import HoursCard from '@/components/shared/HoursCard';
-import { ArrowSquareOut, Instagram } from '@/components/shared/Icon';
-import MapEmbed from '@/components/shared/MapEmbed';
-import ParkingMap, { ParkingList } from '@/components/shared/ParkingMap';
+import { Instagram } from '@/components/shared/Icon';
 import PlateHero from '@/components/shared/PlateHero';
-import Section from '@/components/shared/Section';
-import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
+import { Heading } from '@/components/shared/Type';
 import { BRAND, instagramHandle } from '@/lib/brand';
-import { getVenue, venueAddressLine } from '@/lib/venue';
+import { getVenue } from '@/lib/venue';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta, venueJsonLd } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
@@ -56,21 +53,17 @@ export const metadata: Metadata = pageMeta({
  * El propio `/events` documenta por qué él no la copió con quince.
  *
  * ──────────────────────────────────────────────────────────────────────────
- * ⚠️ LO QUE NO SE TOCÓ, y no por inercia: los horarios y el mapa. La spec de
- * internas (`docs/prompt-claude-design-internas.md` §7.9) los pone como el
- * contenido principal de esta página, porque los dos sets de horario son la
- * confusión número uno del negocio. Siguen DEBAJO del formulario, en su propia
- * banda y sobre otra superficie.
+ * ⚠️ LOS HORARIOS Y EL MAPA SIGUEN SIENDO EL SEGUNDO CONTENIDO DE LA PÁGINA
+ * —la spec de internas (`docs/prompt-claude-design-internas.md` §7.9) los pone
+ * ahí porque los dos sets de horario son la confusión número uno del negocio—
+ * pero DESDE EL 2026-09-22 NO SON SECCIONES PROPIAS: los sirve `FindUs`, el
+ * bloque de la home, por pedido explícito de Camila. Ver la nota de esa
+ * sección más abajo.
  *
- * ⚠️ EL MAPA ES LA ÚNICA COSA PESADA DE LA PÁGINA Y NO SE CARGA SOLO. Ver
- * `components/shared/MapEmbed.tsx`: la dirección, el teléfono y el link a
- * indicaciones están en HTML plano y no dependen de que baje nada.
- *
- * ⚠️ GIFT CARDS APARECE EXACTAMENTE DOS VECES. Pedido de Camila: bien visible,
- * pero «no en loop». Una en la columna de datos y otra en la banda de cierre.
- * Las dos salen a Toast, que es el único enlace de comercio real del negocio,
- * así que van con `target="_blank"` y `rel="noopener noreferrer"` más el aviso
- * en texto de que abren otra pestaña.
+ * ⚠️ GIFT CARDS YA NO APARECE EN ESTA PÁGINA. Aparecía dos veces —la tarjeta
+ * de la columna y la banda de cierre— y Camila marcó las dos: «eliminemos
+ * estas secciones». El link sigue vivo en el footer, que es donde un enlace de
+ * comercio pertenece cuando no es el trabajo de la página.
  *
  * ⚠️ JSON-LD: `venueJsonLd()` ya emite el `BarOrPub` con dirección, horarios
  * (`openingHours` desde `content/hours.ts`) y teléfono. No se escribe uno a
@@ -81,11 +74,12 @@ export const metadata: Metadata = pageMeta({
  *
  *     hero        bone   (la placa y la foto)
  *     formulario  paper  ← el panel va en bone, que es lo que sostiene los campos
- *     horarios    bone
- *     cierre      DEEP   ← única oscura
+ *     find us     bone   ← entra con arco, montada sobre la losa
  *
- * Ninguna queda pegada a otra del mismo color y hay una sola `deep`, que es lo
- * que pide `npm run check:surfaces`.
+ * ⚠️ YA NO HAY NINGUNA `deep` EN LA PÁGINA, porque la que había era la banda
+ * de gift cards. Cero oscuras cumple `npm run check:surfaces` igual que una
+ * —el guard topea, no exige— y la página cierra sobre el mismo hueso con el
+ * que abre, con el arco marcando el corte.
  * ══════════════════════════════════════════════════════════════════════════
  */
 
@@ -112,30 +106,27 @@ export default async function ContactPage() {
   const venue = await getVenue();
 
   /*
-   * ⚠️ CADA BUZÓN LLEVA PARA QUÉ ES, y esa línea es medio bloque.
+   * ⚠️ LOS BUZONES PERDIERON SU BAJADA EL 2026-09-22. Camila, sobre la
+   * captura: «pon cada uno de los mails pero sin sus bajadas y con títulos
+   * menos relevantes; cada título y mail quiero que pase más desapercibido y
+   * no ocupe tanto».
    *
-   * Tres direcciones sin explicación obligan a adivinar, y quien adivina mal
-   * escribe a la general: el buzón de eventos existe justamente para que una
-   * consulta de $20.000 no caiga en el mismo lugar que una pregunta sobre el
-   * horario. Por el mismo motivo `events@` NO va en el footer (ver
-   * `docs/layout-motion.md`): vive sólo acá y en el hub de eventos.
+   * Cada uno traía una línea de para qué era —«Hours, the yard, a jacket
+   * someone left on a bench…»— y el conjunto medía media pantalla al lado de
+   * un formulario de cinco campos. La etiqueta sola ya dice a qué buzón va
+   * cada cosa: «Private events» no necesita que le expliquen que es para
+   * eventos privados.
+   *
+   * ⚠️ LOS TRES BUZONES SIGUEN SIENDO TRES, y eso no se toca: el de eventos
+   * existe para que una consulta de $20.000 no caiga en el mismo lugar que
+   * una pregunta sobre el horario. Por el mismo motivo `events@` NO va en el
+   * footer (ver `docs/layout-motion.md`): vive sólo acá y en el hub de
+   * eventos.
    */
   const buzones = [
-    {
-      label: 'General',
-      address: venue.email,
-      what: 'Hours, the yard, a jacket someone left on a bench, anything that does not fit below.',
-    },
-    {
-      label: 'Private events',
-      address: venue.emailEvents,
-      what: 'Buyouts and private parties. It lands with the person who prices them.',
-    },
-    {
-      label: 'Working here',
-      address: venue.emailHiring,
-      what: 'Bar and venue jobs. The trucks are separate businesses and hire their own crews.',
-    },
+    { label: 'General', address: venue.email },
+    { label: 'Private events', address: venue.emailEvents },
+    { label: 'Working here', address: venue.emailHiring },
   ];
 
   return (
@@ -197,13 +188,24 @@ export default async function ContactPage() {
 
       {/* ══ 2. La losa del formulario, con los datos al costado ═══════════ */}
 
+      {/*
+        ⚠️ LA BAJADA DE LA LOSA YA NO DA INSTRUCCIONES. Decía «Pick the one
+        that fits. The form does the same thing if you would rather type than
+        open your mail app», o sea que explicaba cómo usar la pantalla que se
+        está mirando. Camila: «necesito que la bajada del título tenga sentido,
+        que no indique qué hacer… que diga contáctanos y te responderemos lo
+        antes posible o algo así».
+
+        Ahora dice lo único que a alguien le importa antes de escribir: que lo
+        lee una persona y cuánto tarda en contestar.
+      */}
       <FormSlab
         id="write"
         eyebrow="Write to us"
         eyebrowTone="deep"
         title="Three inboxes"
         titleId="write-title"
-        lead="Pick the one that fits. The form does the same thing if you would rather type than open your mail app."
+        lead="Write to us and a person here reads it. We come back within one business day."
         aside={
           <div className="flex flex-col gap-9">
             {/*
@@ -242,24 +244,37 @@ export default async function ContactPage() {
               </a>
             </div>
 
-            {/* ── Los tres buzones ──────────────────────────────────────── */}
-            <ul className="flex list-none flex-col gap-7 p-0">
+            {/*
+              ── Los tres buzones ────────────────────────────────────────
+              ⚠️ BAJARON DE JERARQUÍA ENTERA. Eran un `Heading` de rótulo, el
+              mail en `d5` de display en caja alta y una bajada de tres
+              renglones: tres bloques de ~120px de alto cada uno, que en la
+              captura de Camila competían con el formulario que están al lado.
+
+              Ahora cada uno es una sola línea de dato —rótulo chico arriba,
+              mail en cuerpo de texto debajo— y los tres juntos miden menos que
+              lo que medía uno. El `gap` bajó de 28 a 18 por lo mismo: sin
+              bajada, 28px entre un mail y el rótulo siguiente abrían un hueco
+              que ya no separa nada.
+
+              ⚠️ EL MAIL DEJA DE SER DISPLAY. `font-display` en caja alta a
+              `d5` es el tratamiento de un titular, y esto no lo es. En cuerpo
+              de texto se lee igual de bien, entra sin `break-all` en la
+              columna angosta y de paso deja de pelear con la píldora del
+              teléfono, que es lo que SÍ tiene que destacar acá.
+            */}
+            <ul className="flex list-none flex-col gap-4.5 p-0">
               {buzones.map((b) => (
                 <li key={b.address}>
-                  <Heading level={3} role="label">
+                  <span className="block font-body text-caption font-medium uppercase tracking-eyebrow text-body/60">
                     {b.label}
-                  </Heading>
-                  <p className="mt-[10px]">
-                    <a
-                      href={'mailto:' + b.address}
-                      className="link-texto break-all font-display text-d5 font-semibold uppercase leading-none text-ink"
-                    >
-                      {b.address}
-                    </a>
-                  </p>
-                  <p className="mt-[10px] max-w-[46ch] text-[16px] leading-[1.65] text-body/80">
-                    {b.what}
-                  </p>
+                  </span>
+                  <a
+                    href={'mailto:' + b.address}
+                    className="link-texto mt-1 block break-words font-body text-[16px] leading-[1.5] text-ink"
+                  >
+                    {b.address}
+                  </a>
                 </li>
               ))}
             </ul>
@@ -294,120 +309,57 @@ export default async function ContactPage() {
               </p>
             </div>
 
-            {/* ── Gift cards, 1 de 2 ───────────────────────────────────── */}
-            <div className="rounded-card border border-ink/15 bg-paper p-[24px]">
-              <Heading level={3} role="card">
-                Gift cards
-              </Heading>
-              <p className="mt-[10px] max-w-[42ch] text-[16px] leading-[1.7] text-body/80">
-                Good at the bar upstairs. The food trucks are independent businesses and take their
-                own payment, so a card covers what is ours.
-              </p>
-              <div className="mt-[18px]">
-                <ButtonLink href={BRAND.giftCards} variant="primary" external>
-                  Buy a gift card
-                </ButtonLink>
-              </div>
-            </div>
+            {/*
+              ⚠️ ACÁ IBA LA TARJETA DE GIFT CARDS Y SE FUE EL 2026-09-22, junto
+              con la banda de cierre que decía lo mismo. Camila marcó las dos
+              sobre las capturas: «eliminemos estas secciones».
+
+              Aparecían dos veces en la misma página —una en esta columna y
+              otra a pantalla completa abajo— y las dos salían al mismo link de
+              Toast. El link de gift cards sigue vivo donde corresponde, en el
+              footer; lo que se fue es el módulo que lo repetía en una página
+              cuyo trabajo es que alguien escriba, no que compre.
+            */}
           </div>
         }
       >
         <ContactForm />
       </FormSlab>
 
-      {/* ══ 3. Horarios y mapa ════════════════════════════════════════════ */}
-
-      <Section id="find" tone="bone" band="lg" labelledBy="find-title" className="scroll-mt-24">
-        <SectionHead
-          eyebrow="Hours and map"
-          eyebrowTone="plum"
-          id="find-title"
-          title="When we are open, and where"
-          lead="The bar and the trucks keep different hours every single day. On Saturday the bar runs three hours past the last window."
-        />
-
-        <div className="mt-[40px] grid gap-[32px] lg:grid-cols-[1fr_1.15fr] lg:gap-[48px]">
-          <div>
-            <HoursCard hours={venue.hours} />
-            {/*
-              ⚠️ ACÁ IBA UN PÁRRAFO DE ESTACIONAMIENTO SIN FUENTE, y por eso se
-              había sacado. El dato apareció el 2026-09-22 —la página `/parking`
-              del sitio viejo— y ya no es un párrafo suelto: es la sección
-              entera de acá abajo, con el mapa dibujado.
-            */}
-          </div>
-
-          <MapEmbed label="Show the map" />
-        </div>
-      </Section>
-
-      {/* ══ 4. Dónde estacionar ═══════════════════════════════════════════ */}
+      {/* ══ 3. Horarios, mapa y cómo llegar ══════════════════════════════ */}
 
       {/*
-        ⚠️ ES UNA SECCIÓN Y NO UN PÁRRAFO DENTRO DE LA DE ARRIBA, aunque las dos
-        hablen de cómo llegar. Dos mapas apilados en la misma sección compiten:
-        el de Google contesta «dónde queda esto» y el dibujado contesta «dónde
-        dejo el auto», que son dos preguntas distintas y se hacen en ese orden.
-        Separadas, además, esta gana su propia ancla —`#parking`, que es a donde
-        apunta el bloque Parking de la home desde que existe.
+        ══════════════════════════════════════════════════════════════════
+        ⚠️ ACÁ HABÍA DOS SECCIONES PROPIAS Y AHORA HAY UNA SOLA, QUE ES LA DE
+        LA HOME. Camila, 2026-09-22, sobre la captura: «acá va mismo layout
+        que en la home, coloca las olas para hacer pase de fondos o al menos
+        las puntas redondeadas, no recto el cambio de fondo».
+
+        Lo que se fue:
+
+          · «When we are open, and where» — una `HoursCard` al lado de un
+            `MapEmbed`, o sea la mitad de lo que este bloque ya hace, con el
+            mapa detrás de un botón.
+          · «Where to park» — la sección `#parking` con el mapa dibujado.
+            Camila la marcó aparte: «eliminemos por completo el mapa de
+            park». `ParkingMap.tsx` se borró con ella, y el link que la home
+            tenía hacia `#parking` también.
+          · La banda de cierre de gift cards, que era la segunda aparición del
+            mismo link en la misma página.
+
+        ⚠️ EL `id="find"` SE CONSERVA y por eso el componente lo recibe por
+        prop: el CTA «Hours and map» del hero de esta misma página apunta ahí
+        desde que existe, y romper un ancla interna al mover una sección es
+        exactamente lo que le pasó al `#parking` de la home.
+
+        ⚠️ EL CAMBIO DE FONDO YA NO ES RECTO, que era la otra mitad del
+        pedido: `FindUs` entra con `banda-arco`, o sea con las dos esquinas de
+        arriba redondeadas y montado sobre la sección anterior. El hueco que
+        la de arriba necesita para no quedar tapada lo pone la regla
+        `:has(+ .banda-arco)` de `globals.css`, sin tocar nada de este lado.
+        ══════════════════════════════════════════════════════════════════
       */}
-      <Section id="parking" tone="paper" band="lg" labelledBy="parking-title" className="scroll-mt-24">
-        <SectionHead
-          eyebrow="Parking"
-          eyebrowTone="terra"
-          id="parking-title"
-          title="Where to park"
-          lead="Old 41 Rd runs right past the door, and the parking is spread over the blocks around it. Five areas, north to south."
-        />
-
-        {/*
-          El dibujo primero y la lista después en mobile; al lado en desktop. Es
-          el mismo reparto que usa la sección de horarios de acá arriba, con las
-          columnas al revés: allá el dato manda y el mapa acompaña, acá el mapa
-          es lo que contesta la pregunta de un vistazo.
-        */}
-        {/*
-          ⚠️ EL MAPA TIENE TOPE DE ANCHO Y LA LISTA NO. El dibujo es más alto
-          que ancho —670 × 900—, así que dejarlo estirarse a media página lo
-          manda a 900 px de alto y abre un pozo de aire al lado de una lista de
-          cinco renglones. Con el tope, el mapa mide lo que tiene que medir y la
-          lista se queda con el resto.
-        */}
-        <div className="mt-[40px] grid gap-[36px] lg:grid-cols-[minmax(0,470px)_minmax(0,1fr)] lg:gap-[56px]">
-          <ParkingMap />
-          <ParkingList className="lg:pt-1" />
-        </div>
-      </Section>
-
-      {/* ══ 5. Cierre: gift cards, 2 de 2 ═════════════════════════════════ */}
-
-      <Section tone="deep" band="md" labelledBy="gift-title">
-        <div className="flex flex-col items-start gap-[24px] lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <Eyebrow tone="cream">Gift cards</Eyebrow>
-            <Heading
-              level={2}
-              id="gift-title"
-              className="mt-gap-kicker max-w-[18ch] text-d4 lg:text-d3"
-            >
-              Someone else&rsquo;s round, on you
-            </Heading>
-            <p className="mt-[12px] max-w-[46ch] text-[16px] leading-[1.7] text-paper/80">
-              {venueAddressLine(venue)}
-            </p>
-          </div>
-          <a
-            href={BRAND.giftCards}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-10.5 shrink-0 items-center gap-[8px] whitespace-nowrap rounded-pill bg-sunset px-[28px] font-body text-cta font-bold tracking-cta text-ink transition-colors hover:bg-sunset-hover"
-          >
-            Buy a gift card
-            <ArrowSquareOut className="size-4" aria-hidden="true" />
-            <span className="sr-only">(opens in a new tab)</span>
-          </a>
-        </div>
-      </Section>
+      <FindUs id="find" />
     </>
   );
 }

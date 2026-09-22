@@ -1,8 +1,7 @@
 import Section from '@/components/shared/Section';
 import { Heading } from '@/components/shared/Type';
 import { Reveal } from '@/components/shared/Motion';
-import { PEOPLE, STORY_LEAD } from '@/content/people';
-import { GIVE_BACK } from '@/content/story';
+import { STORY_LEAD } from '@/content/people';
 
 /**
  * El relato, en dos columnas: titular grande a la izquierda, prosa a la derecha.
@@ -27,27 +26,31 @@ import { GIVE_BACK } from '@/content/story';
  * ══════════════════════════════════════════════════════════════════════════
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LOS TRES PÁRRAFOS SON DATO VERIFICADO Y NINGUNO ESTÁ ESCRITO POR MÍ.
+ * ⚠️ LOS DOS PÁRRAFOS SON DATO VERIFICADO Y NINGUNO ESTÁ ESCRITO POR MÍ.
  * Importa dejarlo asentado porque un bloque de prosa en una página «sobre
- * nosotros» es exactamente donde se cuela el relleno verosímil.
+ * nosotros» es exactamente donde se cuela el relleno verosímil. `STORY_LEAD`
+ * sale de la primera línea de `/this-is-us` del sitio vigente, con los hechos
+ * intactos —cuatro años de planificación, una familia local, Bonita Springs— y
+ * la sintaxis arreglada; el segundo párrafo es la bajada que tenía el hero,
+ * que a su vez no afirma nada que el resto del sitio no diga.
  *
- *   1. `STORY_LEAD` sale de la primera línea de `/this-is-us` del sitio
- *      vigente, con los hechos intactos —cuatro años de planificación, una
- *      familia local, Bonita Springs— y la sintaxis arreglada. La procedencia
- *      está anotada arriba de la constante.
+ * ──────────────────────────────────────────────────────────────────────────
+ * ⚠️ QUÉ SE FUE DE ACÁ EL 2026-09-22, y los dos por pedido de Camila sobre la
+ * captura de la página:
  *
- *   2. La cita de Chris Magnus es TEXTUAL de `/this-is-us`. No se recorta ni
- *      se parafrasea: entra entera y entre comillas, con su nombre y su cargo.
+ *   · LA CITA DE CHRIS MAGNUS. «La frase pongámosla en una sección separada,
+ *     con fondo distintivo y que tenga mucho espacio para que destaque». No se
+ *     perdió: es la sección propia que `/our-story` monta justo debajo de este
+ *     bloque, y sigue siendo textual de `/this-is-us`.
  *
- *   3. El Charity Partner Program sale de `/giveback`, también del sitio
- *      vigente.
+ *   · EL CHARITY PARTNER PROGRAM. «La parte de beneficencia eliminémosla».
  *
- * ⚠️ Y EL TERCERO ARREGLA ALGO QUE ESTABA ROTO. `next.config.ts` manda
- * `/giveback` con un 301 a `/our-story`, y desde el rediseño esa redirección
- * aterrizaba en una página que no mencionaba el programa: quien buscaba
- * «giveback» terminaba en una página sobre otra cosa. El contenido estaba
- * guardado en `content/story.ts` esperando decisión, con la nota puesta. Acá
- * vuelve al render y el 301 vuelve a tener sentido.
+ *     ⚠️ ESO REABRE UN PROBLEMA CONOCIDO: `next.config.ts` manda `/giveback`
+ *     con un 301 a `/our-story`, así que esa redirección vuelve a aterrizar en
+ *     una página que no menciona el programa. Es exactamente el estado del que
+ *     este bloque venía a sacarnos. El contenido queda guardado en
+ *     `content/story.ts` —con su nota— y la decisión sobre el 301 queda
+ *     abierta: repuntarlo a la home, darle ruta propia, o dejarlo así.
  * ══════════════════════════════════════════════════════════════════════════
  *
  * ⚠️ NO SE INVENTA LA FECHA DE APERTURA NI EL NOMBRE DE LA FAMILIA. Los dos
@@ -56,7 +59,6 @@ import { GIVE_BACK } from '@/content/story';
  * confirma la fecha, entra como un cuarto párrafo.
  */
 export default function AboutStory({ id = 'story-title' }: { readonly id?: string }) {
-  const chris = PEOPLE[0];
 
   /*
    * ══════════════════════════════════════════════════════════════════════
@@ -117,52 +119,37 @@ export default function AboutStory({ id = 'story-title' }: { readonly id?: strin
               contraste lo hace el salto contra el titular, no un escalón
               interno de 22 a 17.
             */}
+            {/*
+              ⚠️ EL PRIMER PÁRRAFO ERA LA BAJADA DEL HERO Y AHORA ABRE ACÁ.
+              Camila, 2026-09-22: «unifica el párrafo con la bajada del hero
+              para unirlas y tratarlo como en "Dentro del camión" de la página
+              game truck».
+
+              Es el mismo movimiento que ya recibió `/game-truck` el mismo día,
+              y por el mismo motivo: la bajada y este párrafo decían los mismos
+              hechos a una pantalla de distancia. El hero decía «one local
+              family, a corner of Old 41 across from Riverside Park, and a bar
+              built on the roof of a yard with four independent kitchens» y este
+              bloque abría con «four years of planning, one local family, and a
+              corner of Old 41…». Dos veces la familia, dos veces la esquina.
+
+              ⚠️ NO SE PERDIÓ UN SOLO HECHO. Lo que la bajada tenía y
+              `STORY_LEAD` no —el parque enfrente, el bar sobre el patio, las
+              cuatro cocinas independientes— está en la segunda oración, que es
+              nueva sólo en el orden de las palabras.
+
+              ⚠️ EL HERO QUEDA SIN BAJADA, que es la forma de la referencia:
+              foto, y el texto recién abajo. `PlateHero` ya lo contempla —el
+              hueco es condicional— y `/sunset-bar` y `/game-truck` abren igual.
+            */}
             <p className="m-0 max-w-[52ch] font-body text-intro font-light text-ink">
               {STORY_LEAD}
             </p>
 
-            {/*
-              LA CITA. Va como `<blockquote>` y con `<cite>`, no como un
-              párrafo entre comillas: es palabra de una persona identificada y
-              la estructura tiene que decirlo. El filete naranja de la
-              izquierda es el mismo recurso que el CTA de texto del sitio.
-            */}
-            <figure className="m-0 mt-9 border-l-2 border-sunset pl-6">
-              <blockquote className="m-0">
-                <p className="m-0 max-w-[56ch] font-display text-d5 font-bold uppercase leading-[1.1] text-ink">
-                  {chris.quote}
-                </p>
-              </blockquote>
-              <figcaption className="mt-4 font-body text-caption font-bold uppercase tracking-eyebrow text-muted">
-                <cite className="not-italic">{chris.name}</cite>, {chris.role}
-              </figcaption>
-            </figure>
-
-            {/*
-              EL TERCER PÁRRAFO: el programa de donaciones. Ver la nota de
-              arriba sobre el 301 de `/giveback`.
-
-              ⚠️ LOS TRES MONTOS SE LEEN DE `GIVE_BACK.tiers` y no se escriben
-              acá. Si el cliente cambia los importes, se cambian en un lado.
-            */}
-            <div className="mt-10 border-t border-fog pt-8">
-              <Heading level={3} className="text-d6">
-                {GIVE_BACK.title}
-              </Heading>
-              <p className="m-0 mt-3.5 max-w-[62ch] font-body text-base font-light leading-[1.6] text-body">
-                {GIVE_BACK.body}
-              </p>
-              <ul className="m-0 mt-5 flex list-none flex-wrap gap-2 p-0">
-                {GIVE_BACK.tiers.map((monto) => (
-                  <li
-                    key={monto}
-                    className="rounded-pill bg-cream px-3.5 py-1 font-display text-d7 font-bold tabular-nums text-deep"
-                  >
-                    ${monto}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <p className="m-0 mt-8 max-w-[52ch] font-body text-intro font-light text-ink">
+              What went up on that corner is a bar on the roof of a yard with four independent
+              kitchens in it, across the street from Riverside Park.
+            </p>
           </div>
         </div>
       </Reveal>

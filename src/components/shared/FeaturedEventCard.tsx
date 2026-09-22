@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from '@/components/shared/Icon';
@@ -103,6 +104,43 @@ export const cuerpoSinPrecios = (
 ): readonly string[] => parrafosDe(event).filter((p) => !promos.some((d) => nombraPrecio(p, d.price)));
 
 /**
+ * El envoltorio de la card: un `Link` al calendario, o un `div` si no lleva CTA.
+ *
+ * ⚠️ ES UNA FUNCIÓN APARTE Y NO UN `const Envoltorio = link ? Link : 'div'`
+ * ADENTRO DEL RENDER. Esa versión existió dos minutos y no compila: la unión
+ * de los dos tipos hace que `href` quede opcional, y `LinkProps` lo exige.
+ * Separado, cada rama se tipa sola.
+ *
+ * ⚠️ LAS CLASES LLEGAN POR PROP y son las mismas para las dos ramas. La card
+ * se ve idéntica con link y sin él; lo único que cambia es si se puede
+ * clickear. Ver la nota de `linkToCalendar`.
+ */
+function Envoltorio({
+  link,
+  className,
+  children,
+}: {
+  readonly link: boolean;
+  readonly className: string;
+  readonly children: ReactNode;
+}) {
+  if (!link) return <div className={className}>{children}</div>;
+
+  /*
+    ⚠️ VA AL CALENDARIO Y ANTES IBA A `/whats-on/<slug>`, QUE ES UN 404. La
+    ruta por evento existió y se sacó el 2026-09-16 —está anotado en
+    `app/sitemap.ts`, que ese mismo día dejó de listarlas—, pero este link se
+    quedó apuntando ahí. El destino correcto mientras no exista la ficha es el
+    calendario, que es donde está el resto de las fechas.
+  */
+  return (
+    <Link href="/whats-on" className={className}>
+      {children}
+    </Link>
+  );
+}
+
+/**
  * ══════════════════════════════════════════════════════════════════════════
  * LA CARD GRANDE DEL EVENTO DESTACADO: media card de texto, media de precios.
  *
@@ -129,6 +167,7 @@ export default function FeaturedEventCard({
   dealsLabel,
   headingLevel = 2,
   headingId,
+  linkToCalendar = true,
 }: {
   readonly event: VenueEvent;
   /**
@@ -161,6 +200,26 @@ export default function FeaturedEventCard({
   readonly headingLevel?: 2 | 3 | 4;
   /** El `id` del titular, para que la banda que la contiene pueda apuntarle. */
   readonly headingId?: string;
+  /**
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ SI LA CARD ENTERA ES UN LINK AL CALENDARIO, Y SI DIBUJA «See the
+   * night» — las dos cosas son la misma y por eso son una sola prop.
+   *
+   * En `/whats-on` sí: la card abre la página y el calendario está más
+   * abajo, así que el CTA lleva a algún lado.
+   *
+   * En `/sunset-bar` NO. Camila, 2026-09-22, sobre la captura: «elimina ese
+   * CTA». Ahí la card cuelga del happy hour y cuenta el domingo entero —el
+   * día, el horario, el texto del cliente y las tres promos con su precio—,
+   * así que «ver la noche» no ofrece nada que no esté ya en pantalla.
+   *
+   * ⚠️ Y CUANDO NO HAY CTA TAMPOCO HAY LINK. Un bloque de 400px clickeable
+   * entero, sin una sola señal de que lo es, no es un link: es una trampa.
+   * Con esto en `false` la card se dibuja como un `<div>` y deja de estar en
+   * el recorrido del tabulador.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  readonly linkToCalendar?: boolean;
 }) {
   const cuando =
     event.kind === 'recurring' && event.weekdays.length > 0 ? weekdaysLabel(event.weekdays) : null;
@@ -192,18 +251,14 @@ export default function FeaturedEventCard({
 
   return (
     /*
-      ⚠️ VA AL CALENDARIO Y ANTES IBA A `/whats-on/<slug>`, QUE ES UN 404. La
-      ruta por evento existió y se sacó el 2026-09-16 —está anotado en
-      `app/sitemap.ts`, que ese mismo día dejó de listarlas—, pero este link se
-      quedó apuntando ahí. El destino correcto mientras no exista la ficha es el
-      calendario, que es donde está el resto de las fechas.
-
       ⚠️ EL `text-left` NO ES DECORACIÓN: en `/sunset-bar` esta card cuelga del
       contenedor `text-center` que centra el titular «Happy hour» y su pastilla.
       Sin esto hereda el centrado y se deforma la card entera.
+
+      ⚠️ SI ESTO ES UN `<a>` O UN `<div>` LO DECIDE `Envoltorio`, acá arriba.
     */
-    <Link
-      href="/whats-on"
+    <Envoltorio
+      link={linkToCalendar}
       className="group relative grid overflow-hidden rounded-shell bg-deeper text-left sombra-card lg:grid-cols-2"
     >
       {/*
@@ -339,11 +394,13 @@ export default function FeaturedEventCard({
           </p>
         ))}
 
-        <span className="mt-2 inline-flex w-fit items-center gap-2.5 font-body text-base font-semibold text-cream">
-          See the night
-          <ArrowRight className="size-4 transition-transform duration-300 ease-brand group-hover:translate-x-1" />
-        </span>
+        {linkToCalendar ? (
+          <span className="mt-2 inline-flex w-fit items-center gap-2.5 font-body text-base font-semibold text-cream">
+            See the night
+            <ArrowRight className="size-4 transition-transform duration-300 ease-brand group-hover:translate-x-1" />
+          </span>
+        ) : null}
       </div>
-    </Link>
+    </Envoltorio>
   );
 }

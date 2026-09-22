@@ -2,17 +2,15 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import MarketVendorForm from '@/components/sections/MarketVendorForm';
 import { PROVIDES, SHOTS, STEPS, TERMS } from '@/content/market';
-import { getVenue, venueAddressLine } from '@/lib/venue';
+import { getVenue } from '@/lib/venue';
 import { ButtonLink } from '@/components/shared/Button';
 import FormSlab from '@/components/shared/FormSlab';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
-import { PendingData } from '@/components/shared/PendingData';
 import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
 import SoftWave from '@/components/shared/SoftWave';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
-import { TAG } from '@/lib/tag';
 
 export const metadata: Metadata = pageMeta({
   route: '/market',
@@ -67,7 +65,12 @@ export const metadata: Metadata = pageMeta({
  *
  * ⚠️ TODO EL COPY SALE DE `content/market.ts`, que a su vez sale del sitio
  * vigente. Lo que no sabemos —frecuencia, público y rubros buscados— sigue sin
- * afirmarse en ningún lado, y las FECHAS van como `PendingData` a la vista.
+ * afirmarse en ningún lado.
+ *
+ * ⚠️ LAS FECHAS IBAN COMO `PendingData` A LA VISTA Y YA NO. Camila tachó esa
+ * celda el 2026-09-22 (ver la tarjeta del stand). El dato sigue faltando —ítem
+ * 19 de `docs/pedido-al-cliente.md`— y el pie de esa tarjeta lo sigue diciendo
+ * en prosa: «we have not published the next market days here yet».
  * ══════════════════════════════════════════════════════════════════════════
  *
  * ⚠️ EL H1 NO ES «The Neighborhood Market», y el motivo está medido. Este hero
@@ -183,64 +186,72 @@ export default async function MarketPage() {
         />
 
         {/*
-          ⚠️ `items-start` NO SOBRA Y ES LO QUE HACE LA PARED. Por defecto una
-          celda de grilla se estira al alto de su fila, y una celda estirada
-          IGNORA el `aspect-[4/5]` del tile: las tres fotos de la fila salían
-          del mismo alto y la pieza se leía como un catálogo. Con `start` cada
-          tile conserva su proporción y la fila queda despareja, que es
-          exactamente lo que se busca. Ver la nota de `SHOTS`.
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ ES UN CARRUSEL INFINITO Y ERA UNA PARED DE SEIS TILES. Camila,
+          2026-09-22: «la galería que sea un carrusel infinito como el del
+          home».
 
-          ⚠️ LOS DOS DESFASAJES —`lg:mt-14` en la columna del medio y `lg:mt-7`
-          en la tercera— son el segundo tramo del mismo efecto, y van SÓLO en
-          `lg`. Abajo de ahí la grilla es de dos columnas y un margen superior
-          en una de ellas no se lee como un tendal: se lee como una foto que no
-          cargó.
+          El de la home es el de `PhotoDivider`: una tira de fotos que se
+          desplaza sola, con el set REPETIDO DOS VECES porque la animación
+          corre el 50 % y vuelve al origen — la segunda copia es la que tapa el
+          hueco en el punto de reinicio. Sin ella se ve el corte. Acá es lo
+          mismo con `rt-marquee-rev`, la misma clase y el mismo sentido.
 
-          ⚠️ EL RADIO ES CHICO EN CELULAR Y GRANDE EN ESCRITORIO, y el recuadro
-          de adentro lo sigue. Son concéntricos, así que los dos números están
-          atados: 18 de caja menos 10 de separación da 8 de radio interno, y 32
-          menos 14 da 18. Cambiar uno sin el otro despega las esquinas. Un
-          `rounded-shell` de 32px sobre un tile de 170px de ancho —que es lo
-          que mide a 390 de viewport— se come la foto.
+          ⚠️ EL `overflow-hidden` VA CON `py-13` Y NO ES AIRE: los tiles llevan
+          `sombra-card`, que baja 50px, y el recorte de la tira la cortaba al
+          ras. Es la misma cuenta que está escrita en `PhotoDivider`, con el
+          mismo origen: `scripts/check-sombras.mjs`.
+
+          ⚠️ LOS TILES PASAN A ALTO FIJO Y ANCHO PROPIO. En la pared cada uno
+          tenía su `aspect-ratio` y la grilla los dejaba desparejos a lo alto,
+          que era el efecto buscado ahí; en una tira horizontal lo que tiene que
+          ser parejo es el ALTO, o la fila se ve rota. El ancho lo sigue
+          decidiendo la proporción de cada foto, así que la tira mantiene el
+          ritmo irregular de la pared en el otro eje.
+
+          ⚠️ LA TIRA ES `aria-hidden` ENTERA Y LA SECCIÓN NO PIERDE NADA: lo
+          que las seis fotos dicen ya está escrito en la bajada —«jewelry,
+          prints, plants, clothes, homeware and food»—, que es texto de verdad.
+          Una lista de seis `alt` duplicados por el bucle no le sirve a nadie.
+
+          ⚠️ SE SALE DE LA CAJA CON MÁRGENES NEGATIVOS. Un carrusel que arranca y
+          termina dentro del ancho de lectura no se lee como infinito: se lee
+          como una fila que no entró. Los `-mx` anulan el gutter de la
+          `Section` —16px en celular, 32 desde `md`— y la tira llega al vidrio,
+          que es lo que hace el de la home. No hay utilidad de sangrado en el
+          repo: las otras secciones que sangran lo resuelven al revés, dejando
+          el gutter sólo en su encabezado (ver la nota de `caja-ancha`).
+          ══════════════════════════════════════════════════════════════════
         */}
-        <StaggerGroup
-          as="ul"
-          className="mt-bloque grid list-none grid-cols-2 items-start gap-4 p-0 lg:grid-cols-3 lg:gap-6"
-        >
-          {SHOTS.map((s, i) => (
-            <RevealItem
-              as="li"
-              key={s.src}
-              className={[
-                'relative overflow-hidden rounded-ticket bg-fog sombra-card lg:rounded-shell',
-                s.ratio,
-                i % 3 === 1 ? 'lg:mt-14' : '',
-                i % 3 === 2 ? 'lg:mt-7' : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              <Image
-                src={s.src}
-                alt={s.alt}
-                fill
-                sizes="(max-width: 1023px) 50vw, 420px"
-                className="object-cover"
-              />
+        <div aria-hidden="true" className="mt-bloque -mx-gutter overflow-hidden py-13 md:-mx-gutter-lg">
+          <div className="rt-marquee-rev flex w-max items-center gap-4 lg:gap-6">
+            {[...SHOTS, ...SHOTS].map((s, i) => (
+              <div
+                key={`${s.src}-${i}`}
+                className="relative h-[240px] w-[190px] shrink-0 overflow-hidden rounded-ticket bg-fog sombra-card lg:h-[340px] lg:w-[270px] lg:rounded-shell"
+              >
+                <Image
+                  src={s.src}
+                  alt=""
+                  fill
+                  sizes="(max-width: 1023px) 190px, 270px"
+                  className="object-cover"
+                />
 
-              {/*
-                El recuadro punteado, POR DENTRO de la foto. Blanco al 85 % y
-                con un pixel de sombra, que es la receta de `PhotoDivider`: el
-                trazo tiene que sobrevivir a seis fondos distintos, del mantel
-                negro de la joyería al cielo del mediodía.
-              */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-2.5 rounded-[8px] border border-dashed border-paper/85 [filter:drop-shadow(0_1px_1px_rgb(0_0_0/0.35))] lg:inset-3.5 lg:rounded-ticket"
-              />
-            </RevealItem>
-          ))}
-        </StaggerGroup>
+                {/*
+                  El recuadro punteado, POR DENTRO de la foto. Blanco al 85 % y
+                  con un pixel de sombra, que es la receta de `PhotoDivider`: el
+                  trazo tiene que sobrevivir a seis fondos distintos, del mantel
+                  negro de la joyería al cielo del mediodía.
+                */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-2.5 rounded-[8px] border border-dashed border-paper/85 [filter:drop-shadow(0_1px_1px_rgb(0_0_0/0.35))] lg:inset-3.5 lg:rounded-ticket"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </Section>
 
       {/*
@@ -293,7 +304,7 @@ export default async function MarketPage() {
               Somewhere your work <span className="text-sunset-deep">gets seen</span>
             </>
           }
-          lead="Your table goes in the yard, next to the crowd that is already here for the trucks and the bar. They came for lunch, and they leave knowing what you make. Three steps to get one, and the first takes two minutes."
+          lead="Your table goes in the yard, next to the crowd that is already here for the trucks and the bar. They came for lunch, and they leave knowing what you make."
         />
 
         {/*
@@ -376,19 +387,16 @@ export default async function MarketPage() {
                   {s.kicker}
                 </span>
                 {/*
-                  ⚠️ EL TÍTULO RESERVA DOS RENGLONES AUNQUE OCUPE UNO, y es lo
-                  que alinea los tres párrafos. De los tres pasos sólo «Start
-                  with the form» se parte en dos: sin el piso, la bajada de esa
-                  tarjeta arrancaba 35px más arriba que las de sus vecinas y las
-                  tres tarjetas se leían desfasadas. En los tickets de la home
-                  no hace falta porque los tres títulos son de dos renglones.
+                  ⚠️ EL PISO DE DOS RENGLONES SE FUE EL 2026-09-22, y con él el
+                  problema que lo pedía. Era un `lg:min-h-[1.96em]` —dos veces
+                  la interlínea— porque de los tres pasos sólo «Start with the
+                  form» se partía en dos, y sin el piso la bajada de esa tarjeta
+                  arrancaba 35px más arriba que las de sus vecinas.
 
-                  ⚠️ VA EN `em` Y NO EN PÍXELES: son dos veces la interlínea de
-                  0.98, medida contra el propio cuerpo del título, que es un
-                  `clamp` de 36 a 40px. En píxeles daría bien en una medida y
-                  mal en la otra. Y sólo desde `lg`, que es donde las tarjetas
-                  van lado a lado y hay algo que alinear; apiladas, el piso
-                  sería un hueco debajo de dos de los tres títulos.
+                  Camila lo atacó por el otro lado, que es el correcto: «haz que
+                  los títulos o tengan todos dos líneas o todos una». Con los
+                  tres en un renglón —ver `content/market.ts`— no hay nada que
+                  emparejar y el piso sería un hueco debajo de los tres.
                 */}
                 {/*
                   ⚠️ SIN UN «Step N:» EN `sr-only`, y estuvo puesto un rato. El
@@ -399,27 +407,22 @@ export default async function MarketPage() {
                   una de las tres tarjetas. Es la misma razón por la que los
                   tickets de la home tampoco lo llevan.
                 */}
-                <h3 className="m-0 max-w-[16ch] font-display text-d4 font-bold uppercase leading-[0.98] text-ink lg:min-h-[1.96em] lg:text-h3">
+                <h3 className="m-0 max-w-[16ch] font-display text-d4 font-bold uppercase leading-[0.98] text-ink lg:text-h3">
                   {s.title}
                 </h3>
                 <p className="m-0 max-w-[34ch] font-body text-base font-light text-ink">{s.body}</p>
 
-                {/* Las etiquetas son el molde de los tickets de la home: radio
-                    de familia y no píldora, fondo `bone` —el color de esta
-                    sección, así que el chip se lee como un recorte de la página
-                    apoyado en la tarjeta— y el punto `river` decorativo. La
-                    letra sale de `TAG`. */}
-                <ul className="mt-auto flex list-none flex-wrap justify-center gap-1.5 p-0 pt-5">
-                  {s.tags.map((tag) => (
-                    <li
-                      key={tag}
-                      className={`inline-flex items-center gap-1.75 rounded-btn bg-bone ${TAG} text-muted`}
-                    >
-                      <span aria-hidden="true" className="size-1 shrink-0 rounded-pill bg-river" />
-                      {tag}
-                    </li>
-                  ))}
-                </ul>
+                {/*
+                  ⚠️ ACÁ IBAN LAS ETIQUETAS Y SE FUERON EL 2026-09-22 (Camila:
+                  «elimina de cada paso los tags»). Eran ocho chips al pie de las
+                  tres tarjetas repitiendo el párrafo que tenían encima. El
+                  porqué, largo, está en `content/market.ts`.
+
+                  ⚠️ CON ELLAS SE FUE EL `mt-auto`, que era lo que emparejaba el
+                  alto de las tres tarjetas empujando los pies al piso. Sin un
+                  pie que empujar, las tres miden lo que mide su párrafo, que a
+                  este ancho son dos renglones en las tres.
+                */}
               </div>
             </RevealItem>
           ))}
@@ -466,153 +469,135 @@ export default async function MarketPage() {
           lead="The yard, the power and the crowd are ours. The table and everything on it is yours."
         />
 
-        <div className="mt-bloque rounded-shell bg-bone p-6 lg:px-9 lg:py-7">
-          {/*
-            ⚠️ EN CELULAR SE APILA Y EL FILETE GIRA CON LA FILA: es `divide-y`
-            abajo y `divide-x` desde `sm`. Cuatro celdas en fila a 390px dejarían
-            «Booth fee» en tres renglones de cuatro letras, que es el mismo
-            número con el que se cortó la tarjeta de happy hour.
-          */}
-          <dl className="m-0 flex list-none flex-col divide-y divide-dashed divide-ink/15 p-0 sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0">
-            {TERMS.map((t) => (
-              <div
-                key={t.label}
-                className="flex-auto py-4 first:pt-0 sm:px-7 sm:py-0 sm:first:pl-0"
-              >
-                <dt className="font-body text-caption font-medium uppercase tracking-eyebrow text-muted">
-                  {t.label}
-                </dt>
-                {/*
-                  ⚠️ EL VALOR VA PELADO, SIN LA UNIDAD COLGADA AL LADO. Estuvo
-                  un rato con un «ft» chico detrás del 10 × 10, como el «/ hour»
-                  de las tarifas de `/events`, y ahí funciona porque es una
-                  unidad de una palabra contra un número de cuatro dígitos. Acá
-                  el número ya tiene un símbolo adentro y la sigla se leía como
-                  un punto suelto al final. Los pies los dice el pie de la
-                  tarjeta, con todas las letras.
-                */}
-                <dd className="m-0 mt-2 font-display text-d5 font-extrabold leading-none tabular-nums text-deep">
-                  {t.value}
-                </dd>
-              </div>
-            ))}
-
-            <div className="flex-auto py-4 last:pb-0 sm:px-7 sm:py-0 sm:last:pr-0">
-              <dt className="font-body text-caption font-medium uppercase tracking-eyebrow text-muted">
-                Next dates
-              </dt>
-              {/*
-                ⚠️ EL MARCADOR VA EN EL RENGLÓN DEL VALOR Y NO DEBAJO DEL
-                PÁRRAFO. Las cuatro celdas tienen que leerse como la misma fila
-                de datos: tres con su dato y una con el hueco declarado. Con el
-                `mt` alineado al de los `dd` de al lado, el filo punteado del
-                `TBD` cae a la altura de la línea de mayúsculas de los valores.
-              */}
-              <dd className="m-0 mt-2.5">
-                <PendingData detail="Upcoming market dates not supplied yet" />
-              </dd>
-            </div>
-          </dl>
-
-          {/*
-            ⚠️ EL FILETE VA EN EL ENVOLTORIO Y EL TOPE DE MEDIDA EN EL PÁRRAFO,
-            y no los dos en el mismo nodo. El filete es un SEPARADOR: tiene que
-            cruzar la tarjeta entera, igual que los punteados verticales de la
-            fila de arriba. El párrafo, en cambio, suelto a 1440 se iba a 95
-            caracteres por renglón, medio renglón más que el tope de lectura que
-            usa el resto del sitio. Juntos en el `<p>`, el `max-w` le cortaba el
-            filete a dos tercios y se leía como un subrayado.
-          */}
-          <div className="mt-6 border-t border-dashed border-ink/15 pt-5">
-            <p className="m-0 max-w-[78ch] font-body text-dato font-light leading-[1.65] text-body/75">
-              {/* ⚠️ ACÁ DECÍA TAMBIÉN «anything bigger than that needs approval
-                  first» y se fue: es textual de `PROVIDES.vendor`, o sea que ya
-                  se publica dos tarjetas más abajo en «You bring». Lo único que
-                  este pie tiene que agregar es la UNIDAD —el valor de arriba no
-                  la lleva— y qué pasa con las fechas. */}
-              Ten by ten feet is the standard space, and the last approval happens at check-in on
-              the day. We have not published the next market days here yet, so write the ones you
-              want into the form and we come back to you with what is open.
-            </p>
-          </div>
-        </div>
-
         {/*
           ══════════════════════════════════════════════════════════════════
-          ⚠️ LAS DOS TARJETAS LLEVAN EL TROQUEL PUNTEADO, que es LA forma de
-          tarjeta de este sitio: el filete interior a `inset-3.5` con
-          `rounded-shell`, el mismo número que tienen las columnas de
-          `CompareSlab`, las losas de tipo de evento de `/events`, el panel de
-          `FormSlab`, la tarjeta de happy hour de `/sunset-bar` y el banner de
-          `/food-trucks`. Sin él son dos rectángulos redondeados, que es la
-          única caja que el sitio NO usa.
+          ⚠️ LA BARRA DE DATOS SE METIÓ ADENTRO DE LA TARJETA Y LA TARJETA «WE
+          BRING» SE BORRÓ. Camila, 2026-09-22, sobre la captura: tachó la
+          celda de «Next dates» y la tarjeta entera de «On us / We bring», y
+          encerró en un círculo la barra de datos con una flecha apuntando al
+          lugar de esa tarjeta: «elimina lo que te taché y pon los que te
+          encierro en un círculo en la card donde ahora dice "por nuestra
+          cuenta"».
 
-          ⚠️ EL COLOR DEL FILETE DICE DE QUÉ LADO ESTÁ CADA TARJETA, y eso no lo
-          inventé acá: es exactamente lo que hace `CompareSlab` con sus dos
-          columnas, `teal600` la nuestra y `terra` la otra. Acá el par es el
-          mismo tipo de par —lo que pone el venue contra lo que pone el vendor—
-          así que hereda los dos colores y el rótulo que ya los nombraba.
-          Ratios sobre `bone`: `teal600` 4.62:1 y `terra` 7.19:1; son filetes y
-          no texto, así que no necesitaban pasar, y pasan igual.
+          Y cierra bien: los cuatro renglones de «We bring» eran el espacio
+          10×10, la electricidad, la gente que ya está en el patio y la
+          aprobación al llegar. El primero es literalmente la celda «Space» de
+          la barra, el cuarto es la última oración del pie, y el tercero es la
+          bajada del `SectionHead` de esta misma sección —«the crowd… are
+          ours»—. Tres de cuatro estaban dichos dos veces a 200px de distancia.
 
-          ⚠️ EL PADDING SUBE A 8/10 Y NO ES CAPRICHO: el troquel se come 14px por
-          lado, así que con `p-7` el texto quedaba a 14px del filete en vez de
-          respirar. Es el mismo ajuste que tienen las otras tarjetas troqueladas.
+          ⚠️ LA ELECTRICIDAD ERA EL ÚNICO DATO QUE SÓLO VIVÍA AHÍ, así que se
+          mudó al pie de la tarjeta. No se pierde nada.
+
+          ⚠️ «NEXT DATES» SE VA DE LA PANTALLA PERO NO DEL PEDIDO. Era una celda
+          con `PendingData`, o sea el hueco declarado a la vista. El dato sigue
+          faltando —ítem 19 de `docs/pedido-al-cliente.md`— y el pie de la
+          tarjeta lo sigue diciendo con todas las letras: «we have not published
+          the next market days here yet». Lo que se fue es el marcador, no la
+          honestidad.
+
+          ⚠️ EL PAR DEJA DE SER «NOSOTROS / USTEDES» Y PASA A SER «EL STAND /
+          LO QUE TRAÉS», que es lo que la sección pregunta de verdad. Por eso el
+          filete de la izquierda sigue siendo `teal600` y el de la derecha
+          `terra`: son los dos lados del mismo trato, como en `CompareSlab`.
           ══════════════════════════════════════════════════════════════════
         */}
-        <div className="mt-6 grid gap-6 lg:mt-8 lg:grid-cols-2 lg:gap-8">
-          {[
-            {
-              rotulo: 'On us',
-              tono: 'deep' as const,
-              filete: 'border-teal600/55',
-              titulo: 'We bring',
-              items: PROVIDES.venue,
-            },
-            {
-              rotulo: 'On you',
-              tono: 'terra' as const,
-              filete: 'border-terra/45',
-              titulo: 'You bring',
-              items: PROVIDES.vendor,
-            },
-          ].map(({ rotulo, tono, filete, titulo, items }) => (
-            <article
-              key={titulo}
-              className="relative flex h-full flex-col rounded-shell bg-bone p-8 lg:p-10"
-            >
-              <span
-                aria-hidden="true"
-                className={`pointer-events-none absolute inset-3.5 rounded-shell border border-dashed ${filete}`}
-              />
+        <div className="mt-bloque grid gap-6 lg:grid-cols-2 lg:gap-8">
+          {/* ── El stand: lo que era la barra de datos ──────────────────── */}
+          <article className="relative flex h-full flex-col rounded-shell bg-bone p-8 lg:p-10">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-teal600/55"
+            />
 
-              <div className="relative flex h-full flex-col">
-                <Eyebrow tone={tono}>{rotulo}</Eyebrow>
-                <Heading level={3} className="mt-gap-kicker">
-                  {titulo}
-                </Heading>
-                {/* El filete lleno separa el anuncio de la lista, igual que el
-                    `hr` que parte la columna izquierda de `FormSlab`. */}
-                <ul className="mt-7 flex list-none flex-col gap-3.5 border-t border-ink/15 p-0 pt-6">
-                  {items.map((i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-3 font-body text-lead font-light leading-[1.5] text-body/85"
-                    >
-                      {/* El punto naranja es el mismo separador que llevan las
-                          etiquetas de los tickets: uno de los pocos lugares
-                          donde el `sunset` aparece fuera de un CTA. */}
-                      <span
-                        aria-hidden="true"
-                        className="mt-2.75 size-1.75 shrink-0 rounded-pill bg-sunset"
-                      />
-                      {i}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </article>
-          ))}
+            <div className="relative flex h-full flex-col">
+              <Eyebrow tone="deep">The stand</Eyebrow>
+              <Heading level={3} className="mt-gap-kicker">
+                What a table costs
+              </Heading>
+
+              {/*
+                ⚠️ LOS TRES DATOS PASAN DE FILA A COLUMNA. En la barra iban uno
+                al lado del otro con filetes punteados verticales, porque tenía
+                el ancho de la sección; adentro de media tarjeta, tres celdas en
+                fila dejan «First come» en dos renglones de cinco letras. Como
+                lista, cada dato tiene su renglón y el valor alinea a la derecha,
+                que es la forma en que el sitio publica cualquier tabla de
+                precios (ver los fees de `/events`).
+
+                ⚠️ EL VALOR SIGUE EN `deep` Y NO EN `sunset-deep`. Son datos y
+                no precios de conversión: el naranja de esta página está en los
+                puntos de las listas y en el botón del formulario.
+              */}
+              <dl className="m-0 mt-7 flex list-none flex-col border-t border-ink/15 p-0 pt-6">
+                {TERMS.map((t) => (
+                  <div
+                    key={t.label}
+                    className="flex items-baseline justify-between gap-6 border-b border-dashed border-ink/15 py-3.5 last:border-b-0 last:pb-0"
+                  >
+                    <dt className="font-body text-caption font-medium uppercase tracking-eyebrow text-muted">
+                      {t.label}
+                    </dt>
+                    <dd className="m-0 font-display text-d5 font-extrabold leading-none tabular-nums text-deep">
+                      {t.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+
+              <p className="m-0 mt-6 font-body text-dato font-light leading-[1.65] text-body/75">
+                Ten by ten feet is the standard space, there is electricity if you ask for it
+                ahead, and the last approval happens at check-in on the day. We have not published
+                the next market days here yet, so write the ones you want into the form and we come
+                back to you with what is open.
+              </p>
+            </div>
+          </article>
+
+          {/* ── Lo que trae el vendor ───────────────────────────────────── */}
+          {/*
+            ⚠️ LA TARJETA LLEVA EL TROQUEL PUNTEADO, que es LA forma de tarjeta
+            de este sitio: el filete interior a `inset-3.5` con `rounded-shell`,
+            el mismo número que tienen las columnas de `CompareSlab`, las losas
+            de tipo de evento de `/events`, el panel de `FormSlab`, la tarjeta de
+            happy hour de `/sunset-bar` y el banner de `/food-trucks`.
+
+            ⚠️ EL PADDING ES 8/10 Y NO ES CAPRICHO: el troquel se come 14px por
+            lado, así que con `p-7` el texto quedaba a 14px del filete en vez de
+            respirar. Es el mismo ajuste que tienen las otras troqueladas.
+          */}
+          <article className="relative flex h-full flex-col rounded-shell bg-bone p-8 lg:p-10">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-terra/45"
+            />
+
+            <div className="relative flex h-full flex-col">
+              <Eyebrow tone="terra">On you</Eyebrow>
+              <Heading level={3} className="mt-gap-kicker">
+                You bring
+              </Heading>
+              {/* El filete lleno separa el anuncio de la lista, igual que el
+                  `hr` que parte la columna izquierda de `FormSlab`. */}
+              <ul className="mt-7 flex list-none flex-col gap-3.5 border-t border-ink/15 p-0 pt-6">
+                {PROVIDES.vendor.map((i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 font-body text-lead font-light leading-[1.5] text-body/85"
+                  >
+                    {/* El punto naranja es el mismo separador que llevan las
+                        etiquetas de los tickets: uno de los pocos lugares donde
+                        el `sunset` aparece fuera de un CTA. */}
+                    <span
+                      aria-hidden="true"
+                      className="mt-2.75 size-1.75 shrink-0 rounded-pill bg-sunset"
+                    />
+                    {i}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </article>
         </div>
       </Section>
 
@@ -638,37 +623,43 @@ export default async function MarketPage() {
           </>
         }
         titleId="apply-title"
-        lead="Eleven fields, and most of them are one line. A person reads what comes in and answers within one business day."
+        /*
+          ⚠️ LA BAJADA YA NO CUENTA CAMPOS. Camila, 2026-09-22, sobre la
+          captura: «ojo con todas las bajadas: siempre deben explicar o dar
+          indicios del contenido, pero no explicar qué hacer. En este caso creo
+          que tanto la bajada como el "tenlo listo" deben revisarse y pueden
+          unificarse».
+
+          Decía «Eleven fields, and most of them are one line», que es una
+          descripción del formulario que se ve al lado, y debajo un bloque
+          «Have it ready» enumeraba lo que ese mismo formulario pide, campo por
+          campo. Dos textos sobre el mismo formulario, uno arriba del otro.
+
+          Unificados queda una sola idea —qué mirar de tu trabajo y cuándo
+          contestamos— y la columna baja de cuatro bloques a dos.
+        */
+        lead="Show us your work and tell us which market days you are after. A person reads it and answers within one business day."
         aside={
           /*
-            ⚠️ SON DOS BLOQUES Y NO UNO, que es la forma que tiene el `aside` de
-            `/events`. El de los contactos solo dejaba la columna izquierda en
-            339px contra un panel de 1.250: la más corta de las cuatro losas del
-            sitio, con novecientos píxeles de fondo al costado del formulario.
+            ⚠️ ACÁ ARRIBA HABÍA UN BLOQUE «HAVE IT READY» con lo que el
+            formulario pide, y un rótulo «Or skip the form» encima del mail.
+            Los dos se fueron el 2026-09-22: el primero se fundió en la bajada
+            (ver arriba) y el segundo lo tachó Camila en la captura, igual que
+            en `/events` y en `/join-us`. Estaba al lado de un formulario y lo
+            primero que hacía era ofrecer no usarlo.
 
-            ⚠️ EL BLOQUE NUEVO NO INVENTA NADA: enumera lo que el propio
-            formulario de al lado pide como obligatorio. Es la pregunta que hace
-            cualquiera antes de empezar a llenar quince campos —«¿qué me va a
-            pedir?»— y se contesta ANTES, no scrolleando.
+            ⚠️ EL MAIL Y EL TELÉFONO SE QUEDAN. No son una alternativa que haya
+            que anunciar: son los datos de contacto del venue, y quien prefiere
+            escribir en vez de llenar once campos los tiene a la vista sin que
+            la página se lo sugiera.
           */
-          <div className="flex flex-col gap-9">
-            <div className="flex flex-col gap-2.5">
-              <p className="eyebrow text-body/75">Have it ready</p>
-              <p className="max-w-[40ch] font-body text-base font-light leading-[1.7] text-body/80">
-                A link or an @handle where we can see your work, a sentence about what you make, and
-                the market dates you are after. The rest is your name and how to reach you.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <p className="eyebrow text-body/75">Or skip the form</p>
-              <a href={`mailto:${venue.email}`} className="link-texto font-body text-base">
-                {venue.email}
-              </a>
-              <a href={venue.phoneHref} className="link-texto font-body text-base">
-                {venue.phone}
-              </a>
-            </div>
+          <div className="flex flex-col gap-1.5">
+            <a href={`mailto:${venue.email}`} className="link-texto font-body text-base">
+              {venue.email}
+            </a>
+            <a href={venue.phoneHref} className="link-texto font-body text-base">
+              {venue.phone}
+            </a>
           </div>
         }
       >
@@ -677,109 +668,26 @@ export default async function MarketPage() {
 
       {/*
         ══════════════════════════════════════════════════════════════════
-        EL CIERRE, Y ACÁ VUELVE EL QUE VIENE A COMPRAR.
+        ⚠️ ACÁ IBA EL CIERRE «THE TRUCKS COOK WHILE YOU SHOP» Y SE BORRÓ EL
+        2026-09-22. Camila, sobre la captura: «elimina esta sección».
 
-        ⚠️ ES EL BLOQUE DE CIERRE DEL KIT, EL MISMO QUE CIERRAN `/our-story` Y
-        `/game-truck`, y no una pieza nueva: banda `cream` que monta con
-        `banda-arco`, un troquel punteado a `inset-0` por dentro del contenido,
-        una pieza del brand book apoyada en la esquina de abajo a la derecha,
-        titular con su palabra en acento, bajada, dos CTA y el renglón de la
-        dirección con el teléfono. Que las páginas cierren igual es lo correcto,
-        no una repetición: el kit declara este bloque como fijo para las nueve.
+        Era el bloque K del kit: banda `cream` montada con `banda-arco`, el
+        azulejo del brand book como calcomanía, titular, bajada, dos botones
+        —«Food trucks» y «Sunset Bar»— y la dirección con el teléfono. Es la
+        misma pieza que se sacó el mismo día de `/our-story` y `/game-truck`, y
+        por el mismo motivo: los dos links están en el header de todas las
+        páginas y la dirección en el footer.
 
-        ⚠️ ACÁ HABÍA UN PANEL CREMA SOBRE UNA SECCIÓN BLANCA, con el troquel a
-        `inset-3.5` y el radio de marco. Era el banner de rotación de
-        `/food-trucks` copiado, que es OTRO bloque: ése cierra una sección en
-        medio de la página, no la página. Se veía bien y estaba en el lugar
-        equivocado del vocabulario, y además dejaba la página terminando en dos
-        secciones blancas seguidas.
+        ⚠️ ESO DEJA AL FORMULARIO COMO ÚLTIMO BLOQUE, que es lo correcto en una
+        página cuyo trabajo es que alguien pida una mesa. El cierre le ponía
+        detrás una invitación a hacer otra cosa.
 
-        ⚠️ LA PIEZA ES `seal.svg`, EL AZULEJO. `/our-story` cierra con el
-        medallón —lo que cierra ahí es la marca entera— y `/game-truck` con el
-        isotipo del camión, que es de lo que habla su página. Acá lo que se
-        vende es hecho a mano, así que va el azulejo.
-
-        ⚠️ `z-[3]` Y NO `z-[2]`, porque en esta página el arco de más arriba ya
-        se llevó el `[2]`: entre secciones con el mismo z-index decide el orden
-        del DOM, y ahí ésta ya gana. El número sube igual para dejar escrito
-        cuál monta sobre cuál, que es la misma escalera que tiene la home.
-
-        ⚠️ Y DE PASO PINTA LAS ESQUINAS DEL FOOTER, que también monta con
-        `banda-arco`: lo que se ve en sus dos esquinas es el fondo del hermano
-        anterior, o sea esta banda crema.
+        ⚠️ Y CAMBIA QUÉ PINTA LAS ESQUINAS DEL FOOTER. El footer monta con
+        `banda-arco` y lo que se ve en sus dos esquinas es el fondo del hermano
+        anterior: era esta banda crema y ahora es el `paper` de la losa del
+        formulario.
         ══════════════════════════════════════════════════════════════════
       */}
-      <Section tone="cream" band="lg" labelledBy="while-title" className="banda-arco z-[3]">
-        <div className="relative px-2 py-2 text-center sm:px-8 sm:py-6">
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-shell border border-dashed border-deep/35"
-          />
-
-          {/*
-            ⚠️ VA COMO CALCOMANÍA Y NO COMO MARCA DE AGUA, que es el
-            tratamiento de `/our-story` y no el de `/game-truck`. Los dos
-            cierres del kit son válidos, pero el azulejo es literalmente una
-            pieza troquelada del brand book —viene con su filo crema— y al 30 %
-            de opacidad ese filo se deshace y queda una mancha. Con `.sticker`
-            recupera la sombra de dos pasadas que lo hace leer apoyado, que es
-            la misma clase del logo del header y de los números de los pasos.
-
-            ⚠️ LA ROTACIÓN VA EN EL ENVOLTORIO Y EL FLOTE ADENTRO. Los dos son
-            `transform`: juntos en un nodo, los keyframes de `rt-flotar` le
-            pisan la inclinación y la pieza se endereza al arrancar el ciclo.
-            Es la misma trampa anotada en los stickers de `/sunset-bar`.
-          */}
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute right-8 bottom-8 hidden w-24 rotate-6 sm:block lg:right-12 lg:bottom-10 lg:w-32"
-          >
-            <span className="sticker rt-flotar block">
-              <Image
-                src="/brand/seal.svg"
-                alt=""
-                width={260}
-                height={260}
-                className="block h-auto w-full"
-              />
-            </span>
-          </span>
-
-          <div className="relative px-4 py-10 sm:py-12">
-            <Heading
-              level={2}
-              id="while-title"
-              className="mx-auto max-w-[20ch] text-balance text-d3 lg:text-d2"
-            >
-              The trucks cook <span className="text-sunset-deep">while you shop</span>
-            </Heading>
-            <p className="mx-auto mt-5 max-w-[52ch] font-body text-lead font-light leading-[1.5] text-ink">
-              {/* ⚠️ «people who live here» ES DEL CLIENTE y por eso está
-                  textual: el sitio vigente cierra la página del market con
-                  «supporting people who live here». Estuvo un rato como «who
-                  live twenty minutes away», que suena mejor y es un dato que
-                  nadie nos dio: los veinte minutos son de las cervecerías del
-                  Sunset Bar, no de los artesanos. */}
-              The kitchens are open and the bar is upstairs the whole time you are here. It is an
-              afternoon spent on people who live here.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <ButtonLink href="/food-trucks" variant="dark">
-                Food trucks
-              </ButtonLink>
-              <ButtonLink href="/sunset-bar" variant="outline">
-                Sunset Bar
-              </ButtonLink>
-            </div>
-            <p className="mt-8 font-body text-base text-body/80">
-              {venueAddressLine(venue)} &middot;{' '}
-              <a href={venue.phoneHref} className="link-texto font-semibold">
-                {venue.phone}
-              </a>
-            </p>
-          </div>
-        </div>
-      </Section>
     </>
   );
 }

@@ -73,6 +73,22 @@ export const GAME_DAY_DEALS: readonly GameDayDeal[] = [
  */
 export const GAME_DAY_LABEL = 'Game day at the bar';
 
-/** La bajada del bloque. Dice que el happy hour de siempre no se suspende. */
-export const GAME_DAY_NOTE =
-  'The regular happy hour runs underneath. These three come out on top of it, only on football Sundays.';
+/**
+ * La bajada del bloque. Dice que el happy hour de siempre no se suspende.
+ *
+ * ⚠️ TIENE QUE ENTRAR EN UN RENGLÓN. Camila, 2026-09-22, sobre la captura:
+ * «pon esta aclaración a una sola línea, a menos que lo necesite por el ancho
+ * de pantalla». Decía «The regular happy hour runs underneath. These three
+ * come out on top of it, only on football Sundays» — dos oraciones, 103
+ * caracteres, dos renglones centrados arriba de la card en cualquier desktop.
+ *
+ * Ahora son 61. Medido contra el `max-w` del párrafo que lo publica en
+ * `/sunset-bar`: entra en una línea de 922px para arriba, que es donde ese
+ * bloque tiene el ancho completo, y sigue partiendo solo en pantallas más
+ * angostas — que es la excepción que Camila dejó abierta.
+ *
+ * ⚠️ SI SE REESCRIBE, CONTAR LOS CARACTERES. El techo es ~64 a este cuerpo;
+ * pasado eso vuelve a ser un párrafo de dos renglones y el pedido se pierde
+ * sin que nadie lo note.
+ */
+export const GAME_DAY_NOTE = 'On football Sundays these three come on top of the regular happy hour.';

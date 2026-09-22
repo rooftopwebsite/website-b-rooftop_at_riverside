@@ -41,12 +41,25 @@ import { GUTTER } from '@/components/shared/Section';
  * que la barra del calendario, donde está anotada largo.
  *
  * ──────────────────────────────────────────────────────────────────────────
- * ⚠️ LAS DOS OPCIONES SE VEN SIEMPRE, Y ESA ES LA PIEZA ENTERA. No es un
- * desplegable ni un conmutador de una palabra: son dos bloques del mismo
- * tamaño, cada uno con su número, su nombre y una línea de qué hay adentro. La
- * que no está elegida no se esconde ni se apaga hasta desaparecer, porque su
- * trabajo es decir «también existe esto». Por eso la inactiva conserva el
- * texto legible y lo que cambia es el fondo y la barra de acento.
+ * ⚠️ ES UNA FILA DE PÍLDORAS Y ANTES ERAN DOS TARJETAS GRANDES. Camila,
+ * 2026-09-22, sobre la captura: «saca la bajada del hero, conviértela en un
+ * título y bajada que le siga un selector típico como usamos en otros
+ * proyectos, y con él cambie el contenido de debajo».
+ *
+ * El «selector típico» del repo son los filtros del calendario: píldoras en
+ * una fila, la activa en `deep` con tinta `paper`, las otras con filete. Acá
+ * eran dos tarjetas de 100px de alto con número, nombre, una línea de
+ * descripción y una barra de acento — o sea un objeto con más peso visual que
+ * el titular de la sección que ahora tiene encima.
+ *
+ * ⚠️ LAS DOS OPCIONES SE SIGUEN VIENDO SIEMPRE, que es lo que esta pieza tiene
+ * que hacer: la que no está elegida no se esconde ni se apaga hasta
+ * desaparecer, porque su trabajo es decir «también existe esto».
+ *
+ * ⚠️ Y SE FUE LA LÍNEA DE DESCRIPCIÓN DE CADA UNA. «Bar, kitchen, floor and the
+ * yard» y «Solo acts, bands and DJs» decían lo mismo que la bajada del
+ * formulario que se abre dos píldoras más abajo. En una píldora no entran, y
+ * duplicadas no hacían falta.
  *
  * ⚠️ EL ACTIVO ES `deep` Y NO `sunset`. Misma regla que las píldoras del
  * calendario, y por el mismo motivo: en esta pantalla el naranja es la ACCIÓN
@@ -63,12 +76,10 @@ import { GUTTER } from '@/components/shared/Section';
  * vez y después se llenan veinte campos. Una barra pegada durante todo ese
  * scroll es un objeto que tapa contenido sin que nadie lo vaya a tocar.
  *
- * ⚠️ LA BANDA VA EN `bone`, QUE ES EL FONDO DEL HERO, y no en `paper` como la
- * del calendario. Es deliberado: así el selector se lee como la última línea
- * del hero —la pregunta que el hero deja abierta— y no como la primera de la
- * sección de abajo. El escalón de superficie queda donde tiene que quedar, en
- * el borde del formulario. Por eso la tarjeta inactiva es `paper`: sobre una
- * banda `bone`, una tarjeta `bone` no existe.
+ * ⚠️ LA BANDA VA EN `bone` Y YA NO LLEVA FILETE ABAJO. Sigue el titular que
+ * `/join-us` monta encima —«What are you here for»— y las dos cosas son el
+ * mismo bloque, así que un borde entre el texto y su propio control lo partía
+ * en dos. El corte con el formulario lo hace el cambio de superficie.
  *
  * ⚠️ NO LO VE `npm run check:surfaces`, que sólo expande `<Section>` y
  * `<FormSlab>`. Si algún día esto pasa a ser una `Section`, entra al ritmo y
@@ -91,27 +102,25 @@ export function parseLane(v: string | string[] | undefined): JoinLane {
 
 const CARRILES: readonly {
   readonly id: JoinLane;
-  readonly n: string;
   readonly label: string;
-  readonly hint: string;
 }[] = [
-  {
-    id: 'team',
-    n: '01',
-    label: 'The team',
-    hint: 'Bar, kitchen, floor and the yard. Apply for a shift.',
-  },
-  {
-    id: 'artist',
-    n: '02',
-    label: 'Artists',
-    hint: 'Solo acts, bands and DJs. Send us your material.',
-  },
+  { id: 'team', label: 'The team' },
+  { id: 'artist', label: 'Artists' },
 ];
+
+/**
+ * El molde de la píldora activa, calcado de los filtros del calendario.
+ *
+ * ⚠️ ES `deep` Y NO `sunset`. Misma regla que allá, y por el mismo motivo: en
+ * esta pantalla el naranja es la ACCIÓN —«Plan an Event» en el header, «Send
+ * application» al pie del formulario— y una píldora que sólo dice en qué
+ * carril estás parado no compite con eso.
+ */
+const ACTIVA = 'bg-deep text-paper';
 
 export default function JoinSwitch({ lane }: { readonly lane: JoinLane }) {
   return (
-    <div className={`grano border-b border-ink/12 bg-bone py-[14px] lg:py-[18px] ${GUTTER}`}>
+    <div className={`grano bg-bone pb-[28px] lg:pb-[36px] ${GUTTER}`}>
       <div className="caja">
         {/*
           ⚠️ ES UNA `<nav>` CON LISTA Y NO UN `role="tablist"`. Un tablist
@@ -122,7 +131,18 @@ export default function JoinSwitch({ lane }: { readonly lane: JoinLane }) {
           efectivamente pasa al activarlo.
         */}
         <nav aria-label="What you are applying for">
-          <ul className="m-0 grid list-none gap-[10px] p-0 sm:grid-cols-2">
+          {/*
+            ⚠️ EL RIEL CON FILETE ALREDEDOR DE LAS DOS ES LO QUE LAS HACE UN
+            CONTROL. Sueltas, dos píldoras seguidas se leen como dos botones que
+            hacen dos cosas distintas; adentro de una cápsula con borde, se leen
+            como un conmutador de dos posiciones. Es el mismo riel que el
+            selector de vista del calendario.
+
+            ⚠️ `w-fit` PARA QUE EL RIEL MIDA LO QUE MIDEN LAS PÍLDORAS. Sin eso
+            el `<ul>` se estira a la caja entera y queda una cápsula de 1168px
+            con dos píldoras apretadas a la izquierda.
+          */}
+          <ul className="m-0 flex w-fit list-none gap-[4px] rounded-pill border border-teal600/30 p-[3px]">
             {CARRILES.map((c) => {
               const activo = c.id === lane;
               return (
@@ -137,49 +157,11 @@ export default function JoinSwitch({ lane }: { readonly lane: JoinLane }) {
                     */
                     aria-current={activo ? 'page' : undefined}
                     className={[
-                      'group flex h-full items-start gap-[14px] rounded-card border p-[16px] transition-colors lg:p-[20px]',
-                      activo
-                        ? 'border-deep bg-deep text-paper'
-                        : 'border-ink/15 bg-paper text-body hover:border-deep/40 hover:bg-cream',
+                      'flex items-center whitespace-nowrap rounded-pill px-[16px] py-[9px] text-caption font-bold uppercase tracking-[0.1em] transition-colors lg:px-[22px]',
+                      activo ? ACTIVA : 'text-deep hover:bg-mint/60',
                     ].join(' ')}
                   >
-                    {/*
-                      La barra de acento del activo. Es la misma marca de «acá
-                      estás» que usan las pestañas de `VenueTabs`, y es lo que
-                      hace que los dos bloques se lean como un control y no como
-                      dos tarjetas sueltas que linkean a cualquier lado.
-                    */}
-                    <span
-                      aria-hidden="true"
-                      className={[
-                        'mt-[4px] h-[34px] w-[2px] shrink-0 rounded-pill transition-colors lg:h-[40px]',
-                        activo ? 'bg-sunset' : 'bg-ink/20 group-hover:bg-deep/40',
-                      ].join(' ')}
-                    />
-                    <span className="min-w-0">
-                      <span className="flex items-baseline gap-[10px]">
-                        <span
-                          aria-hidden="true"
-                          className={[
-                            'font-body text-caption font-bold tabular-nums',
-                            activo ? 'text-paper/70' : 'text-body/70',
-                          ].join(' ')}
-                        >
-                          {c.n}
-                        </span>
-                        <span className="font-display text-d6 uppercase leading-none lg:text-d5">
-                          {c.label}
-                        </span>
-                      </span>
-                      <span
-                        className={[
-                          'mt-[6px] block font-body text-[15px] leading-[1.5]',
-                          activo ? 'text-paper/80' : 'text-body/75',
-                        ].join(' ')}
-                      >
-                        {c.hint}
-                      </span>
-                    </span>
+                    {c.label}
                   </Link>
                 </li>
               );

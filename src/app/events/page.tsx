@@ -210,8 +210,32 @@ export default async function EventsPage({
         photo="/images/events/events-hero-wide.jpg"
         photoAlt="Guests with name badges seated along the bar at a private event at Rooftop at Riverside"
       >
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ DECÍA «REQUEST A PROPOSAL» Y AHORA DICE ADÓNDE VA. Camila,
+          2026-09-22, sobre la captura: «que el CTA naranja se comprenda mejor;
+          debe scrollear directo al formulario, hoy no hace nada y además no se
+          comprende que debería hacer».
+
+          Las dos mitades del problema eran distintas y se arreglaron en dos
+          lugares:
+
+            · «no hace nada» era el salto instantáneo de 7.800px hasta el
+              formulario, que no se lee como un scroll. Eso se arregló en
+              `shared/SmoothScroll.tsx`, para todas las anclas del sitio.
+            · «no se comprende» es esta etiqueta. «Request a proposal» nombra
+              el RESULTADO —recibir una propuesta— y quien la lee espera un
+              mail, una llamada o una pantalla nueva. Lo que pasa es que la
+              página baja a un formulario, y eso es lo que ahora dice.
+
+          ⚠️ SIGUE ENTRANDO EN UN RENGLÓN, que es regla fija del repo: «Take me
+          to the form» son 17 caracteres contra el presupuesto de 20 que declara
+          `BASE` en `Button.tsx`, dos menos que los 19 de «Call (239) 268-0080»
+          que ya está medido como el límite real en `size="lg"`.
+          ══════════════════════════════════════════════════════════════════
+        */}
         <ButtonLink href="#inquire" variant="primary" size="lg">
-          Request a proposal
+          Take me to the form
         </ButtonLink>
         <ButtonLink href="#spaces" variant="secondary" size="lg">
           See the spaces
@@ -403,28 +427,6 @@ export default async function EventsPage({
             </article>
           </RevealItem>
 
-          {/* 2 · LOS FEES. En cuerpo chico pero a la vista: 22 % sobre una hora
-              de $1.250 son $275, y enterarse después es la peor manera. */}
-          <RevealItem as="li" className="h-full">
-            <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
-              <Heading level={3} role="label" className="text-cream">
-                On top of that
-              </Heading>
-              <dl className="m-0 mt-5 flex list-none flex-col p-0">
-                {FEES.map((f) => (
-                  <div
-                    key={f.label}
-                    className="flex items-baseline justify-between gap-4 border-b border-dashed border-bone/25 py-3.5 last:border-b-0"
-                  >
-                    <dt className="font-body text-base font-light text-bone/85">{f.label}</dt>
-                    <dd className="m-0 font-display text-d6 font-bold leading-none tabular-nums text-sunset">
-                      {f.amount}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </article>
-          </RevealItem>
 
           {/*
             ══════════════════════════════════════════════════════════════
@@ -483,7 +485,25 @@ export default async function EventsPage({
             </RevealItem>
           ))}
 
-          {/* 5 · LOS ADD-ONS. Sin precio: el PDF del cliente no los publica. */}
+          {/*
+            2 · LOS ADD-ONS. Sin precio: el PDF del cliente no los publica.
+
+            ⚠️ SUBIÓ AL SEGUNDO LUGAR Y ANTES CERRABA LA GRILLA, y a la vez los
+            fees bajaron a cerrarla. Camila, 2026-09-22, sobre la captura:
+            «daría vuelta estas dos cards: la que habla de costos extras, en la
+            card de más abajo para que tenga menos visibilidad; y la otra, que
+            habla de complementos, arriba, para que destaque más los servicios».
+
+            Es un orden de venta y no de maquetación: lo que se contrata —un DJ,
+            música en vivo, una cabina de fotos— vale más arriba que la propina
+            automática. Los fees no se esconden, que era el otro criterio de
+            este bloque: siguen escritos, con su número, en la última tarjeta.
+
+            ⚠️ SIGUE A DOS COLUMNAS (`lg:col-span-2`). Son cinco cápsulas y un
+            párrafo: en media fila las cápsulas caen en tres renglones y la nota
+            queda debajo, que es justo el aire desparejo que esta grilla viene
+            corrigiendo.
+          */}
           <RevealItem as="li" className="h-full lg:col-span-2">
             <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
               <div className="flex h-full flex-col gap-5 lg:flex-row lg:items-center lg:gap-12">
@@ -506,6 +526,37 @@ export default async function EventsPage({
                   {ENHANCEMENTS_NOTE}
                 </p>
               </div>
+            </article>
+          </RevealItem>
+
+          {/*
+            5 · LOS FEES, QUE AHORA CIERRAN LA GRILLA. En cuerpo chico pero a la
+            vista: 22 % sobre una hora de $1.250 son $275, y enterarse después
+            es la peor manera. Por qué bajó, en la nota de los add-ons.
+
+            ⚠️ VA A LO ANCHO COMO LOS ADD-ONS, y no es simetría: son tres filas
+            de etiqueta y número, y en media columna dejaban media tarjeta de
+            aire debajo. En tres columnas las tres entran en una fila y la
+            tarjeta mide lo que mide su contenido.
+          */}
+          <RevealItem as="li" className="h-full lg:col-span-2">
+            <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
+              <Heading level={3} role="label" className="text-cream">
+                On top of that
+              </Heading>
+              <dl className="m-0 mt-5 grid gap-x-12 sm:grid-cols-3">
+                {FEES.map((f) => (
+                  <div
+                    key={f.label}
+                    className="flex items-baseline justify-between gap-4 border-b border-dashed border-bone/25 py-3.5 sm:border-b-0 sm:border-t sm:pt-4"
+                  >
+                    <dt className="font-body text-base font-light text-bone/85">{f.label}</dt>
+                    <dd className="m-0 font-display text-d6 font-bold leading-none tabular-nums text-sunset">
+                      {f.amount}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </article>
           </RevealItem>
         </StaggerGroup>
@@ -549,11 +600,16 @@ export default async function EventsPage({
         ⚠️ EL `id="game-truck"` SOBREVIVE: `AboutExperience` linkea a
         `/events#game-truck`.
 
-        ⚠️ LA FOTO SIGUE SIENDO `game-controller.jpg` Y NO `game-truck.jpg`: la
-        segunda es el flyer de Instagram con el logo encima, que a este tamaño
-        se lee como un banner pegado sobre otro banner. Seguimos sin una foto
-        del camión, que es justo lo que este bloque pide.
-        TODO: pedir al cliente las fotos del gaming truck.
+        ⚠️ LA FOTO ES DEL CAMIÓN DE VERDAD DESDE EL 2026-09-22, y hasta ese día
+        fue un joystick de stock. Las cuatro fotos del gaming truck estaban en
+        la web del propio cliente; el detalle está en `scripts/build-media.mjs`.
+
+        ⚠️ ACÁ VA LA DE NOCHE CON DOS PERSONAS JUGANDO, y en `/game-truck` la
+        del trailer entero. No es indistinto: allá el hero tiene que decir QUÉ
+        ES —un camión que se estaciona en tu fiesta— y acá el banner tiene que
+        decir POR QUÉ LO QUERÉS, que es la gente usándolo. El titular de este
+        bloque ya dice «park a gaming truck in the yard»; la foto no tiene que
+        repetirlo.
         ══════════════════════════════════════════════════════════════════
       */}
       <Section band="lg" labelledBy="game-truck-title">
@@ -575,8 +631,8 @@ export default async function EventsPage({
                 la imagen es lo que dice de qué habla antes de leer nada. */}
             <div className="relative aspect-[4/3] overflow-hidden rounded-shell sombra-card">
               <Image
-                src="/images/game-controller.jpg"
-                alt="Hands on a PlayStation controller in front of a screen"
+                src="/images/game-truck/truck-night.jpg"
+                alt="Two guests in Rooftop shirts playing on the gaming truck screens at night"
                 fill
                 sizes="(min-width: 1024px) 40vw, (min-width: 640px) 45vw, 100vw"
                 className="object-cover"
@@ -679,17 +735,40 @@ export default async function EventsPage({
         eyebrowTone="terra"
         title="One screen, two minutes"
         titleId="inquire-title"
-        lead="Tell us the date and the headcount. We answer within one business day, with numbers."
+        /*
+          ⚠️ LA BAJADA INVITA, YA NO INSTRUYE. Camila, 2026-09-22, sobre la
+          captura: «cambia el texto de la bajada, que invite a completar, no
+          que describa qué completar».
+
+          Decía «Tell us the date and the headcount. We answer within one
+          business day, with numbers»: la primera mitad era el instructivo de
+          los campos que se ven al lado —fecha y cantidad de invitados están
+          los dos en el formulario, rotulados— y la segunda, lo único que
+          alguien no puede saber mirando la pantalla. Queda la segunda, escrita
+          como invitación.
+        */
+        lead="Send it over and you get real numbers back, within one business day."
         aside={
           <div className="flex flex-col gap-9">
+            {/*
+              ⚠️ ACÁ ARRIBA IBA UN RÓTULO «OR SKIP THE FORM» Y SE FUE. Camila,
+              misma captura: «quita ese titulito que invita a hacer otra cosa;
+              solo pon la pregunta en bold con la info debajo para comunicarse
+              por esos medios si son menos de 12 invitados».
+
+              Tenía razón en el diagnóstico: el rótulo estaba al lado de un
+              formulario y lo primero que hacía era ofrecer no usarlo. El mail
+              y el teléfono no se van —son la salida de quien no quiere llenar
+              quince campos— pero dejan de anunciarse como una alternativa al
+              formulario y pasan a ser lo que siempre fueron: los datos de
+              contacto de eventos.
+
+              ⚠️ AHORA LOS ENCABEZA LA PREGUNTA, que es la que Camila pidió
+              poner en bold. Y el orden se dio vuelta con ella: primero para
+              quién es esto, después los dos datos. Antes era al revés y la
+              regla de los 12 quedaba de nota al pie del teléfono.
+            */}
             <div className="flex flex-col gap-1.5">
-              <p className="eyebrow text-body/75">Or skip the form</p>
-              <a href={`mailto:${venue.emailEvents}`} className="link-texto font-body text-base">
-                {venue.emailEvents}
-              </a>
-              <a href={venue.phoneHref} className="link-texto font-body text-base">
-                {venue.phone}
-              </a>
               {/*
                 ⚠️ ESTA REGLA LA PUBLICA EL CLIENTE Y NOSOTROS NO LA TENÍAMOS.
                 El sitio vigente cierra `/hostanevent` con «*For parties less
@@ -698,19 +777,26 @@ export default async function EventsPage({
                 formulario de quince campos, con fecha alternativa y rango de
                 presupuesto, para algo que se resuelve con una llamada.
 
-                ⚠️ VA PEGADA AL TELÉFONO Y NO ARRIBA DEL FORMULARIO, porque es
-                la instrucción de ESE número: primero el dato, después para
-                quién es. Y va en esta columna y no adentro del panel porque
-                quien entra con ocho personas tiene que leerla ANTES de empezar
-                a llenar, no después de scrollear quince campos.
-
-                ⚠️ EL NÚMERO NO SE ESCRIBE DOS VECES: es el mismo `venue.phone`
-                del renglón de arriba, así que la frase lo nombra sin repetirlo.
+                ⚠️ VA EN ESTA COLUMNA Y NO ADENTRO DEL PANEL porque quien entra
+                con ocho personas tiene que leerla ANTES de empezar a llenar, no
+                después de scrollear quince campos.
               */}
-              <p className="mt-1 max-w-[34ch] font-body text-base font-light leading-[1.6] text-body/75">
-                Fewer than {SMALL_PARTY_MAX} guests? That is a reservation, not a buyout. Call that
-                number and we sort it out on the phone.
+              <p className="font-body text-base font-bold leading-[1.5] text-ink">
+                Fewer than {SMALL_PARTY_MAX} guests?
               </p>
+              <p className="max-w-[34ch] font-body text-base font-light leading-[1.6] text-body/75">
+                That is a reservation, not a buyout. Call or write and we sort it out without the
+                form.
+              </p>
+              <a
+                href={`mailto:${venue.emailEvents}`}
+                className="link-texto mt-1.5 font-body text-base"
+              >
+                {venue.emailEvents}
+              </a>
+              <a href={venue.phoneHref} className="link-texto font-body text-base">
+                {venue.phone}
+              </a>
             </div>
 
             {/*
@@ -731,20 +817,47 @@ export default async function EventsPage({
               adentro parten la etiqueta en dos renglones: en un celular con
               datos, 13 MB es una descarga que conviene decidir antes.
             */}
-            <div className="rounded-shell bg-paper p-6">
+            {/*
+              ⚠️ LA TARJETA PASÓ A MENTA Y EL BOTÓN AL ANCHO. Camila,
+              2026-09-22: «haz que la card del PDF tenga más color y el CTA
+              ancho como el contenido de la card, que la card tenga más vida».
+
+              Era `bg-paper` sobre `bone`, o sea el mismo escalón de 1.08:1 que
+              el panel del formulario de al lado: dos rectángulos casi del mismo
+              blanco, uno enorme y uno chico, y el chico desaparecía. `mint` es
+              el color de superficie de acento del repo —el de la banda de tipos
+              de evento de esta misma página— y con `ink` encima da 15:1.
+
+              ⚠️ EL BOTÓN VA `w-full` Y CENTRADO. Con el ancho de la tarjeta
+              deja de ser un link al pie de un párrafo y pasa a ser el piso de
+              la tarjeta, que es lo que hace que se lea como una pieza y no como
+              texto con algo abajo.
+
+              ⚠️ Y PASA A `variant="primary"`, el naranja. Era `dark`, que sobre
+              menta se leía como un rectángulo negro; sobre el mismo fondo el
+              naranja es el CTA de la casa y la tarjeta queda en los dos colores
+              de marca.
+            */}
+            <div className="rounded-shell bg-mint p-6">
               <Eyebrow tone="deep">Download</Eyebrow>
               <Heading level={3} role="card" className="mt-2.5">
                 The events packet
               </Heading>
-              <p className="mt-2.5 font-body text-base font-light leading-[1.7] text-body/80">
+              <p className="mt-2.5 font-body text-base font-light leading-[1.7] text-ink/80">
                 Spaces, food options, enhancements and the small print, in one file you can forward
                 to whoever signs off on it.
               </p>
               <div className="mt-5">
-                <ButtonLink href={EVENTS_PDF.href} variant="dark" size="md" external>
+                <ButtonLink
+                  href={EVENTS_PDF.href}
+                  variant="primary"
+                  size="md"
+                  external
+                  className="w-full justify-center"
+                >
                   {EVENTS_PDF.label}
                 </ButtonLink>
-                <p className="mt-2 font-body text-micro font-medium text-body/70">
+                <p className="mt-2 text-center font-body text-micro font-medium text-ink/70">
                   {EVENTS_PDF.format}, {EVENTS_PDF.size}
                 </p>
               </div>

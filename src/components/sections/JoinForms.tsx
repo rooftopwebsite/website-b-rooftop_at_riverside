@@ -256,7 +256,6 @@ export function JobForm() {
           name="education"
           prefix="edu"
           legend={JOB_LABELS.education}
-          hint="Optional"
           cols={EDU_COLS}
           rows={EDU_ROWS}
         />
@@ -267,7 +266,6 @@ export function JobForm() {
           name="history"
           prefix="job"
           legend={JOB_LABELS.history}
-          hint="Optional"
           cols={HISTORY_COLS}
           rows={HISTORY_ROWS}
         />
@@ -280,7 +278,7 @@ export function JobForm() {
       <FileField
         name="resume"
         label={JOB_LABELS.resume}
-        hint="Optional, both in one file is fine"
+        hint="Both in one file is fine"
         accept=".pdf,.doc,.docx"
         maxMb={MAX_FILE_MB}
       />
@@ -351,7 +349,7 @@ export function ArtistForm() {
         <TextField name="phone" label={ART_LABELS.phone} type="tel" required autoComplete="tel" />
       </div>
       <div className="grid gap-[16px] sm:grid-cols-2">
-        <TextField name="band" label={ART_LABELS.band} hint="Optional" />
+        <TextField name="band" label={ART_LABELS.band} />
         <TextField
           name="social"
           label={ART_LABELS.social}
@@ -381,14 +379,12 @@ export function ArtistForm() {
         <FileField
           name="logo"
           label={ART_LABELS.logo}
-          hint="Optional"
           accept="image/jpeg,image/png,image/webp,image/avif"
           maxMb={MAX_IMAGE_MB}
         />
         <FileField
           name="photo"
           label={ART_LABELS.photo}
-          hint="Optional"
           accept="image/jpeg,image/png,image/webp,image/avif"
           maxMb={MAX_IMAGE_MB}
         />

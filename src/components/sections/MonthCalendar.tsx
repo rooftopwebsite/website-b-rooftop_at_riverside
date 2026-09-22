@@ -1,6 +1,10 @@
+'use client';
+
+import { useState } from 'react';
+import EventDialog, { type EventoAbierto } from '@/components/sections/EventDialog';
 import { Ticket } from '@/components/shared/Icon';
 import { formatTime, isTicketed, standsOut, type VenueEvent } from '@/content/events';
-import { dayNumber, weekdayShort } from '@/lib/calendar';
+import { dayNumber, monthDay, weekdayLong } from '@/lib/calendar';
 import { colorKey, eventDot } from '@/lib/event-color';
 
 /**
@@ -22,25 +26,47 @@ import { colorKey, eventDot } from '@/lib/event-color';
  * arreglo por el que esta página existe.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LAS DOS FORMAS DE LA MISMA GRILLA, Y POR QUÉ SON DOS.
+ * ⚠️ EN MOBILE NO HAY GRILLA. Camila, 2026-09-22, sobre la captura: «en mobile
+ * la vista calendario no tendrá el calendario en sí, sino que enlistaremos
+ * cada uno de los eventos colocando día de la semana y debajo una card
+ * horizontal con su hora, día y título; cada día tendrá su título de día y
+ * luego el listado de eventos que le toca. Los días que no hay eventos no se
+ * mencionan».
  *
- * Siete columnas en un teléfono de 360px dan celdas de 48px. Ahí no entra
- * «6 PM Ross Brown» ni truncado: entra el número del día y poco más. Las dos
- * salidas posibles eran dejar el scroll horizontal, que es exactamente lo que
- * vinimos a sacar, o partir la información:
+ * Hasta el 2026-09-22 el teléfono mostraba LAS DOS COSAS: la grilla de siete
+ * columnas reducida a un mapa de puntos —el número del día y un punto de color
+ * por evento, sin texto— y debajo la agenda con el detalle. O sea que para
+ * saber qué pasaba un día había que contar puntos arriba y después buscar el
+ * día abajo. La grilla de puntos no contestaba ninguna pregunta sola.
  *
- *   · Hasta `lg`, la celda es un MAPA: el número del día y un punto de color
- *     por evento. Se ve el mes entero de un vistazo, sin scroll de costado, y
- *     se entiende dónde hay algo y de qué tipo. Debajo va la agenda con el
- *     texto completo.
- *   · Desde `lg`, la celda lleva los chips con hora y título y la agenda se
- *     apaga.
+ * Ahora:
  *
- * ⚠️ EL TEXTO ESTÁ DOS VECES EN EL HTML Y UNA SOLA EN PANTALLA. `hidden` es
- * `display: none`, así que en cada ancho hay exactamente una de las dos formas
- * viva, también para un lector de pantalla: nadie escucha el mes dos veces. Lo
- * que se paga son unas veinte líneas repetidas en el HTML servido, que al lado
- * de un calendario que no se puede leer en el teléfono no es un costo.
+ *   · Hasta `lg`, SÓLO la agenda: un encabezado por día con eventos y debajo
+ *     sus tarjetas horizontales. Los días vacíos no existen, que es lo que
+ *     hace que la lista mida lo que mide el mes y no 30 renglones.
+ *   · Desde `lg`, SÓLO la grilla, con los chips de hora y título en cada
+ *     celda.
+ *
+ * ⚠️ EL `hidden` ES `display: none`, así que en cada ancho hay exactamente una
+ * de las dos formas viva, también para un lector de pantalla: nadie escucha el
+ * mes dos veces.
+ *
+ * ──────────────────────────────────────────────────────────────────────────
+ * ⚠️ CADA EVENTO ABRE SU FICHA. Mismo pedido, misma captura: «de cada evento
+ * haz una vista previa tipo pop up». El chip y la tarjeta son `<button>` y
+ * abren `EventDialog`, que es donde se lee el horario completo, el espacio y
+ * la descripción que el cliente carga en el dashboard y que hasta ahora no se
+ * publicaba en ninguna parte de esta página.
+ *
+ * ⚠️ POR ESO ESTE COMPONENTE ES CLIENTE. Era servidor y no tenía estado. Lo
+ * único que se manda de más al bundle es este archivo y el diálogo: los
+ * eventos ya viajaban, porque `/whats-on` los renderiza en el HTML.
+ *
+ * ⚠️ EL CHIP CON ENTRADA SIGUE SIENDO UN `<a>` A EVENTBRITE, y es la única
+ * excepción. Ahí el click ya tenía un destino que la persona quiere —comprar—
+ * y meterle un diálogo en el medio agrega un paso a la única acción que esta
+ * página puede convertir. La ficha de esos eventos se abre igual desde la
+ * agenda de mobile, que no linkea.
  * ══════════════════════════════════════════════════════════════════════════
  */
 
@@ -105,9 +131,24 @@ export default function MonthCalendar({
     .map((date) => ({ date, events: eventsByDate.get(date) ?? [] }))
     .filter((d) => d.events.length > 0);
 
+  /*
+    ⚠️ EL EVENTO ABIERTO ES UN ESTADO Y NO UNA RUTA. Las fichas por evento
+    (`/whats-on/<slug>`) existieron y se eliminaron el 2026-09-15 — ver
+    `app/sitemap.ts` —, así que esto no las resucita por la ventana: la URL no
+    cambia, no hay nada nuevo que indexar y la navegación del mes sigue siendo
+    la del query string.
+  */
+  const [abierto, setAbierto] = useState<EventoAbierto | null>(null);
+
   return (
     <div className="mt-[28px]">
-      <table className="w-full table-fixed border-collapse">
+      <EventDialog abierto={abierto} onClose={() => setAbierto(null)} />
+
+      {/*
+        ⚠️ LA TABLA ARRANCA EN `lg`. Ver la nota del encabezado: abajo de eso
+        la grilla era un mapa de puntos sin texto y la reemplaza la agenda.
+      */}
+      <table className="hidden w-full table-fixed border-collapse lg:table">
         <caption className="sr-only">
           Events at {venueName} in {label}
         </caption>
@@ -166,29 +207,13 @@ export default function MonthCalendar({
                         </span>
 
                         {events && events.length > 0 ? (
-                          <>
-                            {/* ── El mapa, hasta `lg` ──────────────────── */}
-                            <span
-                              className="mt-[4px] flex flex-wrap justify-center gap-[3px] px-[2px] lg:hidden"
-                              aria-hidden="true"
-                            >
-                              {events.map(({ event }) => (
-                                <span
-                                  key={`dot-${date}-${event.slug}`}
-                                  className={`size-[7px] rounded-pill ${eventDot(event)}`}
-                                />
-                              ))}
-                            </span>
-
-                            {/* ── Los chips, desde `lg` ────────────────── */}
-                            <ul className="mt-[5px] hidden list-none flex-col gap-[3px] lg:flex">
-                              {events.map(({ event }) => (
-                                <li key={`chip-${date}-${event.slug}`}>
-                                  <Chip event={event} />
-                                </li>
-                              ))}
-                            </ul>
-                          </>
+                          <ul className="mt-[5px] flex list-none flex-col gap-[3px]">
+                            {events.map(({ event }) => (
+                              <li key={`chip-${date}-${event.slug}`}>
+                                <Chip event={event} date={date} onOpen={setAbierto} />
+                              </li>
+                            ))}
+                          </ul>
                         ) : null}
                       </div>
                     ) : null}
@@ -244,32 +269,53 @@ export default function MonthCalendar({
         </ul>
       ) : null}
 
-      {/* ── La agenda, hasta `lg`. Ver la nota del encabezado. ──────────── */}
-      <div className="mt-[24px] border-t border-ink/15 lg:hidden">
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ── LA AGENDA, HASTA `lg`. Es TODO el calendario en un teléfono.
+
+        ⚠️ ERA UNA COLUMNA DE 46px CON EL DÍA AL COSTADO y ahora el día es un
+        encabezado de ancho completo con el listado debajo. Camila, sobre la
+        captura: «cada día tendrá su título de día y luego el listado de
+        eventos que le toca».
+
+        La diferencia práctica es el ancho: con la placa del día a la
+        izquierda, al título del evento le quedaban ~250px en un teléfono de
+        360 y entraba truncado. Con el día arriba, la tarjeta usa el renglón
+        entero.
+
+        ⚠️ LOS DÍAS SIN EVENTOS NO EXISTEN ACÁ, y es parte del mismo pedido:
+        `agenda` ya viene filtrada. Un mes son 30 renglones y ~14 tienen algo;
+        publicar los 16 vacíos es hacer scrollear por nada.
+
+        ⚠️ HOY SE MARCA EN EL ENCABEZADO Y NO EN CADA TARJETA. Es el mismo
+        círculo naranja de la grilla —la única marca que no es un evento— y
+        acá alcanza con que esté una vez por día.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <div className="mt-[24px] lg:hidden">
         <h3 className="sr-only">Day by day in {label}</h3>
-        <ul className="flex list-none flex-col">
+        <ul className="flex list-none flex-col gap-[22px] p-0">
           {agenda.map(({ date, events }) => (
-            <li
-              key={`agenda-${date}`}
-              className="grid grid-cols-[46px_minmax(0,1fr)] gap-[12px] border-b border-ink/10 py-[12px]"
-            >
-              <p className="flex flex-col items-center leading-none">
-                <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-body/60">
-                  {weekdayShort(date)}
+            <li key={`agenda-${date}`}>
+              <h4 className="m-0 flex items-baseline gap-[8px] border-b border-ink/15 pb-[8px]">
+                <span className="font-display text-d6 font-bold uppercase leading-none tracking-[0.02em] text-ink">
+                  {weekdayLong(date)}
                 </span>
                 <span
                   className={[
-                    'mt-[4px] grid size-[28px] place-items-center font-display text-d6 tabular-nums',
-                    date === today ? 'rounded-pill bg-sunset font-semibold text-ink' : 'text-ink',
+                    'grid min-w-[24px] place-items-center rounded-pill px-[6px] py-[2px] font-body text-caption font-bold tabular-nums leading-none',
+                    date === today ? 'bg-sunset text-ink' : 'text-body/60',
                   ].join(' ')}
                 >
-                  {dayNumber(date)}
+                  {date === today ? <span className="sr-only">Today, </span> : null}
+                  {monthDay(date)}
                 </span>
-              </p>
-              <ul className="flex list-none flex-col gap-[8px] pt-[2px]">
+              </h4>
+
+              <ul className="mt-[10px] flex list-none flex-col gap-[8px] p-0">
                 {events.map(({ event }) => (
                   <li key={`agenda-${date}-${event.slug}`}>
-                    <Chip event={event} suelto />
+                    <AgendaCard event={event} date={date} onOpen={setAbierto} />
                   </li>
                 ))}
               </ul>
@@ -282,20 +328,88 @@ export default function MonthCalendar({
 }
 
 /**
- * Un evento dentro de una celda o dentro de la agenda: punto, hora, título.
+ * ══════════════════════════════════════════════════════════════════════════
+ * LA TARJETA HORIZONTAL DE LA AGENDA: hora, día y título.
+ *
+ * Camila, 2026-09-22: «debajo una card horizontal con su hora, día y título».
+ *
+ * ⚠️ LOS TRES DATOS EN DOS RENGLONES: arriba la hora y la fecha en cuerpo
+ * chico, abajo el título en display. La hora primero porque es lo que se
+ * compara cuando ya se decidió el día — que es justo lo que alguien acaba de
+ * hacer al leer el encabezado de arriba.
+ *
+ * ⚠️ LA FECHA SE REPITE A PROPÓSITO, aunque el encabezado del día la diga tres
+ * renglones más arriba. Es lo que pidió Camila y además es lo que hace que la
+ * tarjeta se entienda sola: son las que alguien fotografía o manda por
+ * WhatsApp, y recortada del grupo una tarjeta sin fecha no sirve para nada.
+ *
+ * ⚠️ ES UN `<button>` Y NO UN `<div onClick>`. Entra en el tabulador, se
+ * dispara con Enter y con Espacio, y el lector de pantalla lo anuncia como lo
+ * que es. Un div clickeable no hace ninguna de las tres.
+ *
+ * ⚠️ EL FONDO CREMA MARCA LO MISMO QUE EN LA GRILLA —lo que no va a estar
+ * siempre— y lo decide `standsOut()`, no esta tarjeta. Ver la nota de `Chip`.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+function AgendaCard({
+  event,
+  date,
+  onOpen,
+}: {
+  readonly event: VenueEvent;
+  readonly date: string;
+  readonly onOpen: (a: EventoAbierto) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen({ event, date })}
+      className={[
+        'flex w-full items-start gap-[10px] rounded-card border border-ink/12 px-[12px] py-[10px] text-left transition-colors hover:border-ink/30',
+        standsOut(event) ? 'bg-cream' : 'bg-paper',
+      ].join(' ')}
+    >
+      <span
+        className={`mt-[7px] size-[8px] shrink-0 rounded-pill ${eventDot(event)}`}
+        aria-hidden="true"
+      />
+      <span className="flex min-w-0 flex-col">
+        <span className="flex flex-wrap items-baseline gap-x-[8px] font-body text-caption font-bold uppercase tracking-[0.06em] tabular-nums text-body/70">
+          {formatTime(event.startTime)}
+          <span className="font-medium tracking-[0.04em] text-body/55">{monthDay(date)}</span>
+        </span>
+        <span className="mt-[3px] font-display text-d6 uppercase leading-[1.1] text-ink">
+          {event.title}
+        </span>
+      </span>
+      {isTicketed(event) ? (
+        <Ticket className="mt-[6px] ml-auto size-[15px] shrink-0 text-body/70" aria-hidden="true" />
+      ) : null}
+      <span className="sr-only">— see details</span>
+    </button>
+  );
+}
+
+/**
+ * Un evento dentro de una celda de la grilla: punto, hora, título truncado.
  *
  * ⚠️ EL COLOR VA EN EL PUNTO Y NO EN EL FONDO DEL CHIP. El porqué está entero
  * en `lib/event-color.ts`: con el punto, el título queda en `ink` sobre
  * `paper` y no hay ni una combinación de contraste que verificar.
  *
- * ⚠️ ES UN LINK SÓLO SI HAY ENTRADA QUE COMPRAR, y entonces sale a Eventbrite.
- * Es la misma regla que rige el resto del calendario desde que las fichas por
- * evento se eliminaron el 2026-09-15. Un evento clickeable que no lleva a
- * ninguna parte es peor que un evento que no es clickeable.
+ * ⚠️ AHORA SIEMPRE ES CLICKEABLE, Y ANTES LO ERA SÓLO CON ENTRADA. La regla
+ * vieja —«un evento clickeable que no lleva a ninguna parte es peor que uno
+ * que no lo es»— valía mientras no hubiera adónde llevar: las fichas por
+ * evento se habían eliminado el 2026-09-15. Desde el 2026-09-22 hay adónde, y
+ * es el diálogo. Ver la nota del encabezado.
  *
- * ⚠️ `suelto` ES LA VERSIÓN DE LA AGENDA, donde hay ancho de sobra: la hora y
- * el título van en dos renglones y el título en la display. En la celda de la
- * grilla van en uno solo y truncados, que es lo único que entra.
+ * ⚠️ CON ENTRADA SIGUE SIENDO UN `<a>` A EVENTBRITE. Es la única excepción y
+ * está explicada arriba: ahí el click ya tenía un destino que la persona
+ * quiere.
+ *
+ * ⚠️ `suelto` MURIÓ CON LA AGENDA VIEJA. Era la variante de dos renglones que
+ * usaba la lista de mobile; esa lista ahora tiene su propio componente,
+ * `AgendaCard`, porque además del formato cambió el comportamiento.
  *
  * ══════════════════════════════════════════════════════════════════════════
  * ⚠️ EL FONDO CREMA MARCA LO QUE NO VA A ESTAR SIEMPRE. Camila, 2026-09-21:
@@ -322,18 +436,25 @@ export default function MonthCalendar({
  * esa advertencia tiene que estar.
  * ══════════════════════════════════════════════════════════════════════════
  */
-function Chip({ event, suelto = false }: { readonly event: VenueEvent; readonly suelto?: boolean }) {
+function Chip({
+  event,
+  date,
+  onOpen,
+}: {
+  readonly event: VenueEvent;
+  /** El día de la celda. Ver la nota de `EventoAbierto`. */
+  readonly date: string;
+  readonly onOpen: (a: EventoAbierto) => void;
+}) {
   const cuerpo = (
     <>
       <span
         className={`mt-[5px] size-[7px] shrink-0 rounded-pill ${eventDot(event)}`}
         aria-hidden="true"
       />
-      <span className={suelto ? 'flex min-w-0 flex-col' : 'flex min-w-0 items-baseline gap-[5px]'}>
+      <span className="flex min-w-0 items-baseline gap-[5px]">
         <span className="shrink-0 font-bold tabular-nums">{formatTime(event.startTime)}</span>
-        <span className={suelto ? 'font-display text-d6 uppercase leading-[1.1]' : 'truncate'}>
-          {event.title}
-        </span>
+        <span className="truncate">{event.title}</span>
       </span>
       {isTicketed(event) ? (
         <Ticket className="mt-[3px] size-[13px] shrink-0" aria-hidden="true" />
@@ -342,21 +463,37 @@ function Chip({ event, suelto = false }: { readonly event: VenueEvent; readonly 
   );
 
   const clases = [
-    'flex gap-[6px] rounded-[5px] px-[5px] py-[3px] text-[12px] leading-[1.35]',
+    'flex w-full gap-[6px] rounded-[5px] px-[5px] py-[3px] text-left text-[12px] leading-[1.35]',
     standsOut(event) ? 'bg-cream' : '',
     isTicketed(event) ? 'text-deep underline underline-offset-2 hover:text-terra' : 'text-ink',
   ]
     .filter(Boolean)
     .join(' ');
 
-  if (!isTicketed(event) || !event.ticketUrl) return <span className={clases}>{cuerpo}</span>;
+  if (isTicketed(event) && event.ticketUrl) {
+    return (
+      <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer" className={clases}>
+        {cuerpo}
+        <span className="sr-only">
+          Buy tickets for {event.title} on Eventbrite (opens in a new tab)
+        </span>
+      </a>
+    );
+  }
 
+  /*
+    ⚠️ `hover:bg-ink/6` SÓLO EN EL CHIP SIN FONDO. Sobre el crema del
+    destacado, un gris translúcido encima da un beige sucio: ahí la señal de
+    que se puede clickear la da el cursor y el `focus-visible` del tema.
+  */
   return (
-    <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer" className={clases}>
+    <button
+      type="button"
+      onClick={() => onOpen({ event, date })}
+      className={`${clases} ${standsOut(event) ? '' : 'hover:bg-ink/6'} transition-colors`}
+    >
       {cuerpo}
-      <span className="sr-only">
-        Buy tickets for {event.title} on Eventbrite (opens in a new tab)
-      </span>
-    </a>
+      <span className="sr-only">— see details</span>
+    </button>
   );
 }

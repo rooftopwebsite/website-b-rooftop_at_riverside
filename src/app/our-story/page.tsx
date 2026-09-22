@@ -1,16 +1,15 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import AboutStory from '@/components/sections/AboutStory';
+import FindUs from '@/components/sections/FindUs';
 import HowToOrder from '@/components/sections/HowToOrder';
 import VenueTabs from '@/components/sections/VenueTabs';
-import { ButtonLink } from '@/components/shared/Button';
-import MapEmbed from '@/components/shared/MapEmbed';
-import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
-import { PendingBlock, PhotoPending } from '@/components/shared/PendingData';
+import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
+import { PhotoPending } from '@/components/shared/PendingData';
 import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
 import SoftWave from '@/components/shared/SoftWave';
-import { Heading, SectionHead } from '@/components/shared/Type';
+import { Heading } from '@/components/shared/Type';
 import { PEOPLE } from '@/content/people';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 import { getVenue } from '@/lib/venue';
@@ -39,17 +38,23 @@ export const metadata: Metadata = pageMeta({
  * fecha está en el brief pero la decisión escrita en `AboutStory` es no usarla.
  * Una cifra estimada en una tira de cifras contamina a las otras tres.
  */
-const NUMEROS = [
-  { value: '4', label: 'years of planning before it opened' },
-  { value: '5', label: 'places to be, across two floors' },
-  { value: '4', label: 'independent kitchens in the yard' },
-  /* ⚠️ «and the only tab we keep» y no «and it is the only tab we keep», que
-     es como lo dice `HowToOrder`. Es el único de los cuatro rótulos que
-     partía en dos renglones en desktop, y una tira de cifras con tres
-     etiquetas de un renglón y una de dos se lee desprolija. El hecho es el
-     mismo; se cae el verbo. */
-  { value: '1', label: 'bar upstairs, and the only tab we keep' },
-] as const;
+/**
+ * ⚠️ ACÁ VIVÍA `NUMEROS`, LA TIRA DE CIFRAS, y se borró el 2026-09-22. Camila,
+ * sobre la captura: «esta parte borrémosla, porque los lugares, que es lo más
+ * importante, ya se nombra después».
+ *
+ * Eran cuatro: 4 años de planificación, 5 lugares en dos plantas, 4 cocinas
+ * independientes y 1 barra propia. Los cuatro se siguen diciendo en la misma
+ * página y con más contexto: los años en el primer párrafo de `AboutStory`,
+ * los cinco lugares en `VenueTabs` —que es la sección a la que Camila apunta—,
+ * y las cocinas y la barra en `HowToOrder`.
+ *
+ * ⚠️ CON ELLA SE VA EL ÚNICO USO DE `SpecSlab` EN ESTA PÁGINA. El componente
+ * sigue vivo: lo usa `/game-truck`.
+ */
+
+/** La persona cuya frase abre la sección de la cita. Ver `content/people.ts`. */
+const CHRIS = PEOPLE[0];
 
 /**
  * `/our-story` — de dónde salió el lugar, de qué está hecho y quién lo maneja.
@@ -175,14 +180,15 @@ export default async function OurStoryPage() {
         H1 que fija `PAGE_SEO` y lo que compara `npm run check:seo`. El `<span>`
         parte el renglón y pinta el color; no agrega ni saca una palabra.
 
-        ⚠️ LA BAJADA NO PUEDE SER `STORY_LEAD`, que es lo primero que uno
-        escribe acá. Ese párrafo abre `AboutStory`, o sea la sección que viene
-        justo abajo: puesto también en el hero, la página arrancaría diciendo
-        lo mismo dos veces con una pantalla de distancia. Esta bajada dice los
-        mismos hechos con las otras palabras que ya usa el sitio, y ninguno es
-        nuevo: la familia es local (`/this-is-us`), la esquina es Old 41
-        (`STORY_LEAD`), el parque enfrente es el dato que ya usa `/events`, y
-        los cuatro camiones independientes son el negocio.
+        ⚠️ EL HERO YA NO LLEVA BAJADA. La tenía y decía los mismos hechos que
+        el párrafo de `AboutStory`, una pantalla más abajo: la familia local,
+        la esquina de Old 41, el parque enfrente. Camila, 2026-09-22: «unifica
+        el párrafo con la bajada del hero para unirlas y tratarlo como en
+        "Dentro del camión" de la página game truck».
+
+        Así que el texto no se borró, se mudó: es el segundo párrafo de
+        `AboutStory`, que ahora abre la página. `/game-truck` recibió el mismo
+        movimiento el mismo día y `/sunset-bar` ya abría así.
 
         ⚠️ NO SE PUBLICA LA FECHA DE APERTURA. Está en el brief, pero la
         decisión escrita en `AboutStory` es no usarla mientras el relato
@@ -209,7 +215,6 @@ export default async function OurStoryPage() {
             <span className="block text-sunset-deep">family project</span>
           </>
         }
-        lead="One local family, a corner of Old 41 across from Riverside Park, and a bar built on the roof of a yard with four independent kitchens."
         photo="/images/venue/story-yard-day-wide.jpg"
         photoAlt="The yard at Rooftop at Riverside seen from the rooftop: picnic tables and umbrellas on the turf, with the building's roof edge on the right"
       />
@@ -218,70 +223,74 @@ export default async function OurStoryPage() {
 
       <AboutStory />
 
-      {/* ══ 3. Los números ════════════════════════════════════════════════ */}
+      {/* ══ 3. La frase ═══════════════════════════════════════════════════ */}
 
       {/*
         ══════════════════════════════════════════════════════════════════
-        EL BLOQUE J DEL KIT: los datos duros. Número grande, etiqueta chica.
+        LA CITA DE CHRIS MAGNUS, EN UNA SECCIÓN PROPIA.
 
-        ⚠️ ENTRÓ EL 2026-09-22, al auditar el trabajo contra el referente. La
-        home de `defoodtruckclub.nl` cierra con cuatro cifras —«12 Foodtrucks ·
-        90 Teamleden · 375+ Cateringen · 400+ Festivals»— y su `/over-ons`
-        apoya el relato en «un equipo de 90». Nosotros teníamos la pieza
-        (`SpecSlab`, que la usa `/game-truck`) y no la usábamos en la página de
-        marca, que es justamente donde una cifra hace de prueba.
+        Camila, 2026-09-22, sobre la captura: «la frase pongámosla en una
+        sección separada, con fondo distintivo y que tenga mucho espacio para
+        que destaque».
 
-        ⚠️ LOS CUATRO NÚMEROS YA ESTABAN PUBLICADOS EN ESTA MISMA PÁGINA y no
-        se calculó ninguno: los cuatro años salen de `STORY_LEAD`, los cinco
-        lugares del titular de `VenueTabs`, las cuatro cocinas y la barra
-        propia de `HowToOrder`. Es el mismo criterio con el que el renglón del
-        equipo dice «dos» y no un número redondo: acá no se inventa una métrica
-        porque quede bien.
+        Estaba adentro de `AboutStory`, como un `<figure>` con filete naranja
+        entre el párrafo de arriba y el programa de donaciones de abajo: o sea
+        la única declaración de intenciones del dueño, del tamaño de un
+        subtítulo, apretada entre dos bloques de prosa.
 
-        ⚠️ Y POR ESO NO HAY UN QUINTO. El referente puede poner «375+
-        cateringen» porque los contó; nosotros no tenemos ni aforo confirmado
-        —sigue en `PendingData` en `/events`— ni fecha de apertura publicada.
-        Cuatro cifras verdaderas valen más que seis con una estimada.
+        Las tres cosas que pidió, y cómo se cumplen:
 
-        ⚠️ VA EN `paper` Y NO EN UNA BANDA DE COLOR. Es un escalón, no un
-        campo: la página ya gasta su única crema en el cierre. Y `band="md"`
-        porque son cuatro renglones de texto: con `lg` la banda mide más que
-        su contenido.
+          · SECCIÓN SEPARADA — es un `<Section>` propio, entre el relato y el
+            equipo, y por eso el equipo quedó justo después: «que el equipo
+            vaya luego de la frase», mismo pedido.
+          · FONDO DISTINTIVO — `cream`, el amarillo del brand book. Es el
+            único lugar donde aparece en esta página, así que la banda se
+            reconoce sola.
+          · MUCHO ESPACIO — `band="xl"`, el paso más alto del ritmo (96px en
+            celular, 160 en desktop), con la cita sola y centrada en una caja
+            de 24 caracteres de medida.
+
+        ⚠️ EL CUERPO ES DE TITULAR Y NO DE CITA. `d3/d2` es el tamaño con el
+        que la página escribe sus `h2`: acá el texto ES el titular de la banda,
+        no una nota al pie de otra cosa. Por eso tampoco lleva un `h2` propio
+        —sería un título arriba de un texto del mismo tamaño— y la sección se
+        rotula con un `aria-label`.
+
+        ⚠️ SIGUE SIENDO UN `<blockquote>` CON SU `<cite>`, como cuando vivía en
+        `AboutStory`: es palabra de una persona identificada y la estructura
+        tiene que decirlo. El texto es TEXTUAL de `/this-is-us`.
+
+        ⚠️ LAS COMILLAS SE DIBUJAN. Sin ellas, un bloque de 58px centrado sobre
+        amarillo se lee como el eslogan del venue y no como algo que alguien
+        dijo. Van en `sunset-deep`, aparte del texto y con `aria-hidden`: un
+        lector de pantalla ya sabe que esto es una cita por el `<blockquote>`.
+
+        ⚠️ `cream` ES «PÍLDORAS Y BOTONES, NO FONDOS GRANDES» según el token, y
+        ésta es la excepción que ya tenía el sitio: el cierre de `/our-story`
+        era una banda `cream` entera hasta que se borró ese mismo día. La banda
+        no desaparece de la página, cambia de contenido.
         ══════════════════════════════════════════════════════════════════
       */}
-      <Section band="md" labelledBy="numeros-title">
-        <h2 id="numeros-title" className="sr-only">
-          Rooftop at Riverside in numbers
-        </h2>
-
-        {/*
-          ⚠️ EL `<dt>` VA PRIMERO EN EL DOM Y EL NÚMERO SE SUBE CON
-          `flex-col-reverse`. Es la misma construcción que `SpecSlab`, y no es
-          maquetación: la regla `definition-list` de axe exige que adentro de un
-          `<dl>` cada grupo sea un `<dt>` seguido de su `<dd>`. Con el número
-          escrito primero el informe da `serious`.
-        */}
-        <StaggerGroup
-          as="dl"
-          className="m-0 grid grid-cols-2 gap-x-8 gap-y-10 p-0 lg:grid-cols-4 lg:gap-x-12"
-        >
-          {NUMEROS.map((n) => (
-            <RevealItem key={n.label} className="flex flex-col-reverse border-t border-ink/15 pt-5">
-              <dt className="mt-2.5 font-body text-base leading-[1.4] text-body/80">{n.label}</dt>
-              {/*
-                ⚠️ LA CIFRA VA EN `sunset-deep` Y PASA CONTRASTE PORQUE ES
-                GRANDE: 3.54:1 sobre claro es el umbral de texto grande, y acá
-                el número arranca en 46px. La regla está en la nota de `Accent`,
-                en `Type.tsx`.
-              */}
-              <dd className="m-0 font-display text-d3 font-extrabold leading-none tabular-nums text-sunset-deep lg:text-d2">
-                {n.value}
-              </dd>
-            </RevealItem>
-          ))}
-        </StaggerGroup>
+      <Section tone="cream" band="xl" aria-label="What this place is for">
+        <Reveal>
+          <figure className="m-0 text-center">
+            <span
+              aria-hidden="true"
+              className="block font-display text-d1 font-extrabold leading-[0.6] text-sunset-deep"
+            >
+              &ldquo;
+            </span>
+            <blockquote className="m-0">
+              <p className="m-0 mx-auto max-w-[24ch] font-display text-d3 font-extrabold uppercase leading-[1.05] text-ink lg:text-d2">
+                {CHRIS.quote}
+              </p>
+            </blockquote>
+            <figcaption className="mt-8 font-body text-caption font-bold uppercase tracking-eyebrow text-deep">
+              <cite className="not-italic">{CHRIS.name}</cite>, {CHRIS.role}
+            </figcaption>
+          </figure>
+        </Reveal>
       </Section>
-
       {/* ══ 4. La gente ═══════════════════════════════════════════════════ */}
 
       {/*
@@ -324,95 +333,147 @@ export default async function OurStoryPage() {
         ══════════════════════════════════════════════════════════════════
       */}
       {/*
-        ⚠️ LA OLA VA `bone → deep` PORQUE ARRIBA ESTÁ LA TIRA DE NÚMEROS, que
-        es `bone`. La ola se dibuja del color de la sección de ARRIBA, así que
-        este valor se mueve cada vez que algo cambia de lugar en la página: con
-        el color equivocado se ve un escalón justo en el corte. Es la misma
-        trampa que `CompareSlab` documenta con su prop `from`.
+        ⚠️ LA OLA VA `cream → deep` PORQUE ARRIBA ESTÁ LA BANDA DE LA CITA. La
+        ola se dibuja del color de la sección de ARRIBA, así que este valor se
+        mueve cada vez que algo cambia de lugar en la página: con el color
+        equivocado se ve un escalón justo en el corte. Es la misma trampa que
+        `CompareSlab` documenta con su prop `from`.
+
+        ⚠️ Y ES LA TERCERA VEZ QUE SE MUEVE: fue `bone` cuando arriba estaba la
+        tira de cifras en hueso, `paper` cuando esa tira pasó a papel, y `cream`
+        desde el 2026-09-22, cuando la tira se borró y la cita ocupó su lugar.
+        Ese día se quedó en `paper` un rato y lo agarró
+        `npm run check:surfaces`, que desde el mismo día también mira las olas.
       */}
-      <SoftWave from="paper" to="deep" className="relative -mb-px" />
+      <SoftWave from="cream" to="deep" className="relative -mb-px" />
 
       <Section tone="deep" band="lg" labelledBy="people-title">
         <div className="text-center">
           <Heading level={2} id="people-title" className="text-d3 lg:text-d2">
             Meet <span className="text-sunset">the team</span>
           </Heading>
-          <p className="m-0 mt-4 font-body text-lead font-light text-cream">
-            Two of them run the place
-          </p>
+          {/*
+            ⚠️ ACÁ IBA «TWO OF THEM RUN THE PLACE» Y SE FUE EL 2026-09-22.
+            Camila, sobre la captura: «saca el "Dos de ellos dirigen el lugar"».
+
+            Venía de calcar el renglón de conteo de la referencia —allá dice «90
+            gepassioneerde foodtruckers»— y con dos personas no contaba nada:
+            debajo se ven exactamente dos tarjetas. Y encima se leía raro, como
+            si hubiera un equipo más grande del que estos dos fueran una parte.
+          */}
         </div>
 
         {/*
-          ⚠️ LA FILA TIENE ANCHO TOPE Y VA CENTRADA. En la captura son nueve
-          retratos y la fila llena la banda; con dos, sueltos al ancho de la
-          caja cada uno mediría 572px y la sección se leería como dos fotos
-          enormes de dos desconocidos. El tope los deja en ~340px, que es la
-          medida a la que un retrato 3:4 funciona.
+          ══════════════════════════════════════════════════════════════════
+          LAS TARJETAS DE PLACA, QUE ANTES ERAN RETRATOS CENTRADOS.
+
+          Camila, 2026-09-22, con el prompt y la imagen pegados en el
+          feedback: «dales otro estilo a las cards, que sean así como te dejo
+          en el prompt y la imagen debajo».
+
+          Lo que describe ese prompt, punto por punto: tarjetas verticales 3/4,
+          imagen a sangre, y una PLACA clara al pie posicionada en absoluto que
+          en reposo está desplazada hacia abajo mostrando sólo el título; al
+          hacer hover la placa sube, el cuerpo pasa de opacidad 0 a 1 y la placa
+          cambia a fondo de acento. Sólo `transform` y `opacity`, 160ms, y tiene
+          que funcionar también con tap.
+
+          ⚠️ EL DESPLAZAMIENTO ES `translate-y-19` (76px) Y ESO ES UNA SUMA:
+          los 56 del cajón más los 20 del `p-5` de abajo. Ésa es toda la
+          mecánica: la placa baja lo que mide lo que hay que esconder, así que
+          en reposo se ve el nombre y nada más.
+
+          ⚠️ LA PRIMERA VERSIÓN BAJABA 56 Y SE VEÍA MAL: sin contar el padding
+          inferior, el rol asomaba debajo del nombre. Si el cajón cambia de alto
+          —una tercera línea, otro cuerpo— o cambia el padding de la placa, este
+          número se mueve con ellos o queda un recorte a mitad de renglón.
+
+          ⚠️ EL CAMBIO DE COLOR ES UNA CAPA CON `opacity`, NO UN
+          `background-color` QUE TRANSICIONA. La regla de motion del repo es
+          «sólo transform y opacity» (`docs/layout-motion.md`), y el prototipo
+          de Camila resuelve exactamente igual con un `::before`. Acá es un
+          `<span>` absoluto porque necesita quedar DEBAJO del texto, y un
+          pseudo-elemento de Tailwind no se ordena tan cómodo.
+
+          ⚠️ EL ACENTO ES `sunset` CON TEXTO `ink`, y el prompt pedía «texto
+          blanco». No se puede: el token lo dice en su propia línea —«el texto
+          encima va NEGRO: blanco da 2.54:1»—. El prompt venía de otro sistema
+          de color, donde el naranja de hover es #CC4700 y el blanco encima da
+          4.70:1. Con el naranja de ESTA marca, el que pasa es el negro.
+
+          ⚠️ EN PANTALLAS SIN HOVER LA PLACA ESTÁ SIEMPRE ARRIBA. El
+          `max-lg:translate-y-0` es lo que cumple el «debe funcionar también con
+          tap» sin un `useState`: en un teléfono no hay estado de reposo que
+          valga la pena, porque nadie va a descubrir que la tarjeta esconde algo.
+          Y de paso no queda el hover pegado después de tocar, que es el bug
+          clásico de esta pieza.
+
+          ⚠️ SE DISPARA TAMBIÉN CON `focus-within`: adentro de la placa hay un
+          mail que es un link real, así que tabulando hasta él la tarjeta se
+          abre sola. Sin eso, el foco caería sobre algo invisible.
+
+          ⚠️ EL `grayscale` SE FUE. Estaba puesto para cuando llegaran los
+          retratos —copiaba la referencia— y llegaron el 2026-09-22, del propio
+          `/this-is-us` del cliente. En blanco y negro, la foto de Chris (que es
+          su familia entera con las remeras del venue) pierde justo lo que la
+          hace valer. Ver `content/people.ts`.
+          ══════════════════════════════════════════════════════════════════
         */}
         <StaggerGroup
           as="ul"
-          className="mx-auto mt-bloque grid max-w-[46rem] list-none grid-cols-1 gap-10 p-0 sm:grid-cols-2 sm:gap-8"
+          className="mx-auto mt-bloque grid max-w-[46rem] list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2"
         >
-          {PEOPLE.map((p) => (
-            <RevealItem as="li" key={p.name}>
-              <article className="text-center">
-                {p.photo ? (
-                  /*
-                    ⚠️ `grayscale` ESTÁ PUESTO Y HOY NO SE VE, porque ninguno de
-                    los dos tiene retrato. Va igual: es parte de lo que se pidió
-                    copiar tal cual, y dejarlo escrito ahora significa que el día
-                    que lleguen las fotos la sección ya se ve como la referencia
-                    en vez de descubrirse en ese momento que faltaba.
-
-                    Si con las fotos delante el blanco y negro no funciona, se
-                    saca una clase.
-                  */
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-shell bg-deeper sombra-card">
-                    <Image
-                      src={p.photo}
-                      alt={p.photoAlt ?? p.name}
-                      fill
-                      sizes="(min-width: 640px) 340px, 90vw"
-                      className="object-cover grayscale"
-                    />
-                  </div>
+          {PEOPLE.map((persona) => (
+            <RevealItem as="li" key={persona.name}>
+              <article className="group relative aspect-[3/4] overflow-hidden rounded-shell bg-deeper sombra-card">
+                {persona.photo ? (
+                  <Image
+                    src={persona.photo}
+                    alt={persona.photoAlt ?? persona.name}
+                    fill
+                    sizes="(min-width: 640px) 340px, 90vw"
+                    className="object-cover"
+                  />
                 ) : (
                   <PhotoPending
-                    brief={`Retrato de ${p.name}, vertical 3:4, en el local. Va en blanco y negro.`}
+                    brief={`Retrato de ${persona.name}, vertical 3:4, en el local.`}
                     ratio="aspect-[3/4]"
                     tone="dark"
                   />
                 )}
 
-                {/* El nombre debajo del retrato, centrado y en caja alta, como
-                    la captura. El cargo va un escalón abajo: la referencia no
-                    lo muestra, pero sin él «Anthony Hayes» no dice nada. */}
-                <Heading level={3} className="mt-6 text-d5">
-                  {p.name}
-                </Heading>
-                <p className="m-0 mt-2 font-body text-caption font-bold uppercase tracking-eyebrow text-muted-dark">
-                  {p.role}
-                </p>
-                {p.email ? (
-                  <p className="m-0 mt-3.5 font-body text-base">
-                    <a href={`mailto:${p.email}`} className="link-texto break-all text-cream">
-                      {p.email}
-                    </a>
-                  </p>
-                ) : null}
+                {/* La placa. Ver la nota de arriba: baja 56px, que es lo que
+                    mide el cajón de abajo. */}
+                <div className="absolute inset-x-0 bottom-0 translate-y-19 bg-paper p-5 transition-transform duration-200 ease-brand max-lg:translate-y-0 group-hover:translate-y-0 group-focus-within:translate-y-0">
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-sunset opacity-0 transition-opacity duration-200 ease-brand max-lg:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100"
+                  />
 
-                {p.bio ? (
-                  <p className="m-0 mt-5 font-body text-base font-light leading-[1.65] text-paper/90">
-                    {p.bio}
-                  </p>
-                ) : (
-                  <div className="mt-6 text-left">
-                    <PendingBlock tone="dark" title={`Short bio for ${p.name}`}>
-                      Faltan dos o tres frases en sus propias palabras. Nada de este sitio lo
-                      escribe una máquina, así que esto queda vacío hasta que las manden.
-                    </PendingBlock>
+                  <div className="relative">
+                    <Heading level={3} className="text-d6 leading-none text-ink">
+                      {persona.name}
+                    </Heading>
+
+                    {/* El cajón. Alto FIJO de 56px: es lo que permite que la
+                        placa se desplace en vez de crecer. */}
+                    <div className="mt-3 h-14 overflow-hidden">
+                      <p className="m-0 font-body text-caption font-bold uppercase tracking-eyebrow text-ink/70">
+                        {persona.role}
+                      </p>
+                      {persona.email ? (
+                        <p className="m-0 mt-1.5 font-body text-base leading-[1.4]">
+                          <a
+                            href={`mailto:${persona.email}`}
+                            className="link-texto break-all text-ink"
+                          >
+                            {persona.email}
+                          </a>
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
-                )}
+                </div>
               </article>
             </RevealItem>
           ))}
@@ -478,197 +539,52 @@ export default async function OurStoryPage() {
       */}
       <HowToOrder />
 
-      {/* ══ 7. Dónde queda: el bloque L ═══════════════════════════════════ */}
+      {/* ══ 7. Dónde queda ════════════════════════════════════════════════ */}
 
       {/*
         ══════════════════════════════════════════════════════════════════
-        EL BLOQUE L DEL KIT: el contacto de cierre. Mail y teléfono grandes y
-        clickeables, dirección y mapa.
+        ⚠️ ES EL BLOQUE DE LA HOME, TRAÍDO TAL CUAL. Camila, 2026-09-22, sobre
+        la captura de esta sección: «duplica aquí el layout de la home, tráelo
+        tal cual. Si en otra página también va, haz lo mismo» — y el mismo día,
+        sobre `/contact`, pidió lo mismo. Las tres páginas montan ahora
+        `sections/FindUs`.
 
-        ⚠️ HASTA EL 2026-09-22 ESTA PÁGINA DECÍA LA DIRECCIÓN Y EL TELÉFONO DOS
-        VECES, acá y otra vez en el panel del cierre, a unos 600px de distancia.
-        Salió al comparar con el referente: `defoodtruckclub.nl` separa el
-        llamado («Trek gekregen?») del bloque de datos («Vragen?») y cada dato
-        aparece en uno solo de los dos.
+        Lo que se fue era una versión propia del mismo contenido: un titular
+        «In the centre, across from the park», una columna con dirección,
+        teléfono y mail en display grande, y un `MapEmbed` al lado. Decía lo
+        mismo que la home con otra forma, y en la home además están los
+        horarios y las redes.
 
-        Así que el reparto queda: ACÁ los datos —dirección, teléfono, mail y
-        mapa— y ABAJO sólo el llamado. El cierre perdió su renglón de
-        dirección.
-
-        ⚠️ EL MAIL QUE VA ES EL GENERAL Y NO `events@`. La regla está en
-        `docs/layout-motion.md` y es de negocio, no de diseño: una consulta de
-        $20.000 no puede caer en el mismo buzón que una pregunta sobre el
-        horario, así que `events@` vive sólo en el hub de eventos y en
-        `/contact`. Es el mismo criterio con el que el footer publica `info@` y
-        nada más.
+        ⚠️ SE VA CON ÉL EL ÚLTIMO `MapEmbed` DE ESTA PÁGINA. El componente
+        sigue vivo: lo usa `/market`.
         ══════════════════════════════════════════════════════════════════
       */}
-      <Section tone="bone" band="lg" labelledBy="where-title">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
-          <div>
-            <SectionHead
-              eyebrow="Getting here"
-              eyebrowTone="deep"
-              id="where-title"
-              title="Downtown, across from the park"
-            />
-
-            <address className="mt-gap-bajada not-italic">
-              <p className="text-lead leading-[1.5]">
-                {venue.street}
-                <br />
-                {venue.locality}, {venue.region} {venue.postalCode}
-              </p>
-              <p className="mt-3 font-body text-base text-body/80">{venue.neighborhood}</p>
-            </address>
-
-            {/*
-              ⚠️ EL TELÉFONO Y EL MAIL VAN EN DISPLAY Y NO EN CUERPO DE 16px.
-              El kit los pide «grandes y clickeables» y el motivo es de uso: en
-              un bloque de contacto la mitad de la gente viene a llamar o a
-              escribir, no a leer la dirección. Es el mismo tratamiento que
-              `/contact` le da a sus tres buzones.
-
-              ⚠️ Y SON `<a>` DE VERDAD, con `tel:` y `mailto:`, no números
-              pintados grandes: el alto de la línea a `d5` son 28px de área de
-              toque más el padding del renglón.
-            */}
-            <dl className="m-0 mt-7 flex flex-col gap-5 border-t border-ink/15 pt-7">
-              <div>
-                <dt className="eyebrow text-body/75">Call</dt>
-                <dd className="m-0 mt-2">
-                  <a
-                    href={venue.phoneHref}
-                    className="link-texto font-display text-d5 font-semibold uppercase leading-none text-ink"
-                  >
-                    {venue.phone}
-                  </a>
-                </dd>
-              </div>
-              <div>
-                <dt className="eyebrow text-body/75">Write</dt>
-                <dd className="m-0 mt-2">
-                  <a
-                    href={`mailto:${venue.email}`}
-                    className="link-texto font-display text-d5 font-semibold uppercase leading-none break-all text-ink"
-                  >
-                    {venue.email}
-                  </a>
-                </dd>
-              </div>
-            </dl>
-
-            {/*
-              ⚠️ ACÁ IBA UN PÁRRAFO DE ESTACIONAMIENTO Y SE SACÓ EL 2026-09-15.
-              Decía «street parking on Old 41, y los lotes públicos de Riverside
-              Park, los dos gratis». Ninguna de esas tres afirmaciones tenía
-              fuente, y en particular la de «gratis» sigue sin tenerla.
-
-              El mapa apareció el 2026-09-22 y hoy vive dibujado en la sección
-              `#parking` de `/contact`, que es la página que manda en cómo
-              llegar. Acá NO se repite: este bloque es el cierre de una página
-              que cuenta quiénes somos, no la ficha de visita. Si alguna vez se
-              decide que el estacionamiento también va acá, va como link a esa
-              sección y no como un párrafo gemelo que después se desincroniza.
-            */}
-          </div>
-
-          <MapEmbed />
-        </div>
-      </Section>
-
-      {/* ══ 8. Cierre: el bloque K ════════════════════════════════════════ */}
+      <FindUs />
 
       {/*
         ══════════════════════════════════════════════════════════════════
-        EL BLOQUE K DEL KIT: el cierre, obligatorio en las nueve internas.
+        ⚠️ ACÁ IBA EL CIERRE «COME SEE IT ON A WEDNESDAY» Y SE BORRÓ EL
+        2026-09-22. Camila, sobre la captura: «borremos esta parte».
 
-        ⚠️ ERA UNA SEGUNDA BANDA `deep` Y POR ESO LA PÁGINA DABA ROJO en
-        `npm run check:surfaces`: con la banda del equipo en oscuro eran dos, y
-        el guard admite una sola cada tres secciones. La crema es la otra
-        superficie de color del sitio y acá no compite con nada, porque lo que
-        tiene encima es hueso.
+        Era el bloque K del kit —panel crema con filete punteado, el medallón
+        del brand book en una esquina, titular, bajada y dos botones: «See the
+        calendar» y «Plan an event»—, y el kit lo declara obligatorio en las
+        nueve internas. Se saca igual, y conviene entender por qué no rompe
+        nada: `FindUs` ES un cierre, y uno más útil. Trae la dirección, el mapa,
+        los horarios, el teléfono, el mail, las redes y un botón de indicaciones.
+        Lo que el bloque K aportaba encima eran dos links a páginas que ya están
+        en el header.
 
-        ⚠️ LA FORMA ES LA MISMA QUE LA DEL CIERRE DE `/game-truck`: panel de
-        esquinas muy redondeadas, filete punteado por dentro separado del borde,
-        y una pieza del brand book apoyada en una esquina. Que las dos páginas
-        cierren igual es lo correcto, no una repetición: el kit declara este
-        bloque como fijo para las nueve.
+        ⚠️ ES LA MISMA DECISIÓN QUE EN `/market` Y `/game-truck`, que recibieron
+        el mismo pedido el mismo día sobre sus propios cierres.
 
-        ⚠️ LA PIEZA ES `emblem.svg`, EL MEDALLÓN REDONDO DEL BRAND BOOK, y no el
-        isotipo del camión que usa `/game-truck`. Allá el camión es de lo que
-        habla la página; acá lo que cierra es la marca entera.
-
-        ⚠️ `banda-arco` MONTA ESTE BLOQUE SOBRE EL DE ARRIBA con el radio grande
-        de la casa. El hueco que la sección anterior necesita para no quedar
-        tapada lo pone la regla `:has(+ .banda-arco)` de `globals.css`, y el
-        `z-[2]` no sobra: sin él la sección del mapa, que viene antes en el DOM,
-        pinta su fondo encima de la parte del arco que se monta. Es el mismo par
-        que usa el cierre de `/events`.
+        ⚠️ Y CAMBIA EL RITMO DE SUPERFICIES DE LA PÁGINA, que ahora es: hero y
+        relato en `bone` · la cita en `cream` · el equipo en `deep` · `VenueTabs`
+        · `HowToOrder` en `paper` · `FindUs` en `bone`, entrando con su arco. Una
+        sola oscura, ninguna repetida pegada a sí misma, que es lo que pide
+        `npm run check:surfaces`.
         ══════════════════════════════════════════════════════════════════
       */}
-      <Section tone="cream" band="lg" labelledBy="next-title" className="banda-arco z-[2]">
-        <div className="relative px-2 py-2 text-center sm:px-8 sm:py-6">
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-shell border border-dashed border-deep/35"
-          />
-
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute right-8 bottom-8 hidden w-24 rotate-6 sm:block lg:right-12 lg:bottom-10 lg:w-32"
-          >
-            <span className="sticker rt-flotar block">
-              <Image
-                src="/brand/emblem.svg"
-                alt=""
-                width={260}
-                height={260}
-                className="block h-auto w-full"
-              />
-            </span>
-          </span>
-
-          <div className="relative px-4 py-10 sm:py-12">
-            {/*
-              ⚠️ `text-balance` Y NO UN `max-w` MÁS CHICO. Sin él el titular
-              partía en «COME SEE IT ON / A WEDNESDAY» y dejaba el artículo
-              solo al principio del segundo renglón, que en display de caja
-              alta se lee como un error de maquetación. Balanceado parte en
-              «COME SEE IT ON / A WEDNESDAY» con los dos renglones parejos.
-            */}
-            <Heading
-              level={2}
-              id="next-title"
-              className="mx-auto max-w-[20ch] text-balance text-d3 lg:text-d2"
-            >
-              Come see it on a <span className="text-sunset-deep">Wednesday</span>
-            </Heading>
-            <p className="mx-auto mt-5 max-w-[52ch] font-body text-lead font-light leading-[1.5] text-ink">
-              The calendar is the honest version of this page. Or, if you are the one throwing the
-              party, we close the whole place.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <ButtonLink href="/whats-on" variant="dark">
-                See the calendar
-              </ButtonLink>
-              <ButtonLink href="/events" variant="outline">
-                Plan an event
-              </ButtonLink>
-            </div>
-            {/*
-              ⚠️ ACÁ IBA LA DIRECCIÓN Y EL TELÉFONO Y SE FUERON EL 2026-09-22.
-              Los dos datos están en la sección de arriba, a unos 600px, con el
-              mapa al lado: repetirlos acá no era énfasis, era ruido. El
-              referente separa el llamado del bloque de datos y no repite. Ver
-              la nota del bloque L.
-
-              Este panel queda como el bloque K puro: titular, una línea y dos
-              destinos. Es lo único que un cierre tiene que hacer.
-            */}
-          </div>
-        </div>
-      </Section>
     </>
   );
 }

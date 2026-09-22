@@ -176,8 +176,10 @@ function EventCard({
     <>
       {/*
         ══════════════════════════════════════════════════════════════════
-        ⚠️ LA IMAGEN VA A SANGRE Y RECORTADA EN 4:5, y esto pasó por cuatro
-        formas. Conviene dejar el recorrido escrito para no repetirlo.
+        ⚠️ LA IMAGEN VA A SANGRE Y EN 16:9, SIN RECORTAR. Esto pasó por cinco
+        formas y conviene dejar el recorrido escrito, porque la última es una
+        marcha atrás sobre un pedido anterior de Camila y hay que entender qué
+        cambió en el medio.
 
           1. Apaisada con alto fijo (`h-50` / `20vw`) — la del diseño, para
              fotos de ambiente.
@@ -185,30 +187,45 @@ function EventCard({
              del local, que vienen con el texto impreso.
           3. `aspect-video` — porque las imágenes salen del `bannerUrl` del
              dashboard y el recortador del dashboard impone 16:9.
-          4. Acá: 4:5 otra vez, pero AHORA RECORTANDO.
+          4. Ventana 7:5 con una caja de recorte 4:5 adentro, anclada arriba.
+          5. Acá: ventana 16:9 y nada más.
 
-        ⚠️ POR QUÉ VUELVE. La forma 3 componía el flyer entero adentro del
-        16:9 y eso dejaba dos franjas verdes a los costados. Camila: «las
-        fotos tipo flyer prefiero que se recorten».
+        ⚠️ POR QUÉ LA 4 Y POR QUÉ SE VA. La forma 3 componía el flyer entero
+        adentro del 16:9 y eso dejaba dos franjas verdes a los costados.
+        Camila, entonces: «las fotos tipo flyer prefiero que se recorten». La
+        caja 4:5 hacía exactamente eso, y sin números mágicos: el dashboard
+        mete el afiche vertical entre los píxeles 520 y 1400 de un lienzo de
+        1920, y una caja 4:5 deja a la vista del 527 al 1391. El recorte caía
+        casi exacto sobre el afiche y las bandas se iban solas.
 
-        ⚠️ Y SE PUEDE RECORTAR SIN INVENTAR NADA, que es el dato que lo hace
-        seguro. Bajé el archivo que sirve el dashboard: mide **1920×1080** y
-        trae el afiche vertical ya compuesto en el medio, entre los píxeles
-        520 y 1400, con las bandas PEGADAS EN EL ARCHIVO. No son un hueco de
-        la caja: son parte de la imagen, y por eso ninguna caja apaisada las
-        podía evitar.
+        Ese razonamiento era correcto y sigue siéndolo PARA UN FLYER. Lo que
+        cambió es cuántos hay. Cuando se escribió, de los 44 eventos de la
+        base sólo dos tenían imagen y los dos eran flyers: optimizar para
+        flyer era optimizar para el 100 % del caso.
 
-        Una caja 4:5 con `object-cover` deja a la vista los píxeles 527 a
-        1391 del original. El afiche va de 520 a 1400. O sea que el recorte
-        cae casi exacto sobre el afiche y las bandas se van solas, sin
-        números mágicos y sin tocar el archivo. Y no es casualidad: el
-        dashboard mete un vertical en un horizontal, así que volver al
-        vertical lo devuelve.
+        El 2026-09-22 se cargaron dieciséis imágenes más, y son FOTOS: una
+        banda, un bajista, un DJ en las bandejas, un perro en el patio, la
+        fachada de noche. De dieciocho eventos con imagen, dos son flyers.
 
-        ⚠️ Para un banner que SÍ sea una foto apaisada de verdad, esta misma
-        caja hace un recorte al centro, que es lo que se espera de una foto.
-        ══════════════════════════════════════════════════════════════════
-      */}
+        Y en una foto la caja 4:5 hace lo contrario de lo que hacía con el
+        afiche: no recupera el contenido, lo tira. La cuenta es que 16:9
+        dentro de 4:5 pierde el 55 % del ancho, y la ventana de 7:5 tapaba
+        además la mitad de abajo de lo que quedaba. Camila, sobre eso: «en las
+        cards de evento cambia la proporción o lo que sea mejor para que las
+        imágenes subidas en la base no se recorten tanto al centro, sino se
+        pierde mucho el contexto de la imagen en sí y no se ven bien».
+
+        ⚠️ EL COSTO ES CONOCIDO Y ES CHICO: los dos flyers vuelven a mostrar
+        sus bandas a los costados. Se paga, porque un afiche con bandas se lee
+        entero —que es para lo que existe un afiche— y una foto recortada al
+        tercio no se lee.
+
+        ⚠️ LO QUE NO CAMBIA ES LA PARIDAD DE LAS TARJETAS, que es el otro
+        motivo por el que la ventana existe. Sigue siendo una caja de
+        proporción fija, arriba de todo y fuera del flujo del plate, así que
+        la foto no depende de cuántos renglones ocupe el texto de abajo. Ver
+        la nota de acá abajo.
+        ══════════════════════════════════════════════════════════════════      */}
       {/*
         ══════════════════════════════════════════════════════════════════
         ⚠️ SON DOS CAJAS Y CADA UNA TIENE SU TRABAJO: la VENTANA fija lo que
@@ -224,7 +241,7 @@ function EventCard({
         tamaño, no algunas más grandes». Con «Bring the dog.» en un renglón
         y las otras dos en dos, la primera mostraba 30px más de foto.
 
-        Cómo es: la ventana mide 7:5 SIEMPRE, arriba de todo y fuera del
+        Cómo es: la ventana mide 16:9 SIEMPRE, arriba de todo y fuera del
         flujo del plate, así que la foto ya no depende de lo que diga el
         texto de abajo. La tarjeta dejó de tener proporción fija y ahora
         crece con su contenido; la fila flex las estira a todas al alto de
