@@ -58,8 +58,30 @@ import { GIVE_BACK } from '@/content/story';
 export default function AboutStory({ id = 'story-title' }: { readonly id?: string }) {
   const chris = PEOPLE[0];
 
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * ⚠️ VA EN `bone`, LA MISMA SUPERFICIE DEL HERO, Y ESO ES EL PEDIDO.
+   * Camila, 2026-09-22, con la captura de
+   * `defoodtruckclub.nl/diensten/foodtruck-festivals`: «esta sección me
+   * gustaría que la pongas igual que la refe, debajo de los heros».
+   *
+   * En la referencia la foto del hero y este bloque comparten el mismo panel
+   * claro: la foto tiene las esquinas redondeadas y el texto cae abajo sin que
+   * cambie el fondo, así que las dos cosas se leen como UNA portada. Con el
+   * bloque en `paper` había un escalón justo debajo de la foto.
+   *
+   * ⚠️ DIJO «LOS HEROS», EN PLURAL, así que es una regla y no un arreglo de
+   * una página: el bloque que cae debajo de un `PlateHero` comparte su
+   * superficie. `/game-truck` recibió el mismo cambio en el mismo commit.
+   *
+   * ⚠️ Y ARRASTRA LA SECCIÓN SIGUIENTE. En `/our-story` lo que viene abajo es
+   * la tira de cifras, que estaba en `bone`: con ésta también en `bone`
+   * quedaban dos bandas del mismo color pegadas. La tira pasó a `paper` y la
+   * ola que entra a la losa oscura se movió con ella.
+   * ══════════════════════════════════════════════════════════════════════
+   */
   return (
-    <Section tone="paper" band="lg" labelledBy={id}>
+    <Section tone="bone" band="lg" labelledBy={id}>
       <Reveal>
         {/*
           ⚠️ UN TERCIO Y DOS TERCIOS, Y NO MITADES. Es la proporción de la
@@ -72,17 +94,30 @@ export default function AboutStory({ id = 'story-title' }: { readonly id?: strin
           —que es más corto— queda flotando a media altura del párrafo.
         */}
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.9fr)] lg:gap-20">
-          <Heading level={2} id={id} className="max-w-[14ch] text-d4 lg:text-d3">
+          {/*
+            ⚠️ EL TITULAR SUBIÓ A `d3/d2` (46 → 58px) EL 2026-09-22. En la
+            referencia la columna izquierda es un rótulo GRANDE de dos o tres
+            renglones y es la mitad del peso del bloque; a `d4/d3` quedaba del
+            tamaño de un título de sección cualquiera y la prosa de al lado se
+            lo comía.
+
+            ⚠️ LA MEDIDA BAJÓ DE 14ch A 12ch para acompañar: a más cuerpo, menos
+            caracteres por renglón, o el titular se estira y deja de leerse como
+            una columna.
+          */}
+          <Heading level={2} id={id} className="max-w-[12ch] text-d3 lg:text-d2">
             A rooftop built over a food truck park
           </Heading>
 
           <div>
             {/*
-              EL PRIMER PÁRRAFO VA UN ESCALÓN MÁS GRANDE, que es el recurso de
-              la referencia: `text-lead` son 22px contra los 17 del cuerpo. Es
-              lo que hace que el bloque tenga una entrada y no sea un muro.
+              ⚠️ LA PROSA VA EN `intro` (25px) Y YA NO EN `lead` (22px), y los
+              dos párrafos del bloque van al MISMO cuerpo. En la referencia este
+              bloque es un solo párrafo grande, no una escalera de tamaños: el
+              contraste lo hace el salto contra el titular, no un escalón
+              interno de 22 a 17.
             */}
-            <p className="m-0 max-w-[58ch] font-body text-lead font-light leading-[1.55] text-ink">
+            <p className="m-0 max-w-[52ch] font-body text-intro font-light text-ink">
               {STORY_LEAD}
             </p>
 

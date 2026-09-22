@@ -134,3 +134,66 @@ export const EVENTS_PDF = {
   format: 'PDF',
   size: '13 MB',
 } as const;
+
+/* ==========================================================================
+   LA BARRA
+   ========================================================================== */
+
+/**
+ * Las tres formas de tomar, textuales del PDF (página «DRINK OPTIONS»).
+ *
+ * ⚠️ ESTO FALTABA ENTERO HASTA EL 2026-09-22. El PDF del cliente publica tres
+ * paquetes de barra con precio y la página de eventos no decía ni uno: tenía
+ * «tres maneras de alimentar a todos» y cero sobre la bebida. Al mismo tiempo
+ * el formulario del sitio vigente pregunta «Do you need drink package?», o sea
+ * que el cliente ya vende el producto y nosotros no lo mostrábamos.
+ *
+ * Y el hueco era caro de verdad: en un evento privado la barra suele costar
+ * más que la comida. $35 por persona por hora sobre cincuenta invitados y dos
+ * horas son $3.500, arriba del alquiler.
+ *
+ * ⚠️ MISMA FORMA QUE `FOOD_OPTIONS` a propósito: las dos listas se renderizan
+ * como tarjetas hermanas en `/events`, una al lado de la otra.
+ *
+ * ⚠️ EL 22 % DEL WRISTBAND ES EL MISMO DE `FEES` y no un recargo aparte. El
+ * PDF lo repite dentro del paquete; acá se nombra sin volver a fijar el
+ * número, que ya vive una sola vez en `FEES`.
+ */
+export const DRINK_OPTIONS: readonly FoodOption[] = [
+  {
+    slug: 'drink-tickets',
+    name: 'Drink tickets',
+    price: '$14 each',
+    body: 'One ticket is one drink, top shelf aside. They get sold in fives, so ten, fifteen or twenty at a time.',
+  },
+  {
+    slug: 'wristband',
+    name: 'Wristband tab',
+    price: 'One check',
+    body: 'An open tab for the whole group on wristbands, settled once at the end of the night, with the automatic gratuity on it.',
+  },
+  {
+    slug: 'open-bar',
+    name: 'Open bar',
+    price: 'From $25',
+    body: '$25 per person per hour for wine, beer and seltzers, or $35 for the full liquor bar. Two hour minimum, and $15 per person for each hour after that.',
+  },
+];
+
+/* ==========================================================================
+   LAS FIESTAS CHICAS
+   ========================================================================== */
+
+/**
+ * El piso a partir del cual el formulario tiene sentido.
+ *
+ * ⚠️ ES UNA REGLA QUE EL CLIENTE YA PUBLICA Y NOSOTROS NO TENÍAMOS. El sitio
+ * vigente cierra `/hostanevent` con «*For parties less than 12 people contact:
+ * 239-268-0080», y en el sitio nuevo no estaba en ninguna parte: una mesa de
+ * ocho aterrizaba en un formulario de quince campos con presupuesto y fechas
+ * alternativas, para algo que se resuelve con una llamada.
+ *
+ * ⚠️ EL TELÉFONO NO SE ESCRIBE ACÁ: es el de la casa, y sale de `lib/brand.ts`
+ * como en el resto del sitio.
+ */
+export const SMALL_PARTY_MAX = 12;

@@ -301,6 +301,12 @@ export function TextAreaField(p: BaseFieldProps & { readonly rows?: number }) {
         name={p.name}
         rows={p.rows ?? 5}
         required={p.required}
+        /* ⚠️ ESTABA DECLARADO EN `BaseFieldProps` Y NO LLEGABA AL CONTROL: se
+           podía pasar `autoComplete` a un `TextAreaField`, TypeScript lo
+           aceptaba y el navegador no autocompletaba nada. Lo destapó la
+           dirección del formulario de trabajo, que es un `<textarea>` porque
+           en el papel es una caja alta y quiere `street-address`. */
+        autoComplete={p.autoComplete}
         {...aria}
         className={[BOX_BASE, err ? BAD : OK].join(' ')}
       />
@@ -398,11 +404,26 @@ export function CheckboxGroup({
   legend,
   options,
   hint,
+  defaultChecked,
 }: {
   readonly name: string;
   readonly legend: string;
   readonly options: readonly Option[];
   readonly hint?: string;
+  /**
+   * Los valores que vienen marcados de entrada.
+   *
+   * ⚠️ EXISTE PARA QUE UN LINK PUEDA LLEGAR CON UNA CASILLA YA PUESTA, y el
+   * primer caso es `/game-truck`: sus dos CTA mandaban a `/events#inquire`, o
+   * sea al formulario de eventos privados, con quince campos y ninguna
+   * referencia al camión. Ahora llegan a `/events?area=game-truck#inquire` y
+   * la casilla «The gaming truck» ya está tildada.
+   *
+   * ⚠️ VA EN EL `defaultChecked` DEL INPUT Y NO EN `checked`: el formulario es
+   * NO CONTROLADO —se lee por `FormData` en una server action— y un `checked`
+   * sin `onChange` deja la casilla congelada y React avisa por consola.
+   */
+  readonly defaultChecked?: readonly string[];
 }) {
   const { uid } = useContext(Ctx);
   const { eid, err } = useField(name);
@@ -424,6 +445,7 @@ export function CheckboxGroup({
               type="checkbox"
               name={name}
               value={o.value}
+              defaultChecked={defaultChecked?.includes(o.value)}
               className="size-[20px] rounded-[6px] border border-ink/25 accent-sunset"
             />
             {o.label}
@@ -525,6 +547,301 @@ export function RepeatableField({
           <span className="sr-only"> {label.toLowerCase()}</span>
         </button>
       ) : null}
+
+      {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
+    </fieldset>
+  );
+}
+
+/**
+ * Un grupo de radios: elegir UNA de dos o tres.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ NO EXISTÍA, Y HACÍA FALTA CUATRO VECES EN LA MISMA PANTALLA. El
+ * formulario de trabajo de `/join-us` se calcó del PDF del cliente el
+ * 2026-09-22, y ese papel tiene cuatro elecciones excluyentes: Part-Time o
+ * Full-Time, y las tres preguntas de sí o no (licencia o ID, elegibilidad en
+ * EE.UU., transporte propio). Hasta ese día el archivo sólo exportaba el
+ * *hook* `useRadioGroup`, para que `InquiryForm` dibujara sus tarjetas de
+ * tier a mano: eso está bien para un control único e irrepetible, y es
+ * exactamente lo que no son estos cuatro.
+ *
+ * ⚠️ POR QUÉ RADIOS Y NO UN DESPLEGABLE DE DOS OPCIONES. Con dos respuestas,
+ * un `<select>` esconde la mitad de la pregunta detrás de un clic y cuesta dos
+ * gestos en vez de uno. Y en el papel están las dos a la vista, que es lo que
+ * se está calcando.
+ *
+ * ⚠️ LA PREGUNTA VA ARRIBA Y LAS OPCIONES DEBAJO, aunque en el papel estén en
+ * la misma línea. El `<legend>` TIENE que ser el primer hijo del `<fieldset>`:
+ * es la única posición en la que el navegador lo toma como nombre accesible
+ * del grupo. Metido adentro de un `flex` junto a los radios para que quede en
+ * línea, se convierte en un texto suelto y el grupo se queda sin etiqueta.
+ * Es la misma disposición que ya tiene `CheckboxGroup` en este archivo.
+ *
+ * ⚠️ NINGUNA VIENE MARCADA DE ENTRADA. Una respuesta por omisión en «are you
+ * eligible for employment in the U.S.» es un dato que la persona no dio y que
+ * igual viaja en el mail. El schema exige la elección y el error lo dice.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export function RadioGroup({
+  name,
+  legend,
+  options,
+  hint,
+}: {
+  readonly name: string;
+  readonly legend: string;
+  readonly options: readonly Option[];
+  readonly hint?: string;
+}) {
+  const { uid } = useContext(Ctx);
+  const { eid, err, aria } = useField(name);
+  return (
+    <fieldset id={uid + '-' + name} className="flex flex-col gap-[8px]">
+      <legend className="font-body text-[16px] font-bold">
+        {legend}
+        {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
+      </legend>
+      <div className="mt-[6px] flex flex-wrap items-center gap-x-[28px] gap-y-[8px]">
+        {options.map((o) => (
+          <label
+            key={o.value}
+            htmlFor={uid + '-' + name + '-' + o.value}
+            className="flex cursor-pointer items-center gap-[10px] font-body text-[16px]"
+          >
+            <input
+              id={uid + '-' + name + '-' + o.value}
+              type="radio"
+              name={name}
+              value={o.value}
+              {...aria}
+              className="size-[20px] border border-ink/25 accent-sunset"
+            />
+            {o.label}
+          </label>
+        ))}
+      </div>
+      {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
+    </fieldset>
+  );
+}
+
+/**
+ * La grilla de disponibilidad: una fila por día, una casilla por turno.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ES EL RENGLÓN «AVAILABILITY» DEL PAPEL, que lista los siete días y debajo
+ * de cada uno «AM / PM». Reemplaza a los cinco tipos de turno que teníamos
+ * —«Weekdays», «Night shifts», «Anything you have»—, que los habíamos
+ * inventado nosotros y son más gruesos: con «weekends» tildado no se sabe si
+ * la persona puede el sábado al mediodía.
+ *
+ * ⚠️ CADA CASILLA LLEVA SU PROPIO `aria-label` CON EL DÍA ADENTRO: «Monday
+ * AM». Sin eso, un lector de pantalla recorriendo el formulario anuncia
+ * catorce casillas que dicen «AM», «PM», «AM», «PM» y ninguna dice de qué día.
+ * El nombre del día, visualmente, está en la primera columna de la fila, y esa
+ * relación espacial no viaja al audio.
+ *
+ * ⚠️ NO ES UNA `<table>` AUNQUE SE PAREZCA A UNA. Una tabla anuncia
+ * encabezados de fila y de columna al navegar celda por celda, y acá no hay
+ * datos que comparar: hay catorce casillas. El `<fieldset>` con su `<legend>`
+ * dice lo único que importa, que es de qué pregunta son todas.
+ *
+ * ⚠️ EL DÍA SE ABREVIA POR DEBAJO DE `sm`. Siete filas con «Wednesday» entero
+ * más dos casillas no entran en 360px sin partir la etiqueta en dos renglones.
+ * El papel mismo escribe «Wed.», así que la abreviatura no es una licencia.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export function CheckboxMatrix({
+  name,
+  legend,
+  hint,
+  rows,
+  cols,
+}: {
+  readonly name: string;
+  readonly legend: string;
+  readonly hint?: string;
+  /** Las filas: los días. `short` es lo que se ve en el teléfono. */
+  readonly rows: readonly { readonly value: string; readonly label: string; readonly short: string }[];
+  /** Las columnas: los turnos. */
+  readonly cols: readonly Option[];
+}) {
+  const { uid } = useContext(Ctx);
+  const { eid, err } = useField(name);
+  return (
+    <fieldset id={uid + '-' + name} className="flex flex-col gap-[8px]">
+      <legend className="font-body text-[16px] font-bold">
+        {legend}
+        {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
+      </legend>
+
+      {/*
+        Dos columnas de días desde `sm`: siete filas de una sola línea dejan la
+        mitad derecha del panel vacía, y el formulario ya es largo.
+      */}
+      <div className="mt-[6px] grid gap-x-[24px] gap-y-[10px] sm:grid-cols-2">
+        {rows.map((r) => (
+          /*
+            ⚠️ EL DÍA VA EN UNA COLUMNA DE ANCHO FIJO Y NO CON
+            `justify-between`. Con el reparto automático, «Mon» quedaba pegado
+            al borde izquierdo y sus casillas contra el derecho: doscientos
+            píxeles de nada entre una etiqueta y el control que nombra, que es
+            justo la distancia que hace dudar de cuál casilla es de qué día.
+            Con el ancho fijo, las siete filas arrancan sus casillas en la
+            misma vertical y el recorrido del ojo es corto.
+          */
+          <div key={r.value} className="flex items-center gap-[12px]">
+            <span className="w-[38px] shrink-0 font-body text-[16px] sm:w-[96px]">
+              <span className="sm:hidden" aria-hidden="true">
+                {r.short}
+              </span>
+              <span className="hidden sm:inline" aria-hidden="true">
+                {r.label}
+              </span>
+            </span>
+            <span className="flex shrink-0 items-center gap-[14px]">
+              {cols.map((c) => {
+                const valor = `${r.value}-${c.value}`;
+                return (
+                  <label
+                    key={c.value}
+                    htmlFor={uid + '-' + name + '-' + valor}
+                    className="flex cursor-pointer items-center gap-[6px] font-body text-[15px] text-body/80"
+                  >
+                    <input
+                      id={uid + '-' + name + '-' + valor}
+                      type="checkbox"
+                      name={name}
+                      value={valor}
+                      aria-label={`${r.label} ${c.label}`}
+                      className="size-[20px] rounded-[6px] border border-ink/25 accent-sunset"
+                    />
+                    <span aria-hidden="true">{c.label}</span>
+                  </label>
+                );
+              })}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
+    </fieldset>
+  );
+}
+
+/**
+ * Una TABLA del papel: N filas fijas de las mismas columnas.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SON LAS DOS TABLAS NARANJAS DEL PDF —«Educational background», dos
+ * renglones, y «Employment history», tres— y por eso las filas son FIJAS y no
+ * se agregan con un botón como en `RepeatableField`. El papel ofrece dos y
+ * tres renglones; ofrecer diez sería otro formulario.
+ *
+ * ⚠️ EN EL TELÉFONO NO ES UNA TABLA, ES UNA PILA DE BLOQUES NUMERADOS. Cuatro
+ * columnas en 360px no entran de ninguna manera: o se parte cada palabra o se
+ * mete scroll horizontal, que en esta web está prohibido —la página entera se
+ * arregló para no arrastrarse de costado—. Apiladas, cada fila se lee como una
+ * ficha corta con su número, que es lo que es.
+ *
+ * ⚠️ CADA CELDA TIENE SU `<label>` REAL, CON EL NÚMERO DE FILA ADENTRO, y en
+ * desktop va en `sr-only` porque el rótulo de la columna ya está arriba. Sin
+ * eso, ocho campos comparten cuatro etiquetas y un lector de pantalla no puede
+ * decir en qué renglón está parado.
+ *
+ * ⚠️ LOS RÓTULOS DE COLUMNA SE DIBUJAN UNA SOLA VEZ Y SÓLO EN `lg`, con
+ * `aria-hidden`: son decoración que repite lo que ya dicen los `<label>`.
+ * Anunciados, cada campo se leería dos veces.
+ *
+ * ⚠️ NINGUNA CELDA ES OBLIGATORIA, y es fiel al papel: el PDF no marca un solo
+ * campo de estas dos tablas. Las filas que quedan del todo vacías se descartan
+ * en la server action antes de validar.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export function FieldRows({
+  name,
+  prefix,
+  legend,
+  hint,
+  cols,
+  rows,
+}: {
+  /**
+   * La clave del SCHEMA, que es de donde sale el error y a dónde apunta el
+   * link del resumen de arriba: `education`, `history`.
+   *
+   * ⚠️ NO ES LO MISMO QUE `prefix`, y separarlos no es un capricho. Los inputs
+   * viajan como una columna por `name` repetido (`edu.degree` dos veces),
+   * mientras que zod valida la TABLA ENTERA bajo una sola clave. Si fueran el
+   * mismo string, el resumen de errores linkearía a `#…-edu`, que no existe.
+   */
+  readonly name: string;
+  /** Lo que va delante de cada columna: `edu` → `edu.degree`. */
+  readonly prefix: string;
+  readonly legend: string;
+  readonly hint?: string;
+  readonly cols: readonly { readonly key: string; readonly label: string }[];
+  /** Cuántos renglones dibuja. Es el número que tiene la hoja impresa. */
+  readonly rows: number;
+}) {
+  const { uid } = useContext(Ctx);
+  const { eid, err } = useField(name);
+  const grid = 'grid gap-[12px] sm:grid-cols-2 lg:grid-cols-4';
+
+  return (
+    <fieldset id={uid + '-' + name} className="flex flex-col gap-[8px]">
+      <legend className="font-body text-[16px] font-bold">
+        {legend}
+        {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
+      </legend>
+
+      <div className={`mt-[6px] hidden ${grid} lg:grid`} aria-hidden="true">
+        {cols.map((c) => (
+          <span key={c.key} className="font-body text-caption font-bold uppercase tracking-[0.08em] text-body/70">
+            {c.label}
+          </span>
+        ))}
+      </div>
+
+      <div className="flex flex-col gap-[16px] lg:gap-[12px]">
+        {Array.from({ length: rows }, (_, i) => (
+          <div key={i} className="flex gap-[12px]">
+            {/*
+              El número del renglón, como en el papel. En `lg` ocupa su lugar
+              en la grilla de arriba; abajo de eso es lo que separa una ficha
+              de la siguiente.
+            */}
+            <span
+              aria-hidden="true"
+              className="mt-[10px] w-[16px] shrink-0 font-body text-[15px] font-bold tabular-nums text-body/70"
+            >
+              {i + 1}.
+            </span>
+            <div className={`flex-1 ${grid}`}>
+              {cols.map((c) => {
+                const campo = `${prefix}.${c.key}`;
+                const fid = `${uid}-${campo}-${i}`;
+                return (
+                  <div key={c.key} className="flex flex-col gap-[6px]">
+                    <label htmlFor={fid} className="font-body text-[15px] text-body/80 lg:sr-only">
+                      {c.label}
+                      <span className="sr-only">, row {i + 1}</span>
+                    </label>
+                    <input
+                      id={fid}
+                      name={campo}
+                      type="text"
+                      className={[INPUT_BASE, OK].join(' ')}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
 
       {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
     </fieldset>

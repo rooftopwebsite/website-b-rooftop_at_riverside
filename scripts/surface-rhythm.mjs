@@ -40,6 +40,29 @@ const SECTION_MODULES = {
   '@/components/sections/YardSteps': 'src/components/sections/YardSteps.tsx',
   '@/components/sections/PhotoDivider': 'src/components/sections/PhotoDivider.tsx',
   '@/components/sections/EventVertical': 'src/components/sections/EventVertical.tsx',
+  /*
+   * ⚠️ LAS TRES DE `/our-story`, agregadas el 2026-09-22 al rediseñar la
+   * página. Las tres renderizan su propia `<Section tone>` y ninguna estaba
+   * declarada, así que el guard veía TRES secciones de las siete y reportaba
+   * «deep · paper · deep». El diagnóstico igual era correcto —había dos
+   * oscuras— pero por casualidad: las cuatro que faltaban podrían haber sido
+   * cuatro cremas seguidas sin que nadie se enterara.
+   *
+   * Es exactamente lo que advierte el bloque de arriba: si un archivo de
+   * `sections/` renderiza un `<Section>`, se agrega acá en el mismo commit.
+   */
+  '@/components/sections/AboutStory': 'src/components/sections/AboutStory.tsx',
+  '@/components/sections/VenueTabs': 'src/components/sections/VenueTabs.tsx',
+  '@/components/sections/HowToOrder': 'src/components/sections/HowToOrder.tsx',
+  /*
+   * ⚠️ LA CARCASA DE LOS TRES DOCUMENTOS LEGALES, agregada el 2026-09-22.
+   * `/gaming-truck-policies`, `/game-zone-waiver` y `/bar-games-waiver` no
+   * escriben una sola `<Section>` en su `page.tsx`: las dos que tienen —el
+   * encabezado en `bone` y el cuerpo en `paper`— las pone `LegalPage`, así que
+   * sin esta línea el guard veía tres páginas de CERO secciones y las daba por
+   * buenas sin mirar nada.
+   */
+  '@/components/legal/LegalPage': 'src/components/legal/LegalPage.tsx',
   '@/components/shared/PageHero': null, // el hero es siempre blanco
 };
 
@@ -144,8 +167,24 @@ async function pageTones(file) {
   const src = await fs.readFile(file, 'utf8');
   const own = await tonesIn(file);
 
-  // Componentes de sección usados en el JSX, en orden de aparición.
-  const used = [...src.matchAll(/<([A-Z][A-Za-z]*)\s*\/>/g)].map((m) => m[1]);
+  /*
+   * Componentes de sección usados en el JSX, en orden de aparición.
+   *
+   * ⚠️ ANTES PEDÍA `<Nombre />` PELADO, sin una sola prop, y por eso los tres
+   * documentos legales entraban al guard como páginas de CERO secciones. Su
+   * `page.tsx` no escribe ninguna `<Section>`: las dos que tienen —encabezado
+   * en `bone`, cuerpo en `paper`— las pone `LegalPage`, que se usa con seis
+   * props. El guard las leía, no encontraba nada y las daba por buenas.
+   *
+   * Es la misma trampa que el bloque de `SECTION_MODULES` advierte tres veces
+   * y que ya pasó dos: verde por omisión. Ahora se acepta cualquier
+   * autocerrado, con props o sin ellas.
+   *
+   * ⚠️ AMPLIAR ESTO NO AFECTA A NINGÚN COMPONENTE QUE NO ESTÉ DECLARADO: el
+   * bucle de abajo sólo expande los módulos de `SECTION_MODULES`. Lo único que
+   * cambia es que los declarados ahora también cuentan cuando reciben props.
+   */
+  const used = [...src.matchAll(/<([A-Z][A-Za-z]*)[^>]*\/>/g)].map((m) => m[1]);
   const expanded = [];
 
   for (const name of used) {

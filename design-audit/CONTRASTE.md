@@ -56,7 +56,7 @@ de interfaz y no tiene mínimo.
 | `muted` `#487270` sobre `deep` `#014545` | ❌ `muted` sobre oscuro — el bug que hubo que arreglar | **2.02:1** | 4.5:1 | 🚫 **prohibido, y por esto** |
 | **— La tarjeta del newsletter: `teal600`, donde SÓLO pasa el blanco —** | | | | |
 | `paper` `#FFFFFF` sobre `teal600` `#028382` | Todo el texto de la tarjeta — título, bajada y errores | **4.59:1** | 4.5:1 | ✅ AA |
-| `teal600` `#028382` sobre `deep` `#014545` | La tarjeta contra la losa del footer | **2.36:1** | 3:1 | ❌ **FALLA** |
+| `teal600` `#028382` sobre `deep` `#014545` | La tarjeta contra la losa del footer — dos superficies, sin mínimo | **2.36:1** | — | ➖ exento — decorativo |
 | `cream` `#FDF0B4` sobre `teal600` `#028382` | El relleno del botón «Join» y el anillo de foco | **4.00:1** | 3:1 | ✅ AA |
 | `muted-dark` `#A8C6C4` sobre `teal600` `#028382` | ❌ la bajada en `muted-dark` — por eso la tarjeta pisa `--lead-ink` | **2.52:1** | 4.5:1 | 🚫 **prohibido, y por esto** |
 | `tomato-soft` `#FF8F7A` sobre `teal600` `#028382` | ❌ el error en rojo — por eso los errores quedaron blancos | **2.07:1** | 4.5:1 | 🚫 **prohibido, y por esto** |

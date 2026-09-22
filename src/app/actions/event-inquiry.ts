@@ -6,6 +6,7 @@ import { BRAND } from '@/lib/brand';
 import { sendMail } from '@/lib/mail';
 import {
   AREAS_OF_INTEREST,
+  BAR_TIERS,
   BUDGET_RANGES,
   EVENT_SUBTYPES,
   FOOD_TIERS,
@@ -59,6 +60,11 @@ const inquirySchema = z.object({
   foodTier: z.enum(FOOD_TIERS.map((t) => t.value) as [string, ...string[]], {
     message: 'Choose a food tier.',
   }),
+  /**
+   * ⚠️ OPCIONAL, al revés que la comida: se puede alquilar el lugar sin cerrar
+   * la barra en un paquete. Ver la nota del campo en `InquiryForm`.
+   */
+  barTier: z.enum(BAR_TIERS).optional(),
   budget: z.enum(BUDGET_RANGES, { message: 'Pick a range, even a rough one.' }),
   /** Casillas: la action las lee con `getAll`, no con `fromEntries`. */
   areas: z
@@ -112,6 +118,7 @@ export async function submitEventInquiry(
     d.startTime || d.endTime ? `Time:        ${d.startTime || '?'} – ${d.endTime || '?'}` : null,
     `Guests:      ${d.guests}`,
     `Food tier:   ${d.foodTier}`,
+    d.barTier ? `Bar package: ${d.barTier}` : null,
     `Budget:      ${d.budget}`,
     d.areas.length > 0 ? `Interested:  ${d.areas.join(', ')}` : null,
     d.referral ? `Heard via:   ${d.referral}` : null,

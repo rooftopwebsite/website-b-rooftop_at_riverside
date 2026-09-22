@@ -1,3 +1,5 @@
+import { BRAND } from '@/lib/brand';
+
 /**
  * Navegación.
  *
@@ -146,8 +148,14 @@ export const NAV_MORE_GROUPS: readonly NavGroup[] = [
       },
       { label: 'Market', href: '/market', hint: 'Local vendors and handmade goods in the yard.' },
       {
+        /* ⚠️ LA URL SALE DE `BRAND` Y NO SE ESCRIBE ACÁ. Hasta el 2026-09-22
+           la `href` era el string literal `'GIFT_CARDS'`, o sea el nombre de
+           la constante en vez de su valor: el único link del mega-menú que no
+           navegaba a ningún lado, porque el Header lo pasa crudo a `<Link>` y
+           Next lo resolvía como ruta relativa. El footer ya lo tomaba de
+           `BRAND.giftCards`; ahora los dos leen el mismo lugar. */
         label: 'Gift Cards',
-        href: 'GIFT_CARDS',
+        href: BRAND.giftCards,
         external: true,
         hint: 'Any amount, good at the bar and every truck.',
       },
@@ -237,4 +245,19 @@ export const ALL_ROUTES: readonly string[] = [
   '/join-us',
   '/visit',
   '/contact',
+
+  /*
+   * ⚠️ LOS TRES DOCUMENTOS DEL CAMIÓN NO ESTÁN EN NINGÚN MENÚ, y sí en esta
+   * lista. No es una contradicción: `ALL_ROUTES` no es el menú, es el inventario
+   * de rutas estáticas del que sale el `sitemap.ts`. El menú son `NAV_PRIMARY`
+   * y `NAV_MORE`, y ahí no van: se llega a ellos desde `/game-truck`, que es
+   * donde importan, y desde el pie de cada uno de los otros dos.
+   *
+   * Van al sitemap porque son las únicas páginas que contestan «¿hasta cuándo
+   * puedo cancelar?» o «¿puedo llevar comida al camión?», que es lo que alguien
+   * busca justo antes de reservar.
+   */
+  '/gaming-truck-policies',
+  '/game-zone-waiver',
+  '/bar-games-waiver',
 ];

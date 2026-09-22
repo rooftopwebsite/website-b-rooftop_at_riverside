@@ -163,9 +163,17 @@ export const BRAND = {
     tiktok: null,
   },
 
-  /** Toast. Es el único enlace de comercio que existe hoy en el sitio. */
-  giftCards:
-    'https://www.toasttab.com/rooftop-and-riverside-new-27333-old-41-road/giftcards',
+  /**
+   * Toast. Es el único enlace de comercio que existe hoy en el sitio.
+   *
+   * ⚠️ ES LA PUNTA `order.toasttab.com/egiftcards/...`, la que pasó Camila el
+   * 2026-09-22, y no `www.toasttab.com/<local>/giftcards`, que es la que tenía
+   * antes. Son dos productos distintos de Toast: la vieja es la ficha del
+   * local y la nueva abre directo el flujo de compra de la egift card. Si
+   * alguna vez hay que cambiarla, se cambia acá y nada más: el footer, el
+   * mega-menú, el drawer y las dos apariciones de `/contact` leen esta línea.
+   */
+  giftCards: 'https://order.toasttab.com/egiftcards/rooftop-and-riverside-new-27333-old-41-road',
 
   /**
    * El perfil de organizador en Eventbrite.

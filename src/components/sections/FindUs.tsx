@@ -301,8 +301,16 @@ export default async function FindUs() {
               </span>
               <p className="m-0 font-body text-dato font-light leading-[1.6] text-paper">
                 Street parking on Old 41 and public lots around Riverside Park.{' '}
+                {/*
+                  ⚠️ EL ANCLA `#parking` VOLVIÓ A EXISTIR el 2026-09-22. Estuvo
+                  rota un tiempo: el párrafo de estacionamiento se había caído
+                  de `/contact` por no tener fuente, y este link quedó apuntando
+                  a una sección que no estaba. Ahora del otro lado hay una
+                  sección propia con el mapa dibujado, así que el link cumple lo
+                  que promete.
+                */}
                 <Link href="/contact#parking" className="border-b border-cream text-cream">
-                  Details
+                  See the map
                 </Link>
               </p>
             </div>

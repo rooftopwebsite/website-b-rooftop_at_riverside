@@ -3,220 +3,412 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useId, useState } from 'react';
-import { ArrowRight } from '@/components/shared/Icon';
+import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
-import { SectionHead } from '@/components/shared/Type';
+import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { VENUE_AREAS } from '@/content/venue-areas';
 
 /**
- * «Two floors, five places to be», como lista de pestañas con panel fijo.
+ * «Two floors, five places to be», como ACORDEÓN DE IMÁGENES.
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ ES LA ESTRUCTURA QUE PASÓ CAMILA, 2026-09-16: «para nombrar los Two
- * floors, five places to be creo que podríamos usar esta estructura», con el
- * spec de una sección de feature con tabs.
+ * ⚠️ ES LA ESTRUCTURA QUE PASÓ CAMILA, 2026-09-22, con un componente de
+ * referencia armado: cinco paneles de foto en una fila, el elegido se estira y
+ * los otros quedan como franjas angostas, con flechas de paso y el texto de lo
+ * elegido debajo. «Esto así no me gusta, creo que podríamos hacerlo así.»
  *
- * Lo que se toma del spec, que es la mecánica entera:
+ * Lo que se toma de la referencia, que es la mecánica entera:
  *
- *   · dos columnas;
- *   · izquierda, la lista de pestañas como BOTONES separados por filetes de
- *     1px, cada uno con índice en cifras tabulares, título, y una barra
- *     vertical de acento de 2px en el activo;
- *   · el activo despliega su descripción y el resto queda atenuado;
- *   · botones de acción debajo de la lista;
- *   · derecha, panel STICKY a 88px con una barra de rótulo arriba y la imagen
- *     en 4/3 que cambia con la pestaña.
+ *   · una fila de paneles con `flex-grow` distinto según el estado, y la
+ *     transición en `flex-grow` para que el que abre EMPUJE a los otros;
+ *   · el hover agranda un poco el panel que se está por elegir;
+ *   · flechas de anterior y siguiente, y flechas del teclado;
+ *   · debajo, el texto de la pieza elegida y el link para ir a verla.
  *
- * ⚠️ LO QUE NO SE TOMA ES LA PIEL, y es el propio pedido: «con el UI y la
- * necesidad de este proyecto, obvio». El spec venía con Geist, #E55100, grilla
- * de 4px y radios de 6/10/14. Nada de eso entra: acá van Big Shoulders y Jost,
- * el acento es `sunset`, los radios son los del tema y el filete es `fog`.
+ * ⚠️ LO QUE NO SE TOMA ES LA PIEL. La referencia venía con sus propias
+ * variables —`--rx-*`, Phosphor icons, radios de 6/10/14, una barra de puntos
+ * de 4px—. Acá va el vocabulario del sitio: `bone` de fondo, `rounded-ticket`
+ * en los paneles —el mismo radio que el hueco de foto de `EventTypes`—, el
+ * velo `ink` de `PhotoDivider`, los chips del molde `TAG`, las flechas
+ * redondas de los carruseles de la home y la display en caja alta.
  *
- * ⚠️ Y HAY UNA COSA DEL SPEC QUE SE CAMBIÓ A PROPÓSITO: LA BARRA DE VENTANA
- * FALSA. El original pide «barra de ventana falsa» con tres puntitos, que es el
- * idioma de una captura de producto SaaS. En la página de un bar, tres puntos
- * de macOS arriba de una foto del patio dicen «esto es un screenshot de una
- * app», que es exactamente lo que no es. Se conserva la BARRA —mismos 36px,
- * mismo filete, mismo rótulo en cifras chicas— y adentro va lo que sí es cierto:
- * el piso a la izquierda y el nombre del lugar a la derecha. La composición es
- * idéntica y deja de mentir sobre qué se está mirando.
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ NO HAY RÓTULO SOBRE EL PANEL ABIERTO, y estuvo puesto. Era una plancha
+ * verde apoyada abajo a la izquierda con el piso y el nombre del lugar, calcada
+ * de la referencia. Camila la tachó, 2026-09-22: «estás repitiendo info, sólo
+ * dejá el título de abajo». Tiene razón y es literal: el nombre estaba dos
+ * veces en la misma pantalla, a 60px de distancia, una vez sobre la foto y otra
+ * como `<h3>` justo debajo. La foto abierta queda limpia.
+ *
+ * ⚠️ TAMPOCO HAY BARRA DE PISO NI CONTADOR «01 / 05». Los dos también salieron
+ * tachados en el mismo pase. Eran la barra de rótulo que tenía el panel de la
+ * versión de pestañas, mudada arriba del acordeón, y con el acordeón a la vista
+ * no informaban nada que no se viera: cuál está abierto lo dice el panel que
+ * mide seis veces más que los otros, y cuántos hay se cuentan.
+ *
+ * ⚠️ EL PISO NO SE PIERDE: pasa a ser el EYEBROW del bloque de texto de abajo,
+ * arriba del nombre. Es el único dato de los tres que no se lee solo mirando la
+ * fila —una foto no dice en qué piso fue sacada— y es el dato que le da sentido
+ * al titular de la sección, que habla de dos pisos. Ahí además queda en la
+ * pareja que el sitio usa en todos lados: rótulo chico arriba, título abajo.
+ *
+ * ⚠️ LAS FLECHAS SUBIERON A LA LÍNEA DE LA BAJADA, pedido del mismo pase con la
+ * flecha dibujada hacia arriba. Al irse la barra quedaban sueltas sobre el
+ * acordeón; alineadas al pie del encabezado, la fila entera —rótulo, titular,
+ * bajada y los dos controles— cierra con un solo filete y el acordeón arranca
+ * enseguida.
  * ══════════════════════════════════════════════════════════════════════════
  *
- * ⚠️ REEMPLAZA A LA GRILLA AGRUPADA POR PISO, que es lo que había antes: dos
- * encabezados de piso y debajo las tarjetas de cada uno. Funcionaba, pero
- * mostraba las cinco descripciones a la vez, o sea 900 palabras apiladas en la
- * sección del medio de la página. Con pestañas se lee una por vez y el piso no
- * se pierde: va en el rótulo del panel y en el renglón de cada pestaña.
+ * ⚠️ ACÁ HABÍA UNA LISTA DE PESTAÑAS CON PANEL FIJO, y se fue. Era la
+ * estructura que Camila misma había pasado el 2026-09-16 —lista a la izquierda
+ * con filete y barra de acento, panel sticky con la foto a la derecha— y
+ * funcionaba, pero tenía un problema que sólo se ve en pantalla: la foto era la
+ * mitad chica de la sección y las otras cuatro no existían hasta que las
+ * clickeabas. Un lugar que se vende por cómo se ve necesita que las cinco fotos
+ * estén a la vista.
+ *
+ * Lo que la lista hacía bien y ACÁ SE CONSERVA: que el resto quede ATENUADO
+ * —era un cambio de color de texto, ahora es el velo sobre las fotos cerradas—,
+ * una sola descripción a la vez y nunca las cinco apiladas, y el link del área
+ * activa más «Rent any of it», que es fijo.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EN CELULAR EL ACORDEÓN ES VERTICAL Y NO HORIZONTAL, y no es un detalle de
+ * gusto. A 390px, cinco paneles en fila dejan al abierto en 210px y a los otros
+ * cuatro en 38: cuatro tiras de foto de 38px no se leen como nada. Apilado,
+ * cada panel cerrado es una franja de ~54px de alto y ancho completo, así que
+ * ahí sí entra el NOMBRE al lado del número, que es exactamente lo que hacía la
+ * lista de pestañas vieja. La misma mecánica, la forma que entra.
+ *
+ * ⚠️ EL ALTO DE LA CAJA ESCALA EN CINCO PASOS y no en dos. Es la regla de la
+ * casa para todo valor responsive, y acá hace falta de verdad porque el alto
+ * cambia de significado en el medio: hasta `md` es la suma de cinco franjas
+ * apiladas, y de `md` para arriba es el alto de una foto apaisada.
+ *
+ *     base   460px   vertical, el panel abierto queda en ~268
+ *     sm     540px   vertical con más aire
+ *     md     300px   pasa a horizontal, apaisado
+ *     lg     380px
+ *     desk   440px
+ *
+ * ⚠️ ROLES ARIA DE VERDAD: `tablist` / `tab` / `tabpanel`. Los cinco paneles son
+ * las pestañas y el bloque de texto de abajo es el panel. Sin eso, un lector de
+ * pantalla anuncia cinco botones sueltos y un párrafo que cambia solo.
+ *
+ * ⚠️ CADA BOTÓN SE NOMBRA CON `aria-label` Y LA FOTO VA CON `alt=""`. Adentro
+ * del botón, la foto es decoración: lo que hay que anunciar es «Sunset Bar,
+ * Second floor», no la descripción de la imagen. El `photoAlt` sigue en
+ * `venue-areas.ts` para quien use esas fotos en otro lado.
  *
  * ⚠️ ES CLIENT COMPONENT, y es el único de esta página. Necesita estado para
- * saber qué pestaña está activa. Nada más viaja al bundle: el contenido sale de
- * `VENUE_AREAS`, que es un módulo estático.
- *
- * ⚠️ ROLES ARIA DE VERDAD, no `<div>` con `onClick`. Es un patrón de pestañas
- * reconocido y tiene marcado propio: `tablist` / `tab` / `tabpanel`, con
- * `aria-selected` y `aria-controls`. Sin eso, un lector de pantalla anuncia
- * cinco botones sueltos y un párrafo que cambia solo.
+ * saber qué panel está abierto y cuál tiene el mouse encima. Nada más viaja al
+ * bundle: el contenido sale de `VENUE_AREAS`, que es un módulo estático.
  */
+
+const TOTAL = VENUE_AREAS.length;
+
+const cifra = (n: number) => String(n).padStart(2, '0');
+
+/**
+ * Los tres pesos del acordeón. Salen de la referencia y el par que importa es
+ * el primero: 5,6 contra 1 deja al panel abierto en el 58 % de la fila, que es
+ * lo que lo vuelve una foto y no una franja más ancha.
+ *
+ * ⚠️ EL HOVER ES 1,35 Y EN LA REFERENCIA ERA 1,1. Con 1,1 el panel crece 13px
+ * sobre 130: a ojo no pasa nada y el cursor no recibe respuesta. 1,35 son 45px
+ * y se lee como «este se abre si hago clic», que es para lo que está.
+ *
+ * ⚠️ EL HOVER NO SE APLICA AL QUE YA ESTÁ ABIERTO. Multiplicarle 1,35 a 5,6 lo
+ * empuja al 66 % y los otros cuatro se achican de golpe al pasar el mouse por
+ * el panel que ya estás mirando, que es movimiento sin motivo.
+ */
+const PESO = { abierto: 5.6, encima: 1.35, cerrado: 1 } as const;
+
+/** Las dos flechas de paso. Son las de los carruseles de la home, un tamaño
+ *  más chicas: 52px es el tamaño de un control que vive solo en el medio de una
+ *  banda, y éstas viven al pie de un encabezado. 44 es además el piso de área
+ *  táctil, así que no bajan de ahí. */
+const FLECHA =
+  'grid size-11 cursor-pointer place-items-center rounded-pill bg-deep text-cream ring-1 ring-deep transition-all duration-300 ease-brand hover:bg-sunset hover:text-ink active:scale-95';
+
 export default function VenueTabs({ id = 'place-title' }: { readonly id?: string }) {
   const [activo, setActivo] = useState(0);
+  const [encima, setEncima] = useState<number | null>(null);
   const base = useId();
   const area = VENUE_AREAS[activo]!;
 
   const tabId = (i: number) => `${base}-tab-${i}`;
-  const panelId = (i: number) => `${base}-panel-${i}`;
+  const panelId = `${base}-panel`;
 
+  /** Mueve la selección y le lleva el foco, que es lo que pide el patrón. */
+  const mover = (paso: number) => {
+    const siguiente = (activo + paso + TOTAL) % TOTAL;
+    setActivo(siguiente);
+    document.getElementById(tabId(siguiente))?.focus();
+  };
+
+  /*
+   * ⚠️ VA EN `bone` Y NO EN `paper`. No es un cambio de gusto: en `/our-story`
+   * el relato, esta sección y las dos ventanillas eran tres bandas claras
+   * seguidas, y sin alternancia de fondo una página larga se lee como un
+   * documento. `bone` contra `paper` mide 1.08:1, o sea que el corte se ve sin
+   * meter un campo de color. Es la nota del tono en `Section`.
+   *
+   * ⚠️ EL TONO VA ESCRITO ACÁ Y NO SE RECIBE POR PROP, a propósito:
+   * `npm run check:surfaces` sólo expande los componentes que la página usa
+   * SIN props (`<VenueTabs />`). Con un `tone=` en el call site, la sección se
+   * volvería invisible para el guard, que es justo el «verde por omisión»
+   * contra el que ese archivo advierte.
+   */
   return (
-    <Section band="lg" labelledBy={id}>
-      <SectionHead
-        eyebrow="The place"
-        eyebrowTone="plum"
-        id={id}
-        title="Two floors, five places to be"
-        lead="One property, built in layers. The bar went on the roof because that is where the sunset is, and everything else grew underneath it."
-      />
+    <Section tone="bone" band="lg" labelledBy={id}>
+      {/*
+        El encabezado y los dos controles en la misma fila, cerrados por un solo
+        filete. `items-end` es lo que apoya las flechas en el último renglón de
+        la bajada, que es donde Camila las dibujó.
+      */}
+      <div className="flex flex-col gap-6 border-b border-fog pb-7 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
+        <SectionHead
+          eyebrow="The place"
+          eyebrowTone="plum"
+          id={id}
+          title={
+            <>
+              Two floors, <span className="text-sunset-deep">five places</span> to be
+            </>
+          }
+          lead="One property, built in layers. The bar went on the roof because that is where the sunset is, and everything else grew underneath it."
+        />
+
+        {/*
+          ⚠️ NO SE APAGAN EN LAS PUNTAS: el recorrido es circular, del último
+          vuelve al primero. Con cinco paneles a la vista no hay un «final» que
+          avisar, y una flecha apagada en una fila que se ve entera confunde más
+          de lo que informa.
+        */}
+        <div className="flex shrink-0 gap-2">
+          <button type="button" onClick={() => mover(-1)} className={FLECHA}>
+            <span className="sr-only">Previous place</span>
+            <ArrowLeft className="size-4" />
+          </button>
+          <button type="button" onClick={() => mover(1)} className={FLECHA}>
+            <span className="sr-only">Next place</span>
+            <ArrowRight className="size-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* ── El acordeón ──────────────────────────────────────────────── */}
+      <div
+        role="tablist"
+        aria-label="Places in the building"
+        onMouseLeave={() => setEncima(null)}
+        className="mt-6 flex h-[460px] flex-col gap-2 sm:h-[540px] md:h-[300px] md:flex-row lg:h-[380px] lg:gap-3 desk:h-[440px]"
+      >
+        {VENUE_AREAS.map((a, i) => {
+          const abierta = i === activo;
+          const peso = abierta ? PESO.abierto : encima === i ? PESO.encima : PESO.cerrado;
+
+          return (
+            <button
+              key={a.slug}
+              type="button"
+              role="tab"
+              id={tabId(i)}
+              aria-selected={abierta}
+              aria-controls={panelId}
+              /* Sólo la pestaña abierta entra en el orden de tabulación; entre
+                 ellas se navega con las flechas, que es lo que el patrón pide. */
+              tabIndex={abierta ? 0 : -1}
+              aria-label={`${a.name}, ${a.floor}`}
+              onMouseEnter={() => setEncima(i)}
+              onClick={() => setActivo(i)}
+              onKeyDown={(e) => {
+                /* Las cuatro flechas, y no dos: la fila es horizontal en
+                   desktop y vertical en celular, así que las dos parejas
+                   tienen que hacer lo mismo. */
+                const paso =
+                  e.key === 'ArrowRight' || e.key === 'ArrowDown'
+                    ? 1
+                    : e.key === 'ArrowLeft' || e.key === 'ArrowUp'
+                      ? -1
+                      : 0;
+                if (paso === 0) return;
+                e.preventDefault();
+                mover(paso);
+              }}
+              style={{ flexGrow: peso }}
+              /*
+                ⚠️ `basis-0` MÁS `flexGrow` ES LO QUE HACE EL ACORDEÓN. Con
+                `basis-auto` el ancho de partida sería el del contenido —una
+                foto `fill` no tiene— y el reparto dejaría de ser proporcional.
+
+                ⚠️ LOS MÍNIMOS SON DISTINTOS POR EJE: apilado, un panel cerrado
+                no puede bajar de 52px de ALTO o el chip con el nombre no entra;
+                en fila, no puede bajar de 44px de ANCHO, que es el piso de área
+                táctil. Cada mínimo vale en su orientación y no en la otra.
+
+                ⚠️ LA TRANSICIÓN VA SÓLO EN `flex-grow`. Poniéndola en `all`
+                también anima el color del velo y la sombra del foco, y el
+                anillo de foco tiene que aparecer al instante.
+              */
+              className="group relative min-h-[52px] shrink basis-0 cursor-pointer overflow-hidden rounded-ticket border-0 bg-fog p-0 transition-[flex-grow] duration-300 ease-brand md:min-h-0 md:min-w-[44px]"
+            >
+              {a.photo ? (
+                <Image
+                  src={a.photo}
+                  alt=""
+                  fill
+                  /* El panel abierto se lleva el 58 % de la fila; los cerrados
+                     son franjas. Un solo `sizes` para los dos estados pediría
+                     siempre la grande, así que se declara el caso ancho. */
+                  sizes="(min-width: 768px) 60vw, 92vw"
+                  className="object-cover"
+                />
+              ) : null}
+
+              {/*
+                ⚠️ EL HUECO DE FOTO SÓLO SE DIBUJA EN EL PANEL ABIERTO. El
+                marcador de `PhotoPending` lleva rótulo y brief en español
+                adentro de un filete punteado: en una franja de 44px de ancho se
+                recorta y queda un rectángulo con letras cortadas, que se lee
+                como un error y no como un pendiente. Cerrado queda el `bg-fog`
+                del panel, y el pendiente aparece entero al abrirlo.
+                TODO: confirmar con cliente la foto del patio de arriba.
+              */}
+              {!a.photo && abierta ? (
+                <PhotoPending
+                  brief={a.photoBrief}
+                  ratio=""
+                  className="absolute inset-0 h-full rounded-none border-0"
+                />
+              ) : null}
+
+              {/*
+                ⚠️ EL VELO ES LO QUE ATENÚA LO QUE NO ESTÁ ABIERTO, y es el
+                trabajo que en la versión de pestañas hacía el color del texto.
+                Es `ink` y no negro, que es el mismo velo de `PhotoDivider`: cae
+                al verde casi negro del resto de la página en vez de a un gris.
+
+                ⚠️ 50 % Y NO 60 % como allá. En `PhotoDivider` el velo tiene que
+                dejar leer texto blanco encima de una hoja con mucho contraste;
+                acá encima sólo va un chip con su propio fondo, y lo único que
+                el velo tiene que hacer es mandar la foto un paso atrás.
+
+                ⚠️ EN HOVER BAJA A 25 %, o sea que la foto ASOMA antes de que la
+                elijas. Es la otra mitad de la respuesta al cursor: el panel
+                crece y además se aclara.
+
+                ⚠️ NO SE DIBUJA SOBRE EL PANEL SIN FOTO. Ahí abajo no hay
+                imagen: hay `bg-fog`, que es el color de hueco de foto del
+                sitio. Velado quedaba un verde oliva sucio que no es ningún
+                token, y encima mentía: parecía una foto oscura en vez del lugar
+                vacío que es.
+              */}
+              {a.photo ? (
+                <span
+                  aria-hidden="true"
+                  className={[
+                    'pointer-events-none absolute inset-0 transition-colors duration-300 ease-brand',
+                    abierta ? 'bg-transparent' : 'bg-ink/50 group-hover:bg-ink/25',
+                  ].join(' ')}
+                />
+              ) : null}
+
+              {/*
+                ⚠️ EL CHIP ES EL MOLDE DE LOS TAGS: radio de familia, fondo
+                `bone` y texto `deep`, o sea 10.03:1 medido y no «depende de la
+                foto». Y va SÓLO EN LOS CERRADOS: sobre el abierto sería el
+                rótulo que Camila tachó.
+
+                ⚠️ LLEVA EL NOMBRE HASTA `md`, DONDE SE VA. Apilado hay 358px de
+                ancho y el nombre entra entero, que es lo que convierte a la
+                franja en el renglón de una lista. En fila el panel mide 130px y
+                no entra ni «The Yard»: queda el número. El nombre no se pierde
+                para quien no ve la pantalla: está en el `aria-label`.
+              */}
+              {abierta ? null : (
+                <span className="absolute bottom-3 left-3 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-btn bg-bone px-2.5 py-1">
+                  <span className="font-body text-caption font-bold tabular-nums tracking-eyebrow text-deep">
+                    {cifra(i + 1)}
+                  </span>
+                  <span className="truncate font-display text-d7 font-bold uppercase leading-none text-deep md:hidden">
+                    {a.name}
+                  </span>
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
 
       {/*
-        ⚠️ `items-start` ES LO QUE HACE FUNCIONAR EL STICKY. Con la alineación
-        por defecto —`stretch`— la columna derecha mide lo mismo que la
-        izquierda y un `position: sticky` adentro de una caja que ya es tan alta
-        como su hermana no tiene recorrido: se queda quieto y parece roto.
+        ── El panel: el texto de lo que está abierto ───────────────────
+        ⚠️ ES UNA SOLA DESCRIPCIÓN Y NO LAS CINCO. Es la misma decisión que
+        tenía la versión de pestañas y por el mismo motivo: las cinco juntas son
+        novecientas palabras apiladas en el medio de la página.
+
+        ⚠️ EL TEXTO Y LOS LINKS VAN EN UNA FILA, como en la referencia: el
+        párrafo a la izquierda y la acción a la derecha. Apilados, el link
+        quedaba a cuatro renglones del nombre de lo que manda a ver.
       */}
-      <div className="mt-bloque grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16">
-        {/* ── La lista de pestañas ─────────────────────────────────────── */}
+      <div
+        role="tabpanel"
+        id={panelId}
+        aria-labelledby={tabId(activo)}
+        className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-12"
+      >
         <div>
-          <div role="tablist" aria-label="Places in the building" className="flex flex-col">
-            {VENUE_AREAS.map((a, i) => {
-              const activa = i === activo;
-              return (
-                <button
-                  key={a.slug}
-                  type="button"
-                  role="tab"
-                  id={tabId(i)}
-                  aria-selected={activa}
-                  aria-controls={panelId(i)}
-                  tabIndex={activa ? 0 : -1}
-                  onClick={() => setActivo(i)}
-                  onKeyDown={(e) => {
-                    /* Flechas para moverse entre pestañas: es lo que el patrón
-                       espera y es la única forma de recorrerlas con teclado,
-                       porque las inactivas tienen `tabIndex -1`. */
-                    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-                    e.preventDefault();
-                    const paso = e.key === 'ArrowDown' ? 1 : -1;
-                    const siguiente = (i + paso + VENUE_AREAS.length) % VENUE_AREAS.length;
-                    setActivo(siguiente);
-                    document.getElementById(tabId(siguiente))?.focus();
-                  }}
-                  className="flex cursor-pointer items-stretch gap-4 border-t border-fog bg-transparent py-5 text-left"
-                >
-                  {/*
-                    LA BARRA DE ACENTO DE 2px. Ocupa el alto del ítem y sólo se
-                    pinta en el activo; en los demás queda transparente y sigue
-                    ocupando su lugar, así que el texto no salta al cambiar.
-                  */}
-                  <span
-                    aria-hidden="true"
-                    className={`w-0.5 shrink-0 rounded-pill transition-colors duration-200 ease-brand ${
-                      activa ? 'bg-sunset' : 'bg-transparent'
-                    }`}
-                  />
-
-                  <span className="flex min-w-0 flex-col gap-1.5">
-                    <span className="flex items-baseline gap-2.5">
-                      <span className="font-body text-micro font-medium tabular-nums tracking-label text-muted">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <span
-                        className={`font-display text-d5 font-bold uppercase leading-none transition-colors duration-200 ease-brand ${
-                          activa ? 'text-ink' : 'text-muted'
-                        }`}
-                      >
-                        {a.name}
-                      </span>
-                    </span>
-
-                    {/*
-                      ⚠️ LA DESCRIPCIÓN SÓLO EXISTE EN LA PESTAÑA ACTIVA, y no
-                      está escondida con `hidden` en las otras cuatro: si
-                      estuvieran todas en el DOM, un lector de pantalla leería
-                      las cinco descripciones seguidas y el patrón de pestañas
-                      dejaría de significar nada.
-                    */}
-                    {activa ? (
-                      <span className="flex flex-col gap-2.5 pt-1">
-                        <span className="font-body text-micro font-bold uppercase tracking-cta text-muted">
-                          {a.floor}
-                        </span>
-                        <span className="max-w-[46ch] font-body text-base font-light leading-[1.6] text-body">
-                          {a.body}
-                        </span>
-                      </span>
-                    ) : null}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
+          {/* El piso, que era la barra de arriba. Ver la nota del encabezado. */}
+          <Eyebrow tone="deep">{area.floor}</Eyebrow>
+          <Heading level={3} className="mt-gap-kicker">
+            {area.name}
+          </Heading>
           {/*
-            Los botones de acción debajo de la lista, como pide el spec. El
-            primero es el del área activa y cambia con ella; el segundo es fijo.
+            ⚠️ VA EN `text-base` Y NO EN `text-lead`, o sea UN ESCALÓN POR DEBAJO
+            de la bajada del encabezado de la sección. Pedido de Camila,
+            2026-09-22: «hagamos más chica la font de bajada, creo que debería
+            ser más chica que la bajada del título principal de esta sección».
+            Iban las dos en `text-lead` —17 a 22px— y dos bajadas del mismo
+            cuerpo en la misma sección se leen como dos titulares de la misma
+            jerarquía. La de arriba presenta la sección entera; ésta describe
+            una de cinco piezas.
+
+            ⚠️ EL COLOR SALE DE `bajada` Y NO DE UNA OPACIDAD. Es el token que
+            lee `--lead-ink`, que está medido sobre las tres superficies
+            (5.36:1 en `paper`, 4.96:1 en `bone`, 5.95:1 en `deep`); con
+            `text-body/85` el contraste real cambiaba con el fondo de atrás y
+            dejaba de poder auditarse.
+
+            ⚠️ Y LOS CINCO TEXTOS SE ACORTARON A DOS RENGLONES, en el mismo
+            pedido: «que el copy de cada uno no supere las dos líneas en desk».
+            A 62ch y en `text-base` eso son unos 140 caracteres, y los cinco
+            entran. Lo que se recortó está anotado en `content/venue-areas.ts`.
           */}
-          <div className="flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-fog pt-6">
-            {area.href ? (
-              <Link
-                href={area.href}
-                className="group inline-flex items-center gap-2.25 border-b-2 border-sunset pb-0.75 font-body text-base font-semibold text-ink transition-colors duration-200 hover:text-sunset-deep"
-              >
-                Go to {area.name}
-                <ArrowRight className="size-3.5 text-sunset-deep transition-transform duration-200 group-hover:translate-x-1" />
-              </Link>
-            ) : null}
-            <Link
-              href="/events"
-              className="group inline-flex items-center gap-2.25 font-body text-base font-medium text-muted transition-colors duration-200 hover:text-ink"
-            >
-              Rent any of it
-              <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-1" />
-            </Link>
-          </div>
+          <p className="bajada mt-3.5 max-w-[62ch] font-body text-base font-light">{area.body}</p>
         </div>
 
-        {/* ── El panel fijo ────────────────────────────────────────────── */}
-        <div
-          role="tabpanel"
-          id={panelId(activo)}
-          aria-labelledby={tabId(activo)}
-          className="overflow-hidden rounded-shell border border-fog bg-paper lg:sticky lg:top-22"
-        >
-          {/* La barra de rótulo. Ver la nota del encabezado sobre por qué no
-              lleva los tres puntos de ventana falsa. */}
-          <div className="flex h-9 items-center justify-between gap-4 border-b border-fog bg-bone px-4">
-            <span className="font-body text-micro font-bold uppercase tracking-cta text-muted">
-              {area.floor}
-            </span>
-            <span className="truncate font-body text-micro font-medium tabular-nums text-muted">
-              {String(activo + 1).padStart(2, '0')} / {String(VENUE_AREAS.length).padStart(2, '0')}
-            </span>
-          </div>
-
-          {/* El `bg-fog` sólo detrás de foto real: ver la nota de `TruckCards`. */}
-          <div className={`relative aspect-[4/3] ${area.photo ? 'bg-fog' : ''}`}>
-            {area.photo ? (
-              <Image
-                key={area.slug}
-                src={area.photo}
-                alt={area.photoAlt ?? area.name}
-                fill
-                sizes="(min-width: 1024px) 600px, 92vw"
-                className="object-cover"
-              />
-            ) : (
-              <PhotoPending brief={area.photoBrief} ratio="aspect-[4/3]" className="h-full" />
-            )}
-          </div>
+        {/* El primero es el del área abierta y cambia con ella; el segundo es
+            fijo. Dos de los cinco lugares no tienen página propia, así que ahí
+            queda sólo el fijo. */}
+        <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
+          {area.href ? (
+            <Link
+              href={area.href}
+              className="group inline-flex items-center gap-2.25 border-b-2 border-sunset pb-0.75 font-body text-base font-semibold whitespace-nowrap text-ink transition-colors duration-200 hover:text-sunset-deep"
+            >
+              Go to {area.name}
+              <ArrowRight className="size-3.5 text-sunset-deep transition-transform duration-200 group-hover:translate-x-1" />
+            </Link>
+          ) : null}
+          <Link
+            href="/events"
+            className="group inline-flex items-center gap-2.25 font-body text-base font-medium whitespace-nowrap text-muted transition-colors duration-200 hover:text-ink"
+          >
+            Rent any of it
+            <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+          </Link>
         </div>
       </div>
     </Section>

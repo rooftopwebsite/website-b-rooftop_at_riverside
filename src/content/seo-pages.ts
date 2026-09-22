@@ -88,10 +88,29 @@ export const PAGE_SEO = {
 
 
   '/market': {
-    h1: 'The Neighborhood Market',
+    /**
+     * ⚠️ ERA «The Neighborhood Market» Y CAMBIÓ CON EL REDISEÑO DE LA PÁGINA,
+     * por una medida y no por gusto: el hero pasó a `PlateHero`, que tiene el
+     * contrato de los DOS renglones, y «NEIGHBORHOOD» sola mide 248px a 320 de
+     * viewport contra una placa que ahí puede medir 232. En un teléfono el
+     * titular se partía en tres y la foto le tapaba el último renglón.
+     *
+     * El nombre del market no se pierde: sigue en el `title` de acá, en la
+     * miga, en el rótulo de la banda oscura y en el cierre de la página. Y el
+     * H1 queda como el de las otras cinco páginas terminadas, que son frases y
+     * no nombres de sección: «Bonita's only rooftop», «Say hello».
+     */
+    h1: 'Meet the makers',
     title: 'Neighborhood Market | Rooftop at Riverside',
+    /**
+     * ⚠️ LA DESCRIPCIÓN SIGUE NOMBRANDO EL FEE aunque la página haya dejado de
+     * abrir con él (rediseño del 2026-09-22). No es una contradicción: en un
+     * resultado de búsqueda el precio CALIFICA el clic, y un vendor que ve «$30»
+     * en el snippet entra sabiendo a qué. Lo que se corrigió es el orden: la
+     * frase ahora termina en la acción y no en el número.
+     */
     description:
-      'Local makers set up in the yard with handmade goods, while the trucks cook and the bar stays open. Vendor spots are $30.',
+      'Local makers set up in the yard with handmade goods, while the trucks cook and the bar stays open. Booths are $30, and you can apply online.',
     keywords: ['market bonita springs'],
   },
 
@@ -144,6 +163,49 @@ export const PAGE_SEO = {
     description:
       'Xbox Series X, PlayStation 5 and Nintendo Switch 2 on six screens with a Game Coach on site. $10 per person for 30 minutes, or a two hour party from $400.',
     keywords: [],
+  },
+
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * LOS TRES DOCUMENTOS LEGALES DEL CAMIÓN, rutas nuevas del 2026-09-22.
+   *
+   * ⚠️ ANTES NO ERAN PÁGINAS NUESTRAS. Los dos waivers eran páginas del sitio
+   * viejo con una 301 puesta acá, y las políticas eran un PDF colgado del CDN
+   * de Wix. O sea que los papeles que firma un cliente seguían viviendo en el
+   * dominio que estamos reemplazando, y uno de los tres no tenía URL.
+   *
+   * ⚠️ LOS TRES SE INDEXAN. La tentación es ponerles `noIndex` «porque son
+   * legales», pero estas son las únicas páginas del sitio que contestan
+   * «¿puedo llevar comida al camión?» o «¿hasta cuándo puedo cancelar?», que
+   * es exactamente lo que alguien busca antes de reservar. Además Google
+   * mira la existencia de términos publicados cuando evalúa un sitio que
+   * cobra por adelantado.
+   *
+   * ⚠️ LOS `title` NO REPITEN LA MARCA DOS VECES. Son absolutos como todos
+   * los de esta tabla: ya traen «Rooftop at Riverside» al final y no pasan
+   * por el `template` del layout.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  '/gaming-truck-policies': {
+    h1: 'Gaming truck policies',
+    title: 'Gaming Truck Policies & Procedures | Rooftop at Riverside',
+    description:
+      'Booking, deposits, cancellations, inclement weather, food and drink, alcohol, behavior and game ratings for the gaming truck at Rooftop at Riverside.',
+    keywords: ['gaming truck cancellation policy', 'game truck party rules bonita springs'],
+  },
+  '/game-zone-waiver': {
+    h1: 'Game zone waiver',
+    title: 'Game Zone Waiver | Rooftop at Riverside',
+    description:
+      'The full terms and conditions for the gaming truck: assumption of risk, property damage, release of liability and the photography release. Read it before you sign it.',
+    keywords: ['game truck waiver'],
+  },
+  '/bar-games-waiver': {
+    h1: 'Bar games waiver',
+    title: 'Bar Games Waiver | Rooftop at Riverside',
+    description:
+      'Terms and conditions for the bar games at Rooftop at Riverside. Twenty one and over, no gambling, and the rules every player agrees to.',
+    keywords: ['bar games terms and conditions'],
   },
 } as const satisfies Record<string, PageSeo>;
 

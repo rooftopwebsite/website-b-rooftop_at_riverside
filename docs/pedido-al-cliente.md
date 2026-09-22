@@ -11,7 +11,7 @@ por otra cosa**.
 > Regenerar el inventario:
 > `grep -rn "PhotoPending\|PendingData\|PendingBlock" src/`
 
-**Estado al 2026-09-11:** 33 ítems abiertos. Tres bloquean la home y **uno
+**Estado al 2026-09-11:** 33 ítems abiertos, más el 12 bis que se abrió el 2026-09-22 con el rediseño de `/market`. Tres bloquean la home y **uno
 bloquea toda la lógica de reservas**: el 0, OpenTable.
 
 > ### 0 · ⚠️ ¿Para qué usan OpenTable?
@@ -35,7 +35,7 @@ bloquea toda la lógica de reservas**: el 0, OpenTable.
 
 | bloque | ítems | quién |
 |---|---:|---|
-| A · Fotos y video | 12 | el cliente / un fotógrafo |
+| A · Fotos y video | 13 | el cliente / un fotógrafo |
 | B · Datos duros | 8 | el cliente (operaciones) |
 | C · Archivos y enlaces | 9 | el cliente / decisión técnica nuestra |
 | D · Textos | 3 | los dueños de los trucks |
@@ -120,7 +120,7 @@ fuera de git, en `_interno/video-sitio/`.
 De los cuatro trucks activos, **tres no tienen ninguna foto**. Hoy cada ficha
 muestra el hueco marcado a lo ancho, con el brief de su toma adentro.
 
-### A.3 · Mejoran lo que ya funciona — 5 ítems
+### A.3 · Mejoran lo que ya funciona — 6 ítems
 
 | # | qué | para qué |
 |---|---|---|
@@ -129,6 +129,7 @@ muestra el hueco marcado a lo ancho, con el brief de su toma adentro.
 | 10 | **Un evento privado montado** — mesas puestas, el lugar cerrado, antes de que llegue la gente | El Events banner usa la aérea del patio, que funciona, pero un evento montado vende mejor |
 | 11 | **El patio con los cuatro trucks desde el rooftop**, con el escenario armado | La ficha de The Yard usa una fila de camiones vacía |
 | 12 | **Un evento privado en curso**, rooftop y patio llenos, desde el lado de la calle | La ficha de Full Buyout |
+| 12 bis | **Fotos propias del Neighborhood Market** — los puestos armados, la gente recorriendo, algún detalle de producto. Seis u ocho alcanzan, horizontales y verticales mezcladas | El hero y el muro de `/market`. **No bloquea, pero lo que hay es prestado:** las siete que usa la página hoy se bajaron de la galería del sitio Wix del propio cliente, o sea que son de él pero no nos las dio. Están a 2048px de lado largo y por eso el hero de `/market` sale una medida por debajo de los otros seis. De las 36 fotos de la entrega no hay **ni una** del market |
 
 ### Especificación técnica, para pasarle al fotógrafo
 
@@ -159,6 +160,7 @@ alguien lo usa para decidir.
 | 18 | **Cuántas consolas y cuántas pantallas** en el game lounge | `/the-experience` | `TBD` ×2 — **y acá hay un conflicto**: el brief y el sitio actual dan números distintos, así que no alcanza con elegir uno |
 | 19 | **Próximas fechas del market** | `/market` | `TBD` |
 | 20 | **Horarios propios de cada truck**, si difieren del venue | las cuatro fichas de `/food-trucks`, la fila «When they're here» | «The roster rotates» con un link al calendario. Es cierto y sirve, pero si algún truck tiene días fijos conviene decirlo |
+| 51 | **Las cinco zonas de estacionamiento: nombre, vigencia y si alguna se paga.** El 2026-09-22 apareció la fuente que faltaba —la página `/parking` del sitio viejo— y con ella se dibujó el mapa de `/contact#parking`. Pero la fuente es **una captura de pantalla de Google Maps del 29 de diciembre de 2023, sin una sola palabra escrita salvo «LIBRARY PARKING»**, así que quedan tres cosas sin confirmar: **(a)** que el reparto siga vigente casi tres años después; **(b)** los NOMBRES de cuatro de las cinco zonas, que los pusimos nosotros leyendo sobre qué calle cae cada mancha; **(c)** si alguna es paga, tiene horario o está reservada a otro comercio — la captura no distingue. **Y una pregunta puntual:** las dos filas pegadas a Old 41, que son las más cercanas a la puerta, ¿son del venue o del vecino? | La sección «Where to park» de `/contact` y el bloque Parking de la home | Las cinco zonas dibujadas y nombradas, sin decir de quién es cada una ni si se paga |
 
 Los cuatro espacios están en `src/content/spaces.ts` y los trucks en
 `src/content/trucks.ts`: los números entran ahí y los `TBD` se van solos.
@@ -182,6 +184,26 @@ Los cuatro espacios están en `src/content/spaces.ts` y los trucks en
 > adentro del JPG— así que o el cliente confirma cuál vale y manda la lámina
 > corregida, o alguien va a preguntar.
 
+### B bis · Lo que abrió comparar `/events` contra `/hostanevent` (2026-09-22)
+
+Camila pasó la captura de la página de eventos que el cliente publica hoy y se
+revisó campo por campo contra la nuestra. **Dos huecos se cerraron solos** —los
+tres paquetes de barra y la regla de las fiestas de menos de 12, que estaban en
+las fuentes y no en el sitio— y quedaron estas cuatro preguntas, que no se
+pueden contestar desde acá porque las cuatro son promesas comerciales.
+
+| # | qué | por qué no se decide de este lado |
+|---|---|---|
+| 52 | **¿Se alquila algo además del segundo piso, y a qué precio?** El PDF «Events Packages» tarifa **sólo** el second floor buyout ($750 / $1.250 la hora) y lista tres variantes, las tres de arriba: full upstairs, rooftop patio y rooftop inside. Nuestro `/events` ofrece además **The Yard cerrado con portón** y **el buyout completo**, y para fundraisers y fiestas de fin de año son el argumento principal. | Ninguna fuente del cliente le pone precio ni condiciones al patio de abajo. O existe una tarifa que no nos pasaron, o estamos ofreciendo un producto que no está a la venta |
+| 53 | **¿Cuál es el teléfono de eventos?** La página `/hostanevent` manda las fiestas chicas al **(239) 268-0080**, que es el de la casa. La última lámina del PDF, «Let's collaborate», da **941-889-8827** y dos mails: `events@` y `mpowers@`. | El sitio publica hoy el de la casa en los dos lugares. Si el 941 es la línea de eventos, es el que tiene que estar al lado del formulario |
+| 54 | **¿Hasta cuántos invitados entran?** Su formulario corta el desplegable en **«100 or more»**. El nuestro ofrece **«200 – 350»** y **«350+»**, que son rangos que nadie confirmó. | Es el ítem 13 escrito de otra manera: sin capacidad declarada, un rango en el desplegable es una capacidad declarada por la puerta de atrás |
+| 55 | **¿Siguen vigentes los precios del PDF?** Ya estaba anotado como TODO en `content/events-pricing.ts` y ahora pesa más: con los paquetes de barra publicados, la página afirma **once números** del cliente y el PDF no tiene fecha en ninguna parte. | Podría ser de 2024. Es lo último que hay que confirmar antes de que `/events` salga a producción |
+
+> **Un dato que NO es un pedido:** la primera lámina del PDF dice «food trucks
+> serving 5 unique cuisines» y el sitio nuevo dice cuatro. No hay conflicto: el
+> roster vigente tiene cuatro y los tres retirados están en `content/trucks.ts`
+> con `active: false`. El PDF es el que quedó viejo.
+
 ---
 
 ## C · Archivos y enlaces
@@ -191,7 +213,9 @@ Los cuatro espacios están en `src/content/spaces.ts` y los trucks en
 | 21 | **El PDF del events packet** | `/events/inquire` | El brief pide que se entregue en el momento de enviar el formulario. Como el PDF no existe, la confirmación dice que llega adjunto en la respuesta. Con el archivo pasa a ser descarga inmediata |
 | 0 | **⚠️ Para qué usan OpenTable, y la URL del perfil** | El header, `/visit`, `/whats-on` y `/events/inquire` — depende de la respuesta | Nada: el sitio hoy no menciona reservas en ningún lado. Es el ítem más importante de la lista, ver el bloque del principio |
 | 22 | **Confirmar el perfil de Eventbrite** (lo encontramos nosotros: `eventbrite.com/o/rooftop-at-riverside-104153700851`) | `/whats-on` y `/the-yard`, el CTA de entradas | Ya está puesto en `BRAND.eventbrite` y el bloque «Pending» se fue. Falta que el cliente confirme que es el suyo y que todo evento con entrada se vende por ahí. Hoy el perfil dice «No upcoming events» |
-| 28 | **¿Siguen vigentes los dos waivers?** Los textos de `/bar-games-waiver` y `/game-zone-waiver` siguen publicados y vivos en el sitio actual | `/the-experience`, `/events/game-truck` | Hoy los mandamos con un 301 a `/the-experience`, que sólo menciona que hay que firmar uno. Si siguen vigentes se publican como páginas propias y el 301 se cambia |
+| 28 | **¿Siguen vigentes los tres documentos legales del camión?** Los dos waivers (`/bar-games-waiver`, `/game-zone-waiver`) y el PDF de políticas y procedimientos | Las tres páginas nuevas, y el bloque de links de `/game-truck` | **Los tres ya están publicados en el sitio nuevo**, textuales, el 2026-09-22: `/gaming-truck-policies`, `/game-zone-waiver` y `/bar-games-waiver`. Los dos 301 al ancla se fueron. Lo que falta es que el cliente confirme que ninguno cambió desde el 2026-09-15, que es la fecha que las tres páginas declaran como «last updated» porque es cuando tomamos el texto |
+| 28a | **La edad mínima para jugar en el camión** | El bloque de links de `/game-truck`, y la respuesta a quien llama | Nada: no se publica. Ni los dos waivers ni el PDF fijan una edad. Lo más cerca es «we recommend that the youngest age group we accept party bookings for is age 6», que es una recomendación para reservar una fiesta, no un mínimo para jugar. El «21 and over» es de los juegos de la barra, que son otra cosa |
+| 28b | **Falta una dirección de mail en el documento de políticas.** El apartado VIDEO GAME RATINGS dice «please send an e-mail to indicating the game(s)…» y después de «to» no hay nada | `/gaming-truck-policies` | Se publica tal cual, porque es el texto del cliente y no lo completamos nosotros. Con la dirección confirmada se corrige en el original y acá |
 | 29 | **¿Sigue corriendo el sorteo de los jueves?** (`/tnt-sign-ups`, «Enter to win free tickets», QR en el local, ganador los viernes) | `/whats-on` | Mismo caso: 301 a `/whats-on` sin una línea del sorteo. Las bases legales ya están escritas y se reutilizan tal cual |
 | 30 | **Los menús de los cuatro trucks vigentes** | las cuatro fichas de `/food-trucks` | El sitio actual sólo publica dos menús como imagen, y uno es de un truck que ya no está. De los cuatro del roster hoy sólo El Chilango tiene menú publicado |
 | 31 | **El calendario mensual completo, evento por evento** | `/whats-on`, y la base de RestoExp | La base tiene hoy sólo los cuatro recurrentes semanales. Los eventos puntuales (festivales, shows con entrada) no están cargados, y son justamente los que se venden por Eventbrite. El cliente ya entrega el calendario del mes siguiente el día 10 |

@@ -111,13 +111,21 @@ const nextConfig: NextConfig = {
        *
        *   /giveback       Charity Partner Program — contenido real, sin destino
        *   /tnt-sign-ups   sorteo de entradas — contenido real, sin destino
-       *   /bar-games-waiver, /game-zone-waiver — documentos legales completos
        *   /blank, /blank-1, /inquiry-services-page — plantillas de Wix sin tocar
+       *
+       * ⚠️ `/bar-games-waiver` Y `/game-zone-waiver` YA NO ESTÁN ACÁ, y tenían
+       * una 301 a `/game-truck#policies` cada una. El 2026-09-22 pasaron a ser
+       * páginas nuestras con el texto completo de cada documento, así que las
+       * dos rutas ahora resuelven solas y conservan su slug: los links viejos,
+       * y el correo de confirmación que el cliente le manda a cada fiesta,
+       * siguen llegando a donde decían.
+       *
+       * Mandarlas a un ancla era el peor destino posible de los dos: quien
+       * buscaba el papel que había firmado aterrizaba en un resumen de siete
+       * puntos, y encima el de los juegos de barra ni siquiera es del camión.
        */
       { source: '/giveback', destination: '/our-story', statusCode: 301 },
       { source: '/tnt-sign-ups', destination: '/whats-on', statusCode: 301 },
-      { source: '/bar-games-waiver', destination: '/game-truck#policies', statusCode: 301 },
-      { source: '/game-zone-waiver', destination: '/game-truck#policies', statusCode: 301 },
       { source: '/blank', destination: '/market', statusCode: 301 },
       { source: '/blank-1', destination: '/', statusCode: 301 },
       { source: '/inquiry-services-page', destination: '/events#inquire', statusCode: 301 },

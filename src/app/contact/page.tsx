@@ -5,6 +5,7 @@ import FormSlab from '@/components/shared/FormSlab';
 import HoursCard from '@/components/shared/HoursCard';
 import { ArrowSquareOut, Instagram } from '@/components/shared/Icon';
 import MapEmbed from '@/components/shared/MapEmbed';
+import ParkingMap, { ParkingList } from '@/components/shared/ParkingMap';
 import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
@@ -329,9 +330,10 @@ export default async function ContactPage() {
           <div>
             <HoursCard hours={venue.hours} />
             {/*
-              ⚠️ ACÁ IBA EL MISMO PÁRRAFO DE ESTACIONAMIENTO QUE EN
-              `/our-story`, y se sacó por el mismo motivo: no tiene fuente.
-              TODO: confirmar con cliente el contenido del mapa de parking.
+              ⚠️ ACÁ IBA UN PÁRRAFO DE ESTACIONAMIENTO SIN FUENTE, y por eso se
+              había sacado. El dato apareció el 2026-09-22 —la página `/parking`
+              del sitio viejo— y ya no es un párrafo suelto: es la sección
+              entera de acá abajo, con el mapa dibujado.
             */}
           </div>
 
@@ -339,7 +341,45 @@ export default async function ContactPage() {
         </div>
       </Section>
 
-      {/* ══ 4. Cierre: gift cards, 2 de 2 ═════════════════════════════════ */}
+      {/* ══ 4. Dónde estacionar ═══════════════════════════════════════════ */}
+
+      {/*
+        ⚠️ ES UNA SECCIÓN Y NO UN PÁRRAFO DENTRO DE LA DE ARRIBA, aunque las dos
+        hablen de cómo llegar. Dos mapas apilados en la misma sección compiten:
+        el de Google contesta «dónde queda esto» y el dibujado contesta «dónde
+        dejo el auto», que son dos preguntas distintas y se hacen en ese orden.
+        Separadas, además, esta gana su propia ancla —`#parking`, que es a donde
+        apunta el bloque Parking de la home desde que existe.
+      */}
+      <Section id="parking" tone="paper" band="lg" labelledBy="parking-title" className="scroll-mt-24">
+        <SectionHead
+          eyebrow="Parking"
+          eyebrowTone="terra"
+          id="parking-title"
+          title="Where to park"
+          lead="Old 41 Rd runs right past the door, and the parking is spread over the blocks around it. Five areas, north to south."
+        />
+
+        {/*
+          El dibujo primero y la lista después en mobile; al lado en desktop. Es
+          el mismo reparto que usa la sección de horarios de acá arriba, con las
+          columnas al revés: allá el dato manda y el mapa acompaña, acá el mapa
+          es lo que contesta la pregunta de un vistazo.
+        */}
+        {/*
+          ⚠️ EL MAPA TIENE TOPE DE ANCHO Y LA LISTA NO. El dibujo es más alto
+          que ancho —670 × 900—, así que dejarlo estirarse a media página lo
+          manda a 900 px de alto y abre un pozo de aire al lado de una lista de
+          cinco renglones. Con el tope, el mapa mide lo que tiene que medir y la
+          lista se queda con el resto.
+        */}
+        <div className="mt-[40px] grid gap-[36px] lg:grid-cols-[minmax(0,470px)_minmax(0,1fr)] lg:gap-[56px]">
+          <ParkingMap />
+          <ParkingList className="lg:pt-1" />
+        </div>
+      </Section>
+
+      {/* ══ 5. Cierre: gift cards, 2 de 2 ═════════════════════════════════ */}
 
       <Section tone="deep" band="md" labelledBy="gift-title">
         <div className="flex flex-col items-start gap-[24px] lg:flex-row lg:items-center lg:justify-between">

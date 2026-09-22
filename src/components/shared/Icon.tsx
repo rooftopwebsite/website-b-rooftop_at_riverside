@@ -46,8 +46,13 @@ import type { ReactNode, SVGProps } from 'react';
  * ⚠️ Sin `children` y sin `viewBox`: el dibujo y la grilla los pone el
  * icono, no quien lo usa. Si un call site pudiera pasar `children`, el set
  * dejaría de ser un set.
+ *
+ * ⚠️ SE EXPORTA DESDE EL 2026-09-22. Lo pidió `SpecSlab`, que recibe un icono
+ * por prop para el tile que sobresale de sus tarjetas: sin el tipo exportado
+ * tendría que volver a declarar la misma firma y las dos se separarían en
+ * cuanto ésta cambie. Es el tipo de los 21 iconos del archivo.
  */
-type IconProps = Omit<SVGProps<SVGSVGElement>, 'children' | 'viewBox'>;
+export type IconProps = Omit<SVGProps<SVGSVGElement>, 'children' | 'viewBox'>;
 
 /** Lo que recibe el envoltorio interno, que sí dibuja. */
 type SvgProps = IconProps & { readonly children: ReactNode };

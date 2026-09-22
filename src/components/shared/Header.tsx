@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { BRAND } from '@/lib/brand';
 import { CAJA_ALTA_CLS } from '@/lib/flags';
+import type { NavLink as NavLinkDato } from '@/lib/nav';
 import {
   NAV_CTA,
   NAV_MAIN,
@@ -696,10 +697,18 @@ export default function Header() {
                 </p>
 
                 <ul className="mt-3.5 flex flex-col">
-                  {group.links.map(({ label, href, hint, badge }) => (
+                  {group.links.map(({ label, href, hint, badge, external }) => (
                     <li key={href} className="border-b border-fog last:border-b-0">
+                      {/*
+                        ⚠️ EL DESTINO EXTERNO SE ANUNCIA, igual que en el footer
+                        y por el mismo motivo: Gift Cards sale a Toast. `rel`
+                        completo, pestaña nueva y el aviso para lector de
+                        pantalla. Hasta el 2026-09-22 el `external` del dato
+                        estaba declarado y el menú no lo leía.
+                      */}
                       <Link
                         href={href}
+                        {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : null)}
                         onClick={() => setMoreOpen(false)}
                         aria-current={isCurrent(href) ? 'page' : undefined}
                         className="group block py-3.5"
@@ -728,6 +737,9 @@ export default function Header() {
                             ].join(' ')}
                           >
                             {label}
+                            {external ? (
+                              <span className="sr-only"> (opens in a new tab)</span>
+                            ) : null}
                           </span>
 
                           {/*
@@ -900,16 +912,23 @@ export default function Header() {
                 El filtro deja la entrada de la nav, que es la que tiene el
                 nombre corto y el orden del embudo.
               */}
-              {[
+              {/* ⚠️ EL TIPO SE ANOTA porque la lista mezcla dos formas: los
+                  `NavLink` de la nav y `NAV_MORE_FEATURED`, que además trae
+                  `eyebrow` y `cta`. De lo que el drawer usa —`label`, `href`,
+                  `external`— el destacado tiene los dos primeros, así que la
+                  lista se lee como `NavLink` y el `external` queda opcional en
+                  vez de inexistente. */}
+              {([
                 ...NAV_PRIMARY,
                 ...NAV_MORE,
                 ...([...NAV_PRIMARY, ...NAV_MORE].some((l) => l.href === NAV_MORE_FEATURED.href)
                   ? []
                   : [NAV_MORE_FEATURED]),
-              ].map(({ label, href }) => (
+              ] as readonly NavLinkDato[]).map(({ label, href, external }) => (
                 <li key={href}>
                   <Link
                     href={href}
+                    {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : null)}
                     onClick={() => setDrawerOpen(false)}
                     aria-current={isCurrent(href) ? 'page' : undefined}
                     className="flex items-center justify-between gap-4 border-b border-ink/12 py-3.75"
@@ -925,6 +944,7 @@ export default function Header() {
                       ].join(' ')}
                     >
                       {label}
+                      {external ? <span className="sr-only"> (opens in a new tab)</span> : null}
                     </span>
                     {/* Flecha por ítem: el brief la pide, y además marca el
                         borde derecho del target táctil. */}

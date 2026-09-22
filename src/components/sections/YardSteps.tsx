@@ -396,6 +396,17 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
               central es teal sobre crema, no negro. Da 9.44:1, el mismo ratio
               que el lockup del header contra su plancha.
 
+              ⚠️ Y LA PALABRA «STEP» TAMBIÉN, que hasta el 2026-09-22 iba en
+              `sunset-deep`. Es un fallo de contraste medido: #D66A0A sobre el
+              crema del campo da **3.08:1** a 8px en negrita, y AA pide 4.5 —el
+              umbral de texto grande no aplica, que arranca en 18,66px—. Lo
+              encontró axe al auditar `/market`, que monta este mismo sticker.
+
+              Se movió el color y no el cuerpo porque el cuerpo es la pieza: a
+              8px la palabra es el rótulo del disco y el número es el dato. Con
+              `deep` las dos partes del campo quedan del mismo teal del logo y
+              el ratio sube a 9.44:1. El naranja no se pierde — es el aro.
+
               ⚠️ SÍ LLEVA `.sticker`, Y ES LO QUE LO HACE LEER COMO PEGADO.
               Primero se probó sin la clase, razonando que el `drop-shadow` del
               `<li>` de afuera ya cubría toda la silueta. Es cierto y no
@@ -418,7 +429,7 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
             <span className="sticker absolute top-0 left-1/2 z-30 grid size-17 -translate-x-1/2 place-items-center rounded-pill bg-paper p-1">
               <span className="grid size-full place-items-center rounded-pill bg-sunset p-1.25">
                 <span className="grid size-full place-items-center content-center rounded-pill bg-cream">
-                  <span className="font-body text-[8px] font-bold uppercase tracking-[0.14em] text-sunset-deep">
+                  <span className="font-body text-[8px] font-bold uppercase tracking-[0.14em] text-deep">
                     Step
                   </span>
                   <span className="font-display text-d5 font-extrabold leading-none text-deep">

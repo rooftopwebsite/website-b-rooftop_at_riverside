@@ -74,12 +74,47 @@ export const PACKAGES: readonly PartyPackage[] = [
   },
 ];
 
-/** Lo que traen los dos paquetes, igual en ambos. Sitio vigente. */
+/**
+ * Las pantallas del camión. Sitio vigente: «six high-definition TVs».
+ *
+ * ⚠️ SE DECLARA ACÁ ARRIBA Y NO ABAJO CON EL RESTO DE LAS CIFRAS, y no es
+ * cosmético: `PACKAGE_INCLUDES` la interpola, y un `const` de módulo usado
+ * antes de su declaración queda en la zona muerta temporal. TypeScript lo
+ * marca —TS2448, «used before its declaration»— pero si se le escapara, el
+ * error saldría recién al cargar la página, con un 500.
+ */
+export const SCREENS = 6;
+
+/**
+ * Lo que traen los dos paquetes, igual en ambos.
+ *
+ * ⚠️ LOS CUATRO PRIMEROS SON LA LISTA «INCLUDES» DEL SITIO VIGENTE, ítem por
+ * ítem. El quinto, el aire acondicionado, NO está en esa lista: sale del brief,
+ * y hasta el 2026-09-22 este comentario decía que todo venía del sitio, que era
+ * falso. Queda porque el dato es real y está verificado; queda anotado de dónde
+ * viene porque es lo que permite auditarlo.
+ *
+ * ⚠️ «Physical games plus the subscription libraries» SE HABÍA PERDIDO. Es el
+ * cuarto ítem de la lista del cliente —«Physical Game Inventory, PLUS
+ * Subscription Inventory»— y no estaba en ningún lado del sitio nuevo. Lo
+ * encontró la auditoría del 2026-09-22 comparando contra `_source/game-lounge.md`
+ * y contra la página en vivo, que coinciden.
+ *
+ * ⚠️ EL CONTEO DE TELEVISORES VUELVE A ESTA LISTA. El cliente lo pone acá
+ * —«6 TVs – Xbox Series X, PS6, Switch 2»— y nosotros lo teníamos sólo en la
+ * ficha técnica. Es el mismo número de `SCREENS`, leído de ahí y no escrito dos
+ * veces.
+ *
+ * ⚠️ «PS6» ES UN ERROR DE TIPEO DEL CLIENTE y no se copia: la descripción de su
+ * propia página dice «PlayStation 5» tres párrafos más arriba, y el PDF de
+ * políticas repite la errata. Publicamos la consola que existe.
+ */
 export const PACKAGE_INCLUDES: readonly string[] = [
   'Two hours in the truck',
   'A Game Coach on site the whole time',
-  'Xbox Series X, PlayStation 5 and Nintendo Switch 2',
+  `${SCREENS} TVs with Xbox Series X, PlayStation 5 and Nintendo Switch 2`,
   'Over 30 games, from E-rated to M-rated',
+  'Physical games plus the subscription libraries',
   'Air conditioning',
 ];
 
@@ -117,85 +152,57 @@ export const GAMES: readonly string[] = [
 ];
 
 export const GAMES_TOTAL = '30+';
-export const SCREENS = 6;
 export const CONSOLES: readonly string[] = [
   'Xbox Series X',
   'PlayStation 5',
   'Nintendo Switch 2',
 ];
 
-export interface Policy {
-  readonly title: string;
-  readonly body: string;
-  /** De dónde sale. `null` = no tiene fuente y no se publica. */
-  readonly source: string | null;
-}
-
-/**
- * LAS POLÍTICAS.
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ ACÁ VIVÍAN `POLICIES`, `publishedPolicies()` Y `WAIVERS`, Y SE FUERON EL
+ * 2026-09-22 CON LA SECCIÓN QUE LOS RENDERIZABA.
  *
- * ⚠️ SALEN DE LOS DOS WAIVERS QUE EL CLIENTE YA PUBLICA, no de lo que suele
- * poner un lugar así. `/game-zone-waiver` son 19.097 caracteres de documento
- * legal y `/bar-games-waiver` otros 8.525: lo de abajo es el resumen legible
- * de lo que esos documentos dicen, con el link al texto completo.
+ * `POLICIES` eran siete reglas RESUMIDAS por nosotros a partir de los dos
+ * waivers y del PDF de políticas del cliente, cada una con su cita textual en
+ * el campo `source`. `WAIVERS` eran los tres links, los tres al dominio viejo
+ * —`eatdrinkparadise.com`—, con un TODO escrito acá que decía «migrar los dos
+ * waivers y el PDF de políticas al dominio nuevo».
  *
- * ⚠️ LO QUE NO ESTÁ EN LOS WAIVERS NO SE INVENTA. Faltan tres cosas que un
- * visitante pregunta: la edad mínima para jugar, si se puede entrar con comida
- * y bebida, y si hace falta reservar. Ninguna aparece. Van con `source: null`
- * y no se renderizan.
+ * ⚠️ ESE TODO ES LO QUE SE HIZO, y por eso el resumen sobra. Los tres
+ * documentos ahora son tres páginas nuestras con el texto del cliente TEXTUAL:
+ *
+ *     /gaming-truck-policies   ← el PDF, que antes ni siquiera tenía URL
+ *     /game-zone-waiver        ← el del camión
+ *     /bar-games-waiver        ← el de los juegos de la barra
+ *
+ * El texto vive en `content/legal/` y el índice en `content/legal-docs.ts`.
+ *
+ * ⚠️ Y UN RESUMEN AL LADO DEL ORIGINAL ES UNA TRAMPA. Mientras los documentos
+ * estaban en el sitio viejo, parafrasearlos era la única forma de que el
+ * visitante supiera a qué se compromete. Con los tres publicados enteros, las
+ * siete reglas eran una segunda versión de un texto legal, más corta, más
+ * linda y sin valor: el día que el cliente cambie una cláusula, la que queda
+ * vieja es la de la página que todo el mundo lee.
+ *
+ * Ni un dato se perdió. Los $25, los $100, los 14 días, los $125 del joystick
+ * y la regla de los juegos M están en las tres páginas nuevas con las palabras
+ * del cliente, no con las nuestras.
+ * ══════════════════════════════════════════════════════════════════════════
  */
-export const POLICIES: readonly Policy[] = [
-  {
-    title: 'Kids are welcome, and they are your responsibility',
-    body: 'The truck has a Game Coach running the games, not a babysitter. Rooftop at Riverside does not supervise minors, and staff are not responsible for a game played by anyone younger than that game rating. Somebody in your party has to be the adult.',
-    source:
-      'Waiver del gaming truck, textual: «No Adult Supervision by Rooftop at Riverside, LLC» y «are in no way responsible for any games played by any party attendee who may be younger than the age rating of any game».',
-  },
-  {
-    title: 'Break it and it gets charged',
-    body: 'Controllers are $125 each, a console is $750, a game is $125 and the handheld is $500. Damage to the trailer, the wiring, the lighting or the sound is quoted on repair cost, and can include lost business. This covers you and any child you signed for, on purpose or not.',
-    source:
-      'Waiver del gaming truck, textual: «Controllers, $125 each, gaming systems $750, video games $125 each, Toast Handheld $500, Damage to Game Trailer/Wiring/Lighting/Sound Systems, etc to be determined by quoted repair costs and may include reasonable charges for loss of business».',
-  },
-  {
-    title: 'How people behave in there',
-    body: 'Bad language, threats, disrespect or aggression towards staff or other guests are not tolerated. We can ask an adult from the booking party to step in, ask anyone to leave, or end the session with no refund.',
-    source:
-      'Waiver del gaming truck, textual: «does not tolerate bad language, threatening, disrespectful or aggressive behavior towards our staff or other event attendees» y «reserve the right to request the removal of anyone from the premises as necessary, or end the event at any time without refunds».',
-  },
-  {
-    title: 'Photos',
-    body: 'We take pictures during parties. If you or your kids would rather not be photographed, tell the Game Coach on site and we will not photograph your party.',
-    source:
-      'Waiver del gaming truck, textual: «if you or your child/children prefer not to be photographed, please contact notify the game coach on site, and we will not photograph your party».',
-  },
-  {
-    title: 'Minimum age to play',
-    body: '',
-    // TODO: confirmar con cliente la edad mínima. Los dos waivers hablan de
-    // menores acompañados pero ninguno fija una edad. El «21 and up» del otro
-    // waiver es de los bar games, que son otra cosa.
-    source: null,
-  },
-  {
-    title: 'Food and drink inside the truck',
-    body: '',
-    // TODO: confirmar con cliente si se puede entrar con comida o bebida.
-    source: null,
-  },
-  {
-    title: 'Do I need to book ahead',
-    body: '',
-    // TODO: confirmar con cliente si el juego por persona necesita reserva o
-    // es por orden de llegada. Los paquetes de fiesta sí se reservan.
-    source: null,
-  },
-];
 
-export const publishedPolicies = (): readonly Policy[] => POLICIES.filter((p) => p.source !== null);
-
-/** Los dos waivers que el cliente publica hoy. */
-export const WAIVERS = [
-  { label: 'Gaming truck waiver', href: 'https://www.eatdrinkparadise.com/game-zone-waiver' },
-  { label: 'Bar games waiver', href: 'https://www.eatdrinkparadise.com/bar-games-waiver' },
-] as const;
+/*
+ * ⚠️ EL ÚNICO HUECO QUE SIGUE ABIERTO: LA EDAD MÍNIMA PARA JUGAR.
+ *
+ * Era la séptima entrada de `POLICIES`, con `source: null` y el cuerpo vacío
+ * para que no se renderizara. La lista se fue, pero la pregunta no está
+ * contestada y por eso queda anotada acá:
+ *
+ * TODO: confirmar con el cliente la edad mínima para jugar en el camión. Ni
+ * los dos waivers ni el PDF de políticas fijan una edad. Lo más cerca que
+ * está el waiver del camión es «we recommend that the youngest age group we
+ * accept party bookings for is age 6. However, we will accept younger parties
+ * if requested», que es una recomendación para RESERVAR una fiesta, no un
+ * mínimo para jugar. El «21 and over» del otro waiver es de los juegos de la
+ * barra, que son otra cosa. Está en `docs/pedido-al-cliente.md`.
+ */

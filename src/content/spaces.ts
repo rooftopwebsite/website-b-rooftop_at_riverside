@@ -141,6 +141,30 @@ export const FOOD_TIERS = [
   },
 ] as const;
 
+/**
+ * Los tres paquetes de barra, más la salida de quien todavía no sabe.
+ *
+ * ⚠️ ESTA PREGUNTA FALTABA Y EL CLIENTE YA LA HACE. Su formulario de
+ * `/hostanevent` tiene «Do you need drink package? Yes / No / Maybe» desde
+ * siempre, y el nuestro preguntaba por la comida y nada por la bebida.
+ *
+ * ⚠️ NO SE COPIA EL «SÍ / NO / QUIZÁS», y es una mejora, no un capricho. Un
+ * «sí» no dice nada: hay que volver a escribir para saber cuál de los tres
+ * paquetes. Como `/events` ahora los publica con precio justo arriba del
+ * formulario, se puede preguntar directamente CUÁL, y la respuesta ya sirve
+ * para cotizar.
+ *
+ * ⚠️ LAS ETIQUETAS SON LAS DE `DRINK_OPTIONS` en `content/events-pricing.ts`,
+ * escritas igual a propósito: quien acaba de leer las tarjetas tiene que
+ * reconocer la opción en el desplegable sin traducir nada.
+ */
+export const BAR_TIERS = [
+  'Drink tickets',
+  'Wristband tab',
+  'Open bar',
+  'Not sure yet',
+] as const;
+
 /** Reutilizado tal cual del formulario actual de /hostanevent. */
 export const REFERRAL_SOURCES = [
   'Social media',

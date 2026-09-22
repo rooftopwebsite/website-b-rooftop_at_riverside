@@ -356,6 +356,49 @@ const FOTOS = [
     q: 78,
   },
 
+  /* ── La foto del hero de `/our-story`: la sexta 17:9 ────────────────────
+     ⚠️ MISMA MEDIDA Y MISMO MOTIVO que las cinco anteriores: `/our-story`
+     dejó el encabezado de video calcado de `/over-ons` y abre con `PlateHero`
+     como las demás internas, así que hereda el contrato de imagen. Las cinco
+     17:9 que había ya son el hero de `/sunset-bar`, `/whats-on`, `/events`,
+     `/contact` y `/join-us`, así que hubo que fabricar una más.
+
+     ⚠️ ES EL PATIO VISTO DESDE ARRIBA, y la vista es el argumento de la
+     página. `/our-story` cuenta un lugar CONSTRUIDO EN CAPAS —«a rooftop
+     built over a food truck park»—, y ésta es la única toma de la entrega que
+     muestra la planta entera: el césped, los adoquines, las mesas de picnic,
+     las sombrillas, las Adirondack y el alero del edificio entrando por la
+     derecha. Es el plano del lugar, no un detalle del lugar.
+
+     ⚠️ SE HABÍA DESCARTADO PARA `/contact` Y ACÁ EL ARGUMENTO SE DA VUELTA.
+     Allá se cayó por estar «casi vacía», porque una página que dice «say
+     hello» abriendo con el lugar sin gente se lee fría. Ésta no saluda a
+     nadie: cuenta de qué está hecho el sitio, y para eso el patio despejado
+     es una ventaja. Igual hay seis personas adentro del cuadro, así que no es
+     una foto de un lugar cerrado.
+
+     ⚠️ Y ES EVERGREEN, que fue lo que descartó a la otra finalista.
+     `DSC04091` es el patio lleno de familias de día y funcionaba mejor con el
+     titular —«A Magnus family project»— pero es el 4 de julio: hay banderines,
+     ropa con la bandera y un concurso montado al fondo. Es exactamente el
+     motivo por el que la banda de la home se recortó para sacar las telarañas
+     de Halloween: una página de marca no puede tener fecha.
+
+     ⚠️ EL ORIGINAL ES VERTICAL —4000×6000— así que de acá sale una franja del
+     35 % del alto. `foco: 0.44` está elegido con la placa simulada encima: la
+     placa cae sobre los adoquines y las banquetas del centro, que es superficie
+     vacía, y ninguna de las seis cabezas queda debajo. A 0,4 el borde de arriba
+     cortaba a la mujer del fondo por la cintura; más abajo se pierde el césped
+     de la izquierda, que es lo que hace leer la planta. */
+  {
+    src: '_RCZ8015.jpg',
+    out: 'public/images/venue/story-yard-day-wide.jpg',
+    w: 2576,
+    h: 1364,
+    foco: 0.44,
+    q: 78,
+  },
+
   /* ── La foto del hueco de la escalera: 4:5 ──────────────────────────────
      ⚠️ `_RCZ5847` es la ventanilla del truck de noche con gente pidiendo. Es
      literalmente lo que dice el paso 01 —«order at whichever window you
@@ -405,6 +448,75 @@ const FOTOS = [
      el dominio nuevo. Está anotado en `docs/pedido-al-cliente.md`. */
   { src: 'calendar-la-noche.jpg', out: 'public/images/venue/event-la-noche.jpg', w: 900, h: 1125, q: 80 },
   { src: 'calendar-ross-brown.jpg', out: 'public/images/venue/event-ross-brown.jpg', w: 900, h: 1125, q: 80 },
+
+  /* ══════════════════════════════════════════════════════════════════════
+     EL MATERIAL DEL MARKET: EL HERO Y EL MURO DE SEIS.
+
+     ⚠️ ESTAS SIETE NO SALEN DE LA ENTREGA DEL CLIENTE, igual que los dos
+     flyers de acá arriba: se bajaron de `eatdrinkparadise.com/neighborhood-
+     market` el 2026-09-22, que es la galería que el propio local publica de
+     sus market days. La entrega de 36 fotos NO tiene NI UNA del market: son
+     camiones, barra y noches de música. O sea que la alternativa no era «otra
+     foto», era ilustrar una página de artesanos con fotos de otra cosa.
+
+     Los originales quedan en `public/multimedia/` con nombre legible, que es
+     el mismo trato que `calendar-la-noche.jpg`:
+
+       yard     526079_4e081b3fd5bc…   flowers  526079_9ae6005f4d5b…
+       jewelry  526079_3c6d1ce67bba…   boba     526079_d41d2e3f1784…
+       picnic   526079_c9806fd3c370…   home     526079_5280a1f9a0ff…
+       art      526079_951688ef065d…
+
+     ⚠️ VAN A SU PROPIA CARPETA, `public/images/market/`, Y NO A
+     `images/venue/`. Esa carpeta es la derivada de la ENTREGA DEL CLIENTE y
+     hasta hoy lo era sin excepción; mezclarle siete archivos de otra
+     procedencia rompe lo único que hace legible el árbol de medios. El día que
+     el cliente mande fotos propias del market, entran acá y estas se van.
+     TODO: pedirle al cliente el material original del market.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* ── EL HERO DE /market: EL SÉPTIMO 17:9 ────────────────────────────────
+     ⚠️ SALE A 2048 DE ANCHO Y NO A LOS 2576 DE LOS OTROS SEIS HEROES, y no es
+     un descuido: el ORIGINAL mide 2048×1365. Wix no sirve nada más grande
+     —la URL sin transformar ya es el archivo subido— así que 2576 sería un
+     upscale de 1,26×, que es exactamente lo que este archivo le critica al
+     hero viejo de la home unas líneas más arriba. Mejor nítida y un poco más
+     chica: a 1288 de placa sigue dando 1,59× de densidad.
+
+     ⚠️ `foco: 0.5` Y NO MÁS ABAJO. La placa del titular se monta sobre el
+     borde de arriba de la foto, y ahí lo que hay es la pared del edificio y la
+     carpa azul: superficie vacía, ninguna cara debajo. Bajando el centro entra
+     más adoquín y se pierde la carpa, que es lo que hace leer «feria» de un
+     vistazo. */
+  { src: 'market-yard.jpg', out: 'public/images/market/hero-yard-wide.jpg', w: 2048, h: 1084, q: 78 },
+
+  /* ── EL MURO DE SEIS ────────────────────────────────────────────────────
+     ⚠️ SON DOS MEDIDAS Y NO UNA, y es el muro el que las pide: tres verticales
+     a 4:5 y tres apaisadas a 4:3, alternadas en la grilla para que la fila no
+     se lea como un catálogo. Es la misma razón por la que el tendal de
+     `PhotoDivider` tiene seis altos distintos. El tile más ancho mide ~410px
+     en escritorio, así que 880/900 cubre el 2× de una retina.
+
+     ⚠️ LA DEL HERO NO ESTÁ ACÁ ABAJO, y es la regla que ya se aplicó en el
+     slot 2 de `PhotoDivider`: una misma escena dos veces en la misma página
+     —una a 1288px arriba de todo y otra en un tile de 410— se lee como un
+     error, no como una repetición. `picnic` ocupa ese lugar en el muro.
+
+     ⚠️ `q: 76` y no 72. El tile lleva ENCIMA un recuadro punteado blanco a
+     14px del borde —el mismo de `PhotoDivider`— y los artefactos de bloque del
+     JPEG se ven justo contra ese trazo fino. Dos puntos de calidad cuestan
+     ~8 KB por foto y son los que lo sacan. */
+  { src: 'market-jewelry.jpg', out: 'public/images/market/stall-jewelry.jpg', w: 880, h: 1100, q: 76 },
+  { src: 'market-picnic.jpg', out: 'public/images/market/stall-picnic.jpg', w: 900, h: 675, q: 76 },
+  { src: 'market-art.jpg', out: 'public/images/market/stall-art.jpg', w: 880, h: 1100, q: 76 },
+  { src: 'market-flowers.jpg', out: 'public/images/market/stall-flowers.jpg', w: 900, h: 675, q: 76 },
+  /* ⚠️ `foco` ALTO EN LA VERTICAL DE RETRATO. El recorte de 2:3 a 4:5 se come
+     340px de alto, y centrado se los saca por igual arriba y abajo: acá eso
+     pasa el corte justo por el mentón de la vendedora. Subiendo el centro
+     entra la cara entera y el delantal con el logo de su puesto, que es lo
+     único que dice de qué es el puesto. */
+  { src: 'market-boba.jpg', out: 'public/images/market/vendor-boba.jpg', w: 880, h: 1100, foco: 0.42, q: 76 },
+  { src: 'market-home.jpg', out: 'public/images/market/stall-home.jpg', w: 900, h: 675, q: 76 },
 
   /* ── El fondo del Events banner ─────────────────────────────────────────
      ⚠️ VA CHICO A PROPÓSITO: el componente lo pinta con `blur-[22px]`, así que

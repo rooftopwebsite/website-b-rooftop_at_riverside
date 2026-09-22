@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import Footer from '@/components/shared/Footer';
 import Header from '@/components/shared/Header';
-import NavLock from '@/components/shared/NavLock';
 import PageTransition from '@/components/shared/PageTransition';
 import Preloader from '@/components/shared/Preloader';
 import SmoothScroll from '@/components/shared/SmoothScroll';
@@ -132,13 +131,6 @@ export default async function RootLayout({ children }: { readonly children: Reac
         <SmoothScroll />
         <Preloader />
         <PageTransition />
-
-        {/* ⚠️ TEMPORAL. Deja navegar sólo las páginas terminadas —hoy home,
-            Sunset Bar, Food Trucks y What's On—: los links a las otras seis
-            siguen a la vista pero no llevan a ningún lado. Una página se abre
-            sumándola a `PAGINAS_PUBLICADAS` en `lib/flags.ts`, que es donde
-            está el razonamiento completo. */}
-        <NavLock />
 
         {/* ⚠️ ACÁ ARRIBA VIVÍA EL `PromoBar` —los cuatro hechos del lugar—.
             Camila lo mandó sacar y lo tachó sobre una captura. Los cuatro datos

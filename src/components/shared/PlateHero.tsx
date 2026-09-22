@@ -348,7 +348,30 @@ export default function PlateHero({
           derivada vertical propia, no volver la caja a apaisada.
           ══════════════════════════════════════════════════════════════════
         */}
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-frame bg-fog sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[17/9] lg:max-h-[calc(100svh-378px)]">
+        {/*
+          ⚠️ EL `bg-fog` VA SÓLO DETRÁS DE FOTO REAL, y es la misma regla que ya
+          tienen `VenueTabs` y `TruckCards`. Es el color de la caja mientras la
+          imagen baja; con el hueco adentro pasa a ser el FONDO del marcador, y
+          `PhotoPending` en tono claro está calibrado contra `paper` o `bone`,
+          no contra el fog.
+
+          Lo encontró axe el 2026-09-22, al ser `/game-truck` la primera página
+          que usa este hero SIN foto: el rótulo «Falta la foto» va en `ink/65`
+          sobre el 6 % de tinta del marcador, y con el fog debajo el par caía
+          por debajo de 4.5:1. Marcado `serious` en las dos anchuras.
+
+          Sin `bg-fog` el marcador se apoya en el `bone` de la sección, que es
+          la superficie para la que sus tres opacidades están medidas.
+        */}
+        <div
+          className={[
+            'relative aspect-[4/5] w-full overflow-hidden rounded-frame',
+            photo ? 'bg-fog' : '',
+            'sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[17/9] lg:max-h-[calc(100svh-378px)]',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           {photo ? (
             <Image
               src={photo}

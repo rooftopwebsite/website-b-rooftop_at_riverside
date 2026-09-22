@@ -81,6 +81,42 @@ del clip.
 | `hero-truck-window.jpg` | `_RCZ5847` | **el hero de la home** | ver abajo, tiene sección propia |
 | `truck-window-night.jpg` | `_RCZ5847` | «Five businesses» *(ya no se usa, ver abajo)* | la ventanilla de noche con gente pidiendo |
 | `venue-aerial.jpg` | `WhatsApp Image…` | fondo del Events banner, **y nada más** | la aérea del patio ENTERO, para un bloque que dice «cerramos el lugar completo» |
+| `story-yard-day-wide.jpg` | `_RCZ8015` | **el hero de `/our-story`** | 17:9, la sexta de esa medida. Es el patio desde arriba y el único plano que muestra la PLANTA del lugar, que es lo que cuenta esa página. Se descartó `DSC04091` —el patio lleno de familias, que pegaba mejor con «A Magnus family project»— porque es el 4 de julio y una página de marca no puede tener fecha |
+
+### 2 bis. Las siete del market, que NO son de la entrega
+
+La entrega de 36 fotos **no tiene ni una del Neighborhood Market**: son camiones,
+barra y noches de música. O sea que la alternativa no era «otra foto», era
+ilustrar una página de artesanos con fotos de otra cosa.
+
+Se bajaron el **2026-09-22** de la galería que el propio local publica en
+`eatdrinkparadise.com/neighborhood-market`. Es material del cliente, publicado
+por el cliente, reutilizado en el sitio nuevo del cliente.
+
+Viven en **`public/images/market/`**, no en `images/venue/`: esa carpeta es la
+derivada de la entrega y hasta acá lo era sin excepción. El día que el cliente
+mande fotos propias del market, entran ahí y estas se van.
+
+| derivado | medida | dónde | qué se ve |
+|---|---|---|---|
+| `hero-yard-wide.jpg` | 2048×1084 (17:9) | **el hero de `/market`** | los puestos de ropa con las carpas, dos vendedores atendiendo |
+| `stall-jewelry.jpg` | 880×1100 (4:5) | el muro | tres vendedoras detrás de una mesa de collares |
+| `stall-picnic.jpg` | 900×675 (4:3) | el muro | una mesa baja puesta para picnic sobre el césped |
+| `stall-art.jpg` | 880×1100 (4:5) | el muro | un puesto de cuadros y láminas de la costa |
+| `stall-flowers.jpg` | 900×675 (4:3) | el muro | el puesto de flores, con baldes de tallos y plantas |
+| `vendor-boba.jpg` | 880×1100 (4:5) | el muro | una vendedora entregando un pedido sobre el mostrador |
+| `stall-home.jpg` | 900×675 (4:3) | el muro | mesa larga con platos, velas y flores secas |
+
+⚠️ **El hero sale a 2048 y no a los 2576 de los otros seis heroes.** El original
+mide 2048×1365 —Wix no sirve nada más grande, la URL sin transformar ya es el
+archivo subido— así que 2576 sería un upscale de 1,26×, que es exactamente lo
+que este archivo le critica al hero viejo de la home. A 1288 de placa sigue
+dando 1,59× de densidad.
+
+⚠️ **Dos medidas y no una, y el orden alterna.** El muro es de tres columnas:
+con seis tiles del mismo alto queda un catálogo, con tres verticales y tres
+apaisadas intercaladas queda una pared. Es el mismo criterio del tendal de
+`PhotoDivider`. El orden está fijado en `SHOTS`, en `content/market.ts`.
 
 ### La foto del hero
 
@@ -153,6 +189,10 @@ Ordenado por lo que más bloquea.
 | 1 | **Un perro en el patio.** Alguien con su perro en una mesa, o un perro en la fila de un truck. | La card de **Wooftop Wednesdays** en What's on | Es la noche de perros y en las 36 fotos **no hay ni un perro**. Cualquier foto del patio ahí diría «traé al perro» sobre una imagen sin perros. Es el único hueco marcado que queda en la home. |
 | 2 | **Cielo de atardecer sobre el rooftop.** Horizontal, con las nubes doradas de las 6 de la tarde, desde la terraza. | El fondo del hero — está en el mockup | No hay ni una foto de cielo en la entrega, y menos de golden hour. Un degradado CSS que lo imite es exactamente lo que el brief prohíbe. **Ya NO bloquea:** el hero tiene la ventanilla de noche, que funciona. Pasó a ser una mejora, no un hueco. |
 | 3 | **Clips AMBIENTE, verticales, sin texto ni locución.** 3:4 o 9:16, 6–10 s, sin gente hablando a cámara y sin rótulos quemados. Seis u ocho alcanzan. | El arco del hero y el muro vertical | Hay dos y funcionan, pero se repiten. Lo que sobra son piezas de redes, que en un tile muteado no sirven. Ejemplos de toma: la barra sirviendo, el humo de una parrilla, la fila en una ventanilla, el atardecer desde la terraza, la banda arrancando. |
+
+| 3 bis | **Fotos propias del Neighborhood Market.** Los puestos armados, la gente recorriendo, algún detalle de producto. Seis u ocho alcanzan, y sirve tanto horizontal como vertical. | El hero y el muro de `/market` | **No bloquea, pero sí es prestado.** Hoy las siete que usa la página se bajaron de la galería del sitio Wix del propio cliente (ver §2 bis), o sea que son de él pero no nos las dio: no tenemos el original, están a 2048px de lado largo y por eso el hero sale una medida por debajo del resto. De las 36 fotos de la entrega no hay **ni una** del market. |
+
+| 4 | **El gaming truck, abierto y de frente.** Horizontal y bien apaisada (17:9), con las pantallas encendidas y gente jugando adentro. | El hero de `/game-truck` | Es el **único hueco de foto que queda en un hero** de todo el sitio. De las 36 fotos no hay ni una del camión, y las dos cosas que parecen serlo no lo son: `/images/game-truck.jpg` es el flyer de Instagram con el logo quemado, y `Gaming Truck.mp4` es el reel. Al rediseñar la página (2026-09-22) se revisó el reel cuadro por cuadro buscando un fotograma servible: los planos del exterior están desenfocados —el foco es la presentadora que pasa delante—, los del interior son pantallas de juego llenando el cuadro, y el archivo mide 1440px contra los 2576 del marco. |
 
 ### Lo que mejoraría lo que ya hay
 

@@ -45,19 +45,128 @@ export const PROVIDES = {
   ],
 } as const;
 
-/** Los pasos. Esto SÍ es una secuencia, así que va numerado. */
-export const STEPS: readonly { readonly title: string; readonly body: string }[] = [
+/**
+ * Los pasos. Esto SÍ es una secuencia, así que va numerado.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ CADA PASO TIENE `kicker` Y `tags` DESDE EL REDISEÑO DE LA PÁGINA, y es
+ * porque cambió la forma que los muestra: son los TICKETS de la home, la misma
+ * pieza que `YardSteps`, y ese ticket tiene cuatro renglones —rótulo, título,
+ * párrafo y etiquetas—. Sin los dos campos nuevos la tarjeta queda con un
+ * tercio de aire abajo y deja de parecerse a su hermana.
+ *
+ * ⚠️ NI UNA ETIQUETA DICE ALGO QUE NO DIGA YA SU PROPIO `body`. Son un resumen
+ * de lo que el paso pide o entrega, no datos nuevos: acá no hay frecuencia, ni
+ * público, ni rubros, que son las tres cosas que seguimos sin saber.
+ *
+ * ⚠️ EL TERCER PASO SE LLAMABA «Pay and show up» Y AHORA SE LLAMA «Bring your
+ * table». No es un retoque de estilo: es el pedido de Camila del 2026-09-22 de
+ * dejar de vender esta página desde el pago —«no hables de pagar dándole mucha
+ * importancia, vendamos desde el lado de ayudar a exponer su trabajo»—.
+ *
+ * El precio NO se esconde, que sería el error opuesto: sigue en el `body` del
+ * paso, con todas las letras, y sigue en la fila de datos de la sección de
+ * logística. Lo que cambió es que ya no ES el nombre del paso ni el titular de
+ * una banda oscura a 112px. Un vendor que llega a esta página tiene que
+ * enterarse del fee sin que el fee sea lo primero que le decimos.
+ *
+ * ⚠️ Y POR ESO TAMBIÉN SE CAYÓ LA ETIQUETA «$30 a booth» del tercer ticket: el
+ * dato quedaba dicho dos veces dentro de la MISMA tarjeta, en el párrafo y en
+ * el chip de abajo. En su lugar va «Ten by ten», que es la otra pregunta que un
+ * vendor hace antes de anotarse y que no estaba en ningún chip.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export interface MarketStep {
+  /** El rótulo chico de arriba del título: cuánto tarda o cuándo pasa. */
+  readonly kicker: string;
+  readonly title: string;
+  readonly body: string;
+  readonly tags: readonly string[];
+}
+
+export const STEPS: readonly MarketStep[] = [
   {
-    title: 'Send the form',
-    body: 'Tell us what you make, where we can see it, and which market dates you want. It takes two minutes.',
+    kicker: 'Two minutes',
+    title: 'Start with the form',
+    body: 'Tell us what you make, where we can see it, and which market days you are after. That is the whole thing.',
+    tags: ['What you make', 'Where to see it', 'The days you want'],
   },
   {
-    title: 'We come back to you',
-    body: 'We look at what you sell and whether it fits alongside what is already booked, and answer within one business day.',
+    kicker: 'One business day',
+    title: 'We write back',
+    body: 'A person reads it and answers within one business day, with what is open and who else is set up that day.',
+    tags: ['A person reads it', 'Within a day'],
   },
   {
-    title: 'Pay the $30 and show up',
-    body: 'Spots go first come, and the final approval happens at check-in on the day. Bring your table and your tent.',
+    kicker: 'On the day',
+    title: 'Bring your table',
+    body: 'Pull in, check in with us and set up your ten by ten. The booth is $30 and spots go first come, so the earlier you write the better.',
+    tags: ['Your table and tent', 'Ten by ten', 'First come'],
+  },
+];
+
+/**
+ * EL MURO DE FOTOS DE LA PÁGINA.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ SON FOTOS DEL SITIO VIGENTE Y NO DE LA ENTREGA DEL CLIENTE, porque la
+ * entrega de 36 fotos no tiene NI UNA del market: son camiones, barra y noches
+ * de música. Se bajaron de `eatdrinkparadise.com/neighborhood-market` el
+ * 2026-09-22, que es la galería que el propio local publica de sus market
+ * days. Qué archivo es cuál está en `scripts/build-media.mjs`.
+ * TODO: pedirle al cliente el material original del market.
+ *
+ * ⚠️ LOS `alt` DESCRIBEN LO QUE SE VE Y NADA MÁS. No dicen cuánta gente va, ni
+ * cada cuánto es, ni qué rubros busca el cliente, que son las tres cosas que
+ * seguimos sin saber: un `alt` es texto publicado como cualquier otro.
+ *
+ * ⚠️ EL `ratio` NO ES MAQUETADO, ES EL ARCHIVO. `build-media.mjs` genera las
+ * verticales a 880×1100 y las apaisadas a 900×675, así que la clase de acá
+ * DECLARA la proporción de la derivada, no la elige. Si cambia una, cambian las
+ * dos juntas o la foto se deforma.
+ *
+ * ⚠️ EL ORDEN ALTERNA VERTICAL Y APAISADA, y hay que conservarlo: la grilla es
+ * de tres columnas, así que así queda una vertical al lado de una apaisada en
+ * cada fila. Seis tiles del mismo alto son un catálogo; seis de altos distintos
+ * son una pared. Es el mismo criterio del tendal de `PhotoDivider`.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export interface MarketShot {
+  readonly src: string;
+  readonly alt: string;
+  readonly ratio: 'aspect-[4/5]' | 'aspect-[4/3]';
+}
+
+export const SHOTS: readonly MarketShot[] = [
+  {
+    src: '/images/market/stall-jewelry.jpg',
+    alt: 'Three vendors standing behind a table of handmade necklaces and earrings',
+    ratio: 'aspect-[4/5]',
+  },
+  {
+    src: '/images/market/stall-picnic.jpg',
+    alt: 'A vendor beside a low table set for a picnic, with cushions and baskets on the turf',
+    ratio: 'aspect-[4/3]',
+  },
+  {
+    src: '/images/market/stall-art.jpg',
+    alt: 'Two vendors at a stand of framed paintings and prints of the coast',
+    ratio: 'aspect-[4/5]',
+  },
+  {
+    src: '/images/market/stall-flowers.jpg',
+    alt: 'Two vendors at a flower stand, with buckets of cut stems and potted plants',
+    ratio: 'aspect-[4/3]',
+  },
+  {
+    src: '/images/market/vendor-boba.jpg',
+    alt: 'A vendor in an apron handing an order across her counter',
+    ratio: 'aspect-[4/5]',
+  },
+  {
+    src: '/images/market/stall-home.jpg',
+    alt: 'A long table laid with plates, candles and dried flowers at a homeware stand',
+    ratio: 'aspect-[4/3]',
   },
 ];
 

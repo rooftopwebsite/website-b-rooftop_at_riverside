@@ -16,6 +16,7 @@ import { Eyebrow, Heading } from '@/components/shared/Type';
 import { useActionState } from 'react';
 import {
   AREAS_OF_INTEREST,
+  BAR_TIERS,
   BUDGET_RANGES,
   EVENT_SUBTYPES,
   FOOD_TIERS,
@@ -94,6 +95,7 @@ const LABELS: Record<string, string> = {
   budget: 'Rough budget',
   areas: 'What you are interested in',
   foodTier: 'Food tier',
+  barTier: 'Bar package',
   comments: 'Anything else',
   referral: 'How did you hear about us?',
 };
@@ -103,7 +105,29 @@ function Grupo({ children }: { readonly children: React.ReactNode }) {
   return <legend className="eyebrow mb-[6px] text-body/75">{children}</legend>;
 }
 
-export default function InquiryForm() {
+/**
+ * ⚠️ `defaultAreas` ES LA ÚNICA PROP Y ENTRÓ EL 2026-09-22, para que otra
+ * página pueda mandar acá con su parte del venue ya tildada.
+ *
+ * El caso que lo pidió es `/game-truck`: sus dos CTA de conversión —«Book a
+ * party» y «Ask about a party»— llevaban a `/events#inquire`, o sea al
+ * formulario de eventos privados, con quince campos, fechas, presupuesto y
+ * ninguna mención del camión. Quien viene a reservar dos horas de gaming para
+ * un cumpleaños de diez chicos aterrizaba en el formulario de una compra de
+ * $20.000 y tenía que adivinar qué casilla era la suya.
+ *
+ * ⚠️ SE PREFILLA EL ÁREA Y NO EL TIPO DE EVENTO, y es una decisión, no un
+ * atajo. `AREAS_OF_INTEREST` ya tiene `game-truck`, así que tildarlo es un
+ * dato verdadero: es literalmente lo que la persona vino a pedir. El
+ * `eventType` en cambio habría que adivinarlo —«Social: Birthday or
+ * milestone» es lo más probable pero no lo sabemos— y un desplegable que
+ * llega con una respuesta puesta que no es la tuya es peor que uno vacío.
+ */
+export default function InquiryForm({
+  defaultAreas,
+}: {
+  readonly defaultAreas?: readonly string[];
+} = {}) {
   const [state, action] = useActionState(submitEventInquiry, IDLE);
 
   if (state.status === 'ok') {
@@ -201,12 +225,40 @@ export default function InquiryForm() {
             name="areas"
             legend={LABELS.areas}
             options={AREAS_OF_INTEREST.map((a) => ({ value: a.value, label: a.label }))}
+            defaultChecked={defaultAreas}
           />
         </div>
       </fieldset>
 
-      {/* ── Comida ────────────────────────────────────────────────────── */}
+      {/* ── Comida y barra ────────────────────────────────────────────── */}
       <FoodTier />
+
+      {/*
+        ⚠️ LA BARRA ENTRÓ EL 2026-09-22 y hasta ese día el formulario no la
+        mencionaba: preguntaba cómo comen quince personas y nada sobre qué
+        toman, cuando la barra suele ser el renglón más caro del presupuesto.
+
+        ⚠️ ES UN DESPLEGABLE Y NO TARJETAS COMO LA COMIDA, y la diferencia
+        está justificada: las tarjetas de `FoodTier` existen porque «Full
+        service» contra «Drop-off» no significa nada sin su renglón de
+        explicación. Los tres paquetes de barra sí se explican solos acá
+        —tickets, pulsera o barra abierta— y además están desarrollados con
+        precio unas pantallas más arriba, en la misma página.
+
+        ⚠️ NO ES OBLIGATORIO. Se puede alquilar el lugar sin cerrar la barra en
+        un paquete, y «Not sure yet» es una respuesta legítima y no un campo
+        sin llenar.
+      */}
+      <fieldset className="flex flex-col gap-[16px]">
+        <Grupo>The bar</Grupo>
+        <SelectField
+          name="barTier"
+          label={LABELS.barTier}
+          placeholder="Choose one"
+          hint="Optional"
+          options={BAR_TIERS.map((o) => ({ value: o, label: o }))}
+        />
+      </fieldset>
 
       {/* ── Cierre ────────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[16px]">

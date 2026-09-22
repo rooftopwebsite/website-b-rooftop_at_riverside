@@ -2910,22 +2910,152 @@ main:has(+ .banda-arco) > :last-child {
 }
 
 /* ==========================================================================
-   LOS LINKS QUE HOY NO LLEVAN A NINGÚN LADO
+   PROSA LEGAL — el cuerpo de los tres documentos del gaming truck.
 
-   ⚠️ TEMPORAL, y se va con `NavLock`. Mientras las páginas internas se
-   terminan, los links que apuntan a una ruta que no está en
-   `PAGINAS_PUBLICADAS` (`lib/flags.ts`) siguen a la vista y en su lugar, pero
-   no navegan. El atributo lo pone `NavLock` al pasar el mouse por encima.
+   ⚠️ UNA SOLA CLASE Y NO UTILIDADES EN CADA ETIQUETA. Los documentos son
+   transcripciones VERBATIM del cliente: 22.000 y 11.000 caracteres de texto
+   legal con numerales, listas anidadas y párrafos de doscientas palabras.
+   Escribir las clases en cada `<p>` sería imposible de mantener y, peor,
+   invitaría a tocar el texto mientras se maqueta.
 
-   Lo único que cambia es el CURSOR. Un botón que no hace nada no puede
-   mostrar la manito: con la manito el cliente cree que el sitio está roto, y
-   sin ella lee lo que es, algo que todavía no está.
+   ⚠️ NO HAY UN SOLO VALOR NUEVO: todo sale de los tokens del tema. Es la
+   misma regla que rige el resto del archivo y la que hace que estas tres
+   páginas se lean como parte del sitio y no como un anexo.
 
-   ⚠️ EL HOVER NO SE APAGA a propósito. El color y el texto rodante son parte
-   de cómo se ve el diseño terminado, que es justo lo que se está mostrando.
+   ⚠️ LA INTERLÍNEA ES 1.8 Y NO EL 1.65 DEL CUERPO. Es texto legal denso, sin
+   imágenes y sin cortes: la medida de lectura larga necesita más aire. Es el
+   mismo número que usan las páginas legales de los otros repos de la casa.
    ========================================================================== */
 
-a[data-sin-destino],
-a[data-sin-destino] * {
-  cursor: default;
+.prose-legal {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.8;
+  color: var(--color-body);
+}
+
+.prose-legal > *:first-child {
+  margin-top: 0;
+}
+
+/* Los títulos de apartado. La condensada en caja alta, que es la voz de los
+   títulos del sitio, al cuerpo más chico que el brief le permite (24px). */
+.prose-legal h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-d5);
+  line-height: 1.15;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  margin-top: 2.75rem;
+  margin-bottom: 0.85rem;
+}
+
+/* ⚠️ EL h3 NO VA EN LA CONDENSADA. El brief la prohíbe por debajo de 24px y
+   acá un subtítulo de documento vive en 17: a ese cuerpo una condensada de
+   caja alta se lee como etiqueta y no como título. Va en la geométrica, en
+   caja mixta, que es exactamente lo que hace `role="card"` en `Type.tsx`. */
+.prose-legal h3 {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-top: 1.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.prose-legal p {
+  margin-bottom: 1.15rem;
+  max-width: 78ch;
+}
+
+.prose-legal strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.prose-legal ul,
+.prose-legal ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+  max-width: 78ch;
+}
+
+.prose-legal ul {
+  list-style: disc;
+}
+
+.prose-legal ol {
+  list-style: decimal;
+}
+
+.prose-legal li {
+  margin-bottom: 0.5rem;
+}
+
+/* ⚠️ EL `::marker` EN `sunset-deep` Y NO EN `sunset`. Sobre hueso el naranja
+   de marca da 2.35:1; el oscuro, 3.28:1. Un marcador no es texto y no le debe
+   contraste a nadie, pero a 3.28 se ve y a 2.35 se pierde. */
+.prose-legal li::marker {
+  color: var(--color-sunset-deep);
+}
+
+/* El link del cuerpo legal: mismo criterio que `link-texto`, o sea el
+   subrayado sostiene la identificación y el color no. `deep` sobre hueso da
+   10.03:1. */
+.prose-legal a {
+  color: var(--color-deep);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.prose-legal a:hover {
+  color: var(--color-ink);
+  text-decoration-thickness: 2px;
+}
+
+.prose-legal hr {
+  border: none;
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 15%, transparent);
+  margin: 2.5rem 0;
+}
+
+/* ⚠️ LAS TABLAS SCROLLEAN DENTRO DE SU PROPIA CAJA. Sin esto, una tabla más
+   ancha que la pantalla hace scrollear el DOCUMENTO de costado, que es
+   exactamente lo que el `overflow-x: clip` del `body` está puesto para evitar.
+   Hoy ninguno de los tres documentos tiene tabla; la regla queda por si el
+   cliente manda uno que sí. */
+.prose-legal .tabla {
+  overflow-x: auto;
+  margin-bottom: 1.25rem;
+}
+
+/* ⚠️ LA LISTA DE LETRAS EXISTE PORQUE EL WAIVER DEL CAMIÓN NUMERA DOS VECES.
+   Sus diez cláusulas van en números y los once reconocimientos del final van
+   de la a a la k. Si los dos fueran `decimal`, el documento tendría dos series
+   de números sin relación y una cláusula «4» que no es la cláusula 4. */
+.prose-legal ol.letras {
+  list-style: lower-alpha;
+}
+
+/* ⚠️ EL AVISO EN CAJA ALTA SE DESTACA, NO SE BAJA. Los dos bloques gritados
+   del waiver están así en el original a propósito: en Florida una liberación
+   de responsabilidad por negligencia tiene que ser CONSPICUA para valer, y la
+   caja alta es como este documento lo hace. No se pasa a caja baja.
+
+   Lo que sí se puede hacer es que se lea: cuerpo un punto más chico, interlínea
+   más aireada que el resto —la caja alta no tiene ascendentes ni descendentes
+   que guíen el renglón— y una barra de color al costado que lo separe del
+   cuerpo del documento en vez de dejarlo como un párrafo más, gritando. */
+.prose-legal .aviso {
+  margin: 1.75rem 0;
+  border-left: 3px solid var(--color-sunset-deep);
+  padding: 0.15rem 0 0.15rem 1.15rem;
+  font-size: var(--text-dato);
+  line-height: 1.7;
+  letter-spacing: 0.005em;
+  color: var(--color-ink);
+  max-width: 72ch;
 }
