@@ -202,9 +202,18 @@ const BASE = [
  * ⚠️ NO SE PUEDE DUPLICAR CUALQUIER COSA. Vale para etiquetas cortas: texto,
  * un icono, una flecha. Si algún día un CTA lleva adentro algo con estado o
  * con `id` propio, esto lo clona y hay que sacarlo de acá.
+ *
+ * ⚠️ SE EXPORTA DESDE EL 2026-09-22, y lo pidió `BackToTop`: es un botón que no
+ * pasa por `Button` —es un círculo de 44px fijo en pantalla, no un control de
+ * la escala de `SIZES`— pero tiene que rodar en el hover igual que los otros
+ * sesenta, porque si no se lee como una pieza pegada de otro sitio.
+ *
+ * Exportarlo NO afloja la regla del encabezado: sigue siendo el único lugar
+ * que escribe las clases `rodillo-*`. Lo que se comparte es la mecánica, y de
+ * eso hay una sola copia.
  * ══════════════════════════════════════════════════════════════════════════
  */
-function Rodillo({ children }: { readonly children: ReactNode }) {
+export function Rodillo({ children }: { readonly children: ReactNode }) {
   return (
     <span className="rodillo">
       <span className="rodillo-cara rodillo-base">{children}</span>

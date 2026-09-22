@@ -101,3 +101,45 @@ export const LEGAL_DOCS: readonly LegalDoc[] = [
     blurb: 'For the games upstairs, at the bar. 21 and over.',
   },
 ];
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * LOS CUATRO DEL PIE: LA OTRA FAMILIA DE DOCUMENTOS, Y ESTÁ SEPARADA A
+ * PROPÓSITO.
+ *
+ * `LEGAL_DOCS` son los papeles del camión: se firman, se llega a ellos desde
+ * `/game-truck` y no están en ningún menú. Estos cuatro son los del sitio: los
+ * lista la fila legal del pie, en todas las páginas, y son los que el template
+ * de la agencia exige. No comparten lista porque no comparten navegación: el
+ * pie de un waiver manda a los otros dos waivers, no a la política de cookies.
+ *
+ * ⚠️ EL ORDEN ES EL DEL FIGMA DE RESTO EXPERIENCE —nodo 1255:11114—, que es el
+ * mismo que ya está escrito en `Footer.tsx`. Si cambia, cambia en los dos.
+ *
+ * ⚠️ LOS CUATRO ESTÁN EN BORRADOR: el cuerpo es lorem, las páginas van
+ * `noindex` y no entran al sitemap. Todo el porqué está en
+ * `content/legal/borradores.ts`.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export const SITE_LEGAL_DOCS: readonly LegalDoc[] = [
+  {
+    href: '/privacy-policy',
+    label: 'Privacy Policy',
+    blurb: 'What we collect, why, and what we never do with it.',
+  },
+  {
+    href: '/terms-of-service',
+    label: 'Terms of Service',
+    blurb: 'The rules for using this site and for booking with us.',
+  },
+  {
+    href: '/cookie-policy',
+    label: 'Cookie Policy',
+    blurb: 'Which cookies this site sets and how to say no.',
+  },
+  {
+    href: '/accessibility',
+    label: 'Accessibility',
+    blurb: 'What we build for, what we test, and what still needs work.',
+  },
+];

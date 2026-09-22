@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { SITE_LEGAL_DOCS } from '@/content/legal-docs';
 import { BRAND } from '@/lib/brand';
 import { CAJA_ALTA_CLS } from '@/lib/flags';
 import AgencyBar from './AgencyBar';
@@ -125,23 +126,27 @@ const LINKS_CONOCERNOS: readonly FooterLink[] = [
  * ⚠️ «COOKIES PREFERENCES» NO ESTÁ, y es a propósito. En el template ese
  * control REABRE el banner de cookies, y este sitio no tiene banner. Un botón
  * que dice «preferencias» y no abre nada es peor que no tenerlo. Entra el día
- * que se monte el banner, en la misma fila y con ese texto exacto.
+ * que se monte el banner, en la misma fila y con ese texto exacto. Es lo único
+ * de esta fila que sigue faltando.
  *
- * ⚠️ NO SON LINKS TODAVÍA, Y ESO ES LO QUE HAY QUE CAMBIAR DESPUÉS. Las tres
- * páginas no existen —`/privacy-policy`, `/terms-of-service`,
- * `/cookie-policy`— así que los rótulos se renderizan como texto y no como
- * anclas: un `<a>` a un 404 es una promesa rota, y uno sin `href` no lo
- * anuncia como link ningún lector de pantalla. Cuando las páginas existan hay
- * que hacer DOS cosas acá: agregarles el `href` y cambiar el `<span>` por
- * `<Link>`. La skill `paginas-legales` tiene el procedimiento completo.
+ * ⚠️ YA SON LINKS. Esta nota decía que no lo eran, porque las páginas no
+ * existían y un `<a>` a un 404 es una promesa rota. El 2026-09-22 se crearon
+ * las cuatro y los `<span>` pasaron a `<Link>`.
+ *
+ * ⚠️ LAS CUATRO PÁGINAS SON BORRADORES CON CUERPO DE LOREM, y aun así el link
+ * va. Son dos problemas distintos: que el documento esté escrito es cosa del
+ * cliente y de su abogado; que el rótulo del pie lleve a alguna parte es cosa
+ * nuestra. La página abre, dice en su primer bloque que es un borrador y lleva
+ * `noindex`, que es exactamente lo que un borrador tiene que hacer. El porqué
+ * completo está en `content/legal/borradores.ts`.
+ *
+ * ⚠️ LOS `href` SALEN DE `SITE_LEGAL_DOCS` Y NO ESTÁN ESCRITOS ACÁ. Esa lista
+ * es también la que arma la navegación del pie de cada documento, y con las
+ * rutas escritas en los dos lados alcanzaba con renombrar una para que el pie
+ * del sitio y el pie del documento apuntaran a lugares distintos.
  * ══════════════════════════════════════════════════════════════════════════
  */
-const LEGALES = [
-  'Privacy Policy',
-  'Terms of Service',
-  'Cookie Policy',
-  'Accessibility',
-] as const;
+const LEGALES = SITE_LEGAL_DOCS;
 
 const COLUMNAS = [
   { titulo: 'The place', links: LINKS_LUGAR },
@@ -425,7 +430,19 @@ export default function Footer() {
           le pasaba por encima y partía «Terms of Service» al medio. Todo lo
           que sea texto dentro del footer tiene que estar por encima del
           `z-0` de la capa decorativa. */}
-      <div className="relative z-[1] border-t border-paper/15">
+      {/*
+          ⚠️ `data-pie-cierre` MARCA DÓNDE ARRANCA LA ZONA QUE NO SE PUEDE
+          PISAR, y la lee `BackToTop` para frenar antes de llegar. De acá para
+          abajo van la fila legal, el copyright y la barra de la agencia: lo que
+          cierra el sitio y no admite nada flotando encima.
+
+          ⚠️ Es un atributo de datos y no un `id` a propósito: no es un ancla,
+          nadie navega hasta acá, y un `id` en el footer aparecería en los
+          scripts de auditoría como si fuera un destino. Si algún día se renombra
+          hay que tocar también `alzaDelPie()` en `BackToTop.tsx`; el botón cae
+          a su piso en silencio si no lo encuentra.
+      */}
+      <div data-pie-cierre className="relative z-[1] border-t border-paper/15">
         <div>
           {/*
             ⚠️ LAS DOS PIEZAS SE PONEN EN FILA RECIÉN EN `lg`, Y NO EN `sm`.
@@ -458,8 +475,8 @@ export default function Footer() {
               aria-label="Legal"
               className="order-1 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 lg:order-2 lg:shrink-0 lg:justify-end"
             >
-              {LEGALES.map((rotulo, i) => (
-                <span key={rotulo} className="inline-flex items-center">
+              {LEGALES.map((doc, i) => (
+                <span key={doc.href} className="inline-flex items-center">
                   {/*
                     ⚠️ EL FILETE NUNCA ARRANCA UN RENGLÓN. Va ANTES de cada
                     rótulo menos el primero, y sólo existe a partir de 430px.
@@ -485,11 +502,29 @@ export default function Footer() {
                   ) : null}
                   {/*
                     `py-1.5` para que el área táctil sea cómoda en mobile, que
-                    es otro pedido del template. Hoy no se toca nada, pero el
-                    alto tiene que estar puesto desde ahora: cuando pasen a ser
-                    `<Link>` el layout no se mueve.
+                    es otro pedido del template. El alto ya estaba puesto de
+                    cuando esto era un `<span>` muerto, así que el paso a
+                    `<Link>` no movió una fila.
+
+                    ⚠️ EL HOVER SUBRAYA Y ACLARA, NO PINTA DE ACENTO. Cuatro
+                    rótulos de 13px a `paper/70` sobre el bloque oscuro del pie
+                    están un escalón debajo de las columnas de navegación, que
+                    es donde el template los quiere: son el piso legal, no un
+                    destino que se ofrece. Un dorado acá compite con la barra de
+                    la agencia que viene justo abajo.
+
+                    ⚠️ NO HAY `aria-current` EN ESTA FILA, y sí lo hay en el pie
+                    de cada documento. Acá el pie se renderiza igual en las 24
+                    rutas y marcar la actual exigiría volver cliente al footer
+                    entero para leer el pathname. El que está en la página ya lo
+                    sabe: lo dice el h1 arriba de todo.
                   */}
-                  <span className="px-1 py-1.5 text-paper/70">{rotulo}</span>
+                  <Link
+                    href={doc.href}
+                    className="px-1 py-1.5 text-paper/70 transition-colors hover:text-paper hover:underline focus-visible:text-paper"
+                  >
+                    {doc.label}
+                  </Link>
                 </span>
               ))}
             </nav>

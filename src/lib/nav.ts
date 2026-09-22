@@ -260,4 +260,20 @@ export const ALL_ROUTES: readonly string[] = [
   '/gaming-truck-policies',
   '/game-zone-waiver',
   '/bar-games-waiver',
+
+  /*
+   * ⚠️ FALTAN CUATRO RUTAS QUE SÍ EXISTEN, Y FALTAN A PROPÓSITO:
+   * `/privacy-policy`, `/terms-of-service`, `/cookie-policy` y
+   * `/accessibility`. Las cuatro están construidas y linkeadas desde la fila
+   * legal del pie, pero su cuerpo todavía es lorem —el cliente no tiene esos
+   * documentos escritos— así que van `noindex`.
+   *
+   * ⚠️ Y UNA RUTA `noindex` NO VA AL SITEMAP. El sitemap es una lista de URLs
+   * que le pedimos a Google que indexe; incluir una que además le pide que no
+   * la indexe es mandarle dos señales opuestas sobre la misma URL, que es el
+   * mismo criterio que sacó de acá las rutas de trucks y eventos.
+   *
+   * El día que entre el texto real se sacan los `noIndex` de las cuatro
+   * páginas y se agregan las cuatro líneas acá. Son los dos únicos cambios.
+   */
 ];

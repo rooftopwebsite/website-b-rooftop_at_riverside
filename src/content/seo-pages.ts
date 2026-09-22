@@ -207,6 +207,58 @@ export const PAGE_SEO = {
       'Terms and conditions for the bar games at Rooftop at Riverside. Twenty one and over, no gambling, and the rules every player agrees to.',
     keywords: ['bar games terms and conditions'],
   },
+
+  /*
+   * ══════════════════════════════════════════════════════════════════════
+   * LOS CUATRO DEL PIE. Privacidad, términos, cookies y accesibilidad.
+   *
+   * ⚠️ HOY LAS CUATRO SON `noindex` Y NO ESTÁN EN EL SITEMAP, porque el cuerpo
+   * es lorem. Entonces, ¿por qué tienen entrada acá? Porque el título y la
+   * descripción son lo ÚNICO de estas páginas que ya se puede escribir de
+   * verdad: no dependen del abogado, describen el documento y no lo dicen. El
+   * día que entre el texto se saca el `noIndex` de las cuatro páginas y se
+   * agregan las rutas a `ALL_ROUTES`; acá no hay que tocar nada.
+   *
+   * ⚠️ `keywords` VACÍO, Y NO ES UN OLVIDO. Nadie busca la política de cookies
+   * de un rooftop: estas cuatro existen para el que ya está en el sitio y para
+   * el que lo audita, no para traer tráfico. El campo es documental y acá no
+   * hay intención de búsqueda que documentar.
+   *
+   * ⚠️ EL H1 DE ACCESSIBILITY DICE «statement» Y EL RÓTULO DEL PIE NO. En el
+   * pie es una palabra sola porque comparte renglón con otras tres; en la
+   * página tiene que ser dos, porque el titular lleva una palabra en color y
+   * con una sola palabra el acento se come el titular entero. Es la regla fija
+   * del repo: ningún titular va monocromo.
+   * ══════════════════════════════════════════════════════════════════════
+   */
+  '/privacy-policy': {
+    h1: 'Privacy policy',
+    title: 'Privacy Policy | Rooftop at Riverside',
+    description:
+      'What Rooftop at Riverside collects through this site, why we collect it, who we share it with, and how to ask us to delete it.',
+    keywords: [],
+  },
+  '/terms-of-service': {
+    h1: 'Terms of service',
+    title: 'Terms of Service | Rooftop at Riverside',
+    description:
+      'The terms for using rooftopatriverside.com, buying event tickets, booking a private event and visiting the venue.',
+    keywords: [],
+  },
+  '/cookie-policy': {
+    h1: 'Cookie policy',
+    title: 'Cookie Policy | Rooftop at Riverside',
+    description:
+      'Which cookies rooftopatriverside.com sets, which ones come from third parties, and how to change what you allow.',
+    keywords: [],
+  },
+  '/accessibility': {
+    h1: 'Accessibility statement',
+    title: 'Accessibility | Rooftop at Riverside',
+    description:
+      'How we build and test rooftopatriverside.com for accessibility, what is still missing, and how to tell us when something does not work.',
+    keywords: [],
+  },
 } as const satisfies Record<string, PageSeo>;
 
 export type SeoRoute = keyof typeof PAGE_SEO;

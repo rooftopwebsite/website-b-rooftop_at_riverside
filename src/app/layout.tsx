@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
+import BackToTop from '@/components/shared/BackToTop';
 import Footer from '@/components/shared/Footer';
 import Header from '@/components/shared/Header';
 import PageTransition from '@/components/shared/PageTransition';
@@ -176,6 +177,18 @@ export default async function RootLayout({ children }: { readonly children: Reac
           no contenido de la página, igual que el footer.
         */}
         <Footer />
+
+        {/*
+          ⚠️ VA ÚLTIMO Y FUERA DE `<main>`. Es `fixed`, así que su lugar en el
+          DOM no cambia dónde se dibuja — pero sí cambia dos cosas: es lo último
+          del orden de tabulación, que es donde corresponde un atajo de
+          navegación, y queda después del `<footer>` en el DOM, que es lo que
+          lo deja por encima sin tener que subirle el z-index.
+
+          ⚠️ No lleva envoltorio ni margen: se posiciona solo contra el
+          viewport y frena solo contra el cierre del footer. Ver su archivo.
+        */}
+        <BackToTop />
         </VenueProvider>
       </body>
     </html>

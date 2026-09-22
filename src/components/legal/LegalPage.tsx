@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading } from '@/components/shared/Type';
-import { LEGAL_DOCS, type LegalBlock } from '@/content/legal-docs';
+import { LEGAL_DOCS, type LegalBlock, type LegalDoc } from '@/content/legal-docs';
 
 /**
  * El cuerpo del documento: los bloques de `content/legal/` pasados a HTML.
@@ -114,11 +114,18 @@ function Cuerpo({ blocks }: { readonly blocks: readonly LegalBlock[] }) {
  * sería imposible de mantener y, peor, invitaría a tocar el texto mientras se
  * maqueta. La clase vive en `globals.css`.
  *
- * ⚠️ NO HAY BANNER DE COOKIES NI LINKS LEGALES EN EL FOOTER. La guía de la
- * casa los trae en el mismo paquete, pero estos tres documentos no son
- * privacidad, términos ni cookies: son los papeles que se firman para usar el
- * camión. El footer del sitio no los lista y no debería: se llega desde
- * `/game-truck`, que es donde importan.
+ * ⚠️ ESTA CARCASA LA COMPARTEN DOS FAMILIAS DE DOCUMENTOS, Y SE ELIGE CON
+ * `docs`. Los tres papeles del camión —que es para lo que nació— y los cuatro
+ * del pie del sitio: privacidad, términos, cookies y accesibilidad. Lo que
+ * cambia entre una y otra es a dónde manda la navegación del final, porque el
+ * pie de un waiver manda a los otros dos waivers y no a la política de cookies.
+ * Por eso son dos listas y no una sola con un campo de familia.
+ *
+ * ⚠️ `lastUpdated` ES OPCIONAL, Y ESA AUSENCIA ES INFORMACIÓN. Los cuatro del
+ * pie todavía son borradores con cuerpo de relleno: poner «Last updated ·
+ * September 22, 2026» encima de un lorem sería afirmar que el cliente revisó un
+ * documento que no existe. Sin fecha, el renglón dice que es un borrador. El
+ * día que entre el texto, entra la fecha y el renglón vuelve solo.
  */
 export default function LegalPage({
   title,
@@ -129,26 +136,34 @@ export default function LegalPage({
   currentHref,
   intro,
   blocks,
+  docs = LEGAL_DOCS,
 }: {
   readonly title: string;
   readonly accent: string;
   readonly eyebrow: string;
-  /** Fecha ISO, por ejemplo `2026-09-15`. */
-  readonly lastUpdated: string;
+  /**
+   * Fecha ISO, por ejemplo `2026-09-15`. Se omite mientras el documento sea un
+   * borrador: ver la nota de arriba.
+   */
+  readonly lastUpdated?: string;
   /** La ruta actual, para excluirla de la navegación del pie. */
   readonly currentHref: string;
   /** Una línea nuestra que dice qué es el documento. No es parte del texto legal. */
   readonly intro?: ReactNode;
   /** El documento, de `content/legal/`. */
   readonly blocks: readonly LegalBlock[];
+  /** La familia a la que pertenece, que es la que lista la navegación del pie. */
+  readonly docs?: readonly LegalDoc[];
 }) {
-  const fecha = new Date(`${lastUpdated}T00:00:00`).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const fecha = lastUpdated
+    ? new Date(`${lastUpdated}T00:00:00`).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : null;
 
-  const otros = LEGAL_DOCS.filter((d) => d.href !== currentHref);
+  const otros = docs.filter((d) => d.href !== currentHref);
 
   return (
     <>
@@ -183,8 +198,20 @@ export default function LegalPage({
           Misma regla que `FormSlab`: el panel nunca es del color de su sección.
         */}
         <article className="mx-auto max-w-[900px] rounded-frame bg-bone grano px-6 py-10 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
+          {/*
+            ⚠️ SIN FECHA EL RENGLÓN NO DESAPARECE, CAMBIA. La tarjeta necesita
+            ese primer renglón chico antes del filete para no abrir en frío con
+            un h2, y un borrador necesita decir que lo es justo en el lugar
+            donde normalmente se lee cuándo se revisó el documento.
+          */}
           <p className="eyebrow text-muted">
-            Last updated &middot; <time dateTime={lastUpdated}>{fecha}</time>
+            {lastUpdated && fecha ? (
+              <>
+                Last updated &middot; <time dateTime={lastUpdated}>{fecha}</time>
+              </>
+            ) : (
+              <>Draft &middot; awaiting the final text</>
+            )}
           </p>
 
           <hr className="mt-6 mb-9 h-px w-full border-0 bg-ink/15" />
@@ -196,14 +223,33 @@ export default function LegalPage({
             página en la que ya estás no es navegación, es ruido, y además
             rompe la expectativa de que los tres links llevan a algún lado.
           */}
+          {/*
+            ⚠️ APILADA HASTA `md` Y EN FILA DESDE AHÍ, Y NO ES UNA PREFERENCIA:
+            en fila con `flex-wrap`, el filete de cada link viaja pegado a SU
+            link, así que cuando el grupo envuelve el filete se va con él y
+            arranca el renglón siguiente. Medido: pasaba a 320, 360, 390 y 430.
+            Es el error que la skill `paginas-legales` marca en su tabla.
+
+            El pie del sitio lo resuelve escondiendo los filetes abajo del ancho
+            donde la fila entra en un renglón. Acá no sirve ese truco: los
+            rótulos los pone cada familia de documentos —«Policies and
+            procedures» mide el doble que «Cookie Policy»— así que el ancho
+            donde entran no es uno solo y un número fijo envejecería mal.
+
+            Apilada no hay filete que colocar, y por eso abajo de `md` no se
+            renderiza ninguno. Desde `md` los tres rótulos más largos que
+            existen entran holgados en un renglón.
+          */}
           <nav
             aria-label="The other documents"
-            className="mt-12 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-ink/15 pt-7"
+            className="mt-12 flex flex-col items-start gap-y-2 border-t border-ink/15 pt-7 md:flex-row md:flex-wrap md:items-center md:gap-x-3"
           >
             <span className="eyebrow text-muted">Also read</span>
             {otros.map((d, i) => (
               <span key={d.href} className="flex items-center gap-3">
-                {i > 0 ? <span aria-hidden="true" className="h-3 w-px bg-ink/20" /> : null}
+                {i > 0 ? (
+                  <span aria-hidden="true" className="hidden h-3 w-px bg-ink/20 md:block" />
+                ) : null}
                 <Link href={d.href} className="link-texto font-body text-base font-semibold">
                   {d.label}
                 </Link>
