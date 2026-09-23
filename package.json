@@ -20,6 +20,7 @@
     "a11y": "node scripts/a11y.mjs",
     "contrast": "node scripts/contrast.mjs",
     "check:seo": "node --experimental-strip-types scripts/check-seo.mjs",
+    "test:seguridad": "node --test src/lib/seguridad.test.ts",
     "check:css": "node scripts/check-css.mjs",
     "check:tokens": "node scripts/check-tokens.mjs",
     "check:contrast": "node scripts/contrast.mjs --check",

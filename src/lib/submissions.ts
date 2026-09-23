@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { BRAND } from './brand';
 import { inboxFor, type Inbox } from './inboxes';
 import { sendMail, type MailAttachment } from './mail';
+import { asuntoSeguro } from './saneo';
 
 /**
  * El punto único por donde sale TODO envío de formulario del sitio.
@@ -122,7 +123,7 @@ export async function sendSubmission(s: Submission): Promise<SubmissionResult> {
   const to = inboxFor(s.inbox);
   const res = await sendMail({
     to,
-    subject: s.subject,
+    subject: asuntoSeguro(s.subject),
     text: cuerpo(s),
     replyTo: s.replyTo,
     attachments: s.attachments,
