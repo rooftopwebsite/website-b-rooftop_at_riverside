@@ -1,27 +1,10 @@
 import type { Dish, DishGroup } from '@/lib/restoexp';
-/**
- * La carta del Sunset Bar.
- *
- * Es el ÚNICO menú del sitio con precios, porque es lo único que cobra el
- * venue. Los food trucks cobran su propia venta y sus precios son del vendor.
- *
- * ⚠️ Transcrito a mano desde `docs/source-menus/Rooftop_Menu-Jan-2026_1.jpg`
- * y `_2.jpg`, las dos imágenes que `/drink` publicaba en un slider. Se
- * transcribe para que el menú sea TEXTO: seleccionable, indexable, con
- * jerarquía de headings y legible con lector de pantalla.
- * Prohibido publicarlo como imagen o como PDF.
- *
- * Los precios están en dólares, **impuesto incluido** (así lo declara el menú).
- */
 
 export interface MenuItem {
   readonly name: string;
-  /** En dólares. `9.5` se renderiza como 9⁵⁰, que es como lo escribe el menú. */
   readonly price: number;
   readonly description?: string;
-  /** Nota en cursiva bajo la descripción — variantes, sabores. */
   readonly note?: string;
-  /** Vino de la casa: el que entra en el Happy Hour. */
   readonly house?: boolean;
 }
 
@@ -216,40 +199,15 @@ export const WINE_RED: MenuSection = {
 export const WINE_SECTIONS = [WINE_WHITE, WINE_BUBBLES, WINE_BLUSH, WINE_RED] as const;
 export const BEER_SECTIONS = [DRAFT_BEER, BOTTLED_BEER, SELTZERS] as const;
 
-/** Se muestra al pie de la carta. Está en el menú impreso, es información legal. */
 export const MENU_LEGAL =
   'All listed prices include tax. A 22% gratuity is applied to unsigned bar tabs.';
 
-/** Formatea 9.5 como «9⁵⁰» y 14 como «14», igual que el menú impreso. */
 export function formatPrice(price: number): { whole: string; cents: string | null } {
   const whole = Math.floor(price);
   const cents = Math.round((price - whole) * 100);
   return { whole: String(whole), cents: cents ? String(cents).padStart(2, '0') : null };
 }
 
-/* ==========================================================================
-   EL PUENTE A LA BASE
-
-   ⚠️ TODO LO DE ARRIBA ES AHORA EL RESPALDO, no la fuente. El menú «Sunset
-   Bar» está cargado entero en la base de RestoExp —las mismas nueve
-   categorías, 50 ítems con precio y descripción— y se descubrió el
-   2026-09-15. La transcripción a mano se había hecho porque el sitio viejo
-   publica el menú como dos JPG.
-
-   Ahora el cliente cambia un precio en el dashboard y el sitio lo sigue. Estas
-   constantes quedan para cuando la base no contesta: una carta desactualizada
-   es mala, una carta vacía es peor.
-   ========================================================================== */
-
-/**
- * Las cuatro cartas que muestra `/sunset-bar`, agrupadas desde la base.
- *
- * ⚠️ LA BASE TIENE NUEVE CATEGORÍAS Y LA PÁGINA MUESTRA CUATRO BLOQUES. No es
- * una pérdida de información: los cuatro vinos van juntos bajo «Wine», y las
- * tres de cerveza bajo «Beer and seltzers», que es exactamente cómo está
- * impreso el menú de papel. El agrupador respeta el nombre que puso el cliente
- * en cada categoría como subtítulo de columna.
- */
 export interface MenuCarta {
   readonly id: string;
   readonly title: string;
@@ -305,7 +263,6 @@ export function cartasFromGroups(
     .filter((c) => c.columnas.length > 0);
 }
 
-/** El respaldo, con la misma forma que devuelve el agrupador. */
 export const CARTAS_FALLBACK: readonly MenuCarta[] = [
   { id: 'cocktails', title: 'Signature cocktails', eyebrow: 'The list', lead: 'Made daily with fresh juice and house syrups, upstairs, by us.', columnas: [SIGNATURE_COCKTAILS] },
   { id: 'specials', title: 'Specials', eyebrow: 'Right now', lead: null, columnas: [SPECIALS] },
@@ -313,31 +270,6 @@ export const CARTAS_FALLBACK: readonly MenuCarta[] = [
   { id: 'wine', title: 'Wine', eyebrow: 'By the glass', lead: 'House pours are the ones in the happy hour.', columnas: [...WINE_SECTIONS] },
 ];
 
-/**
- * EL RESPALDO, TRADUCIDO A LA FORMA DE LA BASE.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ EXISTE PARA QUE LA PÁGINA TENGA UN SOLO CAMINO DE DIBUJO. La carta se
- * renderiza con `DishCard`, que habla el tipo `Dish` de la base; el respaldo
- * de acá está en el tipo `MenuItem`, que es la transcripción a mano y tiene
- * cuatro campos. Sin este puente habría que escribir la carta dos veces —una
- * por cada forma— y el día que se toque una, la otra queda vieja.
- *
- * ⚠️ LO QUE NO SE INVENTA. Un ítem transcrito no tiene foto, ni dietarios, ni
- * alérgenos, ni variantes: esos campos salen en `null` o en `false` y la
- * tarjeta simplemente no los dibuja. El respaldo se ve más pobre que la carta
- * de la base A PROPÓSITO, porque eso es exactamente lo que es.
- *
- * ⚠️ CADA SECCIÓN DEL RESPALDO ES UN GRUPO, no cada carta. En la base los
- * grupos son las CATEGORÍAS del dashboard —«Signature cocktails», «Draft»,
- * «By the glass»— y las secciones del respaldo son la misma división, así que
- * los tabs salen iguales con datos o sin ellos.
- *
- * ⚠️ `note` DEL ÍTEM VA A `notes` Y NO A LA DESCRIPCIÓN: en la transcripción
- * es la línea de variantes o sabores, que es justo lo que la tarjeta pone en
- * el pie con el filete punteado.
- * ══════════════════════════════════════════════════════════════════════════
- */
 export function respaldoComoGrupos(
   cartas: readonly MenuCarta[] = CARTAS_FALLBACK,
 ): readonly DishGroup[] {

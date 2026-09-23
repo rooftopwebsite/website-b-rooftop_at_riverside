@@ -6,18 +6,6 @@ import { inquiryFromForm, inquirySchema } from '@/lib/schemas/event-inquiry';
 import { rateLimited, sendSubmission } from '@/lib/submissions';
 import { fieldErrorsFrom, type ActionState } from './types';
 
-/**
- * La consulta de eventos privados de `/events`.
- *
- * ⚠️ La validación se repite ACÁ aunque el cliente ya valide. La del cliente es
- * para la experiencia; la del servidor es la que manda. Un POST a mano se salta
- * la primera entera. El schema es el mismo objeto en los dos lados: ver
- * `lib/schemas/event-inquiry.ts`.
- *
- * ⚠️ HASTA EL 2026-09-23 ERA LA ÚNICA ACTION QUE LLAMABA A `sendMail` DIRECTO,
- * sin rate limit y con su propio armado del cuerpo. Ahora pasa por
- * `sendSubmission` como las otras cuatro: el buzón lo elige `lib/inboxes.ts`.
- */
 export async function submitEventInquiry(
   _prev: ActionState,
   formData: FormData,
@@ -26,8 +14,6 @@ export async function submitEventInquiry(
 
   if (!parsed.success) {
     const fieldErrors = fieldErrorsFrom(parsed.error.issues);
-    // Si cayó el honeypot no se dice por qué: se responde como éxito para no
-    // enseñarle al bot dónde estuvo el problema.
     if (fieldErrors.website) return { status: 'ok', message: 'Thanks. Your request is in.' };
     return { status: 'error', message: 'Please check the highlighted fields.', fieldErrors };
   }

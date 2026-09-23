@@ -6,59 +6,13 @@ import { HeroFadeUp } from '@/components/shared/Motion';
 import Section from '@/components/shared/Section';
 import { Accent, Eyebrow } from '@/components/shared/Type';
 
-/**
- * La 404 del sitio.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ ES `not-found.tsx` Y NO `global-not-found.tsx`. La raíz tiene UN solo
- * layout, así que este archivo alcanza para las dos entradas: las URLs que no
- * matchean ninguna ruta y cualquier `notFound()` que se llame desde una
- * página. `global-not-found` es experimental, pide un flag en `next.config.ts`
- * y se saltea el layout, o sea que habría que rearmar a mano header, footer,
- * fuentes y proveedor del venue. No gana nada acá.
- *
- * Hereda header y footer del layout raíz: la navegación NO se repite adentro.
- * ══════════════════════════════════════════════════════════════════════════
- *
- * ⚠️ LAS FUENTES REALES DE 404, al 2026-09-23. Ninguna tiene redirect:
- *
- *   · `/whats-on/[slug]`, las fichas de evento que se borraron el 2026-09-15.
- *     Estuvieron en el sitemap, así que pueden estar compartidas o indexadas.
- *   · `/the-yard`, borrada el mismo día.
- *   · Cualquier `/events/<algo>` que no sea una de las siete fusionadas.
- *
- * ⚠️ POR ESO EL PRIMARIO ES «WHAT'S ON» Y NO «HOME». Lo más probable es que
- * quien cae acá venga de un link a un evento viejo, y lo que busca es qué hay
- * esta semana. El secundario es el hub de eventos privados, que es la otra
- * mitad de los links muertos y la vertical que más factura. Es el mismo par, y
- * en el mismo orden, que el hero de la home.
- *
- * ⚠️ LA ETIQUETA VA ANTES QUE EL NÚMERO Y QUE EL TITULAR EN EL DOM. El
- * titular es un chiste de estacionamiento, y un lector de pantalla tiene que
- * escuchar «Error: page not found» antes que el chiste. El número es
- * decoración tipográfica y va `aria-hidden`: dice lo mismo que la etiqueta.
- */
-
-/*
-  ⚠️ `metadata` en `not-found.tsx` funciona en esta versión: se midió el
-  `<title>` servido, y pasa por el `template` del layout.
-
-  ⚠️ SIN `robots` ACÁ, y es a propósito. Next ya inyecta
-  `<meta name="robots" content="noindex">` en toda respuesta 404; declararlo
-  además emitía DOS etiquetas robots en el mismo `<head>`, medido.
-*/
 export const metadata: Metadata = {
   title: 'Page not found',
 };
 
-/*
-  Tres como máximo, y ninguno repite los dos CTA. Importan sobre todo en
-  mobile, donde la nav está detrás del botón del menú.
-*/
 const RESCATE = [
   { label: 'Food trucks', href: '/food-trucks' },
   { label: 'Sunset Bar', href: '/sunset-bar' },
-  /* `#find` y no `#visit`: es el `id` que `FindUs` recibe en /contact. */
   { label: 'Hours and map', href: '/contact#find' },
 ] as const;
 
@@ -75,20 +29,6 @@ export default function NotFound() {
         <Eyebrow tone="terra" as="p" className="justify-center">
           Error: page not found
         </Eyebrow>
-
-        {/*
-          El cero es el sello de la palmera, el mismo troquel redondo de la
-          ola de /sunset-bar, con la sombra de sticker y el flote lento. El
-          flote va en el nodo de adentro porque la inclinación también es
-          `transform`: juntos, los keyframes le pisan la rotación.
-        */}
-        {/*
-          ⚠️ NO ES `text-titan` A SECAS: es su misma recta con el piso más
-          alto. El piso de titan es 56px, y a 360 el número quedaba MÁS CHICO
-          que el titular de abajo, que cae en dos renglones de 45. El número
-          es el elemento gráfico de la página y tiene que ganarle. Desde
-          1067px la recta es la de titan y el tope es el mismo, 144px.
-        */}
         <div
           aria-hidden="true"
           className="mt-gap-kicker flex items-center justify-center font-display text-[clamp(6rem,9vw,9rem)] leading-[0.85] font-extrabold uppercase text-deep"

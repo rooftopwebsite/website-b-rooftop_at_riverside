@@ -1,550 +1,67 @@
 @import 'tailwindcss';
 
-/*
- * `estante:` — pantalla ancha Y mouse. La usa el estante de `/game-truck`,
- * que en desktop se ancla y convierte el scroll vertical en horizontal.
- *
- * ⚠️ NO ES `lg:` PORQUE UN IPAD APAISADO MIDE 1024. Con `lg:` solo, la tablet
- * recibía el anclado: 280vh de sección, el scroll del dedo secuestrado y unos
- * 300px de blanco arriba y abajo de la fila. Con el dedo, una fila que se
- * desliza sola es lo natural, y es lo que ve la tablet vertical. El JS del
- * componente usa la MISMA media query; si cambia acá, cambia allá.
- */
 @custom-variant estante (@media (width >= 64rem) and (hover: hover) and (pointer: fine));
 
-/*
- * ⚠️ Las fuentes de contenido, DECLARADAS. Tailwind v4 las autodetecta, pero la
- * autodetección se cayó en silencio: el build seguía pasando y el CSS emitido
- * bajaba de 49 KB a 33 KB sin una sola utilidad de tema — sin `bg-cream`, sin
- * `text-ink`, sin `px-gutter`. La página se veía sin estilos y nada avisaba.
- *
- * Declaradas a mano el escaneo es determinista y no depende de heurística.
- */
 @source '../**/*.{ts,tsx}';
 
-/* ==========================================================================
-   Rooftop at Riverside — sistema de diseño
-
-   La escala tipográfica y de espaciado sale de `docs/house-tokens.md`: son
-   valores MEDIDOS sobre The Orient, Tre Vele y Showdown Social, no inventados.
-   Los colores salen de la ley del color del brief (Fase 1).
-
-   Tailwind v4: el tema vive acá, no en un `tailwind.config.ts` (que en v4 no
-   existe). Es lo que hacen los cinco repos de la casa.
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   TIPOGRAFÍAS
-
-   DOS familias, las dos libres (OFL de Google Fonts) y las dos variables:
-
-     Big Shoulders Display   condensada de caja alta, 100–900. Es el display:
-                 h1, h2, h3, precios y nombres de menú.
-     Jost        geométrica 100–900, revival libre de una neo-grotesca
-                 geométrica. Cubre el cuerpo (400) y los eyebrows/subheads
-                 (500, caja alta con tracking abierto).
-
-   ⚠️ LAS TRES FAMILIAS DEL BRAND BOOK ORIGINAL SALIERON DEL PROYECTO, y en
-   los tres casos el motivo fue LICENCIA y no diseño: una venía marcada como
-   uso personal y sin un solo metadato, otra no era la familia que decía ser
-   sino una variante cirílica con EULA comercial, y la tercera es de una
-   fundición que la vende. El detalle de qué decía la tabla `name` interna de
-   cada archivo está en `_interno/fuentes/LEEME.md`, junto a los originales
-   (se mudaron desde `public/fonts/_drop/` el 2026-09-23).
-
-   Los reemplazos NO se eligieron de memoria, se midieron. Jost entra en el
-   mismo renglón que la geométrica que reemplaza —misma `a` de un piso, misma
-   `o` circular, cifras casi idénticas—. Y Big Shoulders quedó **+10 % de
-   ancho** en «BONITA COMES TOGETHER» a 62px contra la condensada anterior; las
-   otras seis condensadas libres de Google están 20 % o más arriba, así que es
-   la única que queda a un dígito.
-
-   ⚠️ El +10 % es real y hay que tenerlo presente al componer: un titular que
-   entraba justo antes puede partirse acá. Verificado a mano en las tres rutas
-   de más carga tipográfica —home, /events y /sunset-bar— y en las tres entra.
-
-   ⚠️ NO HAY UNA SOLA REGLA @font-face EN ESTE ARCHIVO, y es a propósito. Las
-   dos caras se cargan con `next/font/local` desde `src/app/layout.tsx`, que es
-   lo que agrega el `<link rel="preload" as="font">` y las métricas de respaldo
-   ajustadas. Declaradas acá, el navegador recién descubría el archivo después
-   de bajar y parsear el CSS —tres saltos— y el texto saltaba al hacer el swap.
-   El motivo completo está en el encabezado de `layout.tsx`.
-
-   Los tokens de abajo apuntan a las CSS variables que emite `next/font`.
-   `--font-display` / `--font-subhead` / `--font-body` **no cambian de nombre**:
-   los usan 163 call sites.
-
-   ⚠️⚠️ NO PONGAS UN COMENTARIO CSS DENTRO DEL BLOQUE `@theme` DE ABAJO.
-   Los comentarios CSS **no se anidan**: el cierre del interno termina este
-   bloque antes de tiempo, el cierre final queda suelto, y Tailwind deja de
-   emitir TODAS las utilidades de tema — `bg-cream`, `text-ink`, `px-gutter`,
-   todas. El build sigue pasando sin un solo warning y la página se sirve sin
-   estilos. Ya pasó una vez y costó una bisección encontrarlo.
-   Lo cubre `npm run check:css`.
-   -------------------------------------------------------------------------- */
-
-
 @theme static {
-  /* ── Color ──────────────────────────────────────────────────────────────
-     ⚠️ REVISADO POR TERCERA VEZ — rediseño `redesign/light-tropical`.
-
-     Lo que se revierte, y por qué. La revisión anterior había apoyado el
-     layout en LOSAS oscuras anchas y sacado el blanco puro. Medido sobre el
-     píxel del baseline, eso terminó en **55,4 % de la home en verde oscuro**
-     contra 40,3 % de claro (ver `design-audit/AUDIT.md` §0). El objetivo ahora
-     es el inverso: 70–75 % claro, 20–25 % oscuro.
-
-     El razonamiento no es de gusto. La barra se llama Sunset Bar, los camiones
-     abren a las 4 y cierran a las 8, el happy hour es de 3 a 6 de la TARDE y
-     el domingo se abre a las 11 de la mañana. Es un lugar de día y de
-     atardecer, y el sitio estaba vendiendo la medianoche de un lugar que a la
-     medianoche está cerrado cuatro días de la semana.
-
-     Lo que cambia:
-
-       · **Vuelve el blanco puro.** `paper` pasa de `#FDFCF7` a `#FFFFFF`.
-         ⚠️ Medido, el cambio es **1,03:1** — imperceptible por sí solo. No es
-         lo que aclara el sitio; lo que lo aclara es sacar el `deep` del 55 %.
-         Se hace porque el brief lo pide y porque simplifica: `chalk` deja de
-         tener razón de ser.
-       · **`bone` se desatura y se vuelve la segunda superficie.** Pasa de
-         `#F7F1E3` a `#FAF6EA`, que es `cream` desaturado. Da **1,08:1** contra
-         `paper`: el corte se ve, y es el mismo escalón que tenía el par
-         anterior (1,10:1).
-       · **`deep` vuelve a ser puntuación.** Dos zonas en toda la home: la
-         banda de Events y el footer. Nunca dos seguidas.
-       · **Entra `muted`**, que no existía. El texto secundario se hacía con
-         `text-body/75`, o sea con opacidad, y eso da un color distinto sobre
-         cada superficie — imposible de auditar. Ahora es un token medido.
-
-     ⚠️ NINGÚN TOKEN SE RENOMBRA. El brief llama `cream` a la segunda
-     superficie clara y `cream-deep` al amarillo del brand book. En este repo
-     esos dos roles ya tenían nombre —`bone` y `cream`— y los usan 23 call
-     sites. Renombrarlos sería un reemplazo mecánico sin ganancia, así que se
-     mantiene la nomenclatura del repo y el mapa es:
-
-         brief `paper`       → `paper`   #FFFFFF
-         brief `cream`       → `bone`    #FAF6EA   ← segunda superficie clara
-         brief `cream-deep`  → `cream`   #FDF0B4   ← amarillo, sólo piezas chicas
-         brief `deep`        → `deep`    #014545
-         brief `sunset`      → `sunset`  #F58521
-
-     Todos los ratios de abajo están MEDIDOS con `design-audit/measure.mjs`
-     (WCAG 2.1) y tabulados en `design-audit/CONTRASTE.md`.               */
-  --color-sunset: #f58521; /* CTA primario. ⚠️ El texto encima va NEGRO: blanco da 2.54:1 */
-  --color-river: #0eb6b8; /* isotipo, iconografía, patrón. NUNCA como texto: 2.50:1 sobre paper */
-  --color-cream: #fdf0b4; /* el amarillo del brand book. Píldoras y botones. NO fondos grandes */
+  --color-sunset: #f58521;
+  --color-river: #0eb6b8;
+  --color-cream: #fdf0b4;
   --color-mint: #c4f2ec;
-  --color-deep: #014545; /* las BANDAS oscuras y el footer. Ver la nota de ThreeDoors */
-  --color-deeper: #013434; /* un peldaño más para capas dentro de una losa */
+  --color-deep: #014545;
+  --color-deeper: #013434;
   --color-teal600: #028382;
   --color-tomato: #eb452c;
-  --color-terra: #a62000; /* rojo de error y de dato pendiente sobre claro: 7.43:1 sobre paper */
-  /*
-   * `sunset-deep` — EL ACENTO DE TITULAR SOBRE CLARO. Es el naranja de marca
-   * llevado a una luminosidad que se pueda leer.
-   *
-   * El acento iba en `terra` (#A62000) y el problema no era de contraste sino
-   * de FAMILIA: a esa luminosidad el tono 18° se lee como rojo ladrillo, no
-   * como el naranja del logo. Camila: «las palabras destacadas en los títulos
-   * deben estar en naranja no en rojo».
-   *
-   * ⚠️ Y NO PUEDE SER `sunset` A SECAS. Medido, 2.54:1 sobre `paper` y 2.35:1
-   * sobre `bone`: no llega ni al 3:1 que pide el texto grande de WCAG 1.4.3.
-   * Es exactamente el motivo por el que el acento no era naranja.
-   *
-   * ⚠️ ES EL MISMO TONO QUE `sunset`, NO UN NARANJA NUEVO. Hue 28.3°,
-   * saturación 91 %: los dos valores de `#F58521`, sin tocar. Lo único que
-   * baja es la luminosidad, de 54.5 % a 44 %. Por eso sigue leyéndose como el
-   * naranja de la marca y no como un color aparte.
-   *
-   * Medido: 3.54:1 sobre `paper`, 3.28:1 sobre `bone`, 3.09:1 sobre `cream`.
-   *
-   * ⚠️ PASA EL 3:1 DE TEXTO GRANDE Y NO EL 4.5:1 DE CUERPO, así que vive
-   * ÚNICAMENTE dentro de un titular de display. Sobre oscuro el acento sigue
-   * siendo `sunset` a secas, que ahí da 4.26:1.
-   */
+  --color-terra: #a62000;
   --color-sunset-deep: #d66a0a;
-  /*
-   * `tomato-soft` — el rojo de error PARA SUPERFICIE OSCURA. Es el par de
-   * `terra` del otro lado del sitio.
-   *
-   * Nació para el formulario de newsletter cuando se mudó adentro del footer, a
-   * una tarjeta `deeper`: sus errores iban en `terra` y ahí median 1.16:1, o
-   * sea texto invisible. `tomato`, el otro rojo de la paleta, tampoco alcanzaba:
-   * 3.51:1, por debajo del 4.5 que pide un texto de 13px.
-   *
-   * ⚠️ EL NEWSLETTER YA NO LO USA. Esa tarjeta pasó a `teal600` y sobre ese
-   * verde `tomato-soft` cae a 2.07:1 — ningún rojo de la paleta sobrevive ahí,
-   * así que sus errores quedaron en `paper`. Ver la nota del componente.
-   *
-   * El token SIGUE VIVO y no es un huérfano: lo usa `PendingData` en su
-   * variante oscura, que es la que corre sobre `deep`.
-   *
-   * ⚠️ El BORDE rojo de un campo sigue siendo `tomato`: ese borde cae sobre el
-   * campo, que es blanco, y no sobre la tarjeta.
-   *
-   * Medido: 6.14:1 sobre `deeper` · 4.88:1 sobre `deep` · 2.07:1 sobre `teal600`.
-   */
   --color-tomato-soft: #ff8f7a;
   --color-plum: #402639;
   --color-magenta: #a24584;
-  /*
-   * `sunset-hover` — el naranja un paso más oscuro, para el hover del CTA.
-   *
-   * ⚠️ Existe como token porque estaba escrito a mano como `hover:bg-[#e0741a]`
-   * dentro de `Button.tsx`, y era el ÚNICO hex de nuestra paleta suelto en un
-   * componente. Los otros ocho que aparecen en el grep están en `AgencyBar` y
-   * NO son nuestros: son los grises de la barra de la agencia, que por pedido
-   * explícito tiene que verse igual en todos los sitios de la casa y por eso no
-   * sigue estos tokens. Ver el encabezado de ese archivo.
-   *
-   * No se resuelve con una opacidad: `bg-sunset/85` sobre `paper` aclararía el
-   * naranja en vez de oscurecerlo, y sobre `deep` daría otro color distinto.
-   * Un hover tiene que ser el mismo en las dos superficies.
-   *
-   * El texto encima sigue siendo NEGRO: 7.16:1 sobre este valor.
-   */
   --color-sunset-hover: #e0741a;
 
-  /* ── El color del texto ─────────────────────────────────────────────────
-     ⚠️ UNO SOLO, y es el verde de la marca. `ink` y `body` apuntan al MISMO
-     valor a propósito.
-
-     Había dos: `ink` #101418 para títulos y `body` #2a2b28 para cuerpo. Ni uno
-     ni otro pertenecía a la paleta —eran grises de sistema— y entre los dos
-     hacían el mismo trabajo con dos tonos distintos. Medido contra
-     superside.com, que fue la referencia que puso Camila: ellos tienen UN color
-     de texto, `#0a211f`, en 234 nodos, y es su verde oscuro de marca. Nosotros
-     teníamos ocho colores de texto en la home contra sus cuatro.
-
-     `#0A1F1E` es `deep` llevado a casi negro. El texto pasa a pertenecer a la
-     marca en vez de ser un gris cualquiera, y eso es lo que hace que una página
-     se lea diseñada.
-
-     Contraste: 16.65:1 sobre `paper`, 15.19:1 sobre `bone`. Holgura de sobra.
-
-     ⚠️ Los DOS tokens se mantienen, no se fusionan en uno. Los usan 163 call
-     sites entre `text-ink` y `text-body`, y renombrarlos sería un cambio
-     mecánico enorme con riesgo de romper algo por un reemplazo mal puesto. Los
-     nombres además siguen diciendo la intención —titular contra cuerpo—, así
-     que si mañana hay motivo para que diverjan, el token ya está.           */
-  --color-ink: #0a1f1e; /* titulares sobre claro. 17.11:1 sobre paper, 15.83:1 sobre bone */
-  --color-paper: #ffffff; /* la base. Blanco puro */
-  --color-bone: #faf6ea; /* segunda superficie clara. 1.08:1 contra paper: el corte se ve */
-  /*
-   * `chalk` — QUEDA COMO ALIAS DE `paper`, no como un valor propio.
-   *
-   * Existía para lo que ahora no hace falta: cuando `paper` era hueso cálido,
-   * `chalk` era el blanco real de las tarjetas que tenían que separarse del
-   * fondo. Con `paper` en blanco puro, las dos superficies son la misma.
-   *
-   * ⚠️ No se borra el token: lo usan 4 call sites y borrarlo sería un cambio
-   * mecánico en archivos que esta rama no rediseña. Apuntarlo a `paper` deja UN
-   * valor y ningún riesgo de que divergan. Los call sites de la home sí se
-   * migran a `paper` a medida que se tocan esas secciones.
-   */
+  --color-ink: #0a1f1e;
+  --color-paper: #ffffff;
+  --color-bone: #faf6ea;
   --color-chalk: var(--color-paper);
-  --color-body: #0a1f1e; /* cuerpo de texto — MISMO valor que `ink`, ver arriba */
-  /*
-   * `muted` — el texto secundario, y es un token NUEVO.
-   *
-   * ⚠️ Reemplaza a `text-body/75`. Con opacidad, el color RESULTANTE cambia
-   * según la superficie de atrás, así que no se puede auditar: el mismo
-   * `body/75` da un valor sobre `paper`, otro sobre `bone` y otro sobre una
-   * foto. Un token opaco se mide una vez y vale en todas.
-   *
-   * ⚠️ #487270 NO es el #3F6664 que proponía el brief, y el cambio está
-   * medido. Barrí desde ahí hacia arriba buscando el MÁS CLARO que aún pase
-   * 4.5:1 en las tres superficies claras: #4B7674 falla sobre `cream`
-   * (4.42:1) y #487270 es el primero que pasa las tres. Es la bajada más
-   * liviana posible sin perder AA, que es lo que necesita el salto de
-   * jerarquía; el #3F6664 pasa con 6.37:1 pero queda demasiado cerca del
-   * titular para leerse como segundo nivel.
-   *
-   * Medido: 5.36:1 sobre `paper` · 4.96:1 sobre `bone` · 4.67:1 sobre `cream`.
-   */
+  --color-body: #0a1f1e;
   --color-muted: #487270;
-  /*
-   * `muted-dark` — el mismo rol que `muted`, pero sobre la banda oscura.
-   *
-   * ⚠️ EXISTE PORQUE UN TOKEN OPACO NO SE ADAPTA A LA SUPERFICIE, y ése es el
-   * precio de haber sacado la opacidad. Lo encontró `npm run a11y` sobre la
-   * página servida, no esta tabla: al pasar la bajada de `text-body/75` a
-   * `text-muted`, la bajada de la sección oscura quedó en **2.02:1** —el token
-   * es un verde medio pensado para fondos claros—. La opacidad se adaptaba
-   * sola; el token hay que elegirlo por superficie.
-   *
-   * La solución no es volver a la opacidad: es la variable `--lead-ink`, que
-   * `.on-dark` pisa. Ver el bloque `base` más abajo.
-   *
-   * ⚠️ Y no es `cream`, que es el otro color autorizado sobre `deep`. Cream da
-   * 9.44:1 contra los 10.83:1 del titular en `paper`: al mismo peso visual que
-   * el título, la bajada deja de leerse como segundo nivel. #A8C6C4 da
-   * **5.95:1** — holgado sobre el mínimo y claramente más suave que el
-   * titular, que es exactamente el trabajo de una bajada.
-   */
   --color-muted-dark: #a8c6c4;
-  /*
-   * `fog` — filetes y bordes. RECALIBRADO sobre blanco.
-   *
-   * ⚠️ #E6E1D4 estaba calibrado contra el hueso `#FDFCF7`; sobre blanco puro
-   * da 1.31:1 y el filete de 1px casi desaparece — y en esta dirección los
-   * filetes hacen el trabajo que antes hacían las tarjetas, así que tienen
-   * que verse. #DED8C7 da 1.42:1 sobre `paper` y 1.32:1 sobre `bone`.
-   *
-   * No le pido 3:1: un filete decorativo no es un componente de interfaz y
-   * WCAG 1.4.11 no aplica. Donde el borde SÍ identifica un control —el
-   * `secondary` de Button— el ring va en `ink/35`, que sí lo pasa.
-   */
   --color-fog: #ded8c7;
 
-  /* ── Tipografías ─────────────────────────────────────────────────────────
-     ⚠️ LAS CADENAS YA NO SE ESCRIBEN ACÁ. Cada token apunta a la CSS variable
-     que emite `next/font/local` en `layout.tsx`, y esa variable ya trae la
-     cadena completa: la cara real, la cara de respaldo con métricas ajustadas
-     que genera `adjustFontFallback`, y los respaldos del sistema que se
-     declaran en `fallback`.
-
-     Escribir la cadena a mano acá sería PEOR que redundante: se saltearía la
-     cara de respaldo ajustada, que es justamente lo que evita que el texto
-     salte cuando llega la fuente. Los respaldos —Arial Narrow para el display,
-     Century Gothic / Avenir Next para el cuerpo— están declarados en
-     `layout.tsx`, que es donde viven ahora.
-
-     display  condensada de caja alta → h1, h2, h3, precios, nombres de menú.
-     subhead  geométrica → eyebrows y subheads, SIEMPRE en caja alta, peso 500
-                           y tracking abierto.
-     body     geométrica → cuerpo, a 400.
-
-     ⚠️ `subhead` y `body` apuntan a la MISMA familia, y es deliberado: cubre
-     los dos roles, lo que baja el sistema de tres familias a dos. Se sostiene
-     porque el eyebrow ya se distingue por peso (500), caja alta y 0.24em de
-     tracking — diferencia de sobra sin pedirle otra familia. Los dos tokens se
-     mantienen SEPARADOS igual, para poder volver a divergir sin tocar un solo
-     componente.
-
-     ⚠️ El respaldo del display NO incluye 'Haettenschweiler'. Es la Impact de
-     Windows y es mucho más ancha de caja que una condensada de verdad; cuando
-     estuvo primera en la cadena, todo el sitio se diseñó mirando Impact y los
-     titulares se pisaban. El respaldo tiene que parecerse a lo que reemplaza.
-
-     ⚠️ Si estas variables quedan sin definir —por ejemplo si alguien saca el
-     className del <html>— el texto cae al default del navegador sin aviso.
-     Lo cubre `npm run check:css`. */
   --font-display: var(--font-display-src);
   --font-subhead: var(--font-body-src);
   --font-body: var(--font-body-src);
 
-  /* ── Breakpoints ─────────────────────────────────────────────────────────
-     `desk` (1344) es el de la casa: 1280 de caja + 32×2 de gutter. Es el ancho
-     en el que la pantalla DA para el contenedor grande, no el breakpoint de
-     layout. Ver la nota de `--container-site` en docs/house-tokens.md.
-
-     ⚠️ VA EN **rem**, no en px, aunque el número que importa sean 1344px.
-     Tailwind v4 ordena los media queries por el valor del breakpoint, y los
-     suyos vienen en rem (40rem, 48rem, 64rem…). Declarado en px no los puede
-     comparar y emite el bloque de `desk` ANTES que los defaults — con lo cual
-     `sm:grid-cols-2` le gana a `desk:grid-cols-4` en una pantalla de 1440.
-     Medido: el bloque de 1344px caía en el byte 39975 y el de 40rem en 40927.
-     84rem × 16 = 1344px exactos.                                             */
   --breakpoint-desk: 84rem;
 
-  /* ── Contenedor ──────────────────────────────────────────────────────────
-     1280px es unánime en las seis fuentes auditadas.                        */
   --container-mobile: 780px;
   --container-tablet: 880px;
   --container-site: 1280px;
-  /*
-   * `wide` — la caja del rediseño `food-truck-club`. La usan el header, la
-   * barra de servicio y las nueve secciones de la home.
-   *
-   * ⚠️ VALE 1392 = 1280 + 56×2, Y ESE NÚMERO NO ES UN ANCHO DE TEXTO: es el
-   * ancho de la BANDA. `caja-ancha` lleva el gutter ADENTRO, así que para que
-   * su contenido mida los mismos 1280 que `caja` hay que sumarle los dos
-   * paddings del tope del `clamp`.
-   *
-   * ⚠️ ESTUVO EN 1280 Y ESE ERA EL ERROR, aunque el número pareciera el
-   * correcto. Con la banda en 1280 y el padding adentro, el contenido medía
-   * 1168: cincuenta y seis píxeles por lado menos que cualquier sección con
-   * `caja`, que pone el gutter por fuera. En la misma página, el header y el
-   * pie arrancaban 56px más adentro que las tarjetas. Camila lo marcó dos
-   * veces con líneas verticales sobre la captura —la primera vez sobre el
-   * footer, el 2026-09-19— y el 2026-09-21 sobre el header: «haz que el max
-   * ancho de contenido sea el de los banners, necesito que el max ancho sea
-   * ese en footer y header también».
-   *
-   * La unidad que se buscaba entonces sigue siendo la de ahora, y es lo que
-   * este número arregla de verdad: UN solo ancho de contenido en las 23
-   * páginas, 1280, lo dibuje la caja que lo dibuje.
-   *
-   * ⚠️ SIGUE SIN FUSIONARSE CON `site`, y ahora menos: los números ya ni
-   * coinciden. `caja` mide el contenido, `caja-ancha` mide la banda.
-   *
-   * ⚠️ POR DEBAJO DE 1392 NO CAMBIA NADA. Ahí manda el ancho de la pantalla y
-   * el `clamp` del padding, que son los de siempre.
-   */
   --container-wide: 1392px;
-  /*
-   * `head` — el ancho del bloque de encabezado de sección (eyebrow + h2 +
-   * bajada). Lo usa `max-w-head` en `SectionHead`.
-   *
-   * ⚠️ Subió de 820px porque subió la escala. Con el h2 en 46px un título de
-   * dos renglones entraba en 820; a 88px «Five businesses, one set of stairs.»
-   * necesita 1.040 para no partirse en tres. Es el ancho de la caja de 1280
-   * menos un margen óptico, no un número arbitrario.
-   */
   --container-head: 1040px;
 
-  /* ── Gutter ─────────────────────────────────────────────────────────────
-     16/32. Es el par tokenizado de The Orient y el que cierra con el 1344.  */
-  /* ── Espaciado ───────────────────────────────────────────────────────────
-   * CUÁL USAR, y esto no es preferencia: es la regla que hace que los 1.217
-   * valores con corchetes del inventario se puedan convertir de forma
-   * consistente. Ver `design-audit/AUDIT.md` §3.
-   *
-   *   1. **Token semántico**, si el espacio TIENE un nombre en el sistema:
-   *      `py-band`, `px-gutter`, `mt-gap-bajada`, `mt-gap-cta`. Son los de
-   *      abajo. Un espacio con nombre se cambia en un lugar para todo el sitio.
-   *
-   *   2. **Escala numérica de Tailwind**, para todo lo demás: `p-6`, `gap-5`,
-   *      `mt-8`. Base 4px (`--spacing: 0.25rem`), así que `p-6` = 24px.
-   *      Verificado que se emite: el CSS sale como
-   *      `padding: calc(var(--spacing) * 6)`.
-   *
-   *   3. **Corchete**, sólo cuando el número NO es un múltiplo de 4 y hay un
-   *      motivo geométrico escrito al lado. Ejemplo legítimo: compensar los
-   *      77px de alto del header. Ejemplo ilegítimo: `mt-[37px]` porque quedaba
-   *      bien.
-   *
-   * ⚠️ La escala numérica NO estaba en uso: el código tenía 1.217 corchetes y
-   * sólo 20 utilidades numéricas, casi todas en `AgencyBar`. No era que
-   * faltara el sistema — estaba y no se usaba.                                */
-  /*
-   * ⚠️ LOS DOS VALEN LO MISMO QUE `borde` DESDE EL 2026-09-23, y el par
-   * 16/32 que había acá era la mitad de un desfasaje. `caja` iba con 16/32 y
-   * `caja-ancha` con el `clamp` fluido: a 1024 el hero arrancaba a 41px del
-   * borde y la sección de abajo a 72. Con un solo valor, las dos cajas dan el
-   * MISMO ancho de contenido en cualquier pantalla (ver la nota de `caja`).
-   *
-   * Se dejan los dos nombres para no reescribir las 30 llamadas a `GUTTER` ni
-   * las sangrías `-mx-gutter md:-mx-gutter-lg`: todas siguen al token de una
-   * vez, que es lo que pide la trampa de la sangría escrita con número fijo.
-   */
   --spacing-gutter: var(--spacing-borde);
   --spacing-gutter-lg: var(--spacing-borde);
-  /*
-   * `borde` — el gutter FLUIDO del rediseño, para la home y el header.
-   *
-   * ⚠️ Es un `clamp` y no un par de breakpoints, y esa es toda la diferencia.
-   * El par 16/32 salta: a 767px el contenido tiene 16px de aire y a 768px
-   * tiene 32, y en una banda de color ese salto se ve como un escalón en el
-   * borde. Con la caja en 1400 y bandas que llegan al filo de la pantalla, el
-   * margen tiene que CRECER con el viewport o el titular de 9vw termina
-   * pegado al vidrio.
-   *
-   * 4vw es la pendiente del diseño y 56px el techo, que es donde la caja de
-   * 1400 ya no crece más.
-   *
-   * ⚠️ EL PISO VOLVIÓ A 16px EL 2026-09-17, y conviene leer la vuelta entera
-   * porque ya estuvo en 16, subió a 24 y volvió.
-   *
-   * Subió a 24 por pedido de Camila mirando `FindUs` en un teléfono: «esto en
-   * mobile debe estar marginado como en tablet». El diagnóstico de entonces
-   * era correcto —`FindUs` se veía pegado al vidrio— pero la cura se aplicó al
-   * TOKEN GLOBAL, y el que estaba mal era un solo bloque.
-   *
-   * ⚠️ LO QUE DESTAPÓ EL ERROR: el hero de placa no tenía 24px de gutter,
-   * tenía 48. `PlateHero` ponía `px-borde` en la sección Y `caja-ancha` en el
-   * div de adentro, o sea el par que la nota de `caja-ancha` dice explícitamente
-   * que no se combina porque suma los dos paddings. Con el piso en 24 eso daba
-   * 48px de aire en un teléfono de 375 útiles: la foto quedaba en 279px, tan
-   * ancha como la placa del titular, y el hero perdía la mordida que es su
-   * forma. Camila: «el hero se debe apreciar, tener protagonismo».
-   *
-   * ⚠️ 16 ES EL ESTÁNDAR DE LA CASA, verificado contra los otros proyectos el
-   * 2026-09-17 en vez de elegido a ojo:
-   *
-   *     casa-pirul      px-4 md:px-6        16 → 24
-   *     juanitos        px-4 md:px-8        16 → 32
-   *     santa-maria     px-5 sm:px-6 lg:px-8    20 → 24 → 32
-   *
-   * O sea que el piso de la casa es 16 y el gutter CRECE con el dispositivo,
-   * que es justo lo que el `clamp` de 4vw ya hacía. Rooftop con 24 de piso
-   * —y 48 efectivos en el hero— era el único fuera de la línea.
-   *
-   * ⚠️ `FindUs` NO VUELVE AL PROBLEMA: se queda en 24px con un padding propio
-   * en mobile, que es donde tenía que estar el arreglo desde el principio. Un
-   * bloque que necesita más aire lo pide él, no el sitio entero.
-   *
-   * ⚠️ ESTO MUEVE EL SITIO ENTERO: lo usan `caja`, `caja-ancha` y `px-borde`,
-   * o sea las 23 rutas.
-   */
   --spacing-borde: clamp(16px, 4vw, 56px);
 
-  /* ── Bandas de sección ──────────────────────────────────────────────────
-     Se aplican siempre como PAR mobile/desktop y siempre simétricas
-     (mismo pt que pb). Ver `Section`.                                       */
   --spacing-band-sm: 64px;
   --spacing-band: 96px;
   --spacing-band-lg: 128px;
   --spacing-band-xl: 160px;
 
-  /* ── Ritmo del rediseño: `bloque` y `cierre` ────────────────────────────
-   * Los dos espacios que la home tenía escritos a mano, sección por sección,
-   * con un número distinto en cada una. Son los dos que se ven a simple vista
-   * en una página larga, así que son los dos que tienen que estar
-   * tokenizados:
-   *
-   *   `bloque`  encabezado de sección → su contenido (la grilla, el carrusel,
-   *             la lista de tarjetas). Estaba en 32, 36, 40 y 44 en mobile y
-   *             en 60, 72 y 80 en desktop, según la sección. En las internas,
-   *             en cambio, SIEMPRE valía 40 —`mt-[40px]`, 21 call sites— así
-   *             que el valor de la casa ya existía: era la home la que se
-   *             había ido para arriba. Queda en 40/48.
-   *
-   *             ⚠️ Va MÁS CHICO que el aire de cierre a propósito, y en esa
-   *             proporción está todo el sentido: un titular y su grilla son
-   *             UNA cosa, así que el espacio que los une tiene que ser
-   *             claramente menor que el que separa esa cosa de la siguiente.
-   *             Con 72 arriba de las tarjetas y 72 abajo de la sección, la
-   *             grilla flotaba entre dos secciones en lugar de pertenecer a
-   *             la suya. Hoy la relación es 48 contra 112, o sea 1:2,3.
-   *
-   *   `cierre`  el aire con el que una sección TERMINA cuando abajo cambia el
-   *             fondo. Estaba entre 72 y 104 en desktop, y el corte más
-   *             visible de la home —«Three of them» en hueso contra la banda
-   *             teal de Events— era justo el más apretado de todos, 72. Queda
-   *             en 56/112.
-   *
-   *   `cierre-arco`  el mismo aire, para una banda OSCURA a la que la sección
-   *             siguiente se le monta encima con `-mt-22`. Ahí los últimos
-   *             88px de padding quedan TAPADOS, así que el aire real es el
-   *             padding menos el radio: por eso el token le suma
-   *             `--radius-band`. No es un número más grande porque sí, es el
-   *             mismo `cierre` con la parte que no se ve devuelta. Si cambia
-   *             el radio, los dos se mueven juntos.
-   *
-   * Los valores estáticos son el TOPE; los `clamp` con `vw` los pisan desde
-   * el `:root` de más abajo, por el mismo límite de compilación de v4 que
-   * los `--text-*`.                                                         */
   --spacing-bloque: 48px;
   --spacing-cierre: 112px;
   --spacing-cierre-arco: 200px;
 
-  /* ── Ritmo interno del encabezado de sección ────────────────────────────
-     Valores de DESKTOP. En mobile los pisa el `:root` de más abajo.         */
   --spacing-gap-kicker: 12px;
   --spacing-gap-bajada: 20px;
   --spacing-gap-parrafo: 8px;
   --spacing-gap-cta: 32px;
 
-  /* ── Header ─────────────────────────────────────────────────────────────*/
   --spacing-header: 77px;
   --spacing-header-sm: 67px;
 
-  /* ── Escala de display ──────────────────────────────────────────────────
-     La escala de la casa, tal cual. Las interlíneas son las medidas.        */
   --text-d1: 72px;
   --text-d1--line-height: 0.94;
   --text-d2: 58px;
@@ -560,668 +77,89 @@
   --text-d7: 18px;
   --text-d7--line-height: 1.3;
 
-  /* ── Tracking de display — SE FUE LA ESCALA ÓPTICA ───────────────────────
-     ⚠️ Acá vivían OCHO tokens `--text-*--letter-spacing`, de 0.02em a 0.05em,
-     uno por escalón. Se van todos, y el motivo es que su razón de ser
-     desapareció.
-
-     Aquella escala era una CORRECCIÓN: existía para compensar un
-     `--tracking-display: -0.02em` global y negativo, heredado de otro repo de
-     la casa que usa una serif de ancho normal. Sobre una condensada de caja
-     alta ese tracking negativo la apelmazaba, y fue el motivo concreto por el
-     que Camila rechazó la condensada anterior: «se ve muy pegada». La escala
-     óptica lo arregló abriendo cada escalón.
-
-     La decisión de esta rama es tracking **0** para todo el display —ni
-     negativo como pedía el brief, ni abierto como estaba—. Con el tracking en
-     cero no hay nada que compensar, así que ocho tokens de corrección son ocho
-     lugares donde el valor puede desincronizarse sin ganancia.
-
-     ⚠️ NO poner `-0.01em` como pedía el brief. Es el signo que ya se rechazó
-     una vez sobre esta misma clase de tipografía, y a 144px se ve más que a
-     62px. Si algún día se prueba, se prueba mirando la pantalla y sólo en el
-     hero, no de memoria y no en los siete escalones.
-
-     Los escalones se quedan en `letter-spacing: normal`, que es lo que hay que
-     ver cuando la utilidad no declara tracking.                              */
-
-  /* ── LOS TRES ESCALONES FLUIDOS DEL REDISEÑO ─────────────────────────────
-   *
-   * `hero`, `h2` y `h3`. Son NUEVOS y conviven con la escala `d1..d7`, que se
-   * queda intacta: la usan los precios con `tabular-nums`, los nombres de menú
-   * y las etiquetas de cocina en 23 rutas, y no hay motivo para tocarlos.
-   *
-   * Por qué fluidos y no un mapa de breakpoints. La escala vieja resolvía el
-   * h2 con `text-d5 md:text-d4 lg:text-d3` — tres clases y tres saltos
-   * visibles al redimensionar. Un `clamp` da la misma progresión continua con
-   * una clase, y es lo que permite llegar a 88px sin inventar un escalón `d0`.
-   *
-   * ⚠️ EL SALTO ES EL PUNTO DE TODO EL REDISEÑO. El h2 estaba en 46px sobre un
-   * lienzo de 1440: la relación h2/bajada daba **2,6×** cuando la jerarquía se
-   * lee recién a partir de 3,5×. Con 88/22 queda en **4,0×**. Por eso el
-   * arreglo es agrandar el título y no achicar la bajada.
-   *
-   * ⚠️ El clamp va en `:root`, no acá: Tailwind v4 evalúa el `@theme` en
-   * tiempo de compilación y un `clamp` con `vw` no se puede resolver ahí
-   * (compila mudo en el valor máximo). Acá van los valores ESTÁTICOS —que son
-   * los del tope— y `:root` los pisa con el clamp. Es el mismo mecanismo que
-   * ya usaban `--text-hero` y `--text-lead`.
-   */
   --text-hero: 144px;
-  /*
-   * `h1` — el titular de las 22 páginas internas, vía `PageHero`.
-   *
-   * Existe para que el h1 de una interna quede claramente por ENCIMA del h2
-   * de sección (88px) y claramente por DEBAJO del hero del home (144px). Sin
-   * este escalón, `Heading level={1}` tendría que compartir tamaño con el h2 y
-   * la home dejaría de ser la única pantalla con un titular al tope.
-   */
   --text-h1: 104px;
   --text-h1--line-height: 0.9;
-  /*
-   * ⚠️ 0.88, y AHORA SÍ se puede. El 0.95 anterior estaba puesto para no
-   * pisarse contra la fallback Impact/Haettenschweiler, que tiene mucha más
-   * altura de mayúscula y casi nada de hombro — con la fuente real ausente,
-   * 0.86 hacía que la barriga de «BONITA COMES» tocara el asta de «TOGETHER».
-   *
-   * Hoy la condensada real está cargada y la cara de respaldo ya no es Impact
-   * sino la Arial ajustada que genera `adjustFontFallback` (`size-adjust:
-   * 53.64%`), así que el alto de línea del respaldo se parece al de la fuente
-   * buena. Con eso, 0.88 cierra sin solaparse, que es la interlínea que pide
-   * un titular de display a 144px.
-   */
   --text-hero--line-height: 0.88;
   --text-h2: 88px;
   --text-h2--line-height: 0.92;
   --text-h3: 40px;
   --text-h3--line-height: 1;
-  /*
-   * ── LOS DOS DISPLAY DEL REDISEÑO `food-truck-club` ──────────────────────
-   *
-   * `titan` y `banda` NO reemplazan a `hero` y `h2`: conviven, y cada par
-   * tiene su territorio. `hero`/`h2` siguen sirviendo a las 22 páginas
-   * internas vía `PageHero` y `SectionHead`; estos dos son de la home.
-   *
-   * ⚠️ La diferencia real no es el tamaño, es la INTERLÍNEA. `hero` va en
-   * 0.88 porque su titular puede caer en dos renglones dentro de una caja de
-   * texto normal. En la home nueva los titulares son placas: «BONITA COMES /
-   * TOGETHER» se compone como dos bloques apilados que casi se tocan, y a
-   * 0.88 queda un canal blanco entre los dos que rompe el efecto. 0.85 es lo
-   * que trae el diseño y es lo que cierra el bloque.
-   *
-   * ⚠️ `banda` es MÁS GRANDE que `h2` —7vw contra 6vw, tope 112 contra 88— y
-   * eso es deliberado: en las internas el h2 comparte pantalla con un h1 de
-   * 104px y tiene que quedar por debajo. En la home no hay h1 compitiendo
-   * dentro de la banda, así que el titular de sección ES el titular.
-   *
-   * Los valores acá son los del TOPE. Los clamp están en `:root`, por el
-   * límite de compilación de v4 que ya está explicado más arriba.
-   */
-  /*
-   * `nav` — los items de la nav principal.
-   *
-   * ⚠️ La nav pasó de la geométrica en 12px a la CONDENSADA en 19px, y es el
-   * cambio del rediseño que más se nota sin que nadie sepa señalarlo. Antes
-   * los cinco destinos eran un eyebrow: texto de servicio, del tamaño de una
-   * etiqueta. Ahora son señalética — el mismo registro que los titulares.
-   *
-   * Se puede porque la familia es condensada: «What's On» en Big Shoulders
-   * 700 a 19px ocupa lo mismo que en Jost 500 a 13px. Sube el cuerpo sin
-   * gastar ancho, que es justamente lo que no sobra con cinco items, un
-   * «More», un link de contacto y un CTA en la misma barra.
-   */
-  /*
-   * `pastilla` — el texto del pill de estado del hero.
-   *
-   * ⚠️ SUBE DE 17px A 26px RESPECTO DEL DISEÑO, por pedido de Camila, y el
-   * motivo es de proporción: la pastilla mide 80px de alto porque adentro
-   * lleva un círculo de 80. Con el texto en 17 —el tope del `clamp(14px,
-   * 1.2vw,17px)` del prototipo— el mensaje quedaba flotando en el medio de
-   * una barra tres veces más alta que él, y lo que se veía era el círculo
-   * naranja, no lo que dice.
-   *
-   * 26px es la medida a la que el texto ocupa el renglón: por encima empieza
-   * a pelear con el titular de 144 que tiene al lado, y por debajo vuelve a
-   * ser una etiqueta dentro de una barra grande.
-   *
-   * ⚠️ El pill es la ÚNICA pieza de la home donde el texto tiene que crecer
-   * con la caja y no con la jerarquía, así que no reusa ninguno de los
-   * escalones de texto: `intro` (25px) queda cerca pero es el token de las
-   * bajadas de sección y atarlos haría que cambiar una bajada mueva el hero.
-   */
   --text-pastilla: 26px;
-  /*
-   * ⚠️ 16px Y NO 19, Y EL NÚMERO BAJÓ DOS VECES POR DOS MOTIVOS DISTINTOS.
-   *
-   * La primera, de 19 a 17, fue porque LA LETRA CAMBIÓ: la nav estaba en la
-   * CONDENSADA en caja alta, que a 19px ocupa poquísimo ancho; ahora está en la
-   * del cuerpo, en caja baja y en negrita, que es bastante más ancha por
-   * carácter. Medido en el `desk` más chico (1344px), con los cuatro items más
-   * «More», el aire que queda entre el final de la nav y el logo:
-   *
-   *     16px → 113px      18px →  72px
-   *     17px →  93px      19px →  52px
-   *
-   * ⚠️ LA SEGUNDA, DE 17 A 16, ES UN PEDIDO Y NO UNA MEDICIÓN: Camila,
-   * 2026-09-16, «necesito que tenga más espacio entre esto y el logo». La
-   * tabla de arriba ya decía cuánto costaba: 20px de aire por cada escalón.
-   *
-   * ⚠️ Y ANTES DE TOCAR ESTO SE PROBÓ LO OTRO: acortar el rótulo. «Calendar»
-   * en vez de «What's On» mide 101px contra 110, o sea que compra NUEVE. El
-   * tamaño de letra compra treinta. El largo de los rótulos no es la palanca.
-   *
-   * ⚠️ NO BAJAR MÁS. A 15px la nav empieza a leerse como texto secundario al
-   * lado de un CTA de 15px en caja alta, y el problema pasa a ser otro: la
-   * barra deja de tener una jerarquía clara. Si hace falta más aire todavía,
-   * la palanca que queda es sacar un destino a «More», no achicar la letra.
-   */
   --text-nav: 16px;
   --text-titan: 144px;
   --text-titan--line-height: 0.85;
   --text-banda: 112px;
   --text-banda--line-height: 0.88;
 
-  /* ── Escala de texto ────────────────────────────────────────────────────*/
   --text-intro: 25px;
   --text-intro--line-height: 1.4;
-  /*
-   * `hero-lead` — la bajada DEL HERO, «Rooftop bar. Four kitchens. Walk in.».
-   *
-   * ⚠️ EXISTE PORQUE TIENE QUE ENTRAR EN UN SOLO RENGLÓN EN MOBILE, y `intro`
-   * no puede: `intro` es el token de las bajadas de sección, lo consumen otras
-   * páginas, y bajarlo para arreglar el hero movería todas. Es la misma razón
-   * por la que `pastilla` no se ató a `intro` — ver la nota de ese token.
-   *
-   * En el tope valen exactamente lo mismo (25px), así que de `lg` para arriba
-   * el hero se ve idéntico a antes. Lo único que cambia es el piso.
-   *
-   * El valor fluido está abajo, en `:root`. El de acá es el tope.
-   */
   --text-hero-lead: 25px;
   --text-hero-lead--line-height: 1.35;
-  /*
-   * `lead` — la BAJADA. Sube de 18px a 22px y la interlínea baja de 1.6 a 1.55.
-   *
-   * ⚠️ No sube «para que se vea mejor»: sube para sostener la relación con el
-   * h2. A 88px de título, una bajada de 18px daría 4,9× — demasiado, el
-   * segundo nivel se cae del bloque. 22px lo deja en 4,0×, que es el salto que
-   * se lee jerárquico sin desconectar los dos renglones.
-   *
-   * El clamp va en `:root`. Su `max-width: 60ch` y su color (`muted`) los pone
-   * el componente, no el token.
-   */
   --text-lead: 22px;
   --text-lead--line-height: 1.55;
   --text-base: 16px;
   --text-base--line-height: 1.6;
-  /*
-   * ── LOS DOS ESCALONES DE TEXTO CHICO ────────────────────────────────────
-   *
-   * ⚠️ Nacen de una limpieza, no de una necesidad de diseño. En la home y los
-   * componentes globales había **nueve tamaños de texto escritos con
-   * corchetes**: 11, 12, 13, 14, 15, 16, 17, 20 y 24px. Nueve escalones para
-   * texto chico no es una escala, es la ausencia de una — cada uno se eligió
-   * mirando su propio bloque.
-   *
-   * Se colapsaron a dos tokens más los que ya existían:
-   *
-   *     17px, 16px  →  `base`     (16px)   cuerpo
-   *     15px, 14px  →  `dato`     (15px)   horas, direcciones, metadatos
-   *     13px        →  `micro`    (13px)   etiquetas dentro de un bloque
-   *     12px, 11px  →  `caption`  (12px)   el eyebrow
-   *
-   * ⚠️ Los redondeos son de 1px y TODOS van HACIA ARRIBA (14→15, 11→12) menos
-   * el de 17→16. Hacia arriba es seguro: un texto más grande necesita MENOS
-   * contraste, así que ningún par de la tabla se rompe. El 17→16 baja un
-   * píxel en los datos de contacto de `FindUs`, que están en `ink` sobre
-   * `paper` —17.11:1— y tienen contraste de sobra.
-   *
-   * ⚠️ Cada uno lleva su propia interlínea, y eso es lo que hace desaparecer
-   * los 20 `leading-[...]` sueltos: la utilidad de tamaño se la lleva puesta a
-   * todos los breakpoints, igual que hacen `lead` y `base`.
-   */
   --text-dato: 15px;
   --text-dato--line-height: 1.5;
   --text-micro: 13px;
   --text-micro--line-height: 1.45;
   --text-cta: 16px;
   --text-cta--line-height: 1.2;
-  /*
-   * `caption` — el cuerpo del eyebrow. Baja de 13px a 12px (0.75rem), que es
-   * el valor del brief. A 0.12em de tracking (ver abajo) 13px quedaba pesado
-   * para una micro-etiqueta.
-   */
   --text-caption: 12px;
   --text-caption--line-height: 1.45;
 
-  /*
-   * `eyebrow` — 0.12em, NO 0.24em.
-   *
-   * ⚠️ El 0.24em anterior tenía un motivo concreto: igualar la mancha de la
-   * caja alta de la familia que Jost reemplazó, que era una regular pesada.
-   * Esa familia se fue por licencia, así que el número quedó sin referente —
-   * era una corrección para un problema que ya no existe.
-   *
-   * 0.12em es el valor del brief y es el que corresponde a Jost 500 en caja
-   * alta a 12px: la mitad de aire, la mitad de ruido. Con el doble, una
-   * micro-etiqueta de tres palabras ocupaba el ancho de un titular chico y
-   * competía con él.
-   */
   --tracking-eyebrow: 0.12em;
-  /*
-   * ── LOS OTROS DOS ESCALONES DE TRACKING ─────────────────────────────────
-   *
-   * ⚠️ También nacen de una limpieza. En la home y los globales había SIETE
-   * valores de `letter-spacing` escritos con corchetes —0.01, 0.02, 0.06,
-   * 0.08, 0.1, 0.12 y 0.14em— para lo que son tres roles. Siete valores
-   * dentro de un rango de 0.13em no es una escala: es cada bloque eligiendo
-   * por su cuenta.
-   *
-   * Los tres roles, que se distinguen por CUERPO:
-   *
-   *     eyebrow  0.12em   versalitas chicas, 12-13px
-   *     label    0.08em   versalitas medianas, 15-16px
-   *     cta      0.06em   botones
-   *
-   * A menor cuerpo, más aire: es la misma lógica óptica que tenía la escala de
-   * display, sólo que acá con tres escalones en vez de ocho.
-   *
-   * ⚠️ Los mapeos: 0.14 y 0.1 → `eyebrow` (los dos son versalitas chicas, y
-   * las diferencias de 0.02em a 12px son de un tercio de píxel por letra).
-   * Y 0.01/0.02em SE BORRARON en lugar de tokenizarse: estaban sobre texto en
-   * caja MIXTA, donde el tracking abierto no aporta nada — ahí el valor
-   * honesto es `normal`.
-   */
   --tracking-label: 0.08em;
   --tracking-cta: 0.06em;
 
-  /*
-   * ⚠️ HISTORIA DEL TRACKING DEL DISPLAY, en tres pasos, porque el brief de
-   * esta rama volvió a pedir el primero.
-   *
-   *   1. `--tracking-display: -0.02em`, NEGATIVO, argumentado desde Showdown
-   *      Social. Camila lo rechazó al verlo con la condensada real puesta:
-   *      «se ve muy pegada», y tenía razón. Lo que falló del razonamiento no
-   *      fue medir mal la referencia: fue no medir el efecto ACUMULADO de las
-   *      tres decisiones juntas —condensada extrema + caja alta + peso Bold en
-   *      todos los niveles—. El negativo era la cuarta capa sobre una mancha
-   *      que ya estaba cerrada.
-   *   2. Una escala óptica de ocho `--text-*--letter-spacing`, de 0.02 a
-   *      0.05em, que ABRÍA cada escalón para compensar aquel negativo.
-   *   3. Esta rama: **tracking 0 y ningún token**. El peso bajó a 600 —no Bold
-   *      en todos los niveles— así que la mancha ya no está cerrada y no hay
-   *      nada que compensar en ninguna dirección. Ocho tokens de corrección
-   *      sin nada que corregir eran ocho lugares para desincronizarse.
-   *
-   * El brief pedía volver a −0.01em. No se hizo: es el mismo signo del paso 1,
-   * sobre la misma clase de tipografía, y a 144px se ve más que a 62px.
-   */
-
-  /* ── Motion ─────────────────────────────────────────────────────────────*/
   --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
-  /*
-   * `--ease-rodillo` — la curva CON REBOTE, sólo para el texto que rueda en el
-   * hover de los CTA.
-   *
-   * Está copiada de defoodtruckclub.nl, que es la referencia que trajo Camila
-   * para las microinteracciones: `0.4s cubic-bezier(0.35, 1.5, 0.6, 1)`.
-   *
-   * ⚠️ EL 1.5 DEL TERCER NÚMERO ES UN SOBREPASO DELIBERADO. La curva se va
-   * arriba de 1 y vuelve, o sea que el texto entra pasándose de posición y
-   * retrocede. Es lo que hace que se lea como un gesto físico y no como una
-   * interpolación. `--ease-brand` no sirve acá: es una curva de desaceleración
-   * pura, sin sobrepaso, y el rodado queda blando.
-   *
-   * ⚠️ NO SE USA PARA NADA MÁS. Un sobrepaso en una transición de color o de
-   * opacidad no se ve; en una de layout se lee como un error de cálculo. Vive
-   * únicamente en `rodillo`.
-   */
   --ease-rodillo: cubic-bezier(0.35, 1.5, 0.6, 1);
 
-  /* ── Radios ─────────────────────────────────────────────────────────────
-     ⚠️ TERCERA revisión, y ésta viene de medir, no de suponer.
-
-     Estuvo primero en filo recto (0–4px) y después TODO en píldora, cuando
-     Camila trajo visitors.now. La píldora resultó ser el rasgo que más alejaba
-     el sitio de la casa: ninguna de las cuatro referencias que fijó como
-     máximas —Showdown Social, WeWork, Superside, Stripe— usa píldoras como
-     lenguaje general. Las cuatro usan radios CHICOS, de 4 a 12px.
-
-     Así que:
-       · controles y tarjetas → radio chico
-       · `pill` sobrevive sólo para lo que de verdad es una etiqueta: chips,
-         badges, el riel de progreso. No para botones ni tarjetas.
-       · el CHAFLÁN (ver `.chaflan` abajo) queda reservado para las losas
-         oscuras, que es de donde sale la firma de Showdown.
-
-     ⚠️ AHORA HAY UN SOLO RADIO: 10px, más la píldora.
-
-     Había cinco valores distintos —8, 10, 14, 20 y pill— y se veían todos en la
-     misma pantalla: un botón de 8 al lado de una card de 14 dentro de un panel
-     de 20. Eso no se lee como un sistema, se lee como decisiones sueltas, y era
-     una de las cinco causas medidas del «se percibe tosco».
-
-     Medido en superside.com: **10px en 88 nodos**, píldoras en 13, y un 4px
-     residual en 3. Un radio dominante y una excepción con oficio.
-
-     ⚠️ Los NOMBRES se mantienen aunque hoy compartan valor. `--radius-btn` y
-     `--radius-card` dicen para qué es cada cosa, y el día que alguno tenga
-     motivo para divergir el token ya existe y no hay que ir a buscar los call
-     sites. Cambiar el valor acá cambia el sitio entero; ese es el punto.     */
   --radius-pill: 9999px;
   --radius-btn: 10px;
   --radius-card: 10px;
   --radius-panel: 10px;
   --radius-input: 10px;
   --radius-image: 10px;
-  /* ⚠️ LA FAMILIA GRANDE — entra con el rediseño `food-truck-club`, y NO
-     contradice los 10px de arriba: son dos escalas para dos escalas de pieza.
-
-     Los 10px son el radio de los CONTROLES —botón, input, panel del mega-menú,
-     celda del calendario—: piezas de 40 a 60px de alto, donde 88px de radio
-     las volvería cápsulas.
-
-     Estos cinco son el radio de las SUPERFICIES —bandas de sección completas,
-     el marco del hero, tarjetas de 300 a 600px—. Ahí 10px no se ve: sobre una
-     banda de 900px de ancho un radio de 10 es una esquina recta con el filo
-     limado, y el diseño apoya su carácter justamente en que la banda oscura
-     emerge con un arco visible.
-
-     Los valores salen MEDIDOS del diseño y no redondeados a ojo:
-       band    88px  el arco con el que cada banda emerge sobre la anterior
-       frame   44px  el marco de foto del hero — es la mitad de `band`
-       shell   32px  tarjetas de evento y bloques de contacto
-       door    24px  las tres puertas
-       ticket  18px  las tarjetas troqueladas del yard                      */
-  /*
-   * ⚠️ ES UN `clamp` Y NO 88px FIJOS. Pedido de Camila: «las esquinas en
-   * mobile necesito que sean más chicas».
-   *
-   * 88px sobre una pantalla de 390 son el 22% del ancho: el arco se come un
-   * cuarto de la banda y lo que en desktop es un remate, en un teléfono se lee
-   * como que la sección está mordida. A 36px sigue siendo el mismo gesto y
-   * ocupa el 9%, que es la proporción que tiene el arco de 88 sobre una
-   * pantalla de 978.
-   *
-   * Por eso el `9vw` del medio: mantiene esa proporción en todo el rango y
-   * llega a los 88px justo a 978px de ancho, sin escalón.
-   *
-   * ⚠️ DOS COSAS SIGUEN A ESTE TOKEN SOLAS Y NO HAY QUE TOCARLAS:
-   *   · `--spacing-cierre-arco`, que es `cierre + radius-band` y se recalcula
-   *     porque el `calc` se resuelve al usarse.
-   *   · El margen negativo con el que `HowThisPlaceWorks` y `FindUs` se montan
-   *     sobre la banda de arriba. Era `-mt-22` —88px escritos a mano, con un
-   *     comentario en cada archivo avisando que estaban atados a este token— y
-   *     ahora lee la variable. Ese comentario era una promesa que sólo podía
-   *     cumplir alguien acordándose; ahora la cumple el CSS.
-   */
   --radius-band: clamp(2.25rem, 9vw, 5.5rem);
   --radius-frame: 44px;
   --radius-shell: 32px;
   --radius-door: 24px;
   --radius-ticket: 18px;
 
-  /* ⚠️ `--color-fog` y `--color-linen` VIVÍAN ACÁ y eran grises fríos
-     (#e8e8e8 / #fafafa), calibrados contra un fondo blanco puro. Sobre el
-     hueso cálido se veían sucios: un gris neutro sobre un fondo cálido lee
-     como gris azulado. `fog` se movió arriba, con el resto del color, y
-     ahora es cálido. `linen` se eliminó: era «casi blanco sobre blanco», y
-     con `paper` ya cálido no distinguía nada. Si hace falta una tarjeta que
-     se despegue del fondo, ésa es `chalk`, que es blanco de verdad. */
-
-  /* ── Sombras ────────────────────────────────────────────────────────────
-     ⚠️ REESCRITAS. Eran «tres capas sutiles, nada dramático», en GRIS y casi
-     sin usar: la home medía CERO sombras reales. Camila: «genera ritmo en la
-     página con uso de cambio de fondos y cards con sombras… no termina de
-     tener la impronta correcta».
-
-     El error de fondo fue tomar a superside.com como única referencia. Da la
-     FORMA —composición, escala, disciplina de color— pero no la IMPRONTA de la
-     casa, y Superside no tiene una sola sombra. Los seis proyectos hermanos sí,
-     y todos con el mismo criterio: dos capas y TEÑIDAS en el color oscuro de la
-     marca, nunca en gris neutro.
-
-       the-orient    0 2px 10px rgba(7,25,35,.16), 0 18px 44px -12px rgba(...,.34)
-       yava          0 30px 80px -40px rgba(37,39,94,.45)
-       tre-vele      0 34px 62px -18px rgba(0,0,0,.6)
-       santa-maría   0 4px 32px rgba(0,0,0,.08)
-
-     Estas siguen la estructura de the-orient —una capa de contacto corta y una
-     de profundidad larga con spread negativo— teñidas en nuestro `deep`
-     (1,69,69), y con opacidades casi iguales a las suyas.
-
-     ⚠️ El primer intento las puso un 35% más suaves «porque nuestro fondo es
-     más claro». Fue un error: sobre `bone` la sombra apenas se veía y las
-     cards seguían planas, que es de lo que se quejaba Camila. Sobre un fondo
-     claro la sombra necesita MÁS opacidad, no menos, porque tiene menos
-     contraste contra el que apoyarse.
-
-     ⚠️ Una sombra gris sobre un fondo cálido se ve SUCIA. Es el motivo de que
-     todos los proyectos de la casa las tiñan.                                */
   --shadow-btn: 0 1px 2px rgba(1, 69, 69, 0.1), 0 2px 6px -2px rgba(1, 69, 69, 0.12);
   --shadow-card: 0 2px 10px rgba(1, 69, 69, 0.14), 0 18px 44px -12px rgba(1, 69, 69, 0.3);
   --shadow-photo: 0 3px 10px rgba(1, 69, 69, 0.1), 0 22px 48px -20px rgba(1, 69, 69, 0.26);
   --shadow-float: 0 4px 16px rgba(1, 69, 69, 0.16), 0 30px 70px -18px rgba(1, 69, 69, 0.38);
 
-  /*
-   * ⚠️ `shadow-card-dark` — LA MISMA SOMBRA, PARA LAS LOSAS OSCURAS, y sin
-   * esto la mitad de las tarjetas del sitio no puede tener sombra.
-   *
-   * Las cuatro de arriba están teñidas en `deep` (1,69,69), que es
-   * exactamente el fondo de las bandas oscuras: una tarjeta `deeper` sobre una
-   * banda `deep` con `shadow-card` proyecta el color del fondo sobre el fondo.
-   * No es que se vea poco, es que no se ve.
-   *
-   * Ésta mantiene la estructura de las otras —capa de contacto corta y capa de
-   * profundidad larga con spread negativo— pero teñida casi en negro
-   * (0,15,15) y con más opacidad, que es lo que hacen los proyectos de la casa
-   * que trabajan sobre oscuro: tre-vele va con rgba(0,0,0,.6) y santa-maría
-   * con rgba(0,0,0,.45).
-   */
   --shadow-card-dark: 0 2px 10px rgba(0, 15, 15, 0.34), 0 18px 44px -12px rgba(0, 15, 15, 0.55);
 }
 
 :root {
-  /* ── LOS FLUIDOS ─────────────────────────────────────────────────────────
-   * Van acá y no en `@theme` por el límite de compilación de v4: el `@theme`
-   * se evalúa en build y un `clamp` con `vw` compila mudo en el valor máximo.
-   * Los valores estáticos del `@theme` son los del tope; estos los pisan.
-   *
-   * ⚠️ Se escriben con `vw` y no con la fórmula de interpolación lineal que
-   * había antes (`56px + (100vw - 390px) * 0.0533`). Los dos funcionan, pero
-   * la del brief es directamente legible —`9vw` es «9 % del ancho»— y no hay
-   * que resolver una pendiente a mano para saber qué hace. Comprobado que los
-   * topes caen donde tienen que caer:
-   *
-   *     hero  9vw    → 390px: 56px (piso)  · 1600px: 144px (tope)
-   *     h2    6vw    → 390px: 40px (piso)  · 1467px: 88px  (tope)
-   *     h3    2.6vw  → 390px: 28px (piso)  · 1538px: 40px  (tope)
-   *     lead  1.6vw  → 390px: 17px (piso)  · 1375px: 22px  (tope)
-   *
-   * O sea: en 390px todos están en su piso y en 1440 el hero va a ~130px, el
-   * h2 a 86px y el h3 y la bajada ya en su tope. La progresión es continua en
-   * todo el rango donde hay contenido.
-   */
   --text-hero: clamp(3.5rem, 9vw, 9rem);
-  /*
-   * ⚠️ El piso es 3rem (48px) y NO 2.75rem (44px), y el motivo se vio en el
-   * espécimen a 390px. Todos los clamp están en su piso ahí, así que la escala
-   * se comprime a hero 56 / h1 / h2 40 / h3 28: con 44px, el h1 quedaba a 4px
-   * del h2 y el escalón desaparecía. A 48px hay 8px de separación.
-   *
-   * Se movió ESTE y no el h2 porque el piso del h2 (2.5rem) es valor del brief
-   * y el `h1` es un escalón que agregué yo. Y porque hero y h1 nunca comparten
-   * página —hero es sólo el home, h1 sólo las internas—, así que los 8px que
-   * quedan entre ellos no se ven nunca juntos.
-   */
   --text-h1: clamp(3rem, 7vw, 6.5rem);
   --text-h2: clamp(2.5rem, 6vw, 5.5rem);
   --text-h3: clamp(1.75rem, 2.6vw, 2.5rem);
   --text-lead: clamp(1.0625rem, 1.6vw, 1.375rem);
-  /*
-   * Los dos del rediseño. Mismo mecanismo, mismos topes comprobados:
-   *
-   *     titan  9vw  → 390px: 56px (piso) · 1600px: 144px (tope)
-   *     banda  7vw  → 390px: 45px (piso) · 1600px: 112px (tope)
-   *
-   * ⚠️ El piso de `banda` es 2.8rem y no 2.5rem como el de `h2`. A 390px la
-   * home tiene titulares de hasta cuatro palabras centrados en 16ch —«This
-   * week / in the yard»— y a 40px caían en tres renglones. A 45px caen en dos,
-   * que es como está compuesto el diseño.
-   */
   --text-titan: clamp(3.5rem, 9vw, 9rem);
-  /*
-   * ⚠️ LA PENDIENTE CAMBIÓ PARA QUE EL TITULAR CREZCA EN TABLET SIN MOVER EL
-   * DESKTOP. Era `clamp(2.8rem, 7vw, 7rem)`.
-   *
-   * El problema, medido a 834: el titular quedaba en 58px, o sea 43px de
-   * altura de mayúscula, contra un CTA de 42px de alto. La letra del titular y
-   * el botón medían LO MISMO, y por eso Camila lo vio «como más chico que los
-   * CTA». Un titular de sección no puede empatarle a un control.
-   *
-   * La recta nueva pasa por dos puntos elegidos: 72px a 834 —donde la
-   * mayúscula sube a 53 contra los 42 del botón— y 100,8px a 1440, que es
-   * exactamente lo que daba la fórmula vieja. O sea que el desktop no se
-   * entera: a 1440 el número es el mismo.
-   *
-   * ⚠️ EL TOPE SE QUEDA EN 7rem. Se alcanza a 1673px en vez de a 1600, así que
-   * entre esos dos anchos el titular es unos 3px más chico que antes. Es la
-   * única contrapartida y no se ve.
-   *
-   * ⚠️ LO USAN `WhatsOn` Y `ThreeDoors`, que son los dos titulares CENTRADOS y
-   * con `max-w` en `ch`. `EventsBanner` y `FindUs` NO lo usan: los dos tienen
-   * su propio `clamp` con la pendiente vieja porque sus titulares ocupan el
-   * ancho entero y ya entran justos — con esta pendiente se partirían en
-   * tablet. Está explicado en cada uno.
-   */
   --text-banda: clamp(2.8rem, 2.03rem + 4.75vw, 7rem);
-  /*
-   * La nav también es fluida, y acá el clamp no es cosmético: entre 1344 —el
-   * `desk` donde la nav horizontal aparece— y 1400 hay 56px de margen y ocho
-   * elementos en la barra. A tamaño fijo y grande el último CTA se sale; con
-   * `vw` entra chica y crece recién cuando la pantalla lo permite.
-   *
-   *     nav  1.35vw → 1185px: 16px (tope)
-   *
-   * ⚠️ CON EL TOPE EN 16 EL CLAMP YA NO MODULA NADA en las pantallas donde
-   * esto se ve: la nav horizontal arranca en 1344, y ahí 1.35vw ya son 18,1px,
-   * o sea que siempre está clavada en el tope. Se deja igual porque el piso es
-   * la red de seguridad del día que el `desk` baje o la barra sume un item: si
-   * eso pasa, la nav se achica sola en vez de romperse.
-   *
-   * ⚠️ EL TOPE BAJÓ DE 17 A 16 junto con el token fijo de arriba, y el porqué
-   * —el pedido de aire contra el logo y la tabla de cuánto compra cada
-   * escalón— está anotado allá. Los dos números tienen que moverse juntos.
-   */
   --text-nav: clamp(15px, 1.35vw, 16px);
-  /*
-   * ⚠️ El pill TIENE que ser fluido o se rompe en mobile. A 390px la pastilla
-   * mide todo el ancho menos el círculo de 80 y el padding, o sea 215px de
-   * texto: a 26px no entra ni la frase más corta, a 17px entran las cuatro.
-   *
-   *     pastilla  1.9vw → 390px: 17px (piso) · 1368px: 26px (tope)
-   *
-   * ⚠️ Y el clamp NO alcanza solo: arriba de 1400px la caja topea pero el h1
-   * sigue creciendo, así que el hueco de texto se ACHICA con la pantalla
-   * grande —288px a 1920— mientras el tipo ya está en su tope de 26. Es el
-   * peor caso de los cuatro mensajes y por eso ninguno pasa de ~22 caracteres.
-   * La tabla medida está arriba del array de frases, en `Hero.tsx`.
-   */
   --text-pastilla: clamp(17px, 1.9vw, 26px);
 
-  /*
-   * ⚠️ LA BAJADA DEL HERO ENTRA EN UN RENGLÓN, Y EL NÚMERO SALE DE MEDIRLO.
-   *
-   * «Rooftop bar. Four kitchens. Walk in.» son 36 caracteres. Medido en el
-   * server de producción con Jost ya cargada, la frase en un renglón pide
-   * **367px a 25px**. El ancho disponible es el de la caja menos el borde, que
-   * es `clamp(16px, 4vw, 56px)` por lado:
-   *
-   *     390px   hay 358px   entra hasta 24,3px   ← se pasaba por 9px
-   *     430px   hay 396px   entra hasta 26,9px
-   *     768px   hay 707px   entra hasta 48,1px
-   *
-   * O sea que fallaba SÓLO en los teléfonos angostos, y por poquito. `6vw` da
-   * 23,4px a 390 y toca el tope de 25 a los 417px, con un 4 % de aire en toda
-   * la franja. El piso de 19px cubre hasta 320px, que es la pantalla más
-   * angosta que se sigue probando.
-   *
-   * ⚠️ NO SUBIR EL PISO SIN VOLVER A MEDIR. Si algún día cambia el copy de la
-   * bajada, el número de arriba deja de valer: son 36 caracteres exactos los
-   * que entran con este clamp.
-   */
   --text-hero-lead: clamp(19px, 6vw, 25px);
 
-  /*
-   * ⚠️ ALTO DE LA BANDA INTERCALADA EN UN TITULAR. Se usa con
-   * `h-(--banda-titular)` y hoy la consume un solo bloque: el h2 de «Three
-   * doors», partido en dos renglones con una foto en el medio.
-   *
-   * Va acá y no en `@theme` por el MISMO límite que los `--text-*`: un `clamp`
-   * con `vw` compila mudo en su valor máximo. Y va en el sistema y no como
-   * `h-[clamp(...)]` en el componente porque no es una medida de esa foto: es
-   * cuánto mide un renglón de imagen en esta escala tipográfica, y la próxima
-   * banda tiene que medir lo mismo.
-   *
-   * El número sale del h2, no del ojo. El h2 es `6vw` con `line-height` 0.92,
-   * o sea un renglón de 5.5vw. La banda es `13vw` ≈ **2,4 renglones**: más
-   * alta que el texto —si midiera un renglón se leería como una palabra
-   * tachada— y más baja que un tercio de pantalla, que ya sería una foto de
-   * sección y no parte del titular.
-   *
-   *     390px  → 88px  (piso)   · 1440px → 187px · 1538px → 200px (tope)
-   *
-   * El piso son 88px y no menos porque abajo de eso, con el contenedor a
-   * 350px, el recorte pasa de 4:1 y de la barra no queda nada legible.
-   */
   --banda-titular: clamp(5.5rem, 13vw, 12.5rem);
 
-  /*
-   * El ritmo del rediseño, fluido. Los topes son los del `@theme`:
-   *
-   *     bloque  3.4vw → 390px: 40px (piso) · 1412px: 48px  (tope)
-   *     cierre  7vw   → 390px: 56px (piso) · 1600px: 112px (tope)
-   *
-   * ⚠️ `cierre` crece MÁS RÁPIDO que `bloque` —7vw contra 3.4— y por eso la
-   * proporción entre los dos se abre con la pantalla: en un teléfono es 1:1,4
-   * y en un desktop 1:2,3. Es lo que corresponde: en 390px de ancho, 112px de
-   * aire al pie se comen media pantalla, y en 1600 un corte de fondo sin esos
-   * 112px no se lee como corte.
-   */
   --spacing-bloque: clamp(40px, 3.4vw, 48px);
   --spacing-cierre: clamp(56px, 7vw, 112px);
   --spacing-cierre-arco: calc(var(--spacing-cierre) + var(--radius-band));
 
-  /* El ritmo del encabezado, un escalón más apretado en mobile. */
   --spacing-gap-kicker: 8px;
   --spacing-gap-bajada: 16px;
   --spacing-gap-cta: 24px;
 }
 
-/*
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LOS RADIOS GRANDES ACHICAN EN MOBILE, desde el 2026-09-23. Camila: «para
- * toda la web en general, considero que en mobile los radius de las cards y
- * demás debería ser menos».
- *
- *              390    640+   1024+
- *     frame     28     36     44     marcos de foto, losas, diálogo
- *     shell     20     26     32     tarjetas grandes
- *     door      16     20     24     las placas de «Three doors»
- *     ticket    12     14     18     tickets y tarjetas chicas
- *
- * Los de 10 (`card`, `btn`, `input`…) no se tocan: ya son chicos.
- *
- * ⚠️ EL DE `frame` ES ADEMÁS EL TAMAÑO DE LA ESQUINA INVERSA de los heroes
- * (`esquina-inversa` mide un `--radius-frame`), y eso era un problema aparte:
- * con 44px la placa de `PlateHero` no podía pasar de ~182px a 390 sin que la
- * esquina cayera sobre la curva de la foto, y «two stories up» se partía en
- * tres renglones. Con 28 la placa tiene 246px.
- *
- * ⚠️ VAN EN `:root` Y NO EN `@theme` por lo mismo que los fluidos: el
- * `@theme` guarda el valor de desktop y esto lo pisa abajo de cada corte.
- * ══════════════════════════════════════════════════════════════════════════
- */
 @media (width < 64rem) {
   :root {
     --radius-frame: 36px;
@@ -1247,38 +185,9 @@
   }
 }
 
-/* ==========================================================================
-   EL CONTRATO DE LO QUE SE FIJA AL PIE
-
-   `--aviso-pie` — cuánto espacio se está comiendo, AHORA MISMO, lo que esté
-   pegado al borde inferior de la pantalla. Vale 0 mientras no haya nada.
-
-   Quién la escribe: el elemento fijo, no quien la lee. Hoy no hay ninguno; el
-   primero va a ser el banner de cookies (la skill `paginas-legales` lo monta
-   `fixed inset-x-0 bottom-0`, y este sitio todavía no lo tiene — ver la nota
-   de `LEGALES` en `Footer.tsx`). Cuando se monte, tiene que publicar su alto:
-
-     const alto = ref.current.offsetHeight;
-     document.documentElement.style.setProperty('--aviso-pie', alto + 'px');
-
-   y devolverla a `0px` al cerrarse.
-
-   ⚠️ NO SE INVIERTE LA DIRECCIÓN. Es tentador que el que flota mida al aviso
-   con un `getBoundingClientRect`, y no funciona: un banner de consentimiento
-   decide si aparece DESPUÉS de leer su cookie, o sea más tarde que quien lo
-   mediría, y cuando se cierra nadie avisa. Publicada por el aviso, la variable
-   llega siempre a tiempo y a todos los que la lean.
-
-   Quién la lee hoy: `BackToTop`, que la suma a su piso de 72px.
-   ========================================================================== */
-
 :root {
   --aviso-pie: 0px;
 }
-
-/* ==========================================================================
-   Base
-   ========================================================================== */
 
 @layer base {
   html {
@@ -1293,9 +202,7 @@
   }
 
   body {
-    /* El sitio es blanco y el texto negro. No se negocia. */
     background-color: var(--color-paper);
-    /* El grano del suelo, debajo de todo. Ver la nota de la utilidad. */
     @apply grano;
     color: var(--color-body);
     font-family: var(--font-body);
@@ -1303,45 +210,9 @@
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
 
-    /*
-     * ══════════════════════════════════════════════════════════════════════
-     * LA PÁGINA NO SE ARRASTRA DE COSTADO. NUNCA.
-     *
-     * Camila, 2026-09-21, con una captura de la página corrida hacia la
-     * derecha: «por momentos se rompe, en tablet y solo scroleando».
-     *
-     * ⚠️ NO ES UN PARCHE SOBRE UN DESBORDE: no hay desborde. Barrido de 600 a
-     * 1400px cada 20px, en las dos vistas de `/whats-on`, medido con
-     * `scrollWidth` contra `clientWidth`: cero en los 82 anchos. Esto es un
-     * cinturón contra el desborde MOMENTÁNEO —el recompilado del dev server,
-     * una imagen que llega sin dimensiones, una fuente que ensancha un
-     * renglón antes de asentarse—.
-     *
-     * ⚠️ EL PROBLEMA NO ES EL DESBORDE, ES QUE QUEDA PEGADO. Si el desborde
-     * desaparece solo, el navegador devuelve la página a x=0. Pero si en ese
-     * instante alguien toca un link de la barra del calendario, el
-     * corrimiento SOBREVIVE a la navegación, porque esos links llevan
-     * `scroll={false}` para no saltar al hero. Medido: se arrastra a x=60,
-     * se navega, y la página siguiente arranca en x=60. En un teléfono o una
-     * tablet no hay barra de scroll que lo delate, así que se ve como si el
-     * diseño estuviera roto y no se arregla hasta recargar.
-     *
-     * ⚠️ ES `clip` Y NO `hidden`, Y ESA ES TODA LA DIFERENCIA. `overflow:
-     * hidden` crea un contenedor de scroll, y un contenedor de scroll MATA a
-     * `position: sticky` de sus descendientes: se irían al diablo el header y
-     * la barra del calendario, sin avisar y sin error. `clip` recorta sin
-     * crear ese contenedor. Verificado en el navegador: con `clip`, la barra
-     * se sigue pegando a 79px.
-     *
-     * ⚠️ NO AFECTA A LAS TIRAS QUE SÍ SCROLLEAN DE COSTADO —los filtros del
-     * calendario, las categorías de la carta, el carrusel de la home—: cada
-     * una es su propio `overflow-x: auto` y sigue andando.
-     * ══════════════════════════════════════════════════════════════════════
-     */
     overflow-x: clip;
   }
 
-  /* Sin viudas: equilibra los títulos y evita palabras solas al final. */
   h1,
   h2,
   h3,
@@ -1357,46 +228,16 @@
     text-wrap: pretty;
   }
 
-  /*
-   * Foco visible en TODO lo interactivo. WCAG 2.4.7.
-   *
-   * ⚠️ El anillo va en `ink` y no en `sunset`: sobre blanco el naranja da
-   * 2.54:1, por debajo del 3:1 que pide WCAG 1.4.11 para un elemento de
-   * interfaz no textual. El negro da 21:1 sobre blanco y 8.26:1 sobre el
-   * naranja del CTA, así que se ve sobre los dos fondos.
-   *
-   * Sobre las superficies oscuras (`deep`) el negro desaparece, así que ahí
-   * se invierte — ver la regla de abajo.
-   */
   :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
     outline: 3px solid var(--color-ink);
     outline-offset: 2px;
     border-radius: 2px;
   }
 
-  /* Sobre fondo oscuro el anillo va en crema (9.44:1 contra `deep`). */
   .on-dark :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
     outline-color: var(--color-cream);
   }
 
-  /*
-   * `--lead-ink` — el color de la bajada, RESUELTO POR SUPERFICIE.
-   *
-   * ⚠️ Es el mecanismo que reemplaza a la opacidad, y existe por un bug real
-   * que encontró `npm run a11y`: `text-muted` es un verde medio para fondos
-   * claros, y aplicado tal cual sobre la banda oscura daba 2.02:1. Con
-   * `text-body/75` eso no pasaba porque la opacidad se adapta al fondo — pero
-   * justamente por eso tampoco se podía medir.
-   *
-   * La variable da lo mejor de los dos: se adapta a la superficie Y cada valor
-   * es un color opaco que está en la tabla de contraste.
-   *
-   * ⚠️ Reutiliza `.on-dark`, la MISMA clase que ya invierte el anillo de foco y
-   * que `Section tone="deep"` aplica sola. Ni un call site cambia: un bloque
-   * `SectionHead` metido en una sección oscura se corrige por herencia.
-   *
-   * Medido: 5.36:1 sobre `paper`, 4.96:1 sobre `bone`, 5.95:1 sobre `deep`.
-   */
   :root {
     --lead-ink: var(--color-muted);
   }
@@ -1404,19 +245,6 @@
     --lead-ink: var(--color-muted-dark);
   }
 
-  /*
-   * `--sombra-card` — LA SOMBRA DE TARJETA, RESUELTA POR SUPERFICIE.
-   *
-   * Mismo mecanismo que `--lead-ink`, y por el mismo motivo: el valor correcto
-   * depende de sobre qué cae, y un call site no tiene por qué saberlo. Una
-   * tarjeta escribe `sombra-card` y listo; si vive dentro de un `.on-dark`
-   * —que es la clase que ya traen el footer, las bandas `deep` y
-   * `Section tone="deep"`— le toca sola la variante oscura.
-   *
-   * Es lo que hace posible el pedido de Camila —«que todas las cards tengan
-   * una sombra, las de toda la web»— sin tener que decidir en cada archivo
-   * sobre qué fondo está parado.
-   */
   :root {
     --sombra-card: var(--shadow-card);
   }
@@ -1424,7 +252,6 @@
     --sombra-card: var(--shadow-card-dark);
   }
 
-  /* Reserva de espacio para imágenes: sin esto hay CLS. */
   img,
   video {
     max-width: 100%;
@@ -1432,20 +259,6 @@
   }
 }
 
-/* ==========================================================================
-   Utilidades
-   ========================================================================== */
-
-/**
- * La caja de contenido.
- *
- * ⚠️ EL TECHO DE 1280 VA DESDE 1024 Y NO DESDE 1344, cambio del 2026-09-23.
- * Con el tope de 880 hasta 1344, un iPad apaisado y una notebook de 1280 veían
- * las secciones internas encerradas en 880 mientras el header y el hero iban
- * al ancho entero: a 1280 eran 200px de margen contra 51 en la misma página.
- * Ahora el ancho lo decide el gutter fluido y la caja sólo pone el techo, que
- * es lo mismo que hace `caja-ancha`: las dos miden igual en cualquier pantalla.
- */
 @utility caja {
   margin-inline: auto;
   width: 100%;
@@ -1459,41 +272,6 @@
   }
 }
 
-/**
- * La caja ANCHA — la del rediseño `food-truck-club`.
- *
- * 1400px con el gutter fluido ADENTRO, que es como está compuesto el diseño:
- * `max-width:1400px; margin:0 auto; padding:0 clamp(16px,4vw,56px)`. O sea que
- * el 1400 es el ancho total de la banda y el texto arranca 56px adentro, no
- * que el texto mida 1400.
- *
- * ⚠️ Reemplaza al par `caja` + `GUTTER`, no se combina con él. Poner los dos
- * suma los dos paddings y el contenido queda 88px adentro en desktop.
- *
- * ⚠️ Las secciones que SANGRAN —el carrusel de eventos, el marquee de fotos—
- * no la usan en su contenedor exterior: usan `px-borde` sólo en el encabezado
- * y dejan que la fila de tarjetas se vaya del borde. Si se envuelve todo en
- * `caja-ancha`, la fuga se recorta y el carrusel deja de leerse como continuo.
- */
-/**
- * TOQUE — el área táctil de 44×44 sin cambiar el dibujo.
- *
- * ⚠️ EXISTE PORQUE LOS CONTROLES CHICOS SON CHICOS A PROPÓSITO. Los CTA topean
- * en 42 por pedido de Camila, la barra fija de /whats-on es compacta para no
- * comerse medio teléfono y sus chips miden 29. Agrandarlos cambia el diseño;
- * lo que falta es el blanco del dedo, que es otra cosa. 44 es el mínimo de
- * Apple y de WCAG 2.5.5.
- *
- * Un `::after` invisible centrado en el control, de `max(100%, 44px)` por
- * lado: si el control ya mide más, no agrega nada.
- *
- * ⚠️ UN PADRE CON `overflow` RECORTA EL ÁREA, porque el pseudo cae fuera de su
- * caja y ahí el navegador no entrega el toque. La tira de filtros de
- * /whats-on se estira con `py` y `-my` justamente por eso.
- *
- * ⚠️ NO SE USA EN CONTROLES PEGADOS ENTRE SÍ A MENOS DE 44: las áreas se
- * pisarían y ganaría el último del DOM.
- */
 @utility toque {
   position: relative;
 
@@ -1515,41 +293,6 @@
   padding-inline: var(--spacing-borde);
 }
 
-/**
- * TROQUEL — el borde dentado de las tarjetas del yard.
- *
- * Las tres tarjetas de «cómo funciona esto» son tickets: el borde de arriba y
- * el de abajo están mordidos por una fila de semicírculos, como el talón de
- * una entrada. Es el recurso que más carácter le da a la sección y el que
- * explica sin texto que las tres van juntas y en orden.
- *
- * ⚠️ SE HACE CON `mask` Y NO CON PSEUDO-ELEMENTOS, y la diferencia importa.
- * Con `::before`/`::after` habría que pintar los dientes DEL COLOR DEL FONDO,
- * o sea que la tarjeta sólo funcionaría sobre `bone` y se rompería el día que
- * la sección cambie de superficie. La máscara recorta de verdad: lo que hay
- * detrás se ve, sea lo que sea.
- *
- * Las tres capas, de arriba abajo:
- *   1. la fila de mordiscos del borde SUPERIOR
- *   2. la fila del borde INFERIOR
- *   3. el relleno del medio, con 26px menos de alto para dejarles lugar
- *
- * ⚠️ Los tres números están atados entre sí y no se tocan de a uno:
- * el diente mide 13px de radio, el paso de la repetición 26px (dos radios) y
- * el alto que se le descuenta al relleno son esos mismos 26px. Cambiar uno
- * solo deja una costura de 1px entre el relleno y los dientes, que sobre
- * blanco se ve como una línea gris.
- *
- * ⚠️ El `13.5px` del segundo tope de cada `radial-gradient` NO es un error de
- * tipeo ni un valor «por las dudas»: es medio píxel de antialias. Con los dos
- * topes en 13px el borde del diente queda duro y en pantallas sin DPR fraccional
- * se ve aserrado.
- *
- * ⚠️ La sombra va en el CONTENEDOR con `filter: drop-shadow`, no acá con
- * `box-shadow`. Una `box-shadow` dibuja la sombra del rectángulo original y
- * la máscara no la recorta: quedarían dos esquinas de sombra flotando donde
- * la tarjeta ya no tiene material. `drop-shadow` sigue la silueta enmascarada.
- */
 @utility troquel {
   --troquel-diente: 13px;
   --troquel-paso: 26px;
@@ -1584,44 +327,6 @@
     linear-gradient(#000 0 0) 50% 50% / 100% calc(100% - var(--troquel-paso)) no-repeat;
 }
 
-/**
- * MORDISCO — el hueco redondo que la flecha le muerde a la esquina.
- *
- * Las tres puertas de la home tienen un campo de color con un círculo claro en
- * la esquina de abajo a la derecha. Antes el círculo se apoyaba ENCIMA del
- * campo, como una chapita pegada. Ahora el campo está mordido: el círculo se
- * mete en un hueco recortado con el mismo aire alrededor, y el fondo de la
- * página se ve pasar entre los dos.
- *
- * ⚠️ EL HUECO SE ABRE A LA ESQUINA, no es un agujero flotando en el medio del
- * campo. Es la diferencia entre que se lea como un troquel y que se lea como
- * una mancha: el radio del mordisco (--mordisco-radio) es MÁS GRANDE que la distancia
- * del centro al borde (--mordisco-centro), así que el círculo se pasa de los dos bordes
- * y el recorte queda abierto. Si se invierte esa relación —hueco más chico que
- * la distancia al borde— aparece un agujero cerrado con un anillo de color
- * alrededor, que es exactamente lo que no se busca.
- *
- * ⚠️ ES `mask` Y NO `clip-path`, por el mismo motivo que el `troquel`: hace falta
- * combinar el radio de la tarjeta con el mordisco, y un `clip-path: path()` que
- * los dibuje juntos tendría que estar en píxeles absolutos y dejaría de cuadrar
- * en cuanto la tarjeta cambie de alto. Con máscara, el `border-radius` y el
- * `overflow-hidden` siguen haciendo las esquinas y la máscara sólo saca el
- * mordisco. Los dos recortes conviven sin saber uno del otro.
- *
- * ⚠️ LOS TRES NÚMEROS ESTÁN ATADOS AL BOTÓN Y NO SE TOCAN DE A UNO:
- *
- *     --mordisco-boton   53px   el diámetro del círculo — es `size-13.25`
- *     --mordisco-aire     9px   lo que se ve del fondo entre círculo y campo
- *     --mordisco-sangria  4px   lo que el círculo entra desde la esquina
- *
- * Si el botón cambia de tamaño en el TSX, `--mordisco-boton` cambia con él o el
- * aire deja de ser parejo. Es el mismo trato que tienen el diente y el paso del
- * `troquel`.
- *
- * ⚠️ EL `-webkit-mask` DUPLICADO NO SOBRA. Es la misma regla que ya lleva el
- * `troquel` unas líneas más arriba: sin el prefijo, Safari sirve la tarjeta sin
- * máscara y el círculo vuelve a quedar apoyado encima.
- */
 @utility mordisco {
   --mordisco-boton: 53px;
   --mordisco-aire: 9px;
@@ -1629,8 +334,6 @@
   --mordisco-centro: calc(var(--mordisco-boton) / 2 + var(--mordisco-sangria));
   --mordisco-radio: calc(var(--mordisco-boton) / 2 + var(--mordisco-aire));
 
-  /* El medio píxel del segundo tope es antialias, igual que en el `troquel`:
-     con los dos topes en el mismo valor el filo del mordisco se ve aserrado. */
   mask: radial-gradient(
     circle var(--mordisco-radio) at calc(100% - var(--mordisco-centro))
       calc(100% - var(--mordisco-centro)),
@@ -1645,48 +348,15 @@
   );
 }
 
-/**
- * Eyebrow. La geométrica en caja alta, 12px y 0.12em, siempre.
- *
- * El color lo pone quien lo usa: sobre superficie clara tiene que ser uno de
- * los autorizados —`deep`, `plum`, `terra`, `magenta`—, nunca `sunset` ni
- * `river`. Los ratios están en `design-audit/CONTRASTE.md`.
- *
- * ⚠️ Máximo TRES en la home, y sólo donde clasifican un dato real. Ver la nota
- * de `Eyebrow` en `Type.tsx`.
- */
 @utility eyebrow {
   font-family: var(--font-subhead);
   font-size: var(--text-caption);
   line-height: var(--text-caption--line-height);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  /* ⚠️ 500 y no 400. La familia que el eyebrow tenía antes era una regular
-     pesada, así que a 400 la geométrica quedaba visiblemente más liviana que
-     el eyebrow que había; medido lado a lado en caja alta, el 500 iguala esa
-     mancha y el 600 se pasa. Y es lo que distingue el eyebrow del cuerpo, que
-     va en 400, ahora que las dos comparten familia. */
   font-weight: 500;
 }
 
-/**
- * CHAFLÁN — la esquina cortada de la casa.
- *
- * Medido en Showdown Social:
- *   polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))
- * o sea: se cortan la esquina SUPERIOR DERECHA y la INFERIOR IZQUIERDA. Las
- * otras dos quedan vivas. Esa asimetría es lo que le da dirección — un corte
- * en las cuatro esquinas sería un octógono y no dice nada.
- *
- * Se usa SÓLO en las losas oscuras y en la imagen que va dentro de ellas. No
- * es el radio general del sitio: si todo lleva chaflán, el sitio se vuelve una
- * interfaz de videojuego, que es el registro de Showdown y no el de Rooftop.
- *
- * ⚠️ NO PONER ESTO EN NADA ENFOCABLE. `clip-path` recorta el anillo de foco,
- * así que un botón con chaflán deja a alguien navegando con teclado sin saber
- * dónde está parado. Si algún día hace falta un control con chaflán, el anillo
- * tiene que ir por dentro (`box-shadow: inset`), que sí sobrevive al recorte.
- */
 @utility chaflan {
   clip-path: polygon(
     0 0,
@@ -1698,90 +368,13 @@
   );
 }
 
-/**
- * Un filete de 1px en la tinta, al 12%. Es el separador por defecto del sitio:
- * el color es puntuación, así que las divisiones NO se pintan de color.
- */
 @utility filete {
   height: 1px;
   width: 100%;
   background-color: color-mix(in srgb, var(--color-ink) 12%, transparent);
 }
 
-/**
- * Link de texto.
- *
- * ⚠️ Acá chocan DOS reglas del brief y hay que resolverlo, no elegir una:
- *
- *   a) «el naranja marca el hover de links»
- *   b) «todo cumple AA» / «si un par no pasa, cambialo, no lo justifiques»
- *
- * El naranja sobre blanco da 2.54:1 y no llega al 3:1 que WCAG 1.4.11 pide
- * para un indicador de interfaz no textual. Pintar el subrayado de naranja y
- * listo rompería (b).
- *
- * La resolución:
- *
- *   REPOSO  subrayado 1px en tinta al 45% → **3.36:1**, pasa 1.4.11. Es ACÁ
- *           donde el link se identifica como link, y ese indicador cumple.
- *   HOVER   el subrayado pasa a 2px y a naranja. El cambio de estado se
- *           comunica por GROSOR además de por color, así que no depende del
- *           color (WCAG 1.4.1), y el texto sigue en tinta a 21:1.
- *
- * O sea: el naranja es el gesto del hover, no el que sostiene la accesibilidad.
- * Ninguna información se pierde si el usuario no distingue el naranja.
- */
-/**
- * `greca` — la trama de grecas del brand book, como MÁSCARA.
- *
- * El dibujo sale del Figma («Rooftop at Riverside (Copy)», nodos 2012:4489 y
- * 2012:4488): dos variantes hechas a mano del mismo motivo de espiral. Las
- * convierte `npm run greca` en una tira de dos celdas, `public/brand/greca.png`.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ ES `mask-image` Y NO `background-image`, y de eso depende todo.
- *
- * Una imagen de fondo trae su color adentro, así que habría que exportar una
- * greca por cada color en que se use. Una máscara usa el canal ALFA del PNG y
- * el color lo pone `background-color` — acá `currentColor`, o sea que el color
- * lo decide el `text-*` de quien la usa. Un archivo, todos los colores, y
- * ningún hex suelto.
- *
- * Es la misma razón por la que `WaveBorder` usa un `<pattern>` de SVG en vez de
- * una imagen de fondo. La diferencia es que la cenefa es UNA pieza y esto es
- * una trama que se repite cientos de veces, así que acá el raster gana: 6 KB
- * contra los 148 KB que pesaban los dos SVG del Figma.
- *
- * ⚠️ LA TIRA TRAE LAS DOS GRECAS, y por eso `--greca-celda` se multiplica por
- * dos en el `mask-size`. Repetir una sola celda se lee estampado; alternando
- * las dos, el período es de dos y la tira se lee dibujada a mano.
- *
- * ⚠️ Va el prefijo `-webkit-` además del estándar. Safari sigue necesitándolo
- * para `mask-image`, y sin él la trama no aparece — no degrada, desaparece.
- * ══════════════════════════════════════════════════════════════════════════
- *
- * Uso: `<div class="greca text-deep/10" />` sobre cualquier superficie.
- * El tamaño de celda se ajusta con `--greca-celda`.
- */
 @utility greca {
-  /*
-   * ⚠️ 20px Y NO 34px, y el cambio es de ESCALA, no de opacidad.
-   *
-   * `AUTOCRITICA.md` §2 decía que la trama del cuadro crema «se lee como un
-   * DIBUJO y compite con el texto», y atribuía eso a la opacidad. Al medirlo
-   * con `design-audit/trama.mjs` resultó que el cuadro crema era el MÁS SUAVE
-   * de los tres (ΔE 11,7 contra 13,4 y 15,7), o sea que el diagnóstico estaba
-   * mal: bajarle la opacidad lo habría hecho desaparecer.
-   *
-   * Lo que hacía que la espiral se leyera como dibujo era el TAMAÑO. A 34px la
-   * greca es una figura reconocible una por una; a 20px el ojo la integra como
-   * campo. Comparado en pantalla a 34 / 26 / 20 / 15px: 15px ya deshace el
-   * dibujo —deja de ser una greca y pasa a ser un tejido cualquiera, o sea que
-   * el arte de marca se pierde—, y 20px es el punto donde todavía se reconoce
-   * de cerca pero a distancia de lectura es textura.
-   *
-   * La celda se sigue pudiendo pisar por instancia con `--greca-celda`.
-   */
   --greca-celda: 20px;
   -webkit-mask-image: url('/brand/greca.png');
   mask-image: url('/brand/greca.png');
@@ -1792,129 +385,14 @@
   background-color: currentColor;
 }
 
-/**
- * `bajada` — el color del texto secundario, resuelto por superficie.
- *
- * Lee `--lead-ink`, que vale `muted` sobre claro y `muted-dark` dentro de
- * `.on-dark`. Ver la nota de la variable en el bloque `base`.
- *
- * ⚠️ Se usa en lugar de `text-muted` en cualquier bajada que pueda caer sobre
- * una superficie oscura — o sea, en `SectionHead` y en todo lo que herede de
- * él. `text-muted` directo queda para el texto que SÓLO existe sobre claro.
- */
 @utility bajada {
   color: var(--lead-ink);
 }
 
-/**
- * `sombra-card` — la sombra de una tarjeta, sin tener que elegir cuál.
- *
- * Lee `--sombra-card`, que vale la versión clara por defecto y la oscura
- * dentro de `.on-dark`. Ver la nota de la variable en el bloque `base`.
- *
- * ⚠️ NO se usa en las tarjetas enmascaradas. `YardSteps` lleva su sombra con
- * `filter: drop-shadow` en el contenedor y tiene que seguir así: una
- * `box-shadow` dibuja la sombra del rectángulo original y la máscara del
- * troquel no la recorta, así que quedarían dos esquinas de sombra flotando
- * donde la tarjeta ya no tiene material. Está explicado en el bloque del
- * troquel, más abajo en este mismo archivo.
- */
 @utility sombra-card {
   box-shadow: var(--sombra-card);
 }
 
-/**
- * ══════════════════════════════════════════════════════════════════════════
- * RODILLO — la etiqueta del CTA rueda hacia arriba en el hover y entra una
- * copia idéntica desde abajo.
- *
- * Pedido de Camila con la referencia puesta: «copiar micro interacciones de la
- * web de ejemplo defoodtruckclub.nl en los hovers de cta, me gusta el
- * movimiento de los textos de los ctas con el hover».
- *
- * ⚠️ SON DOS COPIAS DEL MISMO CONTENIDO Y NO UNA QUE SE MUEVE. Con una sola,
- * en el hover el botón se queda un instante VACÍO mientras el texto sale y
- * vuelve, y ese hueco es exactamente lo que hace que el recurso se vea barato.
- * Con dos, siempre hay una etiqueta adentro: una se va por arriba mientras la
- * otra entra por abajo, y el botón nunca queda hueco.
- *
- * ⚠️ LA SEGUNDA COPIA LLEVA `aria-hidden` DESDE EL TSX. Es texto duplicado en
- * el DOM: sin eso, cada botón del sitio se anunciaría dos veces. Ver `Rodillo`
- * en `Button.tsx`, que es lo único que puede escribir estas clases.
- *
- * ⚠️ EL `padding-block` NO ES AIRE, ES EL RECORTE. El `overflow: hidden` es lo
- * que esconde la copia de abajo y recorta a ras de la caja: sin los 0.18em las
- * colas de la `y` y de la `p` de «Plan your event» quedaban cortadas EN
- * REPOSO. Los mismos 0.18em se le restan al margen para que el botón no
- * crezca — el alto del CTA está fijado en 42px como techo y no se puede mover.
- *
- * ⚠️ EL 115 % Y NO 100 %. A 100 % la copia arranca justo pegada al borde de la
- * caja y en pantallas con DPR fraccional se ve un hilo de la letra asomando
- * abajo. El 15 % extra la saca del paso del antialias.
- *
- * ⚠️ CON MOVIMIENTO REDUCIDO NO RUEDA NADA: la copia se esconde con
- * `visibility` y la cara de arriba no se mueve. Un texto que se desplaza es
- * justo lo que `prefers-reduced-motion` viene a apagar.
- * ══════════════════════════════════════════════════════════════════════════
- */
-/**
- * ══════════════════════════════════════════════════════════════════════════
- * BANDA-ARCO — la sección abre con un arco y deja ver la sección ANTERIOR por
- * detrás, no el fondo del documento.
- *
- * Un `border-radius` deja ver lo que hay atrás, y detrás de una sección no hay
- * nada: se ve el `background` del `<body>`, que es blanco puro. Sobre las
- * bandas que vienen después de una superficie crema o verde, las dos esquinas
- * de arriba aparecían con dos triángulos blancos. Camila: «ojo con los bordes,
- * quedan ahí espacios blancos que deberían ser crema».
- *
- * ⚠️ NO SE PUEDE RESOLVER PINTANDO ALGO DETRÁS, porque el color CAMBIA en cada
- * par y la sección no tiene manera de saber cuál le tocó. En la home sola hay
- * cuatro pares distintos, y en las 23 rutas el footer cierra sobre `bone`,
- * `paper`, `cream` y `deep` según la página.
- *
- * ⚠️ LA SOLUCIÓN ES GEOMÉTRICA Y NO DE COLOR: la sección anterior se estira el
- * alto del arco hacia abajo y ésta se monta encima esos mismos píxeles. Detrás
- * del arco queda la sección de arriba, sea cual sea su color, sin que nadie
- * tenga que declararlo. La altura total no cambia: lo que se estira es
- * exactamente lo que el `margin-top` negativo resta.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ SE ESTIRA CON UN BORDE TRANSPARENTE Y NO CON `padding-bottom`, Y ESTE ES
- * EL ERROR QUE HUBO QUE ARREGLAR.
- *
- * La primera versión usaba `padding-bottom: var(--radius-band)`. Un
- * `padding-bottom` no se SUMA al que la sección ya tiene: lo PISA. Todas las
- * secciones cierran con `pb-cierre`, así que el resultado fue que el aire de
- * cierre se reemplazaba por el alto del arco y después el arco se lo comía
- * entero — aire neto CERO. En mobile, donde el radio son 36px, el último
- * párrafo y su CTA quedaban tocando el borde de la banda siguiente. Camila:
- * «en mobile acá quedó pegado el contenido al cambio de fondo, cuidado».
- *
- * Un `border-bottom` transparente hace lo mismo sin pisar nada: el
- * `background` de un elemento se pinta hasta el BORDER box, así que la franja
- * se ve del color de la sección, y el `padding-bottom` que ya estaba sigue
- * ahí, empujando el contenido como siempre.
- *
- * ⚠️ TIENE QUE SER `transparent` Y NO `currentColor`: el borde no está para
- * verse, está para que el fondo llegue más abajo.
- * ══════════════════════════════════════════════════════════════════════════
- *
- * ⚠️ EL `:has(+ .banda-arco)` ES LA MITAD QUE FALTABA Y POR ESO ESTO ESTUVO
- * ROTO EN DOS SECCIONES. El par se venía escribiendo A MANO en el `className`
- * de cada sección —`[margin-top:calc(var(--radius-band)*-1)] rounded-t-band`—
- * y de las cinco que abren con arco, dos no lo tenían: `WhatsOn` y
- * `EventsBanner`. Un par que hay que acordarse de escribir en los dos lados es
- * un par que se rompe. Acá la sección declara UNA clase y el padding del
- * vecino sale solo.
- *
- * ⚠️ HACE FALTA UN `z-index` CRECIENTE, y eso sí sigue a cargo de cada
- * sección. Montarse encima es pintar encima: sin `z-index` propio, una sección
- * con `z-[3]` le gana a la siguiente y le tapa el arco. Ese fue exactamente el
- * bug del footer contra `FindUs`. El orden en la home es 2 → 3 → 3 → 4, y
- * entre iguales decide el orden del DOM, que es el correcto.
- * ══════════════════════════════════════════════════════════════════════════
- */
 @utility banda-arco {
   border-start-start-radius: var(--radius-band);
   border-start-end-radius: var(--radius-band);
@@ -1925,26 +403,6 @@
   border-bottom: var(--radius-band) solid transparent;
 }
 
-/**
- * ⚠️ SI EL HERMANO ANTERIOR ES UN CONTENEDOR SIN FONDO, HAY QUE BAJAR HASTA EL
- * QUE TIENE EL COLOR. Es el caso del FOOTER en las 23 rutas y se escapó en la
- * primera versión.
- *
- * El footer no es hermano de la última sección: es hermano de `<main>`, que las
- * envuelve a todas y es transparente. Así que la regla de arriba le estiraba el
- * borde a `<main>` —correcto— y eso no pintaba absolutamente nada: detrás del
- * arco se seguía viendo el blanco del `<body>`. Camila, dos veces: «las
- * esquinas siguen blancas, deberían ser crema».
- *
- * Acá se le saca el borde a `<main>` y se le da a su último hijo, que es la
- * última sección de la página y la que sí tiene fondo.
- *
- * ⚠️ LOS PARES QUE VIVEN DENTRO DE `<main>` NO PASAN POR ACÁ y no hay que
- * tocarlos: ahí las dos secciones sí son hermanas y la regla de arriba alcanza.
- * En la home son tres —Hero→WhatsOn, WhatsOn→HowThisPlaceWorks y
- * ThreeDoors→EventsBanner— y siempre funcionaron. Es lo que hacía que el
- * defecto pareciera arreglado mirando la home a mitad de página.
- */
 main:has(+ .banda-arco) {
   border-bottom: 0;
 }
@@ -1953,102 +411,6 @@ main:has(+ .banda-arco) > :last-child {
   border-bottom: var(--radius-band) solid transparent;
 }
 
-
-/**
- * ══════════════════════════════════════════════════════════════════════════
- * EL GRANO: VA EN LOS FONDOS Y SÓLO EN LOS FONDOS.
- *
- * Pedidos de Camila, en tres tiempos: «noise effect en toda la web, en todos
- * los fondos de la web, sin importar color», después «el noise effect en los
- * fondos claros no se ve», y por último «los elementos no deben tener noise
- * effect, sólo los fondos».
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ POR QUÉ NO ES UNA CAPA FIJA SOBRE EL VIEWPORT, que es lo que era hasta
- * acá y lo que primero parece más prolijo. Una capa así se pinta sobre TODO:
- * las fotos, el logo, los botones, el emblema de la ola. Sobre una foto el
- * grano no se lee como textura de papel sino como ruido de compresión, y sobre
- * una pieza troquelada le ensucia el filo. No hay forma de excluir elementos
- * desde arriba: habría que ir subiendo cada uno por encima del z-index de la
- * capa, que es una lista que nadie va a mantener.
- *
- * ⚠️ LA SOLUCIÓN SALE DE CÓMO PINTA EL NAVEGADOR, no de un truco: el
- * `background-image` de un elemento se dibuja ENCIMA de su `background-color`
- * y DEBAJO de su contenido. O sea que un grano puesto ahí cubre la superficie
- * entera y no toca nada de lo que va arriba. La exclusión es estructural, no
- * una lista.
- *
- * ⚠️ Y POR ESO EL BLEND ES `background-blend-mode` Y NO `mix-blend-mode`: el
- * primero mezcla las capas DE FONDO del propio elemento entre sí; el segundo
- * mezclaría el elemento entero con lo que tiene detrás.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ SON DOS RUIDOS Y NO UNO, Y ESO ES LO QUE LO HACE VISIBLE EN CUALQUIER
- * COLOR. Hubo una versión en `overlay`, que es el modo que la teoría manda
- * para «textura sobre cualquier fondo»: aclara lo oscuro y oscurece lo claro.
- * Medido, no funcionaba en ninguno de los dos.
- *
- * `overlay` sobre un fondo claro es la fórmula del `screen`: 1-2(1-Cb)(1-Cs).
- * Sobre `bone`, que vale 0.965, el (1-Cb) es 0.035, así que todo el ruido sale
- * comprimido en un rango del 7 %. Desvío medido sobre un bloque plano: 0.47
- * sobre 255. Y del lado oscuro pasaba lo mismo por el otro extremo: 0.93.
- *
- * Una capa por extremo, cada una en el modo que NO se comprime de ese lado:
- *
- *   · `multiply` trabaja sobre lo claro —el resultado es Cb·Cs y con Cb≈1 el
- *     ruido pasa casi entero— y es inerte sobre lo oscuro.
- *   · `screen` trabaja sobre lo oscuro, por el motivo simétrico, y es inerte
- *     sobre lo claro.
- *
- * Medido: `bone` pasa de 0.47 a 2.49 de desvío, y la losa `deep` de 0.93 a
- * 3.84.
- *
- * ⚠️ LA OPACIDAD VA EN EL CANAL ALFA DEL TILE Y NO EN UN `opacity`, porque un
- * `opacity` aplicaría al elemento entero —contenido incluido— y acá justamente
- * lo que no hay que tocar es el contenido. El `feFuncA` de cada SVG es su
- * fuerza: 0.03 el de multiply, 0.05 el de screen.
- *
- * ⚠️ EL `feComponentTransfer` CON `slope: 5` NO ES DECORACIÓN: ES LO QUE HACE
- * QUE EL GRANO NO ENSUCIE LOS COLORES. Estos dos modos, además de dar textura,
- * corren la MEDIA de la superficie: multiply oscurece el claro, screen aclara
- * el oscuro. Ese corrimiento depende sólo de la opacidad, mientras que la
- * textura depende de la opacidad Y del contraste del ruido. Estirando el ruido
- * alrededor de 0.5 se consigue el mismo grano con menos opacidad, y por lo
- * tanto con menos corrimiento. Medido, a igual desvío: sin estirar, `bone` se
- * iba 5.8 niveles; con slope 5, 3.1.
- *
- * ⚠️ LOS VALORES SALEN DE UN BARRIDO CONTRA LOS PARES DE CONTRASTE MÁS
- * AJUSTADOS DEL SITIO, no de probar hasta que se viera lindo. El grano corre
- * los dos colores de cada par y por lo tanto baja el ratio. El par crítico es
- * `muted` sobre `bone`, que ya pasaba AA raspando: 4.96 sin grano, 4.67 con
- * éste. Sigue arriba de 4.5. Los otros tres medidos: `muted-dark` sobre `deep`
- * 5.95 → 5.56, `paper` sobre `deep` 10.83 → 9.93, `ink` sobre `sunset` 6.73 →
- * 6.31.
- *
- * ⚠️ SUBIR ESTOS ALFA SIN REHACER ESA CUENTA ROMPE LA ACCESIBILIDAD, y
- * `npm run check:contrast` NO lo va a avisar: ese guardia lee los tokens
- * declarados, y el grano es una capa que se compone encima. La cuenta hay que
- * hacerla a mano.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ DÓNDE SE APLICA: en el `<body>`, en los cuatro tonos de `Section`, y en
- * las superficies del cromo que no son secciones —la barra del header, el
- * mega-menú, el drawer de mobile, el footer y la franja de la agencia—. NO va
- * en botones, tarjetas, píldoras ni sellos: ésos son objetos apoyados sobre
- * una superficie, no la superficie.
- *
- * ⚠️ NO PONERLO EN UN ELEMENTO QUE YA TENGA `background-image`: se lo pisa.
- * El único caso del sitio es la capa de nubes del footer, que vive en su
- * propio div y por eso no se cruzan.
- *
- * ⚠️ EL TILE ES SVG Y NO UN PNG. `feTurbulence` se rasteriza una vez y el
- * navegador repite el mosaico: pesa medio kilobyte contra los ~8 KB de un PNG,
- * y no es un pedido de red. El `stitchTiles='stitch'` evita que se vea la
- * grilla de 160px en las uniones, y el `saturate 0` que el ruido salga de
- * colores: `feTurbulence` genera los cuatro canales por separado, así que sin
- * desaturar el grano es confeti.
- * ══════════════════════════════════════════════════════════════════════════
- */
 @utility grano {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='5' intercept='-2'/%3E%3CfeFuncG type='linear' slope='5' intercept='-2'/%3E%3CfeFuncB type='linear' slope='5' intercept='-2'/%3E%3CfeFuncA type='linear' slope='0' intercept='0.03'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='5' intercept='-2'/%3E%3CfeFuncG type='linear' slope='5' intercept='-2'/%3E%3CfeFuncB type='linear' slope='5' intercept='-2'/%3E%3CfeFuncA type='linear' slope='0' intercept='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -2057,57 +419,6 @@ main:has(+ .banda-arco) > :last-child {
   background-blend-mode: multiply, screen;
 }
 
-/**
- * ══════════════════════════════════════════════════════════════════════════
- * EL GRANO, VERSIÓN CAPA: para los fondos que NO pintan con `background`.
- *
- * Pedido de Camila: «ojo que las ondas también deben tener noise effect».
- *
- * ⚠️ POR QUÉ NO ALCANZA CON `grano`. La utilidad normal mete el ruido como
- * `background-image`, que es lo que lo deja debajo del contenido. Pero las
- * cenefas de ola no pintan su color con un `background`: son un `<svg>` con
- * paths rellenos, o un `<img>`. El color de LLEGADA de la ola —el de la
- * sección que viene— vive adentro del dibujo, donde un background no llega.
- *
- * ⚠️ POR QUÉ ACÁ SÍ SE PUEDE PONER ENCIMA, que es justo lo que la otra
- * utilidad evita. Estas tiras no tienen contenido: son la transición entre dos
- * superficies y nada más. No hay texto, no hay foto, no hay pieza troquelada
- * que se pueda ensuciar. Una capa encima de una tira que es sólo fondo sigue
- * siendo grano sobre fondo.
- *
- * ⚠️ NO USAR ESTO EN NADA QUE TENGA CONTENIDO. Si la tira algún día lleva un
- * sello o un texto, la capa se lo pinta: ahí hay que volver a `grano` y
- * resolver el color de la ola de otra forma.
- *
- * ⚠️ SON DOS PSEUDOELEMENTOS PORQUE SON DOS MODOS DE MEZCLA, y un elemento
- * sólo puede tener uno. El reparto es el mismo que en `grano`: `multiply` para
- * los claros, `screen` para los oscuros. Ver su nota para el detalle de por
- * qué no puede ser una sola capa en `overlay`.
- *
- * ⚠️ ACÁ LA FUERZA VA EN `opacity` Y NO EN EL ALFA DEL TILE, al revés que en
- * `grano`. Es la diferencia entre las dos técnicas: una capa aparte puede
- * tener su propia opacidad sin tocar nada más, mientras que un `opacity` sobre
- * la superficie se llevaría puesto también su contenido. Los valores son los
- * mismos, 0.03 y 0.05.
- *
- * ⚠️ EL TILE LLEVA EL ALFA FIJO EN 1 CON `feFuncA`, Y NO ES REDUNDANTE.
- * `feTurbulence` genera ruido en los CUATRO canales, alfa incluido: sin
- * fijarlo, el tile sale además agujereado al azar y el grano queda muy por
- * debajo de lo medido. Pasó, y Camila lo vio antes que el guardia: la ola del
- * `PhotoDivider` se seguía viendo lisa con la capa puesta y todo. Acá la
- * fuerza la pone el `opacity` de la capa, así que el tile tiene que ser
- * opaco. En `grano` es al revés: ahí el alfa ES la fuerza.
- *
- * ⚠️ LA UTILIDAD NO DECLARA `position`, Y ESO ES A PROPÓSITO. La primera
- * versión ponía `position: relative` para que los pseudoelementos tuvieran de
- * dónde colgarse, y le pisó el `absolute` a la tira de ola del `PhotoDivider`:
- * la cenefa se cayó del borde de la foto al flujo normal y quedó una banda
- * separando la foto de la ola. Camila lo vio enseguida: «no las separes».
- *
- * Quien la usa tiene que estar posicionado. Los tres call sites lo están, y
- * dos de ellos ya lo estaban por su cuenta.
- * ══════════════════════════════════════════════════════════════════════════
- */
 @utility grano-capa {
   isolation: auto;
 }
@@ -2117,16 +428,6 @@ main:has(+ .banda-arco) > :last-child {
   content: '';
   position: absolute;
   inset: 0;
-  /*
-    ⚠️ EL z-index NO ES DECORATIVO: SIN ÉL LA MITAD DEL GRANO QUEDA DEBAJO
-    DEL DIBUJO. La ola del PhotoDivider es un <img> con transform —lleva una
-    animación— y un elemento transformado se pinta en la MISMA fase que los
-    posicionados. Entre iguales manda el orden del DOM, y ::before viene
-    antes de los hijos: la capa de multiply, que es justo la que trabaja
-    sobre los claros, quedaba tapada por la ola. Sólo llegaba el screen, que
-    sobre crema es inerte. Resultado: la cenefa lisa, y Camila avisando tres
-    veces que las ondas no tenían grano.
-  */
   z-index: 1;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='5' intercept='-2'/%3E%3CfeFuncG type='linear' slope='5' intercept='-2'/%3E%3CfeFuncB type='linear' slope='5' intercept='-2'/%3E%3CfeFuncA type='discrete' tableValues='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -2143,52 +444,6 @@ main:has(+ .banda-arco) > :last-child {
   mix-blend-mode: screen;
 }
 
-/**
- * ══════════════════════════════════════════════════════════════════════════
- * LA ESQUINA INVERSA: el radio que curva HACIA ADENTRO.
- *
- * Camila la pasó dibujada desde Figma —el nodo `Frame 2134282047`, 90×90 con
- * un cuarto de círculo recortado— marcando con una flecha dónde iba: el ángulo
- * vivo que queda donde la placa del hero se encuentra con el borde de la foto.
- *
- * ⚠️ QUÉ PROBLEMA RESUELVE. El recorte del hero es un rectángulo de `bone`
- * pegado a la esquina del marco: la placa de «TOGETHER» cae adentro y la foto
- * arranca donde el rectángulo termina. Eso deja DOS ángulos de 90° —donde el
- * borde derecho del recorte toca el borde de arriba de la foto, y donde el
- * borde de abajo toca el de la izquierda— y un ángulo vivo entre dos
- * superficies delata que una está tapando a la otra. Con el radio invertido el
- * hueso no termina: se curva y entra en la foto.
- *
- * ⚠️ NO ES UN `border-radius`. Un radio redondea hacia adentro de la caja y lo
- * que se necesita acá es lo contrario: una pieza que RELLENA todo menos un
- * cuarto de disco. Se hace con una máscara radial, que además es el mismo
- * recurso con el que están hechos el troquel del logo y las palmeras del
- * footer.
- *
- * ⚠️ EL RADIO ES `--radius-frame`, EL MISMO DEL MARCO DE LA FOTO. Arrancó en
- * `--radius-band` —88px en desktop, que son los 90 del elemento de Figma— y
- * Camila lo bajó: «ambos más chico, para que siga el radio de las otras
- * esquinas». Tiene razón y es lo correcto de sistema: el marco tiene 44px en
- * las tres esquinas que no dan al recorte, y una cuarta con otro radio no se
- * lee como la misma pieza. El de Figma era el tamaño del elemento suelto, no
- * una medida de este lugar.
- *
- * Que sea fijo y no un clamp tampoco es un problema: `--radius-frame` es el
- * radio de ESTE marco en todas las medidas, así que la esquina lo sigue
- * automáticamente, que es lo que se pidió con «en mobile y desk adaptá el
- * tamaño».
- *
- * ⚠️ LLEVA `grano` COMO CUALQUIER OTRO SUPLENTE DE FONDO: es `bone` sobre una
- * sección `bone`, y sin la textura se recorta contra ella.
- *
- * ⚠️ LAS DOS ESQUINAS SON LA MISMA PIEZA, SIN ROTAR, y eso no es casualidad:
- * las dos se cuelgan de un borde del recorte de modo que la esquina del
- * recorte cae en su ángulo SUPERIOR IZQUIERDO. El círculo va siempre en el
- * opuesto. Hubo una versión con la de abajo rotada y se veía como un mordisco
- * al revés —la foto metiéndose en el hueso en vez del hueso en la foto—:
- * Camila la marcó enseguida.
- * ══════════════════════════════════════════════════════════════════════════
- */
 @utility esquina-inversa {
   position: absolute;
   width: var(--radius-frame);
@@ -2229,15 +484,6 @@ main:has(+ .banda-arco) > :last-child {
   transform: translateY(115%);
 }
 
-/**
- * El disparador. Va en el elemento que recibe el hover —el botón o el link— y
- * no en el `rodillo`, porque el área sensible es el control entero y no sólo
- * su etiqueta.
- *
- * ⚠️ TAMBIÉN CON `:focus-visible`. Quien navega con teclado tiene que ver el
- * mismo gesto que quien usa el mouse; si no, el foco pasa por el botón y no
- * pasa nada.
- */
 .rueda:hover .rodillo > .rodillo-base,
 .rueda:focus-visible .rodillo > .rodillo-base {
   transform: translateY(-115%);
@@ -2278,30 +524,6 @@ main:has(+ .banda-arco) > :last-child {
   }
 }
 
-/* ==========================================================================
-   Motion
-   ========================================================================== */
-
-/**
- * ── Preloader ─────────────────────────────────────────────────────────────
- *
- * El logo sobre el verde y el fondo barrido de izquierda a derecha.
- *
- * ⚠️ TODO en CSS, a propósito. La versión anterior movía una barra de progreso
- * desde estado de React, así que la cortina —que la pinta el servidor— sólo se
- * podía levantar con JS. Medido en arranque en frío: HTML a los 8.1s, cortina
- * clavada en «0%» 4.2s más. Una animación de CSS corre sin JS y no puede
- * trabarse. Ver la nota de Preloader.tsx.
- *
- * El corte lo hace `clip-path` y no un `translate`: barriendo el inset
- * izquierdo, el verde se retira revelando la página por la izquierda y el logo
- * queda comido por el barrido a medida que pasa. Con un translate el logo se
- * iría de paseo con el panel, que se lee como «se fue», no como «lo barrió».
- *
- * Tiempos: 700ms de espera —el logo tiene que poder leerse— y 560ms de
- * barrido. Total 1.26s, contra los 2.8s que tardaba la versión con
- * porcentaje. Ninguno de los dos tramos pasa el tope de 600ms del brief.
- */
 @keyframes rt-preloader-wipe {
   from {
     clip-path: inset(0 0 0 0);
@@ -2337,67 +559,25 @@ main:has(+ .banda-arco) > :last-child {
 }
 
 .rt-preloader-logo {
-  /* `both` para que el estado inicial valga ANTES de arrancar: si no, el logo
-     aparece a opacidad plena y recién ahí se anima. */
   animation: rt-preloader-logo 420ms var(--ease-brand, cubic-bezier(0.16, 1, 0.3, 1)) both;
 }
 
 .rt-preloader-edge {
-  /* Nace y muere en transparente: así se lee como luz y no como un rectángulo
-     con los bordes marcados. Es el mismo criterio del halo del pre-footer de
-     The Orient. */
   background: linear-gradient(
     to right,
     rgba(253, 252, 247, 0) 0%,
     rgba(253, 252, 247, 0.14) 55%,
     rgba(253, 252, 247, 0.32) 100%
   );
-  /* ⚠️ `both` y no `forwards`. Con `forwards` el estado inicial NO se aplica
-     durante los 700ms de espera, así que la banda se quedaba quieta en su
-     posición base —pegada al borde izquierdo— y se leía como una franja de
-     degradado fija al lado del logo. Con `both` arranca fuera de pantalla. */
   animation: rt-preloader-edge 560ms var(--ease-brand, cubic-bezier(0.16, 1, 0.3, 1)) 700ms both;
 }
 
-/**
- * ⚠️ Con la animación desactivada NO hay cortina, y no una cortina más lenta.
- * Es una pantalla que tapa el contenido: dejarla quieta la dejaría tapando la
- * página para siempre, que es justo el cuelgue que este rediseño vino a
- * arreglar.
- */
 @media (prefers-reduced-motion: reduce) {
   .rt-preloader {
     display: none;
   }
 }
 
-/**
- * ── El muro del hero ───────────────────────────────────────────────────────
- *
- * Dos filas de piezas cortas del lugar corriendo en direcciones opuestas. Es
- * la forma del hero de Superside, la referencia que fijó Camila.
- *
- * Mismo loop que `.rt-marquee`, con UNA diferencia que importa: bajo
- * `prefers-reduced-motion` la fila no queda congelada y recortada —con los
- * tiles de la derecha inalcanzables— sino que se vuelve scrolleable a mano.
- *
- * ⚠️ Lo que cambia con reduced-motion es el `overflow`, NO el tamaño ni la
- * posición: las cajas de los tiles miden lo mismo en los dos modos, que es
- * exactamente lo que compara `npm run check:motion`.
- *
- * ⚠️ El track se duplica en el markup y la copia va `aria-hidden`. La
- * animación llega a `-50%`, así que al terminar el ciclo la segunda copia está
- * donde arrancó la primera y el loop no salta.
- */
-/**
- * ⚠️ EL MURO CORRE EN VERTICAL. Camila: «los videos deben correr en vertical
- * como en superside». Eran dos filas horizontales; ahora son COLUMNAS que se
- * desplazan hacia arriba, alternando dirección.
- *
- * El cambio no es cosmético: en un hero de alto completo con el texto a la
- * izquierda, una cinta horizontal cruza la composición y compite con la lectura
- * del titular. Columnas verticales acompañan el alto y se leen como un panel.
- */
 .rt-wall {
   overflow: hidden;
 }
@@ -2405,10 +585,6 @@ main:has(+ .banda-arco) > :last-child {
 .rt-wall-track {
   display: flex;
   flex-direction: column;
-  /* ⚠️  no es decorativo: el track es un flex column y sin ancho
-     propio se dimensiona al contenido, con lo cual el  de cada tile no
-     tiene contra qué medir y los tiles colapsan a su ancho intrínseco. Medido:
-     quedaban en 54px dentro de una columna de 164. */
   width: 100%;
   height: max-content;
   animation: rt-wall-up var(--wall-duration, 48s) linear infinite;
@@ -2428,17 +604,12 @@ main:has(+ .banda-arco) > :last-child {
   }
 }
 
-/* Pausa al pasar el mouse o al enfocar algo adentro: si algo se está mirando,
-   no debería escaparse. Es el mismo gesto que ya tiene el marquee. */
 .rt-wall:hover .rt-wall-track,
 .rt-wall:focus-within .rt-wall-track {
   animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Sin movimiento la columna no queda congelada y recortada: se scrollea a
-     mano. Cambia el , NO la geometría — las cajas miden lo mismo en
-     los dos modos, que es lo que compara check:motion. */
   .rt-wall {
     overflow-y: auto;
   }
@@ -2446,32 +617,6 @@ main:has(+ .banda-arco) > :last-child {
     animation: none;
   }
 }
-
-/*
- * ══════════════════════════════════════════════════════════════════════════
- * `rt-sol` — ACÁ VIVÍA EL GIRO DEL MEDALLÓN DEL HORIZONTE, Y SE SACÓ.
- *
- * Era `rotate(360deg)` en 90 segundos, `linear`, infinito. Es la pieza que
- * saqué en la autocrítica final del rediseño —`design-audit/AUTOCRITICA.md`—
- * y queda anotado para que no vuelva por inercia:
- *
- *   · **Contradecía la doctrina de motion de la rama.** Cada mecanismo del
- *     sitio dispara una vez y se queda quieto; `MOTION.md` abre con eso.
- *     Un giro infinito no es «poco, en los momentos justos»: es un estado.
- *   · **Era el único elemento que nunca se asentaba.** Una página que termina
- *     de moverse se lee terminada. Con el sol girando siempre quedaba algo en
- *     marcha en la periferia — justo el movimiento que
- *     `prefers-reduced-motion` existe para apagar. Enviar algo que hay que
- *     defender con un media query es una señal.
- *   · **No era el pedido.** Camila pidió animar el elemento; la animación es
- *     que el sol SUBE al entrar la sección. El giro lo agregué yo encima y no
- *     explicaba nada que la subida no explicara ya.
- *
- * ⚠️ La clase se conserva como gancho vacío a propósito: `HorizonBorder` la
- * sigue aplicando, así que si algún día hay motivo para un movimiento ahí, se
- * define acá y no hay que tocar el componente. El keyframe está borrado.
- * ══════════════════════════════════════════════════════════════════════════
- */
 
 @keyframes rt-marquee {
   from {
@@ -2497,40 +642,6 @@ main:has(+ .banda-arco) > :last-child {
   }
 }
 
-/* ==========================================================================
-   Movimiento del rediseño `food-truck-club`
-
-   Son CUATRO animaciones en toda la home y ninguna es de scroll: las cuatro
-   son bucles lentos de ambiente o transiciones de estado de una sola pasada.
-   El movimiento ligado al scroll ya lo cubre `Motion.tsx`.
-
-   ⚠️ Las tres de bucle —`rev`, `sway`, `wave`— corren SIEMPRE, así que cada
-   una tiene que sobrevivir a la pregunta «¿esto qué explica?». La respuesta
-   está en cada bloque; la que no la tenga, se saca.
-
-   ⚠️ El corte de `prefers-reduced-motion` NO se repite acá: el bloque global
-   del final del archivo las apaga a todas. Es la red de seguridad y alcanza.
-   ========================================================================== */
-
-/**
- * El texto del pill de estado del hero, cuando cambia de mensaje.
- *
- * Es de UNA PASADA: no es ambiente, es la transición entre dos estados. Sube
- * desde abajo con un fundido, que es lo que hace legible el cambio — sin esto
- * el texto se reemplaza de golpe y se lee como un parpadeo o, peor, no se lee
- * (alguien mirando el hero se pierde el cambio y ve otra frase que no sabe de
- * dónde salió).
- *
- * ⚠️ PASÓ DE 420 A 620ms Y CAMBIÓ DE CURVA. Pedido de Camila: «que el cambio
- * entre uno y otro tenga un efecto más vistoso y no tan rápido». La curva es
- * ahora `--ease-rodillo`, la misma con sobrepaso que usan los CTA, así que el
- * texto entra pasándose un pelo y vuelve. El recorrido también creció, de
- * 0.7em a 1em: desde más abajo, el movimiento se ve.
- *
- * ⚠️ VA DE LA MANO CON `STATUS_MS` EN `Hero.tsx`, que subió a 4600. Una
- * entrada de 620ms dentro de un ciclo de 3400 dejaba el mensaje quieto menos
- * de tres segundos. Los dos números se tocan juntos.
- */
 @keyframes rt-roll {
   from {
     opacity: 0;
@@ -2546,39 +657,6 @@ main:has(+ .banda-arco) > :last-child {
   animation: rt-roll 620ms var(--ease-rodillo) both;
 }
 
-/**
- * ══════════════════════════════════════════════════════════════════════════
- * `rt-medalla` — la entrada del círculo con el icono del pill del hero.
- *
- * Pedido de Camila: «que el cambio entre uno y otro tenga un efecto más
- * vistoso y no tan rápido para que se vea un juego y se aprecie que eso va
- * cambiando».
- *
- * ⚠️ ES UN GESTO DISTINTO AL DEL TEXTO, Y ESO ES EL RECURSO. El texto entra
- * con `rt-roll`: sube medio renglón y se funde, que es lo que corresponde a
- * una frase que se lee. El círculo entra girando y creciendo, que es lo que
- * corresponde a un objeto. Los dos con la misma `key` y el mismo momento de
- * arranque: se lee como que la medalla gira y trae el texto con ella.
- *
- * Con la MISMA animación en los dos, el pill entero parecía un fundido cruzado
- * y el cambio pasaba desapercibido — que es el problema que el pedido nombra.
- *
- * ⚠️ EL GIRO ES DE 40° Y NO DE 360. Una vuelta completa convierte el pill en
- * un spinner y arrastra la mirada a un elemento que sólo informa; 40 grados
- * con sobrepaso se leen como que la pieza cayó en su lugar.
- *
- * ⚠️ ARRANCA EN `scale(0.5)` Y NO EN 0. Desde cero el círculo NACE, y con un
- * color de relleno distinto cada vez eso parpadea. Desde la mitad, crece.
- *
- * ⚠️ LA OPACIDAD LLEGA A 1 EN EL 55 % Y NO AL FINAL. El sobrepaso de
- * `--ease-rodillo` ocurre sobre el final del recorrido: si el fundido siguiera
- * abierto ahí, el rebote se vería contra un círculo todavía translúcido y
- * parecería un error de composición.
- *
- * ⚠️ CON MOVIMIENTO REDUCIDO NO HAY NADA DE ESTO. Lo cubre el bloque general
- * de `prefers-reduced-motion` de este archivo, igual que `rt-roll`.
- * ══════════════════════════════════════════════════════════════════════════
- */
 @keyframes rt-medalla {
   0% {
     opacity: 0;
@@ -2597,19 +675,6 @@ main:has(+ .banda-arco) > :last-child {
   animation: rt-medalla 620ms var(--ease-rodillo) both;
 }
 
-/**
- * ⚠️ CON MOVIMIENTO REDUCIDO EL PILL CAMBIA SIN ANIMARSE, Y NO SE QUEDA
- * CONGELADO. Las dos animaciones son `both`, o sea que si sólo se les pusiera
- * `animation: none` el nodo quedaría con los valores del frame 0 —el texto
- * medio renglón abajo y transparente, el círculo a la mitad y girado— y el
- * pill del hero sería un hueco. Hay que apagar la animación Y reponer el
- * estado final a mano.
- *
- * ⚠️ NO ALCANZA CON NO ANIMAR: el contenido tiene que seguir CAMBIANDO. El
- * intervalo de `Hero.tsx` corre igual, así que quien pidió menos movimiento ve
- * los cuatro mensajes rotando, sólo que sin transición. Eso es lo correcto —
- * la información no es movimiento.
- */
 @media (prefers-reduced-motion: reduce) {
   .rt-roll,
   .rt-medalla {
@@ -2619,21 +684,6 @@ main:has(+ .banda-arco) > :last-child {
   }
 }
 
-
-/**
- * El marquee de fotos del divisor, al REVÉS que `rt-marquee`.
- *
- * ⚠️ Va en sentido contrario a propósito y no por variedad. Es la única banda
- * de la home que el visitante cruza sin nada que leer, y va justo después de
- * las tres tarjetas del yard, que se leen de izquierda a derecha. Un marquee
- * en el mismo sentido que la lectura acompaña; en sentido contrario FRENA, y
- * eso es lo que hace que la banda se lea como un respiro entre dos bloques de
- * texto y no como más contenido pasando.
- *
- * 44s para dos vueltas del set de seis fotos. Es lento a propósito: a la
- * velocidad del marquee de logos (35s) las fotos se leen como un carrusel y
- * la gente espera poder pararlas.
- */
 @keyframes rt-marquee-rev {
   from {
     transform: translateX(-50%);
@@ -2648,15 +698,6 @@ main:has(+ .banda-arco) > :last-child {
   will-change: transform;
 }
 
-/**
- * El sello colgado en el borde del divisor: se hamaca.
- *
- * El origen es `50% 12%` —el clavo está arriba, no en el centro— así que el
- * dibujo pivota como algo colgado y no como algo que gira. Es lo que hace que
- * se lea como un objeto pegado al borde de la banda y no como un adorno
- * animado. ±7° y 5.2s: por debajo de eso no se percibe, por encima se vuelve
- * un péndulo y pide atención.
- */
 @keyframes rt-sway {
   0%,
   100% {
@@ -2672,18 +713,6 @@ main:has(+ .banda-arco) > :last-child {
   animation: rt-sway 5.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-/**
- * La cenefa de olas del divisor: se desplaza en horizontal.
- *
- * ⚠️ El SVG se dibuja al **114 % de ancho con `margin-left:-7%`**, y ese
- * sobrante es lo único que hace posible la animación: la ola se mueve 3.5 %
- * hacia la izquierda y tiene que seguir tapando los dos bordes. Sin el
- * sobrante, en el pico del recorrido aparece una franja del fondo de abajo en
- * el borde derecho. Si alguien cambia el 114 %, tiene que cambiar el 3.5 %.
- *
- * 11s, que es casi el doble de la hamaca del sello: dos bucles a la misma
- * velocidad en la misma banda laten juntos y se notan como animación.
- */
 @keyframes rt-wave {
   0%,
   100% {
@@ -2698,11 +727,6 @@ main:has(+ .banda-arco) > :last-child {
   animation: rt-wave 11s ease-in-out infinite;
 }
 
-/**
- * Corte global de movimiento. Es la red de seguridad: cualquier animación que
- * se escape de los componentes (que ya cortocircuitan con `useReducedMotion`)
- * queda desactivada acá. WCAG 2.3.3.
- */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -2714,18 +738,6 @@ main:has(+ .banda-arco) > :last-child {
   }
 }
 
-/**
- * Anclajes internos (`/visit#parking`). Sin esto el título queda tapado por el
- * header, que es lo único que queda pegado arriba.
- *
- * ⚠️ Se mide contra el header y contra nada más. Los otros dos bloques que
- * alguna vez estuvieron ahí arriba —la franja de estado y el `PromoBar` con
- * los cuatro hechos— ya no existen, y sumarlos abriría aire de más en todos
- * los anclajes del sitio.
- *
- * Los tokens de header (67/77) son unos píxeles más altos que la barra real
- * (64/76): es holgura a favor, porque de menos taparía el título.
- */
 :target {
   scroll-margin-top: calc(var(--spacing-header-sm) + 16px);
 }
@@ -2736,56 +748,6 @@ main:has(+ .banda-arco) > :last-child {
   }
 }
 
-/**
- * ══════════════════════════════════════════════════════════════════════════
- * LA PLANCHA DEL STICKER: el troquel del logo, dibujado.
- *
- * Pedido de Camila: «usá este elemento pero en el color correcto por detrás,
- * así parece un sticker con sombra sutil», con el nodo `fondo-para-logo` del
- * Figma del proyecto.
- *
- * ⚠️ ESTO REEMPLAZA UN TROQUEL CALCULADO CON `feMorphology`. Aquella versión
- * dilataba el alfa del lockup en vivo, y el problema es que una dilatación por
- * kernel cuadrado no sabe nada del dibujo: seguía cada letra de la cinta de
- * abajo por separado y dejaba las esquinas del arco achaflanadas. El troquel
- * del Figma está dibujado: une lo que tiene que unir y redondea lo que tiene
- * que redondear. Es una decisión de diseño, no una operación.
- *
- * ⚠️ VA COMO MÁSCARA Y NO COMO IMAGEN PINTADA, que es lo que permite que el
- * color salga del token. El archivo es una silueta blanca sobre transparente;
- * acá se usa de recorte sobre un `background-color`. Si mañana la plancha
- * cambia de color, cambia el token y no el SVG. Ya pasó una vez: estuvo en
- * `cream` y el archivo no se tocó.
- *
- * ⚠️ EL COLOR ES `bone`, EL MISMO DEL HEADER, Y ESO ES EL PUNTO. Pedido de
- * Camila: «debe tener el mismo color que el header». Contra la barra la
- * plancha desaparece —es exactamente el mismo valor— así que arriba de todo
- * el lockup se lee como siempre se leyó, sin una chapa atrás. El troquel
- * aparece recién en los 30px que el sticker cuelga por debajo del filete,
- * sobre lo que scrollea, que es el único lugar donde hace falta: ahí da
- * 10.03:1 contra la losa `deep`.
- *
- * Es lo contrario de lo que haría un fondo en `cream`, que se ve SIEMPRE y
- * convierte el logo en un objeto pegado sobre el header. Con `bone` el
- * sticker no está pegado sobre la barra: es la barra la que está troquelada.
- *
- * ⚠️ LOS DOS PORCENTAJES NO SON EL MISMO NÚMERO Y NO ES UN DESCUIDO. En el
- * Figma el lockup mide 302.3 × 322 y la plancha 330.3 × 350: son 14px de
- * contorno parejo por los cuatro lados. Pero 14px sobre 302 de ancho y 14px
- * sobre 322 de alto NO son el mismo porcentaje —109.262 % contra 108.696 %—,
- * y escalar los dos ejes por igual deformaría el troquel. Cada eje lleva el
- * suyo, y así la silueta entra exacta.
- *
- * ⚠️ EL 4.6 % DE CONTORNO ES DEL DISEÑO, no un valor que se pueda redondear a
- * ojo: es lo que hace que la cinta de «EAT. DRINK. PARADISE.» quede envuelta
- * en una sola pieza en vez de con una isla por letra.
- *
- * ⚠️ LA SOMBRA NO VA ACÁ: va en el envoltorio, que es lo único que contiene a
- * la plancha Y al lockup. Un `drop-shadow` sobre la plancha sola se
- * calcularía antes de la máscara —el orden del render es filtro, recorte,
- * máscara— y saldría la sombra del rectángulo.
- * ══════════════════════════════════════════════════════════════════════════
- */
 .plancha,
 .plancha-filo {
   position: absolute;
@@ -2797,12 +759,6 @@ main:has(+ .banda-arco) > :last-child {
   mask-repeat: no-repeat;
 }
 
-/**
- * ⚠️ LLEVA `grano` AUNQUE SEA UNA PIEZA Y NO UNA SUPERFICIE, y es por lo mismo
- * que está en `bone`: su trabajo es desaparecer contra el header. El grano
- * corre la media de una superficie unos 3 niveles, así que una plancha lisa
- * sobre una barra granulada deja de ser el mismo color y se ve el disco.
- */
 .plancha {
   width: 109.262%;
   height: 108.696%;
@@ -2810,92 +766,22 @@ main:has(+ .banda-arco) > :last-child {
   @apply grano;
 }
 
-/**
- * ⚠️ EL FILO: LA MISMA PLANCHA, UN PELO MÁS GRANDE Y EN `fog`. Pedido de
- * Camila: «¿podés ponerle mejor sombra o un pequeño borde al sticker, para que
- * tenga contraste?».
- *
- * Hace falta porque la plancha es del color del header: contra la barra
- * desaparece del todo, y eso es correcto abajo —donde cuelga sobre la losa
- * verde— pero arriba de la página el sticker no existía. El filo es lo único
- * que lo dibuja ahí.
- *
- * ⚠️ VA EN `fog`, QUE ES EL TOKEN DE LOS FILETES DE 1px DEL SITIO, y no en un
- * gris nuevo: es el mismo valor con el que el header se separa de la página
- * dos píxeles más abajo. El sticker y la barra quedan dibujados con la misma
- * línea.
- *
- * ⚠️ ES UNA COPIA ESCALADA Y NO UN `border`: un borde CSS sigue la caja, que
- * acá es el rectángulo del lockup. El contorno tiene que seguir el troquel, y
- * la única forma es repetir la máscara.
- *
- * ⚠️ LOS PORCENTAJES SON LOS DE LA PLANCHA MÁS 3px SOBRE LAS MEDIDAS DE
- * DESKTOP —75.1 × 80 el lockup—, o sea 1.5px de filo por lado. En mobile el
- * lockup mide 48.8 × 52 y el mismo porcentaje da 0.98px: el filo se achica
- * solo y sigue siendo una línea, nunca un anillo.
- */
 .plancha-filo {
   width: 113.26%;
   height: 112.45%;
   background-color: var(--color-fog);
 }
 
-/**
- * LA SOMBRA DE STICKER. La usan el logo del header y el emblema de la ola en
- * `PhotoDivider`, y es la misma a propósito: las dos piezas son un troquel
- * apoyado encima de otra cosa, así que se despegan igual.
- *
- * Es `drop-shadow` y no `box-shadow` porque la caja de estos elementos es un
- * rectángulo y la sombra tiene que seguir el troquel. Son dos pasadas: una corta y pegada que dibuja el canto del
- * papel, y una más abierta que lo despega de la barra. Van juntas porque
- * `drop-shadow` no tiene spread y una sola pasada da o lo uno o lo otro.
- * Camila las pidió en dos tiempos: «pequeña sombra sutil» primero, «mejor
- * sombra para que tenga contraste» después.
- */
 .sticker {
   filter: drop-shadow(0 1px 1px rgba(1, 69, 69, 0.14))
     drop-shadow(0 4px 8px rgba(1, 69, 69, 0.18));
 }
 
-/**
- * LA MISMA SOMBRA, PARA CUANDO EL STICKER CAE SOBRE SUPERFICIE OSCURA.
- *
- * ⚠️ POR QUÉ HACE FALTA UNA SEGUNDA. `.sticker` tira una sombra en `deep`
- * (rgba 1,69,69) porque nació para el logo del header y para el emblema de la
- * ola, o sea sobre hueso. Verde sobre verde no existe: los stickers de la banda
- * de happy hour en `/sunset-bar` salían planos, pegados al fondo. Camila: «el
- * redondo no tiene sombra, agregale igual que al otro».
- *
- * ⚠️ ES NEGRO Y NO `deep` MÁS OSCURO, y es a propósito: lo que tiene que
- * separar la pieza del fondo es LUMINANCIA, no tono. Un verde más oscuro sobre
- * verde sigue leyéndose como parte de la misma mancha.
- *
- * Las dos pasadas son las mismas de `.sticker` —una corta que dibuja el canto
- * del papel y una abierta que lo despega— con más alcance, porque sobre oscuro
- * la difusa se traga antes.
- */
 .sticker-oscuro {
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.22))
     drop-shadow(0 10px 18px rgba(0, 0, 0, 0.3));
 }
 
-/**
- * EL FLOTE DE LOS STICKERS: ocho píxeles arriba y abajo, muy lento.
- *
- * ⚠️ VA EN UN ELEMENTO DISTINTO AL DE LA ROTACIÓN. Los stickers están
- * inclinados con `rotate-6`, que también es `transform`: si la animación
- * viviera en el mismo nodo, los keyframes le pisarían la inclinación y la pieza
- * se enderezaría al arrancar el ciclo. Por eso la rotación va en el envoltorio
- * y esto adentro. Es la misma trampa que tiene la ola de `/sunset-bar`.
- *
- * ⚠️ LOS SEIS SEGUNDOS SON PARA QUE NO SE NOTE COMO ANIMACIÓN. Camila pidió
- * «un pequeño movimiento»: si el ciclo es corto, ocho píxeles se leen como un
- * parpadeo. A esta velocidad la pieza parece apenas suelta.
- *
- * ⚠️ DOS STICKERS EN LA MISMA PANTALLA NO PUEDEN IR SINCRONIZADOS o se lee
- * como un latido de la página entera. El segundo corre el `animation-delay` y
- * la duración desde la clase de utilidad, no desde acá.
- */
 @keyframes rt-flotar {
   0%,
   100% {
@@ -2910,45 +796,9 @@ main:has(+ .banda-arco) > :last-child {
   animation: rt-flotar 6s ease-in-out infinite;
 }
 
-/**
- * El segundo sticker de una pantalla: mismo flote, otro tiempo.
- *
- * ⚠️ ES UNA CLASE Y NO DOS VALORES SUELTOS EN EL JSX. `.rt-flotar` declara el
- * ATAJO `animation`, que reescribe duración y retraso enteros, así que un
- * `[animation-delay:…]` puesto al lado queda pisado según el orden de las
- * reglas. Con una clase propia el atajo se declara una sola vez y gana el que
- * corresponde.
- *
- * ⚠️ EL RETRASO ES NEGATIVO para que arranque con el ciclo ya empezado: con un
- * retraso positivo los dos stickers quedan quietos al cargar la página y
- * después uno espera al otro, que es justo lo que se quiere evitar.
- */
 .rt-flotar-2 {
   animation: rt-flotar 7.5s ease-in-out -1.4s infinite;
 }
-
-/* ==========================================================================
-   MOVIMIENTO REDUCIDO — la red de seguridad
-
-   ⚠️ ESTO ARREGLA UN BUG QUE DEJABA CONTENIDO INVISIBLE. Con
-   `prefers-reduced-motion: reduce`, 26 elementos de la home y 24 de `/events`
-   quedaban en `opacity: 0`: la persona que activa «reducir movimiento» veía
-   huecos en blanco donde va el contenido. Exactamente al revés de lo que la
-   preferencia pide.
-
-   La causa está explicada entera en `components/shared/Motion.tsx`, arriba de
-   `SIN_MOVIMIENTO`. En dos palabras: el servidor no puede conocer la
-   preferencia, así que emite `style="opacity:0;transform:translateY(32px)"` en
-   el HTML, y cuando React hidrata la rama sin animación NO borra ese atributo.
-
-   Por qué la regla va acá y no sólo en el componente: un `style` en línea le
-   gana a cualquier clase, así que desde React no hay forma de pisarlo con
-   seguridad. `!important` dentro de la media query sí, y no depende de cómo
-   hidrate React ni de en qué orden corran los efectos.
-
-   ⚠️ VA DENTRO DE LA MEDIA QUERY. Sin la preferencia puesta no aplica a nada y
-   las animaciones funcionan igual que siempre.
-   ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
   [data-reveal] {
@@ -2957,22 +807,6 @@ main:has(+ .banda-arco) > :last-child {
     clip-path: none !important;
   }
 }
-
-/* ==========================================================================
-   LA MARQUESINA — bloque G del kit
-
-   El bucle va en CSS y no en JavaScript: un loop infinito en JS corre un
-   callback por frame para siempre, incluso cuando nadie lo mira. Ver
-   `components/shared/Marquee.tsx`.
-
-   ⚠️ SE DETIENE CON `prefers-reduced-motion`. Una tira de texto desplazándose
-   sin parar es justamente lo que marea a quien activa esa preferencia. Con la
-   preferencia puesta la animación se pausa en su posición inicial, así que la
-   tira queda quieta y LEGIBLE: no desaparece.
-
-   ⚠️ SE DETIENE TAMBIÉN AL PASAR EL PUNTERO. Si la tira lleva nombres que
-   alguien quiere leer, tiene que poder leerlos.
-   ========================================================================== */
 
 @keyframes marquesina-corre {
   from {
@@ -3002,25 +836,6 @@ main:has(+ .banda-arco) > :last-child {
   }
 }
 
-/* ==========================================================================
-   LA TIRA DE HORARIOS DEL PRE-HEADER
-
-   ⚠️ NO USA `.rt-marquee` y por eso existe. Esa clase la comparten el muro del
-   hero y otras piezas, y acá hace falta algo que esa no hace: en TELÉFONO la
-   tira tiene que quedarse quieta y desplazarse a dedo, no correr sola.
-
-   El motivo es de lectura. A 390px, una tira animada muestra un día y medio
-   moviéndose: no se puede leer. Y esconderla —que fue el primer intento—
-   deja al teléfono sin los horarios, que es justo el dato que la barra tiene
-   que dar. Quieta y desplazable están los siete días completos.
-
-   De `sm` para arriba sí corre: ahí entra la semana entera y el movimiento es
-   lo que hace notar que hay más a la derecha.
-
-   ⚠️ SE DETIENE CON `prefers-reduced-motion`, y al detenerse queda en su
-   posición inicial, o sea legible desde el primer día. No desaparece.
-   ========================================================================== */
-
 .tira-horarios {
   will-change: transform;
 }
@@ -3042,24 +857,6 @@ main:has(+ .banda-arco) > :last-child {
   }
 }
 
-/* ==========================================================================
-   PROSA LEGAL — el cuerpo de los tres documentos del gaming truck.
-
-   ⚠️ UNA SOLA CLASE Y NO UTILIDADES EN CADA ETIQUETA. Los documentos son
-   transcripciones VERBATIM del cliente: 22.000 y 11.000 caracteres de texto
-   legal con numerales, listas anidadas y párrafos de doscientas palabras.
-   Escribir las clases en cada `<p>` sería imposible de mantener y, peor,
-   invitaría a tocar el texto mientras se maqueta.
-
-   ⚠️ NO HAY UN SOLO VALOR NUEVO: todo sale de los tokens del tema. Es la
-   misma regla que rige el resto del archivo y la que hace que estas tres
-   páginas se lean como parte del sitio y no como un anexo.
-
-   ⚠️ LA INTERLÍNEA ES 1.8 Y NO EL 1.65 DEL CUERPO. Es texto legal denso, sin
-   imágenes y sin cortes: la medida de lectura larga necesita más aire. Es el
-   mismo número que usan las páginas legales de los otros repos de la casa.
-   ========================================================================== */
-
 .prose-legal {
   font-family: var(--font-body);
   font-size: var(--text-base);
@@ -3071,8 +868,6 @@ main:has(+ .banda-arco) > :last-child {
   margin-top: 0;
 }
 
-/* Los títulos de apartado. La condensada en caja alta, que es la voz de los
-   títulos del sitio, al cuerpo más chico que el brief le permite (24px). */
 .prose-legal h2 {
   font-family: var(--font-display);
   font-size: var(--text-d5);
@@ -3081,14 +876,9 @@ main:has(+ .banda-arco) > :last-child {
   text-transform: uppercase;
   color: var(--color-ink);
   margin-top: 2.75rem;
-  /* Del titular al texto, más que entre párrafos. Ver `.prose-legal p`. */
   margin-bottom: var(--spacing-gap-bajada);
 }
 
-/* ⚠️ EL h3 NO VA EN LA CONDENSADA. El brief la prohíbe por debajo de 24px y
-   acá un subtítulo de documento vive en 17: a ese cuerpo una condensada de
-   caja alta se lee como etiqueta y no como título. Va en la geométrica, en
-   caja mixta, que es exactamente lo que hace `role="card"` en `Type.tsx`. */
 .prose-legal h3 {
   font-family: var(--font-body);
   font-size: 17px;
@@ -3099,11 +889,6 @@ main:has(+ .banda-arco) > :last-child {
   margin-bottom: var(--spacing-gap-bajada);
 }
 
-/* ⚠️ EL AIRE ENTRE PÁRRAFOS ES MENOR QUE EL DEL TITULAR AL TEXTO, y es regla de
-   todo el sitio desde el 2026-09-23. Camila: «el interpárrafo debe ser menor al
-   espacio entre título y bajada, y esto debe ser siempre así». Eran 1.15rem
-   entre párrafos contra 0.85rem del h2 al texto, o sea al revés. Ahora el
-   titular separa con `gap-bajada` (16/20) y los párrafos con 0.75rem (12). */
 .prose-legal p {
   margin-bottom: 0.75rem;
   max-width: 78ch;
@@ -3133,16 +918,10 @@ main:has(+ .banda-arco) > :last-child {
   margin-bottom: 0.5rem;
 }
 
-/* ⚠️ EL `::marker` EN `sunset-deep` Y NO EN `sunset`. Sobre hueso el naranja
-   de marca da 2.35:1; el oscuro, 3.28:1. Un marcador no es texto y no le debe
-   contraste a nadie, pero a 3.28 se ve y a 2.35 se pierde. */
 .prose-legal li::marker {
   color: var(--color-sunset-deep);
 }
 
-/* El link del cuerpo legal: mismo criterio que `link-texto`, o sea el
-   subrayado sostiene la identificación y el color no. `deep` sobre hueso da
-   10.03:1. */
 .prose-legal a {
   color: var(--color-deep);
   text-decoration: underline;
@@ -3161,33 +940,15 @@ main:has(+ .banda-arco) > :last-child {
   margin: 2.5rem 0;
 }
 
-/* ⚠️ LAS TABLAS SCROLLEAN DENTRO DE SU PROPIA CAJA. Sin esto, una tabla más
-   ancha que la pantalla hace scrollear el DOCUMENTO de costado, que es
-   exactamente lo que el `overflow-x: clip` del `body` está puesto para evitar.
-   Hoy ninguno de los tres documentos tiene tabla; la regla queda por si el
-   cliente manda uno que sí. */
 .prose-legal .tabla {
   overflow-x: auto;
   margin-bottom: 1.25rem;
 }
 
-/* ⚠️ LA LISTA DE LETRAS EXISTE PORQUE EL WAIVER DEL CAMIÓN NUMERA DOS VECES.
-   Sus diez cláusulas van en números y los once reconocimientos del final van
-   de la a a la k. Si los dos fueran `decimal`, el documento tendría dos series
-   de números sin relación y una cláusula «4» que no es la cláusula 4. */
 .prose-legal ol.letras {
   list-style: lower-alpha;
 }
 
-/* ⚠️ EL AVISO EN CAJA ALTA SE DESTACA, NO SE BAJA. Los dos bloques gritados
-   del waiver están así en el original a propósito: en Florida una liberación
-   de responsabilidad por negligencia tiene que ser CONSPICUA para valer, y la
-   caja alta es como este documento lo hace. No se pasa a caja baja.
-
-   Lo que sí se puede hacer es que se lea: cuerpo un punto más chico, interlínea
-   más aireada que el resto —la caja alta no tiene ascendentes ni descendentes
-   que guíen el renglón— y una barra de color al costado que lo separe del
-   cuerpo del documento en vez de dejarlo como un párrafo más, gritando. */
 .prose-legal .aviso {
   margin: 1.75rem 0;
   border-left: 3px solid var(--color-sunset-deep);
@@ -3199,26 +960,6 @@ main:has(+ .banda-arco) > :last-child {
   max-width: 72ch;
 }
 
-/* ══════════════════════════════════════════════════════════════════════════
-   LA FICHA DE EVENTO DEL CALENDARIO
-
-   ⚠️ NACIÓ EL 2026-09-22. Camila, sobre la captura de `/whats-on`: «de cada
-   evento haz una vista previa tipo pop up». El componente es
-   `sections/EventDialog.tsx` y es un `<dialog>` nativo; acá va lo que Tailwind
-   no puede escribir, que es el pseudo-elemento del fondo y el centrado del top
-   layer.
-
-   ⚠️ EL `::backdrop` NO SE PUEDE PINTAR CON UNA CLASE. No es un hijo del
-   diálogo ni de nadie: es un pseudo-elemento que el navegador dibuja en el top
-   layer, y sólo se alcanza desde CSS. Un `<div>` overlay propio quedaría
-   DEBAJO del top layer y habría que pelearle el `z-index` a algo que ni
-   siquiera está en el flujo del documento.
-
-   ⚠️ EL CENTRADO TAMBIÉN VA ACÁ. Un `<dialog>` abierto con `showModal()` se
-   posiciona con los márgenes `auto` del UA, y `margin: auto` en los cuatro
-   lados es lo que lo clava en el medio de la ventana en los dos ejes. Con las
-   clases de Tailwind sobre el elemento habría que pisar ese default con
-   `!important`. */
 dialog.ficha-evento {
   margin: auto;
   max-height: calc(100dvh - 2 * var(--spacing-borde));
@@ -3226,16 +967,9 @@ dialog.ficha-evento {
 }
 
 dialog.ficha-evento::backdrop {
-  /* La tinta del sitio al 55 %. No es `backdrop-filter`: el desenfoque sobre
-     una página entera cuesta caro en un teléfono y acá no agrega nada que el
-     oscurecimiento no diga ya. */
   background: rgb(26 26 24 / 0.55);
 }
 
-/* ⚠️ LA ENTRADA ES `opacity` Y `transform`, las dos únicas propiedades que el
-   repo anima (ver `docs/layout-motion.md`). `allow-discrete` es lo que hace
-   que la transición corra aunque `display` pase de `none` a `block` en el
-   mismo frame, que es exactamente lo que hace `showModal()`. */
 @media (prefers-reduced-motion: no-preference) {
   dialog.ficha-evento {
     opacity: 0;
@@ -3260,21 +994,6 @@ dialog.ficha-evento::backdrop {
   }
 }
 
-/* ==========================================================================
-   ESQUELETO: el bloque gris de las pantallas de carga (`loading.tsx`)
-   ==========================================================================
-
-   ⚠️ EL BRILLO SE MUEVE CON `transform` Y NO CON `background-position`. El
-   repo anima sólo `opacity` y `transform` (ver `docs/layout-motion.md`): son
-   las dos que el navegador compone sin repintar, y una pantalla de carga es
-   justo el momento en que el hilo principal está ocupado armando la página.
-
-   ⚠️ EL COLOR ES TINTA AL 7%, no un gris propio. Sobre `bone` y sobre `paper`
-   se lee igual de tenue, y en una banda oscura se puede pisar con
-   `[--esqueleto:…]` sin sumar un token.
-
-   ⚠️ CON `prefers-reduced-motion` QUEDA QUIETO. El bloque solo ya dice «acá
-   viene algo»; el brillo es un extra, no la información. */
 @utility esqueleto {
   position: relative;
   overflow: hidden;

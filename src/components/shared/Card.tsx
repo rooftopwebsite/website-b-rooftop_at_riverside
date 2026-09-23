@@ -5,29 +5,6 @@ import { PhotoPending } from './PendingData';
 import { Eyebrow, Heading } from './Type';
 import { TAG } from '@/lib/tag';
 
-/**
- * La tarjeta con enlace: trucks, espacios y eventos usan ésta.
- *
- * ⚠️ El hover está definido en UN solo lugar y es deliberadamente MÍNIMO:
- *   · elevación de 2px (`-translate-y`) y el filo se oscurece
- *   · la imagen escala 1.03 — apenas, y sólo la imagen
- *   · el título pasa a `deep`
- *
- * ⚠️ La superficie la define un FILO de 1px, no una sombra. Es la regla de la
- * referencia y es lo que mantiene la estética plana: la sombra sólo aparece en
- * lo que de verdad flota (el panel del hero, el mega-menú).
- *
- * Nada de parallax: el brief lo prohíbe sobre fotos de comida y de gente, que
- * es justo lo que hay en estas tarjetas.
- *
- * ⚠️ Todo el hover es CSS. Un hover con JS en una grilla de doce tarjetas monta
- * doce listeners y no aporta nada que el navegador no haga mejor.
- *
- * ⚠️ La transición del `transform` se apaga con reduced-motion desde la regla
- * global de globals.css, y el layout no cambia: la elevación es un transform,
- * no espacio reservado.
- */
-
 export interface CardProps {
   readonly href: string;
   readonly title: string;
@@ -36,11 +13,9 @@ export interface CardProps {
   readonly cta?: string;
   readonly photo?: string | null;
   readonly photoAlt?: string | null;
-  /** Qué toma falta si no hay foto. Va dentro del placeholder gris. */
   readonly photoBrief?: string;
   readonly ratio?: string;
   readonly sizes?: string;
-  /** Etiqueta arriba a la izquierda de la imagen, tipo «Ours». */
   readonly badge?: string;
   readonly className?: string;
   readonly children?: ReactNode;
@@ -68,11 +43,6 @@ export default function Card({
         'group flex h-full flex-col overflow-hidden rounded-card bg-paper sombra-card',
         'ring-1 ring-fog',
         'transition-[transform,box-shadow] duration-200 ease-brand',
-        /* ⚠️ El hover sube a `shadow-float` y ya no a `shadow-card`. La tarjeta
-           ahora LLEVA `sombra-card` en reposo —que sobre claro es exactamente
-           `shadow-card`—, así que el hover anterior dejó de cambiar nada: se
-           levantaba medio píxel y la sombra se quedaba igual. `float` es el
-           escalón siguiente de la escala, que es lo que el gesto necesita. */
         'hover:-translate-y-0.5 hover:shadow-float',
         className,
       ]
@@ -89,9 +59,6 @@ export default function Card({
             className="object-cover transition-transform duration-500 ease-brand group-hover:scale-[1.03]"
           />
           {badge ? (
-            /* El badge de la tarjeta es un tag: letra y acolchado de `TAG`.
-               Era bold en caja alta con tracking, que lo hacía leer como un
-               botón naranja pegado a la foto. Ver `lib/tag.ts`. */
             <span className={`absolute top-3 left-3 rounded-btn bg-sunset ${TAG} text-ink`}>
               {badge}
             </span>

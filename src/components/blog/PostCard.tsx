@@ -3,23 +3,6 @@ import Link from 'next/link';
 import { Heading } from '@/components/shared/Type';
 import { postMeta, type Post } from '@/lib/blog-format';
 
-/**
- * La card de una nota: la losa troquelada de `EventTypes` en chico. Papel,
- * `sombra-card`, filete punteado de punta a punta y la foto metida hacia
- * adentro con margen, que es lo que deja al troquel correr siempre sobre papel.
- *
- * ⚠️ EL TROQUEL VA A 10px Y NO A 14. En una losa de 400px de ancho los 14 de
- * `EventTypes` se comían el aire de la foto; 10 dejan el filete a mitad de
- * camino entre el borde y los 20px de padding.
- *
- * ⚠️ UN SOLO LINK, el del título, estirado sobre toda la card con `::after`.
- * Sin «Read more»: un segundo link al mismo destino es ruido para un lector de
- * pantalla. El gesto de hover es el de `shared/Card`.
- *
- * ⚠️ SIN PORTADA NO VA `PhotoPending`. No es una foto que falte en el sitio,
- * es una nota que el dashboard publicó sin foto: va un bloque `bone` con la
- * marca, que se lee como parte del diseño y no como un pendiente.
- */
 export default function PostCard({
   post,
   headingLevel = 3,

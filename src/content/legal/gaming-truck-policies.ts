@@ -1,36 +1,5 @@
 import type { LegalBlock } from '@/content/legal-docs';
 
-/**
- * POLICIES AND PROCEDURES, textual.
- *
- * ⚠️ FUENTE: el PDF «GAMING LOUNGE / POLICIES AND PROCEDURES» que el sitio
- * viejo colgaba desde `/game-lounge`. Nunca fue una página: era un archivo
- * suelto en el CDN de Wix, sin URL legible, sin poder buscarse y sin poder
- * linkearse a una sección. Esta es la primera vez que el documento existe como
- * página.
- *
- * ⚠️ NO SE PUBLICA EL PRECIARIO DEL PDF. Las dos primeras pantallas del
- * original son «DAILY PLAY» y «PARTIES» con los precios, y esos ya viven en
- * `content/game-truck.ts` y se renderizan en `/game-truck`. Repetirlos acá
- * sería tener el precio en dos lugares: el día que cambie, uno de los dos
- * queda viejo, y el que queda viejo siempre es el que está enterrado en un
- * documento legal.
- *
- * Lo que sí se publica es todo lo que era SÓLO del PDF y no estaba en ningún
- * otro lado: reserva, cancelación, privacidad, clima, comida, alcohol,
- * negativa de servicio, conducta, clasificación de los juegos y propina.
- *
- * ⚠️ «PS6» ESTÁ EN EL PDF Y NO ES NUESTRO. En la parte de precios el original
- * dice «Xbox Series X, PS6, Switch 2». Es del cliente y probablemente sea un
- * error de tipeo por PS5, pero el bloque de precios no se publica acá, así que
- * la duda no llega a la página. En `/game-truck` la consola que se nombra sale
- * de `content/game-truck.ts`, no de esto.
- *
- * ⚠️ AL ORIGINAL LE FALTA UNA PALABRA en VIDEO GAME RATINGS: «please send an
- * e-mail to indicating the game(s)». Falta la dirección después de «to». Se
- * transcribe tal cual: es un documento del cliente y no lo completamos
- * nosotros. Está anotado en `docs/pedido-al-cliente.md`.
- */
 export const GAMING_TRUCK_POLICIES: readonly LegalBlock[] = [
   {
     kind: 'parrafo',

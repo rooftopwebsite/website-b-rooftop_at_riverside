@@ -1,32 +1,6 @@
 import type { ReactNode } from 'react';
 import { BRAND } from '@/lib/brand';
 
-/**
- * Los enlaces a las redes, en su fila de píldoras.
- *
- * ⚠️ Vivían PRIVADOS dentro de `Footer.tsx`. Salieron acá porque la sección
- * «Find us» los necesita también —Camila lo pidió mirando el bloque de contacto
- * de Luci's, que lleva el grupo FOLLOW— y duplicar cuatro paths de SVG a mano
- * es la forma más segura de que un día el ícono de Facebook del pie y el de la
- * sección dejen de ser el mismo dibujo.
- *
- * ⚠️ TikTok NO está y no se agrega. `BRAND.social.tiktok` es `null` a
- * propósito: el cliente no tiene cuenta, y un ícono que lleva a una búsqueda o
- * a un handle inventado es peor que no tenerlo. Google Business sí, porque la
- * ficha existe y está vinculada por `cid`.
- *
- * ⚠️ VARIANTE POR SUPERFICIE, y este comentario ya lo había predicho: «sólo va
- * sobre superficie oscura, sobre claro serían invisibles; si alguna vez hace
- * falta en claro, va una variante por superficie y no un override desde
- * afuera». Pasó exactamente eso — `FindUs` dejó de ser una losa verde en
- * `redesign/light-tropical` y los iconos desaparecieron sin dejar rastro: el
- * rótulo «Follow» quedó con nada debajo.
- *
- * Así que acá está la variante. `dark` es lo que había y lo sigue usando el
- * footer; `light` usa el filete `fog` y el trazo en `deep` (10.83:1 medido, muy
- * por encima del 3:1 que pide WCAG 1.4.11 para un elemento de interfaz no
- * textual).
- */
 const SURFACES = {
   dark: 'border-paper/35 text-paper/80 hover:border-cream hover:bg-cream hover:text-deep',
   light: 'border-fog text-deep hover:border-deep hover:bg-deep hover:text-paper',
@@ -37,7 +11,6 @@ export function SocialLinks({
   surface = 'dark',
 }: {
   readonly className?: string;
-  /** Sobre qué superficie cae. `dark` es el default: lo usa el footer. */
   readonly surface?: keyof typeof SURFACES;
 }) {
   return (

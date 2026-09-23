@@ -125,7 +125,6 @@ describe('faqNodes', () => {
 describe('toPostFull', () => {
   it('limpia guiones de título, extracto y alt', () => {
     const p = toPostFull(feed(), SITE)!;
-    // Cuatro palabras antes del guion: la regla de `sinEmDash` pone punto.
     assert.equal(p.title, 'The Art of Paella. A Ritual');
     assert.equal(p.excerpt, 'Bomba rice: saffron and socarrat.');
     assert.equal(p.imageAlt, 'A paella pan: seen from above');

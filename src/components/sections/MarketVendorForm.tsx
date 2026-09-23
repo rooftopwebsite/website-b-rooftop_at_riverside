@@ -16,19 +16,6 @@ import { Eyebrow, Heading } from '@/components/shared/Type';
 import { PRODUCT_CATEGORIES, VENDOR_NEEDS } from '@/content/market';
 import { useVenue } from '@/components/shared/VenueProvider';
 
-/**
- * El formulario de vendor del market.
- *
- * ⚠️ Usa los campos compartidos de `components/form/Fields.tsx`, los mismos
- * que el resto del sitio. No hay un control propio de esta página.
- *
- * ⚠️ EL SEGURO ES UN `<select>` Y NO DOS RADIOS. Son dos opciones excluyentes
- * y un radio group sería más idiomático, pero el sitio ya tiene un lenguaje
- * de select —altura, radio de píldora, padding medido— y meter un radio suelto
- * en un formulario de once campos rompe la columna. Cuando haya un segundo
- * caso de sí/no se extrae un `RadioGroup` al kit compartido.
- */
-
 const LABELS: Record<string, string> = {
   business: 'Business name',
   name: 'Your name',

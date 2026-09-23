@@ -2,20 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { postMeta, type Post } from '@/lib/blog-format';
 
-/**
- * La nota grande del listado, en la LOSA TROQUELADA de `EventTypes`: papel,
- * `sombra-card`, el filete punteado a 14px del borde de punta a punta y la foto
- * metida hacia adentro con el mismo padding que el texto. Camila, 2026-09-23:
- * «que la nota destacada esté en una card, las cards hacelas como las de
- * nuestro proyecto, con línea punteada».
- *
- * Desde `md` la foto va a la izquierda y el texto al lado; en mobile se apila,
- * foto arriba. Toda la losa es clickeable con UN solo link, el del título.
- *
- * ⚠️ EL TÍTULO ES UN `h2` A TAMAÑO `d4 → d3`, el mismo escalón que los títulos
- * de `EventTypes`, que también son oraciones largas. El `h2` de sección (88px)
- * con un título de doce palabras ocuparía la losa entera.
- */
 export default function FeaturedPost({ post }: { readonly post: Post }) {
   return (
     <article className="group relative grid overflow-hidden rounded-shell bg-paper sombra-card transition-[transform,box-shadow] duration-200 ease-brand hover:-translate-y-0.5 hover:shadow-float md:grid-cols-2">

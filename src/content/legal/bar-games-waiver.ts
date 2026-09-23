@@ -1,28 +1,5 @@
 import type { LegalBlock } from '@/content/legal-docs';
 
-/**
- * BAR GAMES TERMS AND CONDITIONS, textual.
- *
- * ⚠️ FUENTE: `_source/bar-games-waiver.md`, scrapeado el 2026-09-15 de
- * `eatdrinkparadise.com/bar-games-waiver`. Son 8 secciones numeradas.
- *
- * ⚠️ ESTE NO ES EL WAIVER DEL CAMIÓN. Es el de los juegos de la barra, arriba,
- * y aplica a mayores de 21 porque hay alcohol de por medio. Se confunden
- * fácil: el del camión es `game-zone-waiver`.
- *
- * ⚠️ LE PUSIMOS EL «1.» A LA PRIMERA SECCIÓN. En el volcado las secciones van
- * de la 2 a la 8 y la primera aparece sin número, porque en el original era el
- * primer ítem de una lista ordenada y el número lo ponía el marcador de la
- * lista, no el texto. Es el único número que no está literal en el volcado.
- *
- * ⚠️ LAS ERRATAS DEL ORIGINAL QUEDAN: «Excuplation» por «Exculpation»,
- * «Signonr» por «Signor», «shall be construe» por «construed», y el «Lease»
- * de la sección 7, que es de otro contrato y quedó pegado acá. Es un documento
- * que la gente firma: no se corrige de este lado.
- *
- * ⚠️ EL TEXTO CORTA EN LA SECCIÓN 8. Después el original sigue con «Month /
- * Day / Year / Submit», que es el formulario de firma de Wix, no el documento.
- */
 export const BAR_GAMES_WAIVER: readonly LegalBlock[] = [
   { kind: 'titulo', text: '1. General rules of participation' },
   {

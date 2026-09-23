@@ -1,28 +1,10 @@
 import type { Hours } from '@/types/content';
 
-/**
- * ¿Está abierto AHORA?
- *
- * ⚠️ ESTO VIVÍA ADENTRO DE `OpenStatus.tsx` y salió porque el rediseño le
- * agregó dos consumidores más: el pill de estado del hero y el badge en vivo
- * de `FindUs`. Tres copias de un parser de horarios con la vuelta de
- * medianoche del sábado es exactamente la clase de duplicación que se
- * desincroniza sin que nada avise — y el que se desincroniza publica un
- * «Open now» falso, que es peor que no publicar nada.
- *
- * ⚠️ TODO ESTO ES CLIENT-ONLY POR DISEÑO. El servidor no sabe qué hora es en
- * Bonita Springs para el visitante, y una página cacheada serviría un estado
- * viejo. Quien lo use tiene que pintar primero SIN estado y resolverlo después
- * de montar; si no, hay mismatch de hidratación y se publica un dato que puede
- * estar mal. Ver cómo lo hacen `OpenStatus` y `Hero`.
- */
-
 interface Now {
   readonly dayIndex: number;
   readonly minutes: number;
 }
 
-/** La hora actual en America/New_York, sin librerías. */
 export function nowInVenueTz(): Now {
   const fmt = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/New_York',
@@ -33,13 +15,11 @@ export function nowInVenueTz(): Now {
   });
   const parts = Object.fromEntries(fmt.formatToParts(new Date()).map((p) => [p.type, p.value]));
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  // HOURS arranca en lunes, así que el índice es el mismo.
   const dayIndex = days.indexOf(String(parts.weekday));
   const hour = Number(parts.hour) % 24;
   return { dayIndex, minutes: hour * 60 + Number(parts.minute) };
 }
 
-/** `3:00 PM` → minutos desde medianoche. */
 function toMinutes(label: string): number | null {
   const m = label.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
   if (!m) return null;
@@ -54,41 +34,19 @@ export function parseRange(range: string): { open: number; close: number } | nul
   const open = toMinutes(a);
   let close = toMinutes(b);
   if (open === null || close === null) return null;
-  // Cierra después de medianoche (2 AM el sábado): se suma un día.
   if (close <= open) close += 24 * 60;
   return { open, close };
 }
 
 export interface VenueStatus {
-  /** Abierto ahora mismo. */
   readonly isOpen: boolean;
-  /** El rango de hoy, tal cual está escrito en `HOURS` («3:00 PM – 8:00 PM»). */
   readonly today: string;
-  /** Índice de hoy en `HOURS`, que arranca en lunes. */
   readonly dayIndex: number;
-  /**
-   * A qué hora cierra hoy, en formato corto («8 PM»). `null` si está cerrado.
-   * Es lo que se muestra en el pill del hero: «Open until 8 PM».
-   */
   readonly closesAt: string | null;
-  /**
-   * El próximo día que abre, cuando hoy está cerrado («Wednesday»). `null` si
-   * está abierto.
-   */
   readonly reopensOn: string | null;
-  /**
-   * A qué hora abre ese día, en formato corto («3 PM»). `null` si está
-   * abierto.
-   *
-   * ⚠️ SE AGREGÓ EL 2026-09-15 por pedido del cliente: quería que los días
-   * cerrados se comunicaran por cuándo ABRE y no por que está cerrado. Con el
-   * día solo —«Open Wednesday»— falta la mitad del dato: alguien puede venir
-   * el miércoles a la una y encontrarlo cerrado igual.
-   */
   readonly reopensAt: string | null;
 }
 
-/** `20:00` → `8 PM`. Sin `:00` cuando la hora es redonda, que es como se lee. */
 function shortTime(minutes: number): string {
   const m = minutes % (24 * 60);
   const h24 = Math.floor(m / 60);
@@ -98,19 +56,6 @@ function shortTime(minutes: number): string {
   return min === 0 ? `${h12} ${suffix}` : `${h12}:${String(min).padStart(2, '0')} ${suffix}`;
 }
 
-/**
- * El estado del venue para un set de horarios.
- *
- * ⚠️ `which` importa: la barra y los camiones NO comparten horario. La barra
- * abre a las 3 y los camiones a las 4, y el sábado la barra cierra a las 2 AM
- * mientras los camiones cierran a las 11 PM. El default es `bar` porque es lo
- * que define si «el lugar» está abierto.
- */
-/**
- * ⚠️ RECIBE LOS HORARIOS, ya no los importa. Antes leía `HOURS` del módulo, o
- * sea el respaldo local, así que el «abierto ahora» del sitio podía contradecir
- * a la base. Ahora se los pasa quien ya los resolvió: en cliente, `useVenue()`.
- */
 export function venueStatus(
   hours: readonly Hours[],
   which: 'bar' | 'trucks' = 'bar',
@@ -123,7 +68,6 @@ export function venueStatus(
   const today = pick(dayIndex);
   const parsed = parseRange(today);
 
-  // Puede seguir abierto de ayer: el sábado cierra a las 2 AM del domingo.
   const carry = parseRange(pick((dayIndex + 6) % 7));
   const stillOpenFromYesterday = carry ? carry.close - 24 * 60 > minutes : false;
 
@@ -135,9 +79,6 @@ export function venueStatus(
   let reopensOn: string | null = null;
   let reopensAt: string | null = null;
   if (!isOpen) {
-    // Se busca hacia adelante el primer día con un rango parseable. El bucle
-    // arranca en HOY porque puede estar cerrado por la hora y no por el día:
-    // un martes a las 10 AM reabre «today», no el miércoles.
     for (let step = 0; step < 7; step += 1) {
       const i = (dayIndex + step) % 7;
       const r = parseRange(pick(i));

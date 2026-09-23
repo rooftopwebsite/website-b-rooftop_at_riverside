@@ -1,16 +1,6 @@
-/**
- * Los motivos de contacto del formulario de `/contact`.
- *
- * ⚠️ Dos de ellos NO se contestan por este formulario: eventos privados y
- * market tienen su propio flujo, con campos que acá no existen. Cuando la
- * persona elige uno de esos, el formulario deja de pedirle el mensaje y le
- * muestra el link a la página que corresponde. Duplicar el flujo sería pedirle
- * dos veces lo mismo y perder los campos que sí hacen falta.
- */
 export interface ContactReason {
   readonly value: string;
   readonly label: string;
-  /** Si tiene `redirect`, este motivo se atiende en otra página. */
   readonly redirect?: { readonly href: string; readonly cta: string; readonly why: string };
 }
 

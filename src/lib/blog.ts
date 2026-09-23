@@ -4,21 +4,6 @@ import { toPosts, type FeedPost, type PostFull } from './blog-format';
 import { fetchConTimeout } from './http';
 import { SITE_URL } from './seo';
 
-/**
- * El blog sale del FEED PÚBLICO del dashboard, el mismo que leen Pretty Hens,
- * Santa Maria, Yava y Juanitos. No pide clave y ya viene filtrado a lo
- * publicado, con la destacada primero y después de la más nueva a la más vieja.
- *
- * ⚠️ NO ES `no-store` COMO EN LOS HERMANOS. Rooftop cachea toda lectura de la
- * base con el caché de Next (ver `restoexp.ts`), y el blog también: 10 minutos
- * y los tags `restoexp` y `blog`. Una nota nueva aparece sola en ese plazo.
- * En dev el caché vive en `.next/cache/fetch-cache`: para ver una nota recién
- * cargada hay que borrar esa carpeta y reiniciar.
- *
- * ⚠️ `BLOG_RESTAURANT_ID` ES SÓLO PARA VERIFICAR. Rooftop tiene 0 notas al
- * 2026-09-23; con ese override se levanta el dev con las de otro restaurante.
- * No va al `.env` de producción.
- */
 const FEED_ORIGIN = process.env.BLOG_FEED_ORIGIN || 'https://app.restoexp.com';
 const RESTAURANT_ID =
   process.env.BLOG_RESTAURANT_ID || process.env.NEXT_PUBLIC_SUPABASE_RESTAURANT_ID;
@@ -38,10 +23,6 @@ const readFeed = cache(async (): Promise<readonly PostFull[]> => {
   return toPosts(body.data as FeedPost[], SITE_URL);
 });
 
-/**
- * Para el listado, el sitemap y el layout. NUNCA TIRA: si el feed no contesta
- * devuelve `[]`, y sin notas el blog entero se esconde (ver `sinBlog`).
- */
 export async function getPosts(): Promise<readonly PostFull[]> {
   try {
     return await readFeed();
@@ -51,11 +32,6 @@ export async function getPosts(): Promise<readonly PostFull[]> {
   }
 }
 
-/**
- * Para la nota. ⚠️ SÍ TIRA si el feed falla: la página da 500 y no 404. Un 404
- * le diría a Google que borre una URL indexada por una caída de diez minutos.
- * `null` significa que el feed contestó y la nota no está.
- */
 export async function getPost(slug: string): Promise<PostFull | null> {
   return (await readFeed()).find((p) => p.slug === slug) ?? null;
 }

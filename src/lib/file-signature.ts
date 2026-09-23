@@ -20,16 +20,6 @@ export function firmaCoincide(bytes: Uint8Array, mime: string): boolean {
   return regla ? regla(bytes) : false;
 }
 
-/**
- * El primer MIME de `candidatos` cuya firma coincide con los bytes, o `null`
- * si ninguno coincide.
- *
- * ⚠️ EXISTE PORQUE EL `type` DEL NAVEGADOR SE DEDUCE DE LA EXTENSIÓN, NO DEL
- * CONTENIDO. Un «guardar imagen como» de Google baja un WebP con extensión
- * `.jpg`: el navegador manda `image/jpeg` y los bytes son WebP. Comparar
- * sólo contra el tipo declarado rechaza una imagen de verdad; recorrer la
- * lista de tipos permitidos por el campo encuentra el que sí coincide.
- */
 export function tipoDetectado(bytes: Uint8Array, candidatos: readonly string[]): string | null {
   for (const candidato of candidatos) {
     if (firmaCoincide(bytes, candidato)) return candidato;

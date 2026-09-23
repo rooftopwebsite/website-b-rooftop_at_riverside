@@ -1,11 +1,3 @@
-/* ══════════════════════════════════════════════════════════════════════════
-   ⚠️ EL CUERPO DE UNA NOTA DEL BLOG. Sale de `.prose-legal` y cambia lo que un
-   texto para LEER pide y un documento no: cuerpo más grande, medida de ~68
-   caracteres y citas, figuras y bloques del editor del dashboard (FAQ,
-   callout, embed), portados de `.post` de Yava.
-   El interpárrafo es 12px, menor que titular→texto (`gap-bajada`): regla de
-   todo el sitio. Nunca justificado.
-   ══════════════════════════════════════════════════════════════════════════ */
 .prose-post {
   font-family: var(--font-body);
   font-size: 17px;
@@ -143,7 +135,6 @@
   color: var(--color-ink);
 }
 
-/* Bloques del editor del dashboard. */
 .prose-post .faq {
   margin-block: 2rem;
 }

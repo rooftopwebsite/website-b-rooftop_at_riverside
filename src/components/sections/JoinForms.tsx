@@ -33,32 +33,6 @@ import {
   YES_NO,
 } from '@/lib/schemas/join';
 
-/**
- * Los DOS formularios de `/join-us`, uno por carril.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ DESDE EL 2026-09-22 NINGUNO DE LOS DOS ES NUESTRO: son calcos de lo que
- * el cliente ya usa. El de trabajo repite, campo por campo y en su orden, la
- * hoja que publica para imprimir —`public/docs/rooftop-at-riverside-job-
- * application.pdf`—; el de artistas repite el formulario «Want to perform at
- * Rooftop? Tell us more» de su sitio.
- *
- * El porqué está largo en `lib/schemas/join.ts`, y se resume en una frase: el
- * papel y la web tienen que pedir lo mismo, o quien recibe termina con dos
- * planillas que no se pueden comparar.
- *
- * ⚠️ CADA UNO TIENE SU SCHEMA, SU SERVER ACTION Y SU MENSAJE DE ÉXITO, y son
- * distintos a propósito. Al músico se le dice que vamos por lotes porque
- * programamos la mayoría de las semanas; a quien busca trabajo se le dice a
- * qué buzón fue y que si el archivo no pasó, responda el mail. Un «gracias, te
- * vamos a contactar» genérico no le sirve a ninguno de los dos.
- *
- * ⚠️ DESDE EL 2026-09-23 LOS ARCHIVOS LLEGAN ADJUNTOS AL MAIL. Hasta ese día
- * se validaban y se descartaban, y el mensaje de éxito lo admitía. Ahora el
- * éxito sólo menciona el CV si de verdad viajó (ver `submitJob`).
- * ══════════════════════════════════════════════════════════════════════════
- */
-
 function Exito({
   eyebrow,
   titulo,
@@ -79,20 +53,6 @@ function Exito({
   );
 }
 
-/**
- * Un rótulo de bloque adentro del formulario.
- *
- * ⚠️ EXISTE PORQUE EL PAPEL LO TIENE: «PERSONAL INFORMATION», «EDUCATIONAL
- * BACKGROUND», «EMPLOYMENT HISTORY» son los tres encabezados del PDF, y sin
- * ellos el calco serían veinte campos seguidos sin un solo descanso. Es lo que
- * deja seguir los dos documentos en paralelo, que es la razón del calco.
- *
- * ⚠️ NO ES UN `<h3>`. Estos formularios viven dentro de una `FormSlab` cuyo
- * `<h2>` es el título del carril, y meter encabezados de verdad adentro del
- * `<form>` mete tres entradas más en el esquema del documento por algo que es
- * un separador visual. Los grupos que necesitan nombre accesible ya lo tienen:
- * cada `<fieldset>` trae su `<legend>`.
- */
 function Bloque({ children }: { readonly children: React.ReactNode }) {
   return (
     <p
@@ -104,14 +64,6 @@ function Bloque({ children }: { readonly children: React.ReactNode }) {
   );
 }
 
-/* ── 1. Trabajo ─────────────────────────────────────────────────────────── */
-
-/*
- * ⚠️ LAS ETIQUETAS SON LAS DEL PAPEL, INCLUIDAS LAS QUE NO ESCRIBIRÍAMOS ASÍ.
- * «Position» a secas, «City/State», «Zipcode». Cambiarlas por algo más
- * amable —«What you want to do»— rompe el paralelo con la hoja impresa, que es
- * lo único que este formulario tiene que sostener.
- */
 const JOB_LABELS: Record<string, string> = {
   position: 'Position',
   employmentType: 'Employment type',
@@ -174,9 +126,6 @@ export function JobForm() {
       />
 
       <Bloque>Personal information</Bloque>
-
-      {/* El reparto de las columnas es el del papel: los nombres a la
-          izquierda, teléfono y mail a la derecha. */}
       <div className="grid gap-[16px] sm:grid-cols-2">
         <TextField
           name="firstName"
@@ -201,8 +150,6 @@ export function JobForm() {
           autoComplete="email"
         />
       </div>
-
-      {/* En el papel «Address» es una caja alta, no un renglón. */}
       <TextAreaField
         name="address"
         label={JOB_LABELS.address}
@@ -225,12 +172,6 @@ export function JobForm() {
           autoComplete="postal-code"
         />
       </div>
-
-      {/*
-        Las tres preguntas de sí o no, con la redacción del papel. «Of ID Card»
-        del original es una errata por «or ID card» y se corrige acá: copiar un
-        error de tipeo no es fidelidad, es copiar un error.
-      */}
       <div className="flex flex-col gap-[20px]">
         <RadioGroup
           name="license"
@@ -248,15 +189,6 @@ export function JobForm() {
           options={YES_NO.map((y) => ({ value: y.value, label: y.label }))}
         />
       </div>
-
-      {/*
-        ⚠️ ESTAS DOS NO LLEVAN <Bloque> ARRIBA Y EL RESTO SÍ. El rótulo de
-        bloque repetiría palabra por palabra el <legend> del fieldset, que ya
-        está ahí y que además es el nombre accesible del grupo: se veía
-        «EDUCATIONAL BACKGROUND» y tres píxeles abajo «Educational background».
-        Lo que hacía falta del <Bloque> era el filete que separa, y eso lo pone
-        el envoltorio.
-      */}
       <div className="mt-[12px] border-t border-ink/15 pt-[24px]">
         <FieldRows
           name="education"
@@ -296,14 +228,6 @@ export function JobForm() {
   );
 }
 
-/* ── 2. Artistas ────────────────────────────────────────────────────────── */
-
-/*
- * ⚠️ LAS DIEZ ETIQUETAS SON LAS DEL FORMULARIO DEL CLIENTE, con su redacción:
- * «Band Name», «Social media link», «Genre of music/entertainment», «Video
- * link». Lo único que se corrige es el «(Youtube, Facebook, ect.)» del
- * original, que va con la errata adentro.
- */
 const ART_LABELS: Record<string, string> = {
   firstName: 'First name',
   lastName: 'Last name',
@@ -371,14 +295,6 @@ export function ArtistForm() {
       </div>
       <div className="grid gap-[16px] sm:grid-cols-2">
         <TextField name="genre" label={ART_LABELS.genre} hint="Rough is fine" />
-        {/*
-          ⚠️ EL `hint` DICE QUE ES LO QUE MÁS IMPORTA, y el campo sigue siendo
-          opcional. El formulario del cliente no lo marca con asterisco y esto
-          es un calco, así que la regla no se endurece acá; lo que sí se puede
-          hacer es decir la verdad al lado del campo, que sin algo para
-          escuchar o mirar la solicitud no se puede evaluar. Lo mismo dice la
-          columna de la izquierda de la página.
-        */}
         <TextField
           name="video"
           label={ART_LABELS.video}

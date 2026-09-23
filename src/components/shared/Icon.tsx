@@ -1,69 +1,9 @@
-/**
- * El set de iconos del sitio.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ POR QUÉ ESTÁN DIBUJADOS ACÁ Y NO SE INSTALA PHOSPHOR.
- *
- * El diseño de origen (`_interno/design-source-bundle/…/Rooftop at Riverside -
- * Home.dc.html`, fuera de git desde el 2026-09-11: es material del cliente)
- * pide Phosphor y lo trae por CDN con dos `<link rel="stylesheet">` a unpkg —
- * uno para el peso `regular` y otro para el `fill`. En un prototipo eso está
- * bien; acá no, y por tres motivos medidos, no por purismo:
- *
- *   · Una hoja de estilos externa BLOQUEA el render. Son dos hojas, a un host
- *     de tercero, sin `preconnect`: DNS + TLS + descarga antes del primer
- *     píxel, y en el peor caso el sitio queda sin iconos si unpkg se cae.
- *   · Las dos hojas juntas bajan la familia de iconos ENTERA —más de mil
- *     glifos— para usar catorce.
- *   · Phosphor por CSS dibuja los iconos como un `@font-face`, o sea que son
- *     TEXTO. Con `font-display:swap` aparecen tarde, y hasta que aparecen el
- *     navegador dibuja el glifo de reemplazo de la fuente de sistema: en el
- *     hero eso es un cuadrado negro dentro del círculo naranja.
- *
- * Instalar `@phosphor-icons/react` tampoco: son 14 iconos en un sitio que hoy
- * no tiene una sola dependencia de UI.
- *
- * ⚠️ NO son las curvas de Phosphor calcadas. Están redibujados en la misma
- * grilla de 24 y con el mismo peso óptico, que es lo que hace falta para que
- * el conjunto se lea parejo. Si alguna vez hay que igualar el trazo original
- * al píxel, el lugar es este archivo y nada más.
- * ══════════════════════════════════════════════════════════════════════════
- *
- * ⚠️ TODOS son `aria-hidden`. Un icono acá SIEMPRE acompaña a un texto o a un
- * `aria-label` del elemento que lo contiene; ninguno carga significado solo.
- * Si alguna vez uno queda sin texto al lado, el label va en el botón o el
- * link, no acá.
- *
- * ⚠️ El tamaño va por `className` (`size-4`, `size-5`…) y no por props de
- * ancho: así el icono hereda el `currentColor` y escala con la caja.
- */
-
 import type { ReactNode, SVGProps } from 'react';
 
-/**
- * Lo que recibe un icono desde afuera.
- *
- * ⚠️ Sin `children` y sin `viewBox`: el dibujo y la grilla los pone el
- * icono, no quien lo usa. Si un call site pudiera pasar `children`, el set
- * dejaría de ser un set.
- *
- * ⚠️ SE EXPORTA DESDE EL 2026-09-22. Lo pidió `SpecSlab`, que recibe un icono
- * por prop para el tile que sobresale de sus tarjetas: sin el tipo exportado
- * tendría que volver a declarar la misma firma y las dos se separarían en
- * cuanto ésta cambie. Es el tipo de los 21 iconos del archivo.
- */
 export type IconProps = Omit<SVGProps<SVGSVGElement>, 'children' | 'viewBox'>;
 
-/** Lo que recibe el envoltorio interno, que sí dibuja. */
 type SvgProps = IconProps & { readonly children: ReactNode };
 
-/**
- * El envoltorio común.
- *
- * `stroke-width` 1.7 sobre la grilla de 24 es el peso al que el set queda a la
- * par de Phosphor Regular. Los iconos rellenos (`SunHorizon`, `Dot`) pasan
- * `fill` y anulan el trazo.
- */
 function Svg({ className = 'size-5', ...rest }: SvgProps) {
   return (
     <svg
@@ -81,10 +21,6 @@ function Svg({ className = 'size-5', ...rest }: SvgProps) {
   );
 }
 
-/* ── Flechas y cursores ──────────────────────────────────────────────────
-   Las flechas comparten la misma punta (un chevron de 45°) para que
-   girar una no cambie el peso del dibujo. */
-
 export function ArrowRight(props: IconProps) {
   return (
     <Svg {...props}>
@@ -101,14 +37,6 @@ export function ArrowLeft(props: IconProps) {
   );
 }
 
-/**
- * La flecha hacia arriba. Es la del botón «Back to top» y nada más.
- *
- * ⚠️ NO es un dibujo nuevo: es `ArrowRight` girada 90° sobre el centro de la
- * grilla, punto por punto — `M4 12h15` queda `M12 20V5`, y la punta
- * `M13 6l6 6-6 6` queda `M6 11l6-6 6 6`. Por eso pesa exactamente igual que
- * las otras, que es de lo que se trata el set.
- */
 export function ArrowUp(props: IconProps) {
   return (
     <Svg {...props}>
@@ -125,14 +53,6 @@ export function ArrowUpRight(props: IconProps) {
   );
 }
 
-/**
- * La cruz de cerrar.
- *
- * ⚠️ NACIÓ EL 2026-09-22 CON EL DIÁLOGO DE EVENTO. Es el primer cierre del
- * sitio: hasta ahora nada se abría encima de nada. Las dos diagonales son la
- * misma punta de 45° que comparten las flechas, así que a `1.7` de
- * trazo pesa exactamente lo mismo que el resto del set.
- */
 export function X(props: IconProps) {
   return (
     <Svg {...props}>
@@ -157,7 +77,6 @@ export function CaretUp(props: IconProps) {
   );
 }
 
-/** «Se abre afuera»: la flecha que sale de la caja. Va en Get directions. */
 export function ArrowSquareOut(props: IconProps) {
   return (
     <Svg {...props}>
@@ -165,11 +84,6 @@ export function ArrowSquareOut(props: IconProps) {
     </Svg>
   );
 }
-
-/* ── Redes ───────────────────────────────────────────────────────────────
-   Las tres son marcas registradas y por eso se dibujan como CONTORNO y no
-   como el logotipo relleno: un contorno es una referencia, un logotipo
-   calcado es un uso de marca. Es lo que hace el diseño de origen. */
 
 export function Instagram(props: IconProps) {
   return (
@@ -199,13 +113,6 @@ export function Google(props: IconProps) {
   );
 }
 
-/* ── Marca y ambiente ────────────────────────────────────────────────────── */
-
-/**
- * El sol sobre el horizonte. Es el icono del pill de estado del hero, y el
- * único RELLENO del set: va dentro de un círculo naranja de 80px, donde un
- * contorno de 1.7 desaparece.
- */
 export function SunHorizon({ className = 'size-5', ...rest }: IconProps) {
   return (
     <svg
@@ -228,15 +135,6 @@ export function SunHorizon({ className = 'size-5', ...rest }: IconProps) {
   );
 }
 
-/**
- * La luna. Es el icono de «cerrado» en el pill del hero.
- *
- * ⚠️ Es un CRECIENTE dibujado como una sola silueta —un arco grande al que
- * le muerde otro arco— y no un círculo con una sombra encima. Con dos formas
- * superpuestas habría que pintar la mordida del color del fondo, y el pill
- * cambia de fondo según el estado. Así el contorno funciona sobre cualquier
- * superficie.
- */
 export function Moon(props: IconProps) {
   return (
     <Svg {...props}>
@@ -245,13 +143,6 @@ export function Moon(props: IconProps) {
   );
 }
 
-/**
- * Dos corcheas unidas por la barra. El icono de «música en vivo».
- *
- * ⚠️ Las cabezas son círculos y no elipses inclinadas. A 26px —el tamaño al
- * que se usa, dentro del círculo naranja del hero— una elipse rotada se lee
- * como una mancha sucia; el círculo se lee como una nota.
- */
 export function MusicNote(props: IconProps) {
   return (
     <Svg {...props}>
@@ -262,7 +153,6 @@ export function MusicNote(props: IconProps) {
   );
 }
 
-/** El punto del estado en vivo. Relleno, 8px, al lado de «Open · closes 8 PM». */
 export function Dot({ className = 'size-2', ...rest }: IconProps) {
   return (
     <svg
@@ -278,47 +168,11 @@ export function Dot({ className = 'size-2', ...rest }: IconProps) {
   );
 }
 
-/* ── Las tres puertas ────────────────────────────────────────────────────
-   Se dibujan a 72–104px, que es diez veces el tamaño de una flecha. A ese
-   cuerpo el trazo de 1.7 se ve filoso, así que los tres bajan a 1.4: el peso
-   ÓPTICO es el mismo porque escala con la caja. */
-
-/**
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LOS TRES ESTÁN REDIBUJADOS. La primera versión se veía mal a 104px y
- * conviene dejar anotado QUÉ estaba mal, porque los tres errores son los
- * típicos de dibujar un icono pensándolo a 20px:
- *
- *   · El camión tenía las ruedas en `cy=17.8 r=1.9`, o sea que su borde
- *     superior quedaba en 15.9 mientras la caja terminaba en 16.5: las
- *     ruedas se montaban 0,6 sobre la carrocería. Y encima había tres
- *     segmentos de «piso» a la altura del EJE, que dejaban la caja flotando
- *     sobre una línea suelta. A 20px no se nota; a 104 es lo primero que se
- *     ve.
- *   · El confeti era directamente ilegible: un triángulo con cuatro marcas
- *     sueltas alrededor que no se leían como chispas ni como nada.
- *   · La copa estaba bien pero le faltaba peso: un triángulo hueco.
- *
- * Ahora las ruedas APOYAN (su borde superior toca el piso de la caja, 16 con
- * 16), el camión tiene ventanilla —que es lo que lo vuelve un food truck y
- * no una camioneta de reparto— y el confeti se reemplazó por globos.
- *
- * ⚠️ POR QUÉ GLOBOS Y NO UN CONFETI MEJOR DIBUJADO. Un popper es una forma
- * ambigua: cono más chispas se lee como cono más chispas, y hay que
- * interpretarlo. Dos globos con su nudo y su piolín se leen como fiesta sin
- * pensar, y no compiten con la copa de la tarjeta de al lado — que era el
- * otro riesgo, porque «brindis» habría puesto dos vidrios en tres tarjetas.
- * ══════════════════════════════════════════════════════════════════════════
- */
-
 export function Truck(props: IconProps) {
   return (
     <Svg strokeWidth="1.4" {...props}>
-      {/* La caja. Termina en 16, que es donde apoyan las ruedas. */}
       <path d="M3 8h11v8H3z" />
-      {/* La ventanilla: es lo que lo vuelve un food truck. */}
       <path d="M5.6 10.4h5.8v3.2H5.6z" />
-      {/* La trompa. */}
       <path d="M14 11h3.6L21 14.4V16h-7z" />
       <circle cx="7.2" cy="18" r="2" />
       <circle cx="17.4" cy="18" r="2" />
@@ -331,27 +185,15 @@ export function Martini(props: IconProps) {
     <Svg strokeWidth="1.4" {...props}>
       <path d="M3.5 5h17L12 13.5 3.5 5Z" />
       <path d="M12 13.5V20M8 20h8" />
-      {/* La aceituna. Va RELLENA y es lo único macizo del dibujo: a 104px un
-          triángulo hueco con un palito no tiene dónde apoyar la vista. */}
       <circle cx="15.2" cy="7.6" r="1.15" fill="currentColor" stroke="none" />
     </Svg>
   );
 }
 
-/**
- * Globos. El icono de «el lugar entero, cerrado para vos».
- *
- * ⚠️ Reemplaza a `Confetti`, que se llamaba así porque el prototipo pedía
- * `ph-confetti`. El nombre sigue al DIBUJO y no al prototipo: un componente
- * que se llama `Confetti` y dibuja globos es una trampa para el próximo que
- * lo busque.
- */
 export function Balloons(props: IconProps) {
   return (
     <Svg strokeWidth="1.4" {...props}>
       <circle cx="8.8" cy="8.4" r="4.8" />
-      {/* El nudo, un triángulo chico. Es el detalle que lo separa de «dos
-          círculos con una línea». */}
       <path d="M8.8 13.2 7.7 15.1h2.2z" />
       <path d="M8.8 15.1c0 2.3 2.7 2.6 2.7 5.1" />
       <circle cx="17.2" cy="11" r="3.6" />
@@ -361,18 +203,6 @@ export function Balloons(props: IconProps) {
   );
 }
 
-/* ── El conmutador de vistas de `/whats-on` ──────────────────────────────
-   Los dos son la misma caja de 24 con el mismo margen, para que al alternar
-   entre ellos nada se mueva de lugar dentro del botón. */
-
-/**
- * La vista de tarjetas: cuatro celdas.
- *
- * ⚠️ NO SON SEIS CELDAS aunque la grilla real tenga tres columnas. A 20px, una
- * matriz de 2×3 deja celdas de 6px con 2 de aire y se lee como una trama gris.
- * Cuatro cuadrados grandes dicen «tarjetas» de un vistazo, que es lo único que
- * el icono tiene que decir.
- */
 export function GridFour(props: IconProps) {
   return (
     <Svg {...props}>
@@ -384,34 +214,16 @@ export function GridFour(props: IconProps) {
   );
 }
 
-/**
- * La vista de calendario: la hoja con las dos anillas y el filete del
- * encabezado, que es lo que la distingue de un rectángulo cualquiera.
- */
 export function CalendarGrid(props: IconProps) {
   return (
     <Svg {...props}>
       <rect x="3.2" y="5" width="17.6" height="16" rx="2.2" />
       <path d="M3.2 9.6h17.6M8 3.2v3.6M16 3.2v3.6" />
-      {/* Dos marcas de día. Sin ellas la hoja se lee como una ventana. */}
       <path d="M7.6 13.4h2M12 13.4h2M16.4 13.4h.01M7.6 17h2M12 17h.01" />
     </Svg>
   );
 }
 
-/**
- * La entrada, para el calendario.
- *
- * ⚠️ REEMPLAZA A `ArrowSquareOut` EN LOS CHIPS DEL MES y no en el resto del
- * sitio. Camila, 2026-09-21: «si tiene entrada debe mostrarse eso de alguna
- * forma, quizá un iconito de ticket». La flecha de «abre en otra pestaña» dice
- * cómo se abre el link; el ticket dice QUÉ hay del otro lado, que es el dato
- * que sirve cuando alguien está eligiendo a qué ir.
- *
- * ⚠️ LA PERFORACIÓN ES LO QUE LO HACE LEGIBLE A 12px. Sin los tres trazos del
- * medio, las dos muescas laterales no alcanzan y queda un rectángulo redondeado
- * como cualquier otro.
- */
 export function Ticket(props: IconProps) {
   return (
     <Svg {...props}>
@@ -421,36 +233,11 @@ export function Ticket(props: IconProps) {
   );
 }
 
-/**
- * Chincheta de mapa. El icono del estacionamiento.
- *
- * ⚠️ ES LA UBICACIÓN Y NO UN AUTO, y la diferencia es de contenido: lo que la
- * página promete no es que haya cocheras propias —no las hay— sino DÓNDE se
- * estaciona: la calle Old 41 y las playas públicas de Riverside Park. Un auto
- * diría «tenemos parking»; la chincheta dice «está acá».
- *
- * ⚠️ EL AGUJERO VA HUECO. Relleno se lee como una gota a 20px y pierde el
- * parentesco con el resto del set, que es todo de trazo.
- */
-/**
- * Un auto de frente tres cuartos, para el renglón de cómo llegar.
- *
- * ⚠️ REEMPLAZA A `MapPin` EN LA TARJETA DE ESTACIONAMIENTO. Camila,
- * 2026-09-22, sobre la captura de `/events`: «cambia el icono, no representa
- * estacionamiento». Tenía razón: un alfiler de mapa dice «acá queda esto», que
- * es lo que contesta el mapa de la página de contacto, no «dejá el auto acá».
- *
- * ⚠️ `MapPin` NO SE BORRA: lo usa el pie de `/market` y es el pin genérico del
- * set.
- */
 export function Car(props: IconProps) {
   return (
     <Svg {...props}>
-      {/* El capó y el techo, en una sola polilínea. */}
       <path d="M4.5 12.5 6 7.8A2 2 0 0 1 7.9 6.4h8.2A2 2 0 0 1 18 7.8l1.5 4.7" />
-      {/* La carrocería. */}
       <path d="M3.4 12.5h17.2v4.1a1 1 0 0 1-1 1H4.4a1 1 0 0 1-1-1z" />
-      {/* Las dos ruedas, apoyadas por fuera de la caja. */}
       <path d="M6.6 17.6v1.4M17.4 17.6v1.4" />
     </Svg>
   );
@@ -465,19 +252,6 @@ export function MapPin(props: IconProps) {
   );
 }
 
-/**
- * Persona en un círculo. El icono del «un solo contacto».
- *
- * ⚠️ EL PRIMER DIBUJO FUE UN GLOBO DE DIÁLOGO CON UNA PERSONA ADENTRO y se
- * cayó al verlo en página: a 20px —el tamaño al que se usa, dentro del tile de
- * 44— la cola del globo, la cabeza y los hombros quedaban a tres trazos de
- * distancia y se leían como una mancha. Un icono que hay que agrandar para
- * entender no es un icono.
- *
- * ⚠️ EL NOMBRE SIGUE AL DIBUJO, que es la regla de este archivo: se llamaba
- * `ContactPerson` por lo que significaba y ahora se llama por lo que es. Lo
- * que significa lo dice el texto que tiene al lado.
- */
 export function UserCircle(props: IconProps) {
   return (
     <Svg {...props}>

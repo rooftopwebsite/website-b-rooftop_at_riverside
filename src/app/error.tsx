@@ -6,16 +6,6 @@ import { Button, ButtonLink } from '@/components/shared/Button';
 import Section from '@/components/shared/Section';
 import { Accent, Eyebrow } from '@/components/shared/Type';
 
-/**
- * La página que se ve cuando algo falla al renderizar una ruta. Hasta el
- * 2026-09-23 no existía y se veía la pantalla genérica de Next. Tiene la misma
- * forma que el 404 (`not-found.tsx`): rótulo, titular con una palabra en color,
- * los dos CTA y tres salidas.
- *
- * ⚠️ `retry` Y NO `reset`: en Next 16 `retry()` vuelve a pedir los datos de la
- * ruta además de re-renderizar, que es lo que hace falta cuando lo que falló
- * es la base de RestoExp.
- */
 const RESCATE = [
   { label: 'Food trucks', href: '/food-trucks' },
   { label: 'Sunset Bar', href: '/sunset-bar' },

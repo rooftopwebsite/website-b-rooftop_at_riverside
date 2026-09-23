@@ -6,14 +6,6 @@ import { GUTTER } from './Section';
 import { Eyebrow, Heading } from './Type';
 import { TileMark } from './TilePattern';
 
-/**
- * Encabezado de página interna.
- *
- * ⚠️ Mismo criterio que el hero del home: la tipografía va sobre BLANCO, nunca
- * encima de la foto. Cuando hay imagen va como panel al costado. El sitio es
- * blanco y el h1 tiene que dar 21:1 sin depender de un velo.
- */
-
 export interface Crumb {
   readonly name: string;
   readonly path: string;
@@ -34,23 +26,12 @@ export default function PageHero({
   readonly lead?: ReactNode;
   readonly image?: string | null;
   readonly imageAlt?: string | null;
-  /**
-   * El brief EN ESPAÑOL de la foto que falta. Con `image` en `null` y esto con
-   * texto, el hero reserva la MISMA caja y pinta el marcador gris en vez de
-   * colapsar a un encabezado sin foto.
-   *
-   * ⚠️ Existe porque cuatro heroes traían fotos de STOCK. Entraron el
-   * 2026-09-08, dos días antes de que el cliente entregara las suyas, y
-   * dejarlas puestas era peor que mostrar el hueco: una foto de un camión que
-   * no es el del cliente le miente al visitante y encima disimula que falta.
-   */
   readonly imageBrief?: string | null;
   readonly crumbs?: readonly Crumb[];
   readonly children?: ReactNode;
 }) {
   const hasImage = Boolean(image);
   const hasHueco = !hasImage && Boolean(imageBrief);
-  /** Si hay foto o hay hueco, el hero va a dos columnas igual. */
   const dosColumnas = hasImage || hasHueco;
 
   return (
@@ -63,16 +44,6 @@ export default function PageHero({
         }
       >
         <div
-          /* ⚠️ EL `pt` YA NO COMPENSA AL HEADER, y por eso bajó de 98/110/122
-             a 34/46. Los tres escalones anteriores llevaban sumada la altura
-             de un header `fixed` (64px hasta `desk`, 76 a partir de ahí)
-             encima del aire propio del hero (34 base, 46 desde `lg`).
-
-             Con el rediseño el header volvió al flujo normal y ocupa su
-             lugar, así que sumarle la altura otra vez abría el doble de aire
-             en las 22 internas. Quedan sólo los dos tramos del aire propio,
-             y por eso desaparece el escalón de `desk`: era del header, no del
-             hero. Ver la nota grande de `Header.tsx`. */
           className={`${GUTTER} flex flex-col justify-center pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]`}
         >
           <div

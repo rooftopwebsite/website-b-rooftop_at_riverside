@@ -19,29 +19,6 @@ import { getVenue } from '@/lib/venue';
 import { tipoDetectado } from '@/lib/file-signature';
 import { fieldErrorsFrom, type ActionState } from './types';
 
-/**
- * Las dos server actions de `/join-us`.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LOS CAMPOS MÚLTIPLES SE LEEN CON `getAll`, y eso lo hacen `jobFromForm`
- * y `artistFromForm` en `lib/schemas/join.ts`, que son los mismos que usa el
- * navegador para validar antes de enviar.
- *
- * ⚠️ DESDE EL 2026-09-23 LOS ARCHIVOS VIAJAN ADJUNTOS EN EL MAIL. Hasta ese
- * día se validaban y se tiraban, y el mensaje de éxito le pedía a la persona
- * que mandara el CV de nuevo respondiendo el mail. El techo de tamaño lo pone
- * Vercel y está explicado en `MAX_REQUEST_MB`.
- * ══════════════════════════════════════════════════════════════════════════
- */
-
-/**
- * Una tabla, en texto, para el cuerpo del mail.
- *
- * ⚠️ VA CON LOS RÓTULOS DE LA COLUMNA ADELANTE Y NO COMO UNA GRILLA ALINEADA.
- * Quien recibe esto lo lee en un cliente de mail, muchas veces en el teléfono,
- * y una grilla de cuatro columnas con espacios se descuadra al primer renglón
- * largo. Con el rótulo delante de cada dato, cada fila se lee sola.
- */
 function tablaTexto(rows: readonly TableRow[], cols: readonly { key: string; label: string }[]) {
   if (rows.length === 0) return '(none given)';
   return rows
@@ -56,7 +33,6 @@ function tablaTexto(rows: readonly TableRow[], cols: readonly { key: string; lab
     .join('\n');
 }
 
-/** Los adjuntos que sí vinieron, con un nombre que se entienda en la bandeja. */
 async function adjuntos(
   campos: readonly {
     readonly file: File | undefined;
@@ -72,16 +48,6 @@ async function adjuntos(
   return out;
 }
 
-/**
- * ⚠️ SE ACEPTA SI LOS BYTES COINCIDEN CON CUALQUIERA DE LOS TIPOS PERMITIDOS
- * PARA ESE CAMPO, no sólo con el `type` que declaró el navegador. Ese `type`
- * sale de la extensión del archivo, y un «guardar imagen como» puede bajar un
- * WebP con extensión `.jpg`: el navegador diría `image/jpeg`, los bytes son
- * WebP, y comparar sólo contra lo declarado rechazaba una imagen real.
- *
- * Devuelve, además de los errores, el tipo REAL detectado por campo: es el
- * que se manda como `contentType` del adjunto para que el mail lo abra bien.
- */
 async function revisarFirmas(
   campos: readonly {
     readonly name: string;
@@ -153,11 +119,6 @@ export async function submitJob(_prev: ActionState, formData: FormData): Promise
     inbox: 'careers',
     replyTo: d.email,
     subject: `Job application: ${d.position} (${d.firstName} ${d.lastName})`,
-    /*
-     * ⚠️ LAS CLAVES SIGUEN EL ORDEN DE LA HOJA IMPRESA. Quien recibe los dos
-     * canales —el PDF en mano y esto— lee lo mismo en el mismo orden, que es
-     * la razón entera por la que el formulario se calcó.
-     */
     data: {
       Position: d.position,
       'Employment type': d.employmentType === 'part-time' ? 'Part-Time' : 'Full-Time',
@@ -228,12 +189,6 @@ export async function submitArtist(_prev: ActionState, formData: FormData): Prom
   }
 
   const d = parsed.data;
-  /*
-   * ⚠️ EL ASUNTO USA EL NOMBRE DE LA BANDA Y CAE EN EL DE LA PERSONA SI NO
-   * HAY. En el formulario del cliente «Band Name» es opcional, así que un
-   * solista que no se puso nombre artístico llegaría como «Booking request: »
-   * con el asunto cortado a la mitad.
-   */
   const acto = d.band || `${d.firstName} ${d.lastName}`;
   const archivos = await adjuntos([
     { file: d.logo, prefijo: 'Logo', contentType: detectados.logo },

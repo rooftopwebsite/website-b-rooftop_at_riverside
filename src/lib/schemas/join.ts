@@ -1,84 +1,9 @@
 import { z } from 'zod';
 
-/**
- * Los DOS formularios de `/join-us`, cada uno con su schema.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LOS DOS SON CALCOS DE LO QUE EL CLIENTE YA TIENE VIVO, y desde el
- * 2026-09-22 eso es literal, campo por campo. Antes eran formularios NUESTROS,
- * armados por lo que nos parecía que había que preguntar.
- *
- * Camila, 2026-09-22: «ten en cuenta que ese es el pdf que está publicado en
- * la web para aplicar a jobs, deberíamos hacer que en el form digital estén
- * tal cual esos items a completar», y acto seguido la captura del formulario
- * de artistas del sitio actual: «estos son los inputs del formulario de
- * artistas».
- *
- *   · TRABAJO   ← `public/docs/rooftop-at-riverside-job-application.pdf`, la
- *                 hoja que el cliente publica para imprimir y entregar en mano.
- *   · ARTISTAS  ← el formulario «Want to perform at Rooftop? Tell us more» que
- *                 vive hoy en el sitio de Wix.
- *
- * ⚠️ POR QUÉ IMPORTA QUE SEAN CALCOS Y NO «MEJORES». La hoja de papel y el
- * formulario web tienen que pedir LO MISMO: alguien que llenó el PDF en la
- * barra y alguien que lo mandó desde el teléfono tienen que llegar al mismo
- * buzón con los mismos datos, o el que recibe termina con dos planillas que no
- * se pueden comparar. Cada campo que agreguemos de nuestra cosecha es una
- * columna que el papel no tiene.
- *
- * ⚠️ LO QUE SE PERDIÓ AL CALCAR, ANOTADO PARA QUE SEA UNA DECISIÓN Y NO UN
- * OLVIDO. El formulario de artistas que teníamos preguntaba duración del set,
- * cuántos son, qué noches les sirven y cuánto cobran. El del cliente no
- * pregunta nada de eso, así que agendar a alguien arranca con un mail de ida y
- * vuelta. Está hablado con Camila el 2026-09-22 y es el precio de que los dos
- * canales pidan lo mismo. Si el cliente suma esos campos a su formulario,
- * vuelven acá.
- *
- * ⚠️ SON DOS SCHEMAS Y NO UNO CON CAMPOS OPCIONALES. Un músico y alguien que
- * busca trabajo no comparten casi nada. Un schema único con la mitad de los
- * campos opcionales no valida nada de verdad, y los mensajes de error terminan
- * hablando de campos que la persona nunca vio.
- *
- * ⚠️ EL ARCHIVO SE VALIDA EN LOS DOS LADOS. En el cliente por `accept` y por
- * el chequeo de tamaño; en el servidor por lo que dice el `File`, que es lo
- * único que manda. Un `accept` en el HTML es una sugerencia al selector de
- * archivos, no una restricción: se puede arrastrar cualquier cosa.
- * ══════════════════════════════════════════════════════════════════════════
- */
-
-/**
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ EL TECHO DE VERDAD NO LO PONEMOS NOSOTROS: LO PONE VERCEL, 4,5 MB POR
- * REQUEST. Es el cuerpo entero —campos más archivos— y lo que pasa de ahí
- * se corta con un 413 antes de llegar a la action. Desde el 2026-09-23 los
- * archivos viajan adjuntos en el mail (antes se descartaban), así que ese
- * techo pasó a importar.
- *
- * Por eso hay DOS números:
- *   · lo que se deja ELEGIR (el del CV y el de las fotos, abajo), y
- *   · lo que se deja ENVIAR, sumado, que es `MAX_REQUEST_MB`.
- *
- * ⚠️ LAS FOTOS SE ACHICAN EN EL NAVEGADOR ANTES DE SALIR. Ver
- * `lib/compress-image.ts`: una foto de teléfono de 8 MB llega al mail en
- * menos de 1 MB y a 2400px del lado largo, que es más de lo que hace falta
- * para decidir si una banda entra. Un PDF no se puede achicar, y por eso el
- * CV bajó de 5 a 4 MB.
- * ══════════════════════════════════════════════════════════════════════════
- */
 export const MAX_REQUEST_MB = 4;
 
-/** 4 MB para el currículum. Era 5, el que pidió Camila; ver la nota de arriba. */
 export const MAX_FILE_MB = 4;
 
-/**
- * 15 MB para el logo y la foto de la banda, ANTES de achicarlas.
- *
- * ⚠️ NO ES UN NÚMERO NUESTRO: es el que declara el formulario del cliente
- * debajo de sus dos campos de subida, «Upload supported file (Max 15MB)». Si
- * acá pusiéramos 5, alguien que ya subió su foto en el sitio viejo se comería
- * un rechazo por un límite que nadie le avisó que bajó. Se sostiene porque el
- * navegador las achica antes de enviar; lo que llega al servidor es mucho menos.
- */
 export const MAX_IMAGE_MB = 15;
 
 export const RESUME_TYPES = [
@@ -89,13 +14,6 @@ export const RESUME_TYPES = [
 
 export const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'] as const;
 
-/**
- * Un archivo subido, validado.
- *
- * ⚠️ VACÍO PASA. Un `<input type="file">` sin elegir nada llega como un `File`
- * de 0 bytes y nombre vacío, no como `undefined`. Sin este caso, un campo
- * opcional rechazaría todos los envíos que no suben nada.
- */
 const archivo = (tipos: readonly string[], etiqueta: string, maxMb: number, formatos: string) =>
   z
     .custom<File>((v) => v instanceof File, 'Attach a file.')
@@ -106,8 +24,6 @@ const archivo = (tipos: readonly string[], etiqueta: string, maxMb: number, form
     .refine((f) => f.size === 0 || tipos.includes(f.type), `${etiqueta} has to be ${formatos}.`)
     .optional();
 
-/* ── Piezas que comparten los dos ───────────────────────────────────────── */
-
 const nombre = (campo: string) => z.string().trim().min(2, `Enter your ${campo}.`).max(100, 'Keep this under 100 characters.');
 const mail = z.string().trim().email('Enter a valid email.').max(254, 'That email is too long.');
 const telefono = z
@@ -116,62 +32,13 @@ const telefono = z
   .max(30, 'That phone number is too long.')
   .refine((v) => v.replace(/\D/g, '').length >= 10, 'Enter a phone number with at least 10 digits.');
 
-/**
- * El campo trampa.
- *
- * ⚠️ SE LLAMA `website` Y ANTES SE LLAMABA `website_hp`, QUE ERA UN BUG MUDO.
- * El input lo dibuja `FormShell` con `name="website"`, así que el schema
- * buscaba una clave que no llegaba nunca: caía en el `.default('')`, el
- * `if (parsed.data.website_hp)` daba falso siempre y la trampa no atrapaba a
- * nadie. Un filtro anti spam que nunca se dispara no se nota hasta que llega
- * el spam.
- *
- * ⚠️ EL MISMO BUG SIGUE VIVO EN `lib/schemas/market-vendor.ts`, que es el
- * tercer formulario con trampa. No se tocó acá porque es otra página; queda
- * anotado para arreglarlo en su propio commit.
- */
 const trampa = z.string().max(0).optional().default('');
-
-/* ── 1. Trabajo ─────────────────────────────────────────────────────────── */
-
-/*
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ TODO LO QUE SIGUE SALE DE LA HOJA, EN EL ORDEN DE LA HOJA. Lo que el
- * papel pide arriba se pregunta arriba. Es la única forma de que alguien que
- * tiene el PDF abierto al lado pueda seguir los dos.
- *
- * ⚠️ EL «DATE» DEL ENCABEZADO NO SE PREGUNTA, y es la única línea del papel
- * que no está acá. En una hoja impresa hay que escribir la fecha porque el
- * papel no la sabe; un envío web llega con la suya. Preguntarla sería pedir un
- * dato que ya tenemos y que además puede venir mal escrito.
- *
- * ⚠️ LAS DOS TABLAS SON OPCIONALES ENTERAS, tal cual el papel: el PDF no marca
- * un solo campo como obligatorio en «Educational background» ni en
- * «Employment history». El costo asumido, hablado con Camila el 2026-09-22, es
- * que un envío puede llegar sin una línea de experiencia. Lo que sostiene el
- * envío igual son los obligatorios de arriba —puesto, nombre, teléfono, mail y
- * las tres preguntas de sí o no—, que es con lo que se llama a alguien.
- * ══════════════════════════════════════════════════════════════════════════
- */
 
 export const EMPLOYMENT_TYPE = [
   { value: 'part-time', label: 'Part-Time' },
   { value: 'full-time', label: 'Full-Time' },
 ] as const;
 
-/**
- * Los siete días, cada uno con AM y PM.
- *
- * ⚠️ ES LA GRILLA DEL PAPEL Y NO LOS CINCO TIPOS DE TURNO QUE TENÍAMOS
- * («Weekdays», «Night shifts», «Anything you have»). Esos los inventamos
- * nosotros. El papel pide día por día y mañana o tarde, que para armar una
- * semana de turnos es un dato mucho más fino: con «weekends» no se sabe si
- * puede el sábado al mediodía.
- *
- * ⚠️ `short` EXISTE PARA EL TELÉFONO. Siete filas con «Wednesday» entero más
- * dos casillas no entran en 360px sin que la etiqueta se parta en dos
- * renglones. El papel mismo abrevia «Wed.», así que no es una licencia nuestra.
- */
 export const DAYS = [
   { value: 'mon', label: 'Monday', short: 'Mon' },
   { value: 'tue', label: 'Tuesday', short: 'Tue' },
@@ -187,12 +54,10 @@ export const SHIFTS = [
   { value: 'pm', label: 'PM' },
 ] as const;
 
-/** `mon-am`, `mon-pm`, `tue-am`… Los catorce que puede mandar el formulario. */
 export const AVAILABILITY_SLOTS: readonly string[] = DAYS.flatMap((d) =>
   SHIFTS.map((s) => `${d.value}-${s.value}`),
 );
 
-/** Cómo se lee un slot en el mail: `mon-am` → `Monday AM`. */
 export function slotLabel(slot: string): string {
   const [dia, turno] = slot.split('-');
   const d = DAYS.find((x) => x.value === dia);
@@ -207,23 +72,6 @@ export const YES_NO = [
 
 const siNo = (pregunta: string) => z.enum(['yes', 'no'], { message: pregunta });
 
-/**
- * Las dos tablas del papel, como columnas.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LAS FILAS VIAJAN COMO COLUMNAS PARALELAS Y SE ARMAN EN LA ACTION. Cada
- * celda es un input con el `name` de su columna repetido por fila
- * —`eduDegree` dos veces, `jobCompany` tres—, y la action las lee con
- * `getAll` y las cruza. Es el mismo mecanismo que ya usa `RepeatableField`
- * para los links, y el motivo es el mismo: `Object.fromEntries` se queda con
- * el último valor de cada nombre, así que sin `getAll` de una tabla de tres
- * filas llegaría una sola.
- *
- * ⚠️ LAS FILAS VACÍAS SE DESCARTAN ANTES DE VALIDAR. El papel tiene dos
- * renglones de estudios y tres de empleos porque es papel y hay que imprimir
- * algo; nadie está obligado a llenar los cinco.
- * ══════════════════════════════════════════════════════════════════════════
- */
 export const EDU_COLS = [
   { key: 'degree', label: 'Degree / Certificate' },
   { key: 'school', label: 'University / Institute' },
@@ -238,11 +86,9 @@ export const HISTORY_COLS = [
   { key: 'years', label: 'Year(s)' },
 ] as const;
 
-/** Dos renglones de estudios y tres de empleos, como la hoja impresa. */
 export const EDU_ROWS = 2;
 export const HISTORY_ROWS = 3;
 
-/** Una fila ya armada: la columna y lo que se escribió en ella. */
 export type TableRow = Readonly<Record<string, string>>;
 
 const tabla = (maxFilas: number) =>
@@ -252,13 +98,6 @@ const tabla = (maxFilas: number) =>
     .default([]);
 
 export const jobSchema = z.object({
-  /**
-   * ⚠️ ES TEXTO LIBRE Y NO UN DESPLEGABLE DE PUESTOS, igual que en el papel,
-   * donde «Position» es una línea en blanco. Hoy el dashboard no tiene
-   * ninguna búsqueda cargada, así que un select estaría vacío; y con texto
-   * libre alguien puede escribir «anything behind the bar», que es lo que
-   * realmente escribe la gente.
-   */
   position: z.string().trim().min(2, 'What kind of work are you after?').max(200, 'Keep this under 200 characters.'),
   employmentType: z.enum(['part-time', 'full-time'], {
     message: 'Part-time or full-time?',
@@ -287,41 +126,11 @@ export const jobSchema = z.object({
 
   startDate: z.string().trim().min(1, 'When could you start?').max(200, 'Keep this under 200 characters.'),
 
-  /**
-   * ⚠️ UN SOLO CAMPO PARA LAS DOS COSAS. El pie del papel dice «attach your
-   * resume and portfolio to this job application form», o sea los dos, pero no
-   * da dos renglones: da un sobre. Dos campos separados en la web obligarían a
-   * quien tiene todo en un PDF a subirlo dos veces o a elegir cuál miente.
-   */
   resume: archivo(RESUME_TYPES, 'Your resume', MAX_FILE_MB, 'a PDF or a Word document'),
 
   website: trampa,
 });
 
-/* ── 2. Artistas ────────────────────────────────────────────────────────── */
-
-/*
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ DIEZ CAMPOS, LOS DIEZ DEL FORMULARIO DEL CLIENTE, EN SU ORDEN: nombre,
- * apellido, mail, teléfono, band name, social media link, género, video link,
- * logo y foto.
- *
- * ⚠️ SÓLO LOS CUATRO PRIMEROS SON OBLIGATORIOS, que son los cuatro que el
- * formulario del cliente marca con asterisco. Los demás quedan opcionales
- * aunque uno de ellos sea el que más importa: sin un link de video o de redes
- * no hay nada para escuchar y la solicitud no se puede evaluar. Se respeta el
- * original igual —es un calco, no una corrección— y el peso se pone donde sí
- * corresponde: en el `hint` del campo y en la columna de la izquierda de la
- * página, que dice qué necesitamos para poder contestar.
- * ══════════════════════════════════════════════════════════════════════════
- */
-
-/*
- * ⚠️ UN LINK SE PIDE QUE PAREZCA UN LINK, NO QUE SEA UNA URL PERFECTA. Se
- * acepta con o sin `https://` —nadie lo escribe— y también un @usuario, que es
- * como la gente pasa su Instagram. Lo que se rechaza es lo que seguro no lleva
- * a ningún lado: texto con espacios o sin un solo punto.
- */
 const PARECE_LINK = /^(@[\w.]{2,}|(https?:\/\/)?[^\s/]+\.[^\s]{2,})$/i;
 
 const linkOpcional = (campo: string) =>
@@ -353,27 +162,6 @@ export const artistSchema = z.object({
 export type JobInput = z.infer<typeof jobSchema>;
 export type ArtistInput = z.infer<typeof artistSchema>;
 
-/* ── Del FormData al objeto a validar ───────────────────────────────────── */
-
-/*
- * ⚠️ VIVEN ACÁ Y NO EN LA ACTION desde el 2026-09-23: el navegador valida con
- * el mismo schema antes de enviar, y para eso tiene que armar el mismo objeto.
- * Si cada lado cruzara las tablas a su manera, un error podría aparecer en un
- * lado y no en el otro.
- */
-
-/**
- * Las tablas del papel, de columnas paralelas a filas.
- *
- * ⚠️ CADA COLUMNA LLEGA COMO UN `name` REPETIDO —`edu.degree` dos veces,
- * `job.company` tres— y acá se cruzan por índice: la fila 0 es la primera celda
- * de cada columna.
- *
- * ⚠️ LAS FILAS VACÍAS SE DESCARTAN, y eso incluye las medio vacías al revés:
- * si alguien escribió sólo la empresa, la fila entra con los otros tres campos
- * en blanco. Lo que se tira es la fila donde no se escribió NADA, que es lo
- * normal cuando el papel ofrece tres renglones y la persona tuvo dos trabajos.
- */
 export function tableRows(
   formData: FormData,
   prefijo: string,
@@ -396,11 +184,6 @@ export function tableRows(
   return out;
 }
 
-/**
- * ⚠️ LOS CAMPOS MÚLTIPLES SE LEEN CON `getAll`. `Object.fromEntries` se queda
- * con el último valor de cada nombre, así que alguien que tilda seis turnos
- * habría enviado uno solo.
- */
 export function jobFromForm(fd: FormData) {
   return {
     ...Object.fromEntries(fd),

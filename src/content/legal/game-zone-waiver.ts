@@ -1,37 +1,5 @@
 import type { LegalBlock } from '@/content/legal-docs';
 
-/**
- * GAME TRUCK TERMS AND CONDITIONS, textual. Es el documento largo de los tres:
- * 10 cláusulas numeradas, once reconocimientos de la a a la k, el permiso de
- * fotos y el aviso de firma electrónica.
- *
- * ⚠️ FUENTE: `_source/game-zone-waiver.md`, scrapeado el 2026-09-15 de
- * `eatdrinkparadise.com/game-zone-waiver`.
- *
- * ⚠️ LAS MAYÚSCULAS SON DEL ORIGINAL Y NO SE BAJAN. Los dos avisos en caja
- * alta están gritados a propósito: en Florida un waiver que libera de
- * responsabilidad por negligencia tiene que ser CONSPICUO para valernos, y la
- * caja alta es la forma en que este documento lo hace. Pasarlos a caja baja
- * «porque se lee mejor» les saca justamente eso.
- *
- * ⚠️ LAS ERRATAS TAMBIÉN QUEDAN: «shall be construe» por «construed», el
- * «Lease» de la cláusula 7 —que es de otro contrato y quedó pegado acá—, y el
- * «please contact notify the game coach» del permiso de fotos.
- *
- * ⚠️ TRES LÍNEAS DEL VOLCADO NO SE PUBLICAN, y no son texto del documento:
- *
- *   · «NOTICE TO THE MINOR CHILD’S OR CHILDREN’S NATURAL GUARDIAN OR
- *     CARETAKER» aparece DOS VECES seguidas, con una línea suelta que dice
- *     «Rooftop at Riverside, LLC» en el medio. Es el encabezado de la sección
- *     partido por la maqueta de Wix: se publica una sola vez.
- *   · «For multiple names, separate names with a comma.» es la ayuda de un
- *     campo del formulario de firma.
- *   · «Month / Day / Year / Submit» y el aviso de modo de dibujo son la UI de
- *     la firma electrónica de Wix.
- *
- * El formulario no se replica: acá el waiver se lee, y se firma en el lugar
- * antes de subir al camión.
- */
 export const GAME_ZONE_WAIVER: readonly LegalBlock[] = [
   { kind: 'titulo', text: 'Rooftop at Riverside, LLC game truck terms and conditions' },
   {

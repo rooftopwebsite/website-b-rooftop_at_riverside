@@ -1,19 +1,5 @@
 import { sinEmDash } from './restoexp';
 
-/**
- * El blog, en su parte pura: del feed del dashboard a lo que dibuja el sitio.
- *
- * Sin fetch y sin Next, para que se pruebe con `npm test`. El fetch vive en
- * `blog.ts`.
- *
- * ⚠️ EL FEED ES EL MISMO DE PRETTY HENS, SANTA MARIA, YAVA Y JUANITOS:
- * `app.restoexp.com/api/public/restaurants/<id>/blogs`. Lo que cambia acá es
- * lo que se corrigió de ellos en la auditoría del 2026-09-23 (ver el spec):
- * la portada se valida contra el `remotePattern`, el extracto de respaldo sale
- * del HTML y no del markdown, y el texto pasa por `sinEmDash`, porque las notas
- * reales traen guiones medios y la regla del sitio no los admite.
- */
-
 export interface FeedPost {
   readonly id: string;
   readonly slug: string | null;
@@ -25,15 +11,11 @@ export interface FeedPost {
   readonly ogImage?: string | null;
   readonly ogTitle?: string | null;
   readonly ogDescription?: string | null;
-  /** Markdown. Sólo se usa si no vino `contentHtml`. */
   readonly content?: string | null;
-  /** Ya sanitizado por el dashboard. Es lo que se imprime. */
   readonly contentHtml?: string | null;
   readonly jsonLd?: unknown;
   readonly author?: { readonly name?: string | null; readonly avatarUrl?: string | null } | null;
-  /** YYYY-MM-DD. */
   readonly publishedAt?: string | null;
-  /** ISO. */
   readonly updatedAt?: string | null;
   readonly featured?: boolean | null;
 }
@@ -44,9 +26,7 @@ export interface Post {
   readonly excerpt: string;
   readonly image: string | null;
   readonly imageAlt: string;
-  /** YYYY-MM-DD o ''. */
   readonly publishedAt: string;
-  /** ISO o ''. */
   readonly modifiedAt: string;
   readonly readMinutes: number;
   readonly featured: boolean;
@@ -57,17 +37,10 @@ export interface PostFull extends Post {
   readonly metaTitle: string;
   readonly metaDescription: string;
   readonly ogImage: string | null;
-  /** `/blog/<slug>`, o el path del canonical del dashboard si es de nuestro dominio. */
   readonly canonicalPath: string;
   readonly faqJsonLd: readonly Record<string, unknown>[];
 }
 
-/**
- * ⚠️ ES EL `remotePattern` DE `next.config.ts`, y tiene que seguir siéndolo.
- * Una portada con otro host tira `next/image` en runtime y se lleva el listado
- * entero: es lo que le pasa hoy a Santa Maria. Las de Yava vienen como ruta
- * relativa a SU `public/`, que acá daría 404.
- */
 export const IMAGE_ORIGIN =
   'https://kqibgbvdgxrjhdyfoxvm.supabase.co/storage/v1/object/public/restaurant-assets/';
 
@@ -95,25 +68,13 @@ const ENTIDADES: Record<string, string> = {
 
 const decode = (t: string) => t.replace(/&[#a-z0-9]+;/gi, (e) => ENTIDADES[e.toLowerCase()] ?? e);
 
-/** `sinEmDash` sin comerse los espacios de los bordes, que separan del tag vecino. */
 function limpiarTexto(t: string): string {
   const texto = t.replace(/&mdash;|&#8212;/gi, '—');
   if (!texto.includes('—')) return texto;
   const [, antes, medio, despues] = texto.match(/^(\s*)([\s\S]*?)(\s*)$/)!;
-  // «<strong>b</strong> — c» → «<strong>b</strong>: c»: si el texto ARRANCA
-  // con el guion, los dos puntos se pegan al tag de la izquierda.
   return `${medio.startsWith('—') ? '' : antes}${sinEmDash(medio)}${despues}`;
 }
 
-/**
- * Limpia el HTML del cuerpo. Dos cosas, y sólo en el texto visible:
- *   · saca los guiones medios, texto por texto, nunca en atributos ni en
- *     `<code>`/`<pre>`;
- *   · baja los `h1` a `h2`: el `h1` de la página es el título de la nota.
- *
- * No sanitiza: el dashboard ya manda `contentHtml` sanitizado, y el respaldo
- * de markdown sale escapado de `markdownToHtml`.
- */
 export function cleanHtml(html: string): string {
   let crudo = 0;
   return html
@@ -136,11 +97,6 @@ export function htmlToText(html: string): string {
 const escapar = (t: string) =>
   t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-/**
- * Respaldo mientras el dashboard no mande `contentHtml` en todas las notas.
- * Párrafos y títulos, todo escapado. No es un parser de markdown y no quiere
- * serlo: los dos feeds reales de hoy ya traen el HTML.
- */
 export function markdownToHtml(md: string): string {
   return md
     .split(/\n\s*\n/)
@@ -164,7 +120,6 @@ function ymd(value: string | null | undefined): string {
   return m ? m[1] : '';
 }
 
-/** «April 15, 2026». En UTC al mediodía: nunca se corre de día. */
 export function formatDate(value: string): string {
   const d = ymd(value);
   if (!d) return '';
@@ -176,12 +131,10 @@ export function formatDate(value: string): string {
   });
 }
 
-/** La línea de datos de la nota: «April 15, 2026 · 6 min read». */
 export function postMeta(post: Post): string {
   return [formatDate(post.publishedAt), `${post.readMinutes} min read`].filter(Boolean).join(' · ');
 }
 
-/** Los nodos `FAQPage` del schema del dashboard, cada uno con su `@context`. */
 export function faqNodes(jsonLd: unknown): Record<string, unknown>[] {
   const nodos = Array.isArray(jsonLd) ? jsonLd : jsonLd && typeof jsonLd === 'object' ? [jsonLd] : [];
   const out: Record<string, unknown>[] = [];
@@ -250,7 +203,6 @@ export function toPostFull(feed: FeedPost, siteUrl: string): PostFull | null {
   };
 }
 
-/** El feed entero, en su orden, sin notas vacías ni slugs repetidos. */
 export function toPosts(feed: readonly FeedPost[], siteUrl: string): PostFull[] {
   const vistos = new Set<string>();
   const out: PostFull[] = [];
@@ -263,7 +215,6 @@ export function toPosts(feed: readonly FeedPost[], siteUrl: string): PostFull[] 
   return out;
 }
 
-/** La nota grande del listado: la marcada en el dashboard, o la primera. */
 export function splitFeatured<T extends Post>(posts: readonly T[]): { featured: T | null; rest: T[] } {
   if (posts.length === 0) return { featured: null, rest: [] };
   const i = Math.max(0, posts.findIndex((p) => p.featured));

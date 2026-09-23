@@ -6,12 +6,6 @@ import { rateLimited, sendSubmission } from '@/lib/submissions';
 import { getVenue } from '@/lib/venue';
 import { fieldErrorsFrom, type ActionState } from './types';
 
-/**
- * La solicitud de puesto del Neighborhood Market.
- *
- * ⚠️ El objeto a validar lo arma `marketVendorFromForm`, el mismo que usa el
- * cliente: ahí está la nota de por qué `needs` se lee con `getAll`.
- */
 export async function submitMarketVendor(
   _prev: ActionState,
   formData: FormData,
@@ -20,7 +14,6 @@ export async function submitMarketVendor(
 
   if (!parsed.success) {
     const fieldErrors = fieldErrorsFrom(parsed.error.issues);
-    // El honeypot se contesta con un ok falso, igual que en los otros cuatro.
     if (fieldErrors.website) return { status: 'ok', message: 'Thanks. Your request is in.' };
     return {
       status: 'error',

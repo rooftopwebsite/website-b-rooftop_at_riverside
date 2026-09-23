@@ -1,40 +1,10 @@
 import type { Hours } from '@/types/content';
 import { fetchConTimeout } from './http';
 
-/**
- * Los datos del local, leídos de la base de RestoExp.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ SÍ SE PUEDE LEER CON LA ANON KEY, y el repo tenía anotado lo contrario.
- *
- * La nota vieja decía que la anon key «autentica pero no tiene permiso sobre
- * nada», porque la prueba se había hecho contra `/rest/v1/events`, una tabla
- * que NO EXISTE. Las que existen son `locations`, `location_hours`,
- * `location_events` y `menu_items`, y las cuatro devuelven 200 con la anon key
- * que ya está en `.env.local`. Verificado el 2026-09-15.
- *
- * ⚠️ NO FALTA NINGUNA VARIABLE DE ENTORNO. Las tres que hacen falta ya están:
- *   · NEXT_PUBLIC_SUPABASE_URL
- *   · NEXT_PUBLIC_SUPABASE_ANON_KEY
- *   · NEXT_PUBLIC_SUPABASE_RESTAURANT_ID
- * Lo que faltaba era el código que las usara. Esto es ese código.
- *
- * ⚠️ NUNCA la `SUPABASE_SERVICE_ROLE_KEY` acá. La instancia es COMPARTIDA por
- * todos los sitios de la casa y lo único que separa un cliente de otro es el
- * `restaurant_id`: la service role saltea el row-level security y daría acceso
- * de administrador a los datos de todos los demás restaurantes.
- *
- * ⚠️ FETCH PLANO Y NO `@supabase/supabase-js`. Son dos GET con filtro; el
- * paquete pesa más que el código que lo usaría, y así el caché lo maneja Next
- * con `revalidate` en vez de una capa propia.
- * ══════════════════════════════════════════════════════════════════════════
- */
-
 const URL_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const RESTAURANT_ID = process.env.NEXT_PUBLIC_SUPABASE_RESTAURANT_ID;
 
-/** Una hora. El dato del local cambia poco y una página vieja de una hora no rompe nada. */
 const REVALIDATE = 3600;
 
 export interface RestoexpLocation {
@@ -50,43 +20,16 @@ export interface RestoexpLocation {
   readonly latitude: number | null;
   readonly longitude: number | null;
   readonly timezone: string | null;
-  /** Hoy viene `null` en este restaurante. Ver `docs/`. */
   readonly social_links: readonly { readonly platform: string; readonly url: string }[] | null;
 }
 
 interface LocationHourRow {
-  readonly day_of_week: number; // 0 = domingo
+  readonly day_of_week: number;
   readonly open_time: string | null;
   readonly close_time: string | null;
   readonly is_closed: boolean;
 }
 
-/**
- * SIN EM DASHES. Se aplica a TODO texto que entra de la base.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ REGLA ESTRICTA DEL PROYECTO: ningún texto visible del sitio lleva em dash
- * (—). Vale para copy, titulares, alt, aria-label y metadatos. Se reemplaza
- * por punto, coma, dos puntos o paréntesis, el que corresponda al sentido.
- *
- * ⚠️ HACE FALTA ACÁ PORQUE EL CLIENTE LOS ESCRIBE. Verificado el 2026-09-15:
- * el menú cargado en el dashboard tiene seis, entre nombres de ítem («Xtini —
- * The Espresso Martini»), categorías («Wine — White») y descripciones («a new
- * frozen flavor — ask us what's blending now»). Ahora que la fuente es la
- * base, el texto ya no pasa por nuestras manos antes de publicarse.
- *
- * ⚠️ LA ELECCIÓN NO ES AL AZAR, y son sólo dos casos:
- *   · Si lo que va antes son tres palabras o menos, es un RÓTULO y su
- *     calificador: «Wine — White» → «Wine: White». Dos puntos.
- *   · Si es más largo, son dos oraciones: «…flavor — ask us…» → «…flavor. Ask
- *     us…». Punto, y mayúscula en la que sigue.
- *
- * ⚠️ EL EN DASH (–) SE CONSERVA. En rangos —«3–6 PM», «$25–35»— es la forma
- * tipográfica correcta y no es lo que la regla prohíbe.
- *
- * TODO: pedirle al cliente que los corrija en el dashboard. Esto es una red,
- * no el arreglo: el texto correcto tiene que estar en la fuente.
- */
 export function sinEmDash(t: string): string;
 export function sinEmDash(t: string | null): string | null;
 export function sinEmDash(t: string | null): string | null {
@@ -98,9 +41,7 @@ export function sinEmDash(t: string | null): string | null {
       if (i === 0) return parte;
       if (!parte) return acc;
       const palabras = acc.split(/\s+/).filter(Boolean).length;
-      // Rótulo corto y su calificador: dos puntos.
       if (palabras <= 3) return `${acc}: ${parte}`;
-      // Dos oraciones: punto y mayúscula en la que sigue.
       const conMayuscula = parte.charAt(0).toUpperCase() + parte.slice(1);
       return `${acc.replace(/[.,;:]$/, '')}. ${conMayuscula}`;
     }, '')
@@ -123,14 +64,11 @@ async function query<T>(path: string): Promise<readonly T[]> {
     }
     return (await res.json()) as readonly T[];
   } catch (e) {
-    // ⚠️ Nunca tirar: si la base no contesta, el sitio se sirve igual con el
-    // contenido local. Un teléfono viejo es infinitamente mejor que un 500.
     console.error('[restoexp]', e instanceof Error ? e.message : e);
     return [];
   }
 }
 
-/** La ficha del local. `null` si la base no contesta: el llamador usa el respaldo. */
 export async function getLocation(): Promise<RestoexpLocation | null> {
   const rows = await query<RestoexpLocation>(
     `locations?restaurant_id=eq.${RESTAURANT_ID}&select=*&limit=1`,
@@ -140,7 +78,6 @@ export async function getLocation(): Promise<RestoexpLocation | null> {
 
 const DIAS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-/** `15:00:00` → `3:00 PM`. El formato que ya usa el sitio. */
 function reloj(t: string | null): string {
   if (!t) return '';
   const [hRaw, m] = t.split(':');
@@ -150,23 +87,12 @@ function reloj(t: string | null): string {
   return `${h12}:${m} ${ampm}`;
 }
 
-/**
- * Los horarios del local, en el mismo formato que consume todo el sitio.
- *
- * ⚠️ DEVUELVE LOS DE LA BARRA. La base guarda UN set de horarios por local y
- * el negocio tiene DOS: la barra y los food trucks abren y cierran a horas
- * distintas todos los días. Los de la barra coinciden exactos con la base; los
- * de los trucks no están en ninguna tabla.
- * TODO: confirmar con cliente si los horarios de los trucks pueden cargarse en
- * el dashboard. Hasta entonces esa columna sale de `content/hours.ts`.
- */
 export async function getHours(location: string): Promise<readonly Hours[] | null> {
   const rows = await query<LocationHourRow>(
     `location_hours?location_id=eq.${location}&select=day_of_week,open_time,close_time,is_closed&order=day_of_week`,
   );
   if (rows.length === 0) return null;
 
-  // La base arranca en domingo; el sitio muestra la semana de lunes a domingo.
   const porDia = new Map(rows.map((r) => [r.day_of_week, r]));
   const orden = [1, 2, 3, 4, 5, 6, 0];
 
@@ -180,52 +106,12 @@ export async function getHours(location: string): Promise<readonly Hours[] | nul
   });
 }
 
-/* ==========================================================================
-   LAS CARTAS COMO PDF
-
-   ⚠️ DESDE EL 2026-09-21 CADA CARTA TIENE SU PDF EN LA BASE. Camila: «en la
-   base de datos ya actualicé los menús, están subidos los PDF, conectá cada
-   card con su menú de la base de datos». Son cinco filas de `menus` con
-   `pdf_url` apuntando al storage de Supabase: las cuatro de los trucks y la del
-   Sunset Bar.
-
-   ⚠️ ESTO REEMPLAZA A `menuImage` DE `content/trucks.ts`, que eran dos JPG
-   bajados a mano del sitio viejo el 2026-09-16 y que sólo cubrían dos de los
-   cuatro trucks. El campo queda en el archivo como respaldo —si la base no
-   contesta, la tarjeta sigue teniendo algo que abrir— pero la fuente ahora es
-   la base, que es lo que el cliente puede actualizar solo.
-   ========================================================================== */
-
-/** Una carta publicada como archivo: el nombre que le puso el cliente y su PDF. */
 export interface MenuPdf {
   readonly name: string;
-  /**
-   * La bajada que el cliente escribe en el dashboard.
-   *
-   * ⚠️ ES LO QUE PUBLICA LA TARJETA DEL TRUCK. Camila, 2026-09-21: «cada
-   * descripción agregala en la descripción de cada menú en la base de datos».
-   * Antes el texto de la tarjeta vivía en `content/trucks.ts`, o sea que
-   * cambiarlo era un commit. Ahora lo cambia el cliente.
-   */
   readonly description: string | null;
   readonly pdfUrl: string;
 }
 
-/**
- * Las cartas con PDF cargado, tal como están en el dashboard.
- *
- * ⚠️ NO FILTRA POR NOMBRE NI ADIVINA A QUÉ TRUCK PERTENECE CADA UNA: devuelve
- * lo que hay y el emparejamiento lo hace `content/trucks.ts`, que es donde vive
- * el roster. Acá no se sabe qué es un truck.
- *
- * ⚠️ FILTRA `is_active` y las que no tienen PDF. Una carta desactivada en el
- * dashboard es una carta que el cliente sacó, y publicarla es ofrecer algo que
- * no existe.
- *
- * ⚠️ EL `pdf_url` YA VIENE CON `?v=` —el sello de la última subida— y se
- * conserva tal cual: es lo que hace que al reemplazar el archivo el navegador
- * no siga mostrando el viejo de su caché.
- */
 export async function getMenuPdfs(): Promise<readonly MenuPdf[]> {
   const rows = await query<{
     name: string;
@@ -244,18 +130,6 @@ export async function getMenuPdfs(): Promise<readonly MenuPdf[]> {
     }));
 }
 
-/* ==========================================================================
-   EL MENÚ DE LA BARRA
-
-   ⚠️ ESTÁ CARGADO ENTERO EN LA BASE, y el repo lo tenía transcrito a mano.
-   Verificado el 2026-09-15: el menú «Sunset Bar» tiene las NUEVE categorías
-   exactas de `content/bar-menu.ts` y 50 ítems con precio y descripción. La
-   transcripción a mano se hizo porque el sitio viejo publica el menú como dos
-   imágenes JPG, y nadie había mirado la base.
-
-   Ahora el cliente cambia un precio en el dashboard y el sitio lo sigue.
-   ========================================================================== */
-
 export interface MenuRow {
   readonly name: string;
   readonly description: string | null;
@@ -270,12 +144,6 @@ export interface MenuGroup {
   readonly items: readonly MenuRow[];
 }
 
-/**
- * Las nueve cartas del bar, en el orden del dashboard.
- *
- * ⚠️ FILTRA `is_active`. Un ítem desactivado en el dashboard es un ítem que el
- * cliente sacó de la carta, y publicarlo es ofrecer algo que no existe.
- */
 export async function getMenu(): Promise<readonly MenuGroup[] | null> {
   const menus = await query<{ id: string }>(
     `menus?restaurant_id=eq.${RESTAURANT_ID}&select=id&limit=1`,
@@ -310,30 +178,6 @@ export async function getMenu(): Promise<readonly MenuGroup[] | null> {
   return grupos.filter((g) => g.items.length > 0);
 }
 
-/**
- * LA CARTA DEL BAR CON TODAS LAS COLUMNAS.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ ES `getMenu()` PERO PIDIENDO LA FICHA ENTERA, y esa diferencia es el
- * motivo de que exista. `getMenu` selecciona cuatro columnas —nombre,
- * descripción, precio base y si está activo— porque nació para una carta que
- * se imprimía como lista de dos columnas. Con eso, todo lo demás que el
- * cliente carga en el dashboard no llegaba nunca a la página: las VARIANTES
- * de precio (copa y botella), la foto, el descuento, los dietarios, los
- * alérgenos, el picante y las notas.
- *
- * Acá se piden las 29 columnas de `CAMPOS_PLATO`, que son las mismas que ya
- * usaba `getTruckMenu`. El que decide qué mostrar es el componente, no la
- * consulta: si mañana el cliente le carga una foto a un trago, aparece sola.
- *
- * ⚠️ LAS DOS CONVIVEN Y NO SE FUSIONAN. `getMenu` sigue sirviendo a quien
- * necesita la carta liviana; ésta trae 29 columnas por ítem y no tiene sentido
- * pedirlas para una lista de nombres y precios.
- *
- * ⚠️ DEVUELVE `null` Y NO UN ARRAY VACÍO cuando no hay nada, que es lo que
- * espera el lado de la página para caer al respaldo transcrito a mano. Una
- * carta desactualizada es mala; una carta vacía es peor.
- */
 export async function getBarMenu(): Promise<readonly DishGroup[] | null> {
   const menus = await query<{ id: string }>(
     `menus?restaurant_id=eq.${RESTAURANT_ID}&select=id&limit=1`,
@@ -370,42 +214,6 @@ export async function getBarMenu(): Promise<readonly DishGroup[] | null> {
   return conPlatos.length > 0 ? conPlatos : null;
 }
 
-/* ==========================================================================
-   EL MENÚ DE CADA TRUCK
-
-   ══════════════════════════════════════════════════════════════════════════
-   ⚠️ HOY NO HAY NINGUNO CARGADO, Y EL CÓDIGO ESTÁ IGUAL. Verificado el
-   2026-09-16: el restaurante tiene UN solo `menus`, el «Sunset Bar».
-
-   Se escribe ahora porque la estructura de la base ya lo permite sin cambiar
-   una línea: un menú por truck es una fila más en `menus`, con el NOMBRE DEL
-   TRUCK. El cliente carga «El Chilango» en el dashboard, le arma sus
-   categorías y sus platos, y la página del truck se llena sola en la próxima
-   revalidación. Sin deploy y sin que nadie toque este archivo.
-
-   Pedido de Camila, 2026-09-16: «armalo con lo que tenemos hoy contemplando
-   que en cada uno tendremos el menú digital».
-
-   ⚠️ EL MATCH ES POR NOMBRE Y NO POR UN ID GUARDADO EN `trucks.ts`. Un id
-   obliga a que alguien lo copie del dashboard al repo y lo mantenga; el nombre
-   ya existe en los dos lados y es lo que el cliente va a escribir igual. Se
-   compara normalizado —sin mayúsculas, sin acentos, sin puntuación— para que
-   «OCN Seafood Co.» encuentre a «OCN Seafood Co» y a «ocn seafood co.».
-
-   ⚠️ SI NO HAY MENÚ DEVUELVE `null` Y NO UN ARRAY VACÍO. La página tiene que
-   poder distinguir «este truck todavía no cargó su carta» de «cargó una carta
-   y está vacía»: lo primero se muestra como dato pendiente, lo segundo es un
-   error del dashboard y no se muestra.
-   ========================================================================== */
-
-/**
- * Un plato, con TODOS los campos que la plataforma sabe guardar.
- *
- * ⚠️ ES LA MISMA FORMA QUE USAN LAS OTRAS CASAS —pretty-hens y santa-maría
- * leen esta tabla con estos mismos nombres— y por eso se copian los nombres de
- * columna tal cual en vez de renombrarlos a algo más lindo. El día que el
- * dashboard agregue un campo, acá se agrega una línea y no un adaptador.
- */
 export interface Dish {
   readonly name: string;
   readonly description: string | null;
@@ -444,7 +252,6 @@ export interface DishGroup {
   readonly items: readonly Dish[];
 }
 
-/** Las columnas que se piden. Se escriben una vez y se usan en las dos lecturas. */
 const CAMPOS_PLATO =
   'name,description,base_price,base_price_max,base_is_price_range,price_variants,' +
   'discount_percent,show_currency,image_url,image_alt,spice_level,calories,' +
@@ -452,7 +259,6 @@ const CAMPOS_PLATO =
   'is_vegetarian,is_gluten_free,is_dairy_free,is_nut_free,is_halal,is_keto,' +
   'is_organic,contains_alcohol,is_active,sort_order';
 
-/** Sin mayúsculas, sin acentos y sin nada que no sea letra o número. */
 function normalizar(t: string): string {
   return t
     .normalize('NFD')
@@ -461,9 +267,6 @@ function normalizar(t: string): string {
     .replace(/[^a-z0-9]/g, '');
 }
 
-/**
- * La carta de un truck, buscada por su nombre. `null` si todavía no existe.
- */
 export async function getTruckMenu(nombreTruck: string): Promise<readonly DishGroup[] | null> {
   const menus = await query<{ id: string; name: string }>(
     `menus?restaurant_id=eq.${RESTAURANT_ID}&select=id,name`,
@@ -502,21 +305,6 @@ export async function getTruckMenu(nombreTruck: string): Promise<readonly DishGr
   return conPlatos.length > 0 ? conPlatos : null;
 }
 
-/* ==========================================================================
-   LOS EVENTOS
-
-   ⚠️ SE LEEN EN VIVO Y YA NO POR SCRIPT. Hasta el 2026-09-15 los bajaba
-   `npm run sync:events` a un JSON versionado, porque se creía que la única
-   puerta era la API del dashboard, que exige sesión. Pero la tabla
-   `location_events` se lee con la anon key, así que el JSON y el script dejan
-   de hacer falta: el cliente carga un evento y aparece en el sitio sin deploy.
-
-   ⚠️ LA FORMA QUE DEVUELVE ES LA MISMA que traía el JSON, a propósito. El
-   adaptador de `content/events.ts` y las siete piezas que lo consumen no se
-   enteran del cambio.
-   ========================================================================== */
-
-/** La fila cruda, con los nombres que ya espera el adaptador. */
 export interface RawEventRow {
   readonly id: string;
   readonly title: string;
@@ -557,7 +345,6 @@ export async function getEvents(): Promise<readonly RawEventRow[] | null> {
   if (rows.length === 0) return null;
 
   return rows
-    // Un evento en borrador o cancelado no se publica.
     .filter((r) => r.status === null || r.status === 'active' || r.status === 'published')
     .map((r) => ({
       id: r.id,
@@ -570,7 +357,6 @@ export async function getEvents(): Promise<readonly RawEventRow[] | null> {
       endTime: r.end_time,
       isRecurring: r.is_recurring,
       recurrenceType: r.recurrence_type,
-      // El adaptador espera el JSON serializado, que es lo que devolvía la API.
       recurrenceDays:
         r.recurrence_days == null
           ? null
@@ -581,20 +367,6 @@ export async function getEvents(): Promise<readonly RawEventRow[] | null> {
       tags: r.tags ?? [],
     }));
 }
-
-/* ==========================================================================
-   LAS VACANTES
-
-   ⚠️ LA TABLA EXISTE Y HOY ESTÁ VACÍA para este restaurante. Verificado el
-   2026-09-15: `job_postings` tiene título, descripción, requisitos, tipo de
-   empleo, departamento, rango salarial y método de postulación, y devuelve
-   cero filas con `restaurant_id` del cliente.
-
-   Eso es exactamente lo que necesita `/join-us`: si el cliente carga una
-   búsqueda en el dashboard, aparece listada; si no hay ninguna, la página
-   muestra aplicación abierta. Ninguna de las dos cosas necesita un deploy, y
-   NO hace falta un `content/positions.ts` escrito a mano.
-   ========================================================================== */
 
 export interface JobPosting {
   readonly id: string;
@@ -609,11 +381,9 @@ export interface JobPosting {
   readonly status: string | null;
 }
 
-/** Las búsquedas abiertas. Array vacío = aplicación abierta, no error. */
 export async function getJobPostings(): Promise<readonly JobPosting[]> {
   const rows = await query<JobPosting>(
     `job_postings?restaurant_id=eq.${RESTAURANT_ID}&select=*&order=sort_order`,
   );
-  // Una búsqueda cerrada o en borrador no se publica.
   return rows.filter((r) => r.status === null || r.status === 'open' || r.status === 'active');
 }

@@ -25,63 +25,6 @@ import {
   REFERRAL_SOURCES,
 } from '@/content/spaces';
 
-/**
- * El formulario de `/events`. UNA PANTALLA, sin pasos.
- * Envía por Resend a través de una Server Action.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ EL 2026-09-21 DEJÓ DE TENER CONTROLES PROPIOS. Hasta ese día este archivo
- * definía su propio `Field`, su propio `SelectField`, su propio resumen de
- * errores y su propio honeypot: unas 180 líneas que eran una SEGUNDA
- * implementación de lo que ya estaba en `components/form/Fields.tsx`, que se
- * creó justamente para que hubiera una sola y cuya cabecera decía que «los
- * cinco formularios del sitio la usan». Éste no la usaba.
- *
- * El costo no era teórico. `Fields.tsx` apagaba la flecha del navegador con
- * `appearance-none` y dibujaba la suya a 18px del borde; la copia de acá
- * dejaba el `<select>` nativo, así que en el mismo sitio había desplegables
- * con la flecha adentro de la píldora y desplegables con la flecha del sistema
- * montada sobre la curva. Camila marcó las dos con un círculo el 2026-09-21:
- * «fijate de reorganizar para que se vea bien y que los iconos ocupen bien su
- * lugar».
- *
- * Todo lo que este archivo documentaba sobre los controles —la píldora, los
- * 22px de padding, los 42px de alto, el textarea como única excepción— sigue
- * escrito, pero donde vive el control: arriba de `INPUT_BASE` en `Fields.tsx`.
- *
- * ⚠️ LO QUE SIGUE SIENDO PROPIO DE ACÁ son las dos piezas que ningún otro
- * formulario tiene: las tarjetas de radio de `foodTier` y el bloque de éxito.
- *
- * ──────────────────────────────────────────────────────────────────────────
- * ⚠️ LAS FECHAS Y LAS HORAS PASARON DE UNA FILA DE TRES A DOS FILAS DE DOS, y
- * es el otro pedido del mismo mensaje. Eran CUATRO campos en una grilla de
- * tres columnas, así que el cuarto —«End time»— caía solo a un renglón nuevo y
- * la fila de arriba quedaba con un hueco. Peor: «A second date that works» es
- * la única etiqueta larga del formulario y partía en dos renglones, lo que
- * empujaba su campo 24px más abajo que sus dos vecinos.
- *
- * Dos filas de dos agrupan lo que se piensa junto —las dos fechas primero, las
- * dos horas después— y no dejan huecos. La diferencia de alto entre etiquetas
- * la resuelve el `flex-1` de `Label`, que también es de este commit.
- *
- * ──────────────────────────────────────────────────────────────────────────
- * ⚠️ Es un `<form action={...}>` de verdad, no un `onSubmit` con `fetch`. Eso
- * significa que **funciona sin JavaScript**: si el bundle no carga, el POST
- * sale igual y la respuesta se renderiza en el servidor. Para el formulario
- * que más plata mueve del sitio, esa diferencia importa.
- *
- * ⚠️ Accesibilidad: la garantiza `FormShell` para los cinco formularios de
- * una vez —`<label>` real por campo, errores por texto además de por borde,
- * resumen enfocable con `role="alert"`, `aria-live` que existe siempre en el
- * DOM y honeypot en vez de captcha—. Ver la nota de ese archivo.
- * ══════════════════════════════════════════════════════════════════════════
- */
-
-/*
- * ⚠️ DOS TEXTOS NO, UNO SOLO. `LABELS` es a la vez lo que se pinta encima del
- * campo y lo que dice el resumen de errores de arriba («Your name: required»),
- * así que cada uno tiene que funcionar suelto, fuera del formulario.
- */
 const LABELS: Record<string, string> = {
   name: 'Your name',
   email: 'Email',
@@ -101,29 +44,10 @@ const LABELS: Record<string, string> = {
   referral: 'How did you hear about us?',
 };
 
-/** Un rótulo de grupo dentro del formulario. */
 function Grupo({ children }: { readonly children: React.ReactNode }) {
   return <legend className="eyebrow mb-[6px] text-body/75">{children}</legend>;
 }
 
-/**
- * ⚠️ `defaultAreas` ES LA ÚNICA PROP Y ENTRÓ EL 2026-09-22, para que otra
- * página pueda mandar acá con su parte del venue ya tildada.
- *
- * El caso que lo pidió es `/game-truck`: sus dos CTA de conversión —«Book a
- * party» y «Ask about a party»— llevaban a `/events#inquire`, o sea al
- * formulario de eventos privados, con quince campos, fechas, presupuesto y
- * ninguna mención del camión. Quien viene a reservar dos horas de gaming para
- * un cumpleaños de diez chicos aterrizaba en el formulario de una compra de
- * $20.000 y tenía que adivinar qué casilla era la suya.
- *
- * ⚠️ SE PREFILLA EL ÁREA Y NO EL TIPO DE EVENTO, y es una decisión, no un
- * atajo. `AREAS_OF_INTEREST` ya tiene `game-truck`, así que tildarlo es un
- * dato verdadero: es literalmente lo que la persona vino a pedir. El
- * `eventType` en cambio habría que adivinarlo —«Social: Birthday or
- * milestone» es lo más probable pero no lo sabemos— y un desplegable que
- * llega con una respuesta puesta que no es la tuya es peor que uno vacío.
- */
 export default function InquiryForm({
   defaultAreas,
 }: {
@@ -131,7 +55,6 @@ export default function InquiryForm({
 } = {}) {
   const submission = useSubmission(submitEventInquiry);
   const { state } = submission;
-  /* El `min` de las fechas: hoy en Florida, el mismo corte que valida el schema. */
   const hoy = hoyEnFlorida();
 
   if (state.status === 'ok') {
@@ -145,10 +68,6 @@ export default function InquiryForm({
         </Heading>
         <p className="mt-gap-bajada max-w-[54ch] text-lead text-body/80">{state.message}</p>
         <p className="mt-3 max-w-[54ch] text-[16px] leading-[1.65] text-body/75">
-          {/* ⚠️ ACÁ SE PROMETÍA UN PDF ADJUNTO EN LA RESPUESTA y nada lo
-              adjunta: la consulta llega al buzón de eventos y la respuesta la
-              escribe una persona. Prometer un archivo que no llega es la
-              clase de detalle por el que alguien deja de contestar. */}
           Rental rates, food options and the fees are all on this page if you want them now.
         </p>
       </SentPanel>
@@ -157,7 +76,6 @@ export default function InquiryForm({
 
   return (
     <FormShell submission={submission} schema={inquirySchema} fromForm={inquiryFromForm}>
-      {/* ── Quién sos ─────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[16px]">
         <Grupo>About you</Grupo>
         <div className="grid gap-[16px] sm:grid-cols-2">
@@ -171,8 +89,6 @@ export default function InquiryForm({
           />
         </div>
       </fieldset>
-
-      {/* ── El evento ─────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[16px]">
         <Grupo>The event</Grupo>
 
@@ -183,9 +99,6 @@ export default function InquiryForm({
           placeholder="Choose one"
           options={EVENT_SUBTYPES.map((o) => ({ value: o, label: o }))}
         />
-
-        {/* Las dos fechas juntas, y las dos horas juntas. Ver la nota de
-            arriba: eran cuatro campos en una grilla de tres. */}
         <div className="grid gap-[16px] sm:grid-cols-2">
           <DateField name="date" label={LABELS.date} required min={hoy} />
           <DateField name="altDate" label={LABELS.altDate} min={hoy} />
@@ -203,12 +116,6 @@ export default function InquiryForm({
             placeholder="Choose a range"
             options={GUEST_RANGES.map((o) => ({ value: o, label: o }))}
           />
-          {/*
-            ⚠️ RANGO Y NO CAMPO ABIERTO, y está discutido en el brief:
-            «Madeline y Tony advirtieron que los campos de presupuesto abierto
-            traen respuestas poco realistas». El corte más bajo sale del piso
-            real: dos horas del segundo piso son $1.500.
-          */}
           <SelectField
             name="budget"
             label={LABELS.budget}
@@ -217,11 +124,6 @@ export default function InquiryForm({
             options={BUDGET_RANGES.map((o) => ({ value: o, label: o }))}
           />
         </div>
-
-        {/*
-          ⚠️ CASILLAS Y NO UN SELECT: casi nadie quiere una sola parte del
-          lugar. El servidor las lee con `getAll`, no con `fromEntries`.
-        */}
         <div className="mt-[8px]">
           <CheckboxGroup
             name="areas"
@@ -231,26 +133,7 @@ export default function InquiryForm({
           />
         </div>
       </fieldset>
-
-      {/* ── Comida y barra ────────────────────────────────────────────── */}
       <FoodTier />
-
-      {/*
-        ⚠️ LA BARRA ENTRÓ EL 2026-09-22 y hasta ese día el formulario no la
-        mencionaba: preguntaba cómo comen quince personas y nada sobre qué
-        toman, cuando la barra suele ser el renglón más caro del presupuesto.
-
-        ⚠️ ES UN DESPLEGABLE Y NO TARJETAS COMO LA COMIDA, y la diferencia
-        está justificada: las tarjetas de `FoodTier` existen porque «Full
-        service» contra «Drop-off» no significa nada sin su renglón de
-        explicación. Los tres paquetes de barra sí se explican solos acá
-        —tickets, pulsera o barra abierta— y además están desarrollados con
-        precio unas pantallas más arriba, en la misma página.
-
-        ⚠️ NO ES OBLIGATORIO. Se puede alquilar el lugar sin cerrar la barra en
-        un paquete, y «Not sure yet» es una respuesta legítima y no un campo
-        sin llenar.
-      */}
       <fieldset className="flex flex-col gap-[16px]">
         <Grupo>The bar</Grupo>
         <SelectField
@@ -260,8 +143,6 @@ export default function InquiryForm({
           options={BAR_TIERS.map((o) => ({ value: o, label: o }))}
         />
       </fieldset>
-
-      {/* ── Cierre ────────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[16px]">
         <Grupo>Anything else</Grupo>
         <TextAreaField name="comments" label={LABELS.comments} rows={4} maxLength={4000} />
@@ -280,31 +161,11 @@ export default function InquiryForm({
         <div>
           <SubmitButton idle="Send the request" busy="Sending…" />
         </div>
-        {/*
-          ⚠️ ACÁ DECÍA «Prefer email? …» Y SE MUDÓ A LA COLUMNA IZQUIERDA de la
-          losa, junto al teléfono y al packet. Camila pidió para el cierre la
-          estructura del formulario de contacto de defoodtruckclub, donde los
-          datos de contacto van AL LADO del panel y no adentro. Y ahí sirven
-          más: quien no quiere llenar quince campos ve la salida antes de
-          empezar, no después de scrollear el formulario entero.
-        */}
       </div>
     </FormShell>
   );
 }
 
-/**
- * Los tres tiers de comida, en tarjetas de radio.
- *
- * ⚠️ ES LA ÚNICA PIEZA DE CONTROL QUE SIGUE VIVIENDO EN ESTE ARCHIVO, porque
- * es la única del sitio: ningún otro formulario elige entre tres opciones con
- * una línea de explicación cada una. Si mañana aparece una segunda, se muda a
- * `Fields.tsx` como se mudó todo lo demás.
- *
- * ⚠️ SON TARJETAS Y NO UN DESPLEGABLE porque la diferencia entre los tres está
- * en la explicación, no en el nombre: «Full service» contra «Drop-off» no
- * significa nada sin el renglón de abajo, y un `<option>` no lo puede llevar.
- */
 function FoodTier() {
   const { eid, err, aria } = useRadioGroup('foodTier');
   return (

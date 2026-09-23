@@ -1,33 +1,15 @@
-/**
- * Los espacios alquilables. Alimenta `/events/spaces`, la página que más plata deja.
- *
- * ⚠️ Las capacidades y los mínimos están TODOS en `null` a propósito. El brief:
- * «Los números todavía no los tengo: usá TBD visible en un componente
- * <PendingData> para que no se me pase. No inventes capacidades.»
- *
- * Un `null` acá se renderiza como un bloque TBD visible, no como un hueco.
- */
-
 export interface Space {
   readonly slug: string;
   readonly name: string;
-  /** Una línea: qué es. */
   readonly kicker: string;
-  /** Para qué sirve. Dos o tres frases. */
   readonly description: string;
-  /** Capacidad de pie. `null` → TBD visible. */
   readonly standing: number | null;
-  /** Capacidad sentada. `null` → TBD visible. */
   readonly seated: number | null;
-  /** Mínimo de invitados. `null` → TBD visible. */
   readonly minimum: number | null;
-  /** Para qué tipo de evento se recomienda. */
   readonly bestFor: readonly string[];
   readonly photo: string | null;
   readonly photoAlt: string | null;
-  /** Qué toma hace falta cuando `photo` es null. Se muestra en el placeholder. */
   readonly photoBrief: string;
-  /** Si el espacio está operativo. El patio está en obra. */
   readonly status: 'available' | 'renovating';
 }
 
@@ -100,7 +82,6 @@ export const SPACES: readonly Space[] = [
 
 export const spaceBySlug = (slug: string) => SPACES.find((s) => s.slug === slug);
 
-/** Tipos de evento del dropdown de `/events/inquire`. Cerrado, según el brief. */
 export const EVENT_TYPES = [
   'Corporate event',
   'Holiday party',
@@ -112,7 +93,6 @@ export const EVENT_TYPES = [
   'Full buyout',
 ] as const;
 
-/** Rangos de invitados. El brief pide rangos, no un número libre. */
 export const GUEST_RANGES = [
   'Under 25',
   '25 – 50',
@@ -122,7 +102,6 @@ export const GUEST_RANGES = [
   '350+',
 ] as const;
 
-/** Los tres tiers de comida. */
 export const FOOD_TIERS = [
   {
     value: 'Food Truck Spread',
@@ -141,23 +120,6 @@ export const FOOD_TIERS = [
   },
 ] as const;
 
-/**
- * Los tres paquetes de barra, más la salida de quien todavía no sabe.
- *
- * ⚠️ ESTA PREGUNTA FALTABA Y EL CLIENTE YA LA HACE. Su formulario de
- * `/hostanevent` tiene «Do you need drink package? Yes / No / Maybe» desde
- * siempre, y el nuestro preguntaba por la comida y nada por la bebida.
- *
- * ⚠️ NO SE COPIA EL «SÍ / NO / QUIZÁS», y es una mejora, no un capricho. Un
- * «sí» no dice nada: hay que volver a escribir para saber cuál de los tres
- * paquetes. Como `/events` ahora los publica con precio justo arriba del
- * formulario, se puede preguntar directamente CUÁL, y la respuesta ya sirve
- * para cotizar.
- *
- * ⚠️ LAS ETIQUETAS SON LAS DE `DRINK_OPTIONS` en `content/events-pricing.ts`,
- * escritas igual a propósito: quien acaba de leer las tarjetas tiene que
- * reconocer la opción en el desplegable sin traducir nada.
- */
 export const BAR_TIERS = [
   'Drink tickets',
   'Wristband tab',
@@ -165,7 +127,6 @@ export const BAR_TIERS = [
   'Not sure yet',
 ] as const;
 
-/** Reutilizado tal cual del formulario actual de /hostanevent. */
 export const REFERRAL_SOURCES = [
   'Social media',
   'Radio',
@@ -176,23 +137,9 @@ export const REFERRAL_SOURCES = [
   'Other',
 ] as const;
 
-/* ==========================================================================
-   LAS TRES FAMILIAS DE EVENTO
-
-   ⚠️ REEMPLAZAN LA LISTA PLANA DE OCHO TIPOS de `EVENT_TYPES`, que sigue
-   existiendo porque la lee el formulario viejo. Ocho opciones sin agrupar
-   obligan a leerlas todas; tres familias con subtipo se eligen de un vistazo.
-
-   ⚠️ LAS TRES SON LAS QUE PIDIÓ CAMILA el 2026-09-15: social, corporativo y
-   entretenimiento. Los subtipos son los que ella enumeró, más «Full buyout»,
-   que es un producto real del PDF del cliente y no encaja en ninguna de las
-   tres: se alquila el lugar entero, sea para lo que sea.
-   ========================================================================== */
-
 export interface EventFamily {
   readonly id: string;
   readonly label: string;
-  /** Lo que se muestra en la página. */
   readonly title: string;
   readonly lead: string;
   readonly subtypes: readonly string[];
@@ -228,19 +175,10 @@ export const EVENT_FAMILIES: readonly EventFamily[] = [
   },
 ];
 
-/** Todos los subtipos, planos, para validar el desplegable en el servidor. */
 export const EVENT_SUBTYPES = EVENT_FAMILIES.flatMap((f) =>
   f.subtypes.map((s) => `${f.label}: ${s}`),
 ) as [string, ...string[]];
 
-/**
- * Rangos de presupuesto.
- *
- * ⚠️ SON RANGOS Y NO UN CAMPO ABIERTO, y está discutido en el brief: Chris
- * propuso un dropdown por cabeza, y «Madeline y Tony advirtieron que los
- * campos de presupuesto abierto traen respuestas poco realistas». Los cortes
- * salen del piso real: el segundo piso arranca en $1.500 (dos horas a $750).
- */
 export const BUDGET_RANGES = [
   'Under $1,500',
   '$1,500 – $3,000',
@@ -250,7 +188,6 @@ export const BUDGET_RANGES = [
   'Not sure yet',
 ] as const;
 
-/** Qué parte del lugar le interesa. Casillas, porque suelen ser varias. */
 export const AREAS_OF_INTEREST = [
   { value: 'rooftop', label: 'The rooftop bar' },
   { value: 'patio', label: 'The rooftop patio' },

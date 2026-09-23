@@ -1,60 +1,30 @@
-/**
- * LAS PANTALLAS DE CARGA. Las usan los `loading.tsx` de `src/app/`.
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ DIBUJAN LA FORMA DE LA PÁGINA QUE VIENE, NO UN SPINNER. El hero de placa
- * (`PlateHero`) lo usan ocho de las diez páginas, así que el esqueleto arranca
- * con su silueta: migas, bajada, titular centrado y la foto grande con las
- * mismas proporciones por escalón (4/5 → 4/3 → 16/9 → 17/9). Cuando llega la
- * página, el contenido cae donde ya estaba el bloque gris y no hay salto.
- *
- * ⚠️ CUÁNDO SE VEN. Las páginas estáticas vienen prefetcheadas y casi nunca
- * lo muestran. Las que se arman por request —`/whats-on` (lee la base),
- * `/events` y `/join-us` (leen la URL)— sí: al navegar hacia ellas, esto es
- * lo que se ve mientras el servidor contesta, en vez de la página anterior
- * congelada sin señal de que el clic hizo algo.
- *
- * ⚠️ ACCESIBILIDAD. Los bloques van `aria-hidden`: un lector de pantalla no
- * tiene nada que leer en un rectángulo gris. Lo que sí se anuncia es UNA
- * línea, «Loading», en un `role="status"`.
- * ══════════════════════════════════════════════════════════════════════════
- */
-
-/** Un bloque del esqueleto. La forma la ponen las clases. */
 export function Bone({ className = '' }: { readonly className?: string }) {
   return <span aria-hidden="true" className={`esqueleto block ${className}`} />;
 }
 
-/** Un renglón de texto: alto de línea, radio de píldora. */
 function Linea({ className = '' }: { readonly className?: string }) {
   return <Bone className={`h-[14px] rounded-pill ${className}`} />;
 }
 
-/** La silueta de `PlateHero`. */
 function HeroSkeleton() {
   return (
     <div className="bg-bone pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]">
       <div className="caja-ancha">
-        {/* Migas */}
         <Linea className="mb-[20px] w-[140px]" />
-        {/* Bajada: dos renglones centrados */}
         <div className="mx-auto flex max-w-[40ch] flex-col items-center gap-[10px]">
           <Linea className="w-full" />
           <Linea className="w-3/4" />
         </div>
-        {/* Titular: dos renglones del alto de `text-banda` */}
         <div className="mx-auto mt-5 flex flex-col items-center gap-[0.18em] text-banda lg:mt-7">
           <Bone className="h-[0.82em] w-[min(92%,9em)] rounded-card" />
           <Bone className="h-[0.82em] w-[min(70%,6em)] rounded-card" />
         </div>
-        {/* La foto, con las proporciones del hero por escalón */}
         <Bone className="mt-[28px] aspect-[4/5] w-full rounded-frame sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[17/9] lg:max-h-[calc(100svh-378px)]" />
       </div>
     </div>
   );
 }
 
-/** Una tarjeta: foto 16/9 y tres renglones. */
 function CardSkeleton() {
   return (
     <div className="overflow-hidden rounded-card border border-ink/10 bg-paper">
@@ -69,7 +39,6 @@ function CardSkeleton() {
   );
 }
 
-/** El cuerpo genérico: titular de sección, bajada y una fila de tres tarjetas. */
 function BodySkeleton() {
   return (
     <div className="caja-ancha py-16 lg:py-24">
@@ -90,12 +59,10 @@ function BodySkeleton() {
   );
 }
 
-/** `/whats-on`: filtros en píldora, la barra del mes y la grilla de fechas. */
 function CalendarSkeleton() {
   return (
     <div className="caja-ancha py-12 lg:py-16">
       <div className="flex flex-wrap gap-3">
-        {/* Los anchos de los filtros, en clases enteras y no en `style`. */}
         {['w-[88px]', 'w-[72px]', 'w-[104px]', 'w-[80px]', 'w-[96px]'].map((w) => (
           <Bone key={w} className={`h-10.5 rounded-pill ${w}`} />
         ))}
@@ -116,7 +83,6 @@ function CalendarSkeleton() {
   );
 }
 
-/** `/events` y `/join-us`: la losa del formulario, texto a la izquierda y panel. */
 function FormSkeleton() {
   return (
     <div className="caja-ancha py-16 lg:py-24">
