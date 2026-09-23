@@ -9,7 +9,16 @@ export async function fetchConTimeout(
   for (let i = 0; i < intentos; i += 1) {
     try {
       const res = await fetch(url, { ...init, signal: AbortSignal.timeout(ms) });
-      if (res.status >= 500 && i < intentos - 1) continue;
+      if (res.status >= 500 && i < intentos - 1) {
+        // Se descarta esta respuesta y se reintenta: sin cancelar el body,
+        // el socket queda abierto esperando un consumidor que nunca llega.
+        try {
+          await res.body?.cancel();
+        } catch {
+          // No importa si no se puede cancelar; seguimos al reintento igual.
+        }
+        continue;
+      }
       return res;
     } catch (error) {
       ultimoError = error;
