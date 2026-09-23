@@ -53,6 +53,14 @@ export const inquirySchema = z
       .string()
       .trim()
       .min(1, 'Event date is required.')
+      /*
+       * ⚠️ EL FORMATO SE VALIDA ANTES QUE «ES FUTURA». El input es
+       * `type="date"`, pero el servidor recibe texto: sin este chequeo,
+       * cualquier cadena que compare mayor que la fecha de hoy pasaba el
+       * `refine` de abajo tal cual, y esa cadena viaja tal cual al asunto del
+       * mail.
+       */
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Pick a date.')
       .refine((v) => v >= hoyEnFlorida(), 'Pick a date from today on.'),
     /**
      * ⚠️ LA FECHA ALTERNATIVA ES OPCIONAL PERO SE PIDE SIEMPRE, y es el campo
@@ -65,6 +73,7 @@ export const inquirySchema = z
       .trim()
       .optional()
       .default('')
+      .refine((v) => v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v), 'Pick a date.')
       .refine((v) => v === '' || v >= hoyEnFlorida(), 'Pick a date from today on.'),
     startTime: z.string().trim().max(200, 'Keep this under 200 characters.').optional().default(''),
     endTime: z.string().trim().max(200, 'Keep this under 200 characters.').optional().default(''),
