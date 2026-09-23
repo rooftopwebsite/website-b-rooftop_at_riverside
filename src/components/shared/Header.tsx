@@ -861,14 +861,36 @@ export default function Header() {
           drawerOpen ? 'visible' : 'invisible pointer-events-none',
         ].join(' ')}
       >
+        {/*
+          ⚠️ DESDE `md` ES UN PANEL DE 480 Y NO LA PANTALLA ENTERA, cambio del
+          2026-09-23. A 768 y a 1024 la lista de nueve destinos se estiraba al
+          ancho completo: renglones de 700 a 1000px con la palabra a la
+          izquierda, la flecha a la derecha y media pantalla vacía abajo. Es el
+          patrón de The Orient (panel lateral desde tablet) con el ancho de un
+          teléfono grande, que es para lo que la lista está compuesta.
+
+          El velo de atrás cierra al tocarlo. No es un control: el botón de
+          cerrar y Escape siguen siendo la salida accesible, por eso va con
+          `aria-hidden` y fuera del orden de tabulación.
+        */}
+        <div
+          aria-hidden="true"
+          onClick={() => setDrawerOpen(false)}
+          className={[
+            'absolute inset-0 hidden bg-ink/45 transition-opacity duration-300 ease-brand md:block',
+            drawerOpen ? 'opacity-100' : 'opacity-0',
+          ].join(' ')}
+        />
         <div
           role="dialog"
           aria-modal="true"
           aria-label="Site menu"
           className={[
-            'absolute inset-0 flex flex-col bg-bone grano',
+            'absolute inset-0 flex flex-col bg-bone grano md:left-auto md:w-[min(480px,100%)] md:shadow-float',
             'transition-[opacity,transform] duration-300 ease-brand',
-            drawerOpen ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0',
+            drawerOpen
+              ? 'translate-y-0 opacity-100 md:translate-x-0'
+              : '-translate-y-2 opacity-0 md:translate-x-8 md:translate-y-0',
           ].join(' ')}
         >
           <div className={`flex h-header-sm shrink-0 items-center justify-between ${GUTTER}`}>

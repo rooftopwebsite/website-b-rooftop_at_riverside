@@ -113,6 +113,7 @@ export function EventPhoto({
   tone = 'light',
   imgClassName = 'object-cover',
   fondo = '',
+  ventana = '',
   children,
 }: {
   readonly event: VenueEvent;
@@ -124,11 +125,17 @@ export function EventPhoto({
   readonly imgClassName?: string;
   /** El color de la ventana mientras la foto carga, o si no hay. */
   readonly fondo?: string;
+  /**
+   * Clases que pisan la forma de la ventana. Hoy la usa sólo la tarjeta
+   * compacta de mobile de `/whats-on`, donde la foto deja de ser 16:9 arriba y
+   * pasa a ser una columna de 112px al costado.
+   */
+  readonly ventana?: string;
   /** Las píldoras que van encima de la foto. */
   readonly children?: ReactNode;
 }) {
   return (
-    <div className={`relative aspect-video w-full shrink-0 overflow-hidden ${fondo}`}>
+    <div className={`relative aspect-video w-full shrink-0 overflow-hidden ${fondo} ${ventana}`}>
       {event.image === null ? (
         /* ⚠️ SIN `pb-[42%]`. Ese padding compensaba la parte de la caja
            vertical que la ventana no mostraba; sin caja, centra solo. */

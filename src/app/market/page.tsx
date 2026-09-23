@@ -383,7 +383,7 @@ export default async function MarketPage() {
                 de la home. Mismo elemento, misma jerarquía, otra letra.
               */}
               <div className="troquel relative flex flex-1 flex-col items-center gap-3.5 rounded-ticket bg-paper px-5.5 pt-12 pb-13 text-center lg:px-8 lg:pt-15 lg:pb-14">
-                <span className="font-body text-[11px] font-medium uppercase tracking-[0.18em] text-muted">
+                <span className="font-body text-caption font-medium uppercase tracking-[0.18em] text-muted">
                   {s.kicker}
                 </span>
                 {/*

@@ -1,6 +1,18 @@
 @import 'tailwindcss';
 
 /*
+ * `estante:` — pantalla ancha Y mouse. La usa el estante de `/game-truck`,
+ * que en desktop se ancla y convierte el scroll vertical en horizontal.
+ *
+ * ⚠️ NO ES `lg:` PORQUE UN IPAD APAISADO MIDE 1024. Con `lg:` solo, la tablet
+ * recibía el anclado: 280vh de sección, el scroll del dedo secuestrado y unos
+ * 300px de blanco arriba y abajo de la fila. Con el dedo, una fila que se
+ * desliza sola es lo natural, y es lo que ve la tablet vertical. El JS del
+ * componente usa la MISMA media query; si cambia acá, cambia allá.
+ */
+@custom-variant estante (@media (width >= 64rem) and (hover: hover) and (pointer: fine));
+
+/*
  * ⚠️ Las fuentes de contenido, DECLARADAS. Tailwind v4 las autodetecta, pero la
  * autodetección se cayó en silencio: el build seguía pasando y el CSS emitido
  * bajaba de 49 KB a 33 KB sin una sola utilidad de tema — sin `bg-cream`, sin
@@ -407,8 +419,19 @@
    * ⚠️ La escala numérica NO estaba en uso: el código tenía 1.217 corchetes y
    * sólo 20 utilidades numéricas, casi todas en `AgencyBar`. No era que
    * faltara el sistema — estaba y no se usaba.                                */
-  --spacing-gutter: 16px;
-  --spacing-gutter-lg: 32px;
+  /*
+   * ⚠️ LOS DOS VALEN LO MISMO QUE `borde` DESDE EL 2026-09-23, y el par
+   * 16/32 que había acá era la mitad de un desfasaje. `caja` iba con 16/32 y
+   * `caja-ancha` con el `clamp` fluido: a 1024 el hero arrancaba a 41px del
+   * borde y la sección de abajo a 72. Con un solo valor, las dos cajas dan el
+   * MISMO ancho de contenido en cualquier pantalla (ver la nota de `caja`).
+   *
+   * Se dejan los dos nombres para no reescribir las 30 llamadas a `GUTTER` ni
+   * las sangrías `-mx-gutter md:-mx-gutter-lg`: todas siguen al token de una
+   * vez, que es lo que pide la trampa de la sangría escrita con número fijo.
+   */
+  --spacing-gutter: var(--spacing-borde);
+  --spacing-gutter-lg: var(--spacing-borde);
   /*
    * `borde` — el gutter FLUIDO del rediseño, para la home y el header.
    *
@@ -1372,8 +1395,14 @@
    ========================================================================== */
 
 /**
- * La caja de contenido. El salto a 1280 va en 1344 (1280 + 32×2 de gutter),
- * que es cuando la PANTALLA da para el máximo — no en el breakpoint de layout.
+ * La caja de contenido.
+ *
+ * ⚠️ EL TECHO DE 1280 VA DESDE 1024 Y NO DESDE 1344, cambio del 2026-09-23.
+ * Con el tope de 880 hasta 1344, un iPad apaisado y una notebook de 1280 veían
+ * las secciones internas encerradas en 880 mientras el header y el hero iban
+ * al ancho entero: a 1280 eran 200px de margen contra 51 en la misma página.
+ * Ahora el ancho lo decide el gutter fluido y la caja sólo pone el techo, que
+ * es lo mismo que hace `caja-ancha`: las dos miden igual en cualquier pantalla.
  */
 @utility caja {
   margin-inline: auto;
@@ -1383,7 +1412,7 @@
   @media (width >= 768px) {
     max-width: var(--container-tablet);
   }
-  @media (width >= 1344px) {
+  @media (width >= 1024px) {
     max-width: var(--container-site);
   }
 }
@@ -1404,6 +1433,39 @@
  * y dejan que la fila de tarjetas se vaya del borde. Si se envuelve todo en
  * `caja-ancha`, la fuga se recorta y el carrusel deja de leerse como continuo.
  */
+/**
+ * TOQUE — el área táctil de 44×44 sin cambiar el dibujo.
+ *
+ * ⚠️ EXISTE PORQUE LOS CONTROLES CHICOS SON CHICOS A PROPÓSITO. Los CTA topean
+ * en 42 por pedido de Camila, la barra fija de /whats-on es compacta para no
+ * comerse medio teléfono y sus chips miden 29. Agrandarlos cambia el diseño;
+ * lo que falta es el blanco del dedo, que es otra cosa. 44 es el mínimo de
+ * Apple y de WCAG 2.5.5.
+ *
+ * Un `::after` invisible centrado en el control, de `max(100%, 44px)` por
+ * lado: si el control ya mide más, no agrega nada.
+ *
+ * ⚠️ UN PADRE CON `overflow` RECORTA EL ÁREA, porque el pseudo cae fuera de su
+ * caja y ahí el navegador no entrega el toque. La tira de filtros de
+ * /whats-on se estira con `py` y `-my` justamente por eso.
+ *
+ * ⚠️ NO SE USA EN CONTROLES PEGADOS ENTRE SÍ A MENOS DE 44: las áreas se
+ * pisarían y ganaría el último del DOM.
+ */
+@utility toque {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    translate: -50% -50%;
+  }
+}
+
 @utility caja-ancha {
   margin-inline: auto;
   width: 100%;

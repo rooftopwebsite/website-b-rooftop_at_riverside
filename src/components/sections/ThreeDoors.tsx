@@ -192,7 +192,7 @@ export default function ThreeDoors() {
   return (
     <section
       aria-labelledby="doors-title"
-      className="relative bg-bone grano pt-16 pb-cierre lg:pt-30"
+      className="relative bg-bone grano pt-16 pb-cierre md:pt-20 lg:pt-24 desk:pt-30"
     >
       <div className="caja-ancha">
         {/* El encabezado entra como un bloque —titular y bajada juntos— y las
@@ -225,7 +225,7 @@ export default function ThreeDoors() {
           imagen — y 24px ahí hacen que el link de arriba parezca el pie de la
           tarjeta de abajo.
         */}
-        <StaggerGroup as="ul" className="mt-bloque grid list-none grid-cols-1 gap-12 p-0 md:grid-cols-3 md:gap-6">
+        <StaggerGroup as="ul" className="mt-bloque grid list-none grid-cols-1 gap-12 p-0 md:gap-5 lg:grid-cols-3 lg:gap-6">
           {DOORS.map(({ title, body, link, href, field, tinta, tintaIcono, Icon }) => (
             /*
               ══════════════════════════════════════════════════════════════
@@ -248,7 +248,22 @@ export default function ThreeDoors() {
               ══════════════════════════════════════════════════════════════
             */
             <RevealItem as="li" key={href} className="h-full">
-              <Link href={href} className="group flex h-full flex-col gap-3">
+              {/*
+                ══════════════════════════════════════════════════════════
+                ⚠️ EN TABLET ES UNA FILA, desde el 2026-09-23. Entre 768 y 1023
+                las tres puertas iban en columnas de 220px: los títulos de las
+                placas caían en cuatro renglones y la bajada en columnas de
+                25 caracteres. Ahora la placa va a la izquierda con 300px y el
+                texto a la derecha, CENTRADO EN VERTICAL contra la placa —
+                Camila: «los textos en las cards horizontales, centrados»—.
+                Desde `lg` vuelven las tres columnas de siempre.
+
+                El envoltorio del texto es `contents` en mobile y en desktop,
+                así que ahí no existe: el `mt-auto` del CTA sigue alineando
+                los tres links como antes. Sólo en tablet es una caja.
+                ══════════════════════════════════════════════════════════
+              */}
+              <Link href={href} className="group flex h-full flex-col gap-3 md:flex-row md:gap-7 lg:flex-col lg:gap-3">
                 {/*
                   ══════════════════════════════════════════════════════════
                   ⚠️ SON DOS ELEMENTOS HERMANOS Y NO UNO ADENTRO DEL OTRO, y
@@ -265,7 +280,7 @@ export default function ThreeDoors() {
                   de referencia del `absolute`.
                   ══════════════════════════════════════════════════════════
                 */}
-                <div className="relative mb-2.5 h-64 lg:h-80">
+                <div className="relative mb-2.5 h-64 md:mb-0 md:h-56 md:w-75 md:shrink-0 lg:mb-2.5 lg:h-80 lg:w-auto">
                   {/*
                     ⚠️ EL CAMPO ES AHORA UNA PLACA CON NOMBRE: icono arriba,
                     título abajo, `justify-between` entre los dos. Ver la nota
@@ -368,15 +383,17 @@ export default function ThreeDoors() {
                   </span>
                 </div>
 
-                <p className="m-0 font-body text-dato font-light text-ink">{body}</p>
+                <div className="contents md:flex md:flex-col md:justify-center md:gap-3 lg:contents">
+                <p className="m-0 font-body text-dato font-light text-ink md:max-w-[40ch] md:text-base lg:max-w-none lg:text-dato">{body}</p>
 
                 {/* El `mt-auto` es la otra mitad de la alineación: empuja el
                     CTA al fondo de la tarjeta, que ahora tiene altura de
                     sobra. Ver la nota del `<li>`. */}
-                <span className="mt-auto inline-flex w-fit items-center gap-2.25 border-b-2 border-sunset pt-2 pb-0.75 font-body text-base font-medium text-ink transition-colors duration-200 group-hover:text-sunset-deep">
+                <span className="mt-auto inline-flex w-fit md:mt-0 lg:mt-auto items-center gap-2.25 border-b-2 border-sunset pt-2 pb-0.75 font-body text-base font-medium text-ink transition-colors duration-200 group-hover:text-sunset-deep">
                   {link}
                   <ArrowRight className="size-3.5 text-sunset-deep transition-transform duration-200 group-hover:translate-x-1" />
                 </span>
+                </div>
               </Link>
             </RevealItem>
           ))}

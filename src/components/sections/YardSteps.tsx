@@ -448,7 +448,7 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
               las tarjetas de la home que entran con reveal.
             */}
             <div className="troquel relative flex flex-1 flex-col items-center gap-3.5 rounded-ticket bg-paper px-5.5 pt-12 pb-13 text-center transition-transform duration-300 ease-brand hover:-translate-y-1.5 lg:px-8 lg:pt-15 lg:pb-16">
-              <span className="font-body text-[11px] font-medium uppercase tracking-[0.18em] text-muted">
+              <span className="font-body text-caption font-medium uppercase tracking-[0.18em] text-muted">
                 {step.kicker}
               </span>
               <h3 className="m-0 max-w-[16ch] font-display text-d4 font-bold uppercase leading-[0.98] text-ink lg:text-h3">

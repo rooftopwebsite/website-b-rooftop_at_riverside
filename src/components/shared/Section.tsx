@@ -65,27 +65,41 @@ const TONES = {
   none: '',
 } as const;
 
+/*
+ * ⚠️ CUATRO ESCALONES Y NO DOS, desde el 2026-09-23. El par mobile/desktop
+ * saltaba de golpe en 1024: una banda `lg` pasaba de 80 a 128 en un pixel de
+ * viewport, y el iPad vertical quedaba con el aire del teléfono. Ahora crece
+ * en `md` (768), `lg` (1024) y `desk` (1344):
+ *
+ *     banda   390   768   1024   1344+
+ *     sm       48    56     60     64
+ *     md       64    72     84     96
+ *     lg       80    96    112    128
+ *     xl       96   112    136    160
+ *
+ * Las puntas son las de antes: el teléfono y el desktop grande no se enteran.
+ */
 const PY = {
-  sm: 'py-12 lg:py-band-sm',
-  md: 'py-band-sm lg:py-band',
-  lg: 'py-20 lg:py-band-lg',
-  xl: 'py-band lg:py-band-xl',
+  sm: 'py-12 md:py-14 lg:py-15 desk:py-band-sm',
+  md: 'py-band-sm md:py-18 lg:py-21 desk:py-band',
+  lg: 'py-20 md:py-24 lg:py-28 desk:py-band-lg',
+  xl: 'py-band md:py-28 lg:py-34 desk:py-band-xl',
   none: '',
 } as const;
 
 const PT = {
-  sm: 'pt-12 lg:pt-band-sm',
-  md: 'pt-band-sm lg:pt-band',
-  lg: 'pt-20 lg:pt-band-lg',
-  xl: 'pt-band lg:pt-band-xl',
+  sm: 'pt-12 md:pt-14 lg:pt-15 desk:pt-band-sm',
+  md: 'pt-band-sm md:pt-18 lg:pt-21 desk:pt-band',
+  lg: 'pt-20 md:pt-24 lg:pt-28 desk:pt-band-lg',
+  xl: 'pt-band md:pt-28 lg:pt-34 desk:pt-band-xl',
   none: 'pt-0',
 } as const;
 
 const PB = {
-  sm: 'pb-12 lg:pb-band-sm',
-  md: 'pb-band-sm lg:pb-band',
-  lg: 'pb-20 lg:pb-band-lg',
-  xl: 'pb-band lg:pb-band-xl',
+  sm: 'pb-12 md:pb-14 lg:pb-15 desk:pb-band-sm',
+  md: 'pb-band-sm md:pb-18 lg:pb-21 desk:pb-band',
+  lg: 'pb-20 md:pb-24 lg:pb-28 desk:pb-band-lg',
+  xl: 'pb-band md:pb-28 lg:pb-34 desk:pb-band-xl',
   none: 'pb-0',
 } as const;
 

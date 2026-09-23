@@ -172,14 +172,30 @@ export default function EventSpaces() {
           repartijas. Los cortes son 1 · 2 · 3 · 5: en `desk` entran las cinco en
           una línea —(1288 menos 4x20)/5 = 241px por tarjeta— y abajo de eso van
           3+2, que se lee como dos filas y no como una fila rota.
+
+          ⚠️ Y EL 3+2 YA NO DEJA HUECO, desde el 2026-09-23. En tres columnas la
+          segunda fila quedaba con dos tarjetas y un tercio vacío a la derecha.
+          Ahora esa franja es una grilla de SEIS: las tres de arriba ocupan dos
+          partes cada una y las dos de abajo tres, así que las cinco llenan el
+          ancho. En dos columnas (`sm`) la quinta va a lo ancho por lo mismo.
+          Las clases por índice asumen cinco ítems; si la lista cambia de
+          largo, cambia la cuenta.
           ══════════════════════════════════════════════════════════════════════
         */}
         <StaggerGroup
           as="ul"
-          className="mt-bloque grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 md:grid-cols-3 desk:grid-cols-5"
+          className="mt-bloque grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 md:grid-cols-6 desk:grid-cols-5"
         >
-          {INCLUIDO.map((item) => (
-            <RevealItem as="li" key={item.label} className="h-full">
+          {INCLUIDO.map((item, i) => (
+            <RevealItem
+              as="li"
+              key={item.label}
+              className={[
+                'h-full desk:col-span-1',
+                i < 3 ? 'md:col-span-2' : 'md:col-span-3',
+                i === INCLUIDO.length - 1 && INCLUIDO.length % 2 === 1 ? 'sm:col-span-2' : '',
+              ].join(' ')}
+            >
               {/*
                 ⚠️ EL ICONO VA SUELTO ADENTRO DE LA TARJETA Y NO EN UN SELLO.
                 Camila: «que los iconos no estén en los circulitos, que estén

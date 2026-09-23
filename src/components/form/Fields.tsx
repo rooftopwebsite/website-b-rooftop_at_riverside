@@ -983,9 +983,16 @@ const FRASE = 'font-body text-lead font-light leading-[2] text-body';
 
 /** El renglón de la frase. Envuelve texto y campos en la misma línea de base. */
 export function SentenceRow({ children }: { readonly children: ReactNode }) {
-  return <div className={['flex flex-wrap items-center gap-x-3 gap-y-3', FRASE].join(' ')}>{children}</div>;
+  return <div className={['flex flex-wrap items-center gap-x-3 gap-y-1 sm:gap-y-3', FRASE].join(' ')}>{children}</div>;
 }
 
+/*
+ * ⚠️ EN MOBILE LA ETIQUETA OCUPA SU RENGLÓN (`basis-full`) Y EL CAMPO VA ABAJO,
+ * desde el 2026-09-23. A 390, «You can reach me at» se comía la mitad de la
+ * línea y el email quedaba en una píldora de 150px, donde una dirección normal
+ * no se lee entera. La frase sigue leyéndose de corrido; desde `sm` vuelve a
+ * ir en línea con el campo.
+ */
 function InlineLabel({
   htmlFor,
   children,
@@ -996,7 +1003,7 @@ function InlineLabel({
   readonly required?: boolean;
 }) {
   return (
-    <label htmlFor={htmlFor} className="shrink-0">
+    <label htmlFor={htmlFor} className="shrink-0 basis-full sm:basis-auto">
       {children}
       {required ? (
         <span className="ml-[4px] text-terra" aria-hidden="true">

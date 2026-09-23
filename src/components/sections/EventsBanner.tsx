@@ -229,7 +229,7 @@ export default function EventsBanner() {
         descendientes, y acá adentro hay tres tarjetas con `sombra-card`. Es
         exactamente el defecto que vigila `npm run check:sombras`.
       */
-      className="banda-arco relative z-[3] bg-deep grano pt-14 pb-cierre-arco text-bone on-dark lg:pt-28"
+      className="banda-arco relative z-[3] bg-deep grano pt-14 pb-cierre-arco text-bone on-dark md:pt-18 lg:pt-22 desk:pt-28"
     >
       <div className="caja-ancha relative">
         {/* ⚠️ El titular, la bajada y el sello entran JUNTOS. La bajada está
@@ -413,11 +413,12 @@ export default function EventsBanner() {
           está escrito entero arriba de `CARDS`, y conviene leerlo antes de
           volver a intentarlo.
         */}
-        <StaggerGroup as="ul" className="mt-bloque flex list-none flex-col gap-6 p-0 lg:grid lg:grid-cols-3">
+        <StaggerGroup as="ul" className="mt-bloque flex list-none flex-col gap-6 p-0 md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6">
           {CARDS.map(({ tag, title, body, src, alt }, i) => (
             <RevealItem
               as="li"
               key={src}
+              className={i === 0 ? 'md:col-span-2 lg:col-span-1' : undefined}
               /*
                 ⚠️ EL `<li>` SIGUE SIENDO UN ENVOLTORIO VACÍO Y NO SE PUEDE
                 FUSIONAR CON LA TARJETA DE ADENTRO. La tarjeta necesita
@@ -535,18 +536,24 @@ export default function EventsBanner() {
                 que usan las tarjetas de espacios de `PrivateEvents` en
                 tre-vele, que es la referencia que trajo Camila.
 
+                ⚠️ EL TABLET DE ARRIBA YA NO VALE DESDE EL 2026-09-23: las
+                tres apiladas en 16/9 sumaban 1.240px de fotos seguidas. Ahora
+                es un mosaico de dos columnas —la primera, los trucks, a todo
+                el ancho en 16/8, y las otras dos lado a lado en 4/5—, que
+                deja la sección en unos 1.350px en vez de 1.790.
+
                 ⚠️ LA PROPORCIÓN DE DESKTOP NO SE TOCA. En `lg` la tarjeta vive
                 en una grilla de tres columnas de 373px: ahí el retrato es lo
                 que hace que las tres se lean como una fila de fotos, y es el
                 mismo formato que las tarjetas de `WhatsOn`.
                 ══════════════════════════════════════════════════════════
               */}
-              <div className="group relative isolate flex aspect-square flex-col justify-end overflow-hidden rounded-shell bg-deeper sombra-card md:aspect-[16/9] lg:aspect-[4/5]">
+              <div className={`group relative isolate flex aspect-square flex-col justify-end overflow-hidden rounded-shell bg-deeper sombra-card ${i === 0 ? 'md:aspect-[16/8]' : 'md:aspect-[4/5]'} lg:aspect-[4/5]`}>
                 <Image
                   src={src}
                   alt={alt}
                   fill
-                  sizes="(min-width: 1024px) 420px, 100vw"
+                  sizes={i === 0 ? '(min-width: 1024px) 420px, 100vw' : '(min-width: 1024px) 420px, (min-width: 768px) 50vw, 100vw'}
                   className="-z-20 object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
                 />
 

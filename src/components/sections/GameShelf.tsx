@@ -180,13 +180,15 @@ export default function GameShelf({
       setAncho(window.innerWidth);
       setIzq(caja.current ? caja.current.getBoundingClientRect().left : 0);
       /*
-       * ⚠️ EL MODO LO DECIDE UNA MEDIA QUERY Y NO UN ANCHO SUELTO. `64rem` es
-       * el `lg` de Tailwind y tiene que ser la MISMA condición que las clases
-       * `lg:` de abajo, o el JS y el CSS discrepan en el pixel del corte. Es el
-       * mismo patrón que usan `WhatsOn` y `YardSteps` para contar cuántas
-       * tarjetas entran por vista.
+       * ⚠️ EL MODO LO DECIDE UNA MEDIA QUERY Y NO UN ANCHO SUELTO, y tiene que
+       * ser la MISMA condición que la variante `estante:` de las clases de
+       * abajo (definida en globals.css), o el JS y el CSS discrepan. Además del
+       * ancho pide mouse: en un iPad apaisado el anclado secuestraba el scroll
+       * del dedo.
        */
-      setScrollable(window.matchMedia('(min-width: 64rem)').matches);
+      setScrollable(
+        window.matchMedia('(min-width: 64rem) and (hover: hover) and (pointer: fine)').matches,
+      );
     };
     medir();
     window.addEventListener('resize', medir);
@@ -246,7 +248,7 @@ export default function GameShelf({
         estuviera siempre, en un teléfono habría dos pantallas y media de nada
         debajo de una fila que ya se puede recorrer sola.
       */
-      className="relative lg:h-[280vh]"
+      className="relative estante:h-[280vh]"
     >
       {/*
         ══════════════════════════════════════════════════════════════════
@@ -333,7 +335,7 @@ export default function GameShelf({
           de ola = 636 para unos 556 de contenido. Si alguna de las cuatro
           piezas crece, hay que volver a medir.
         */
-        className="relative -mx-gutter overflow-hidden pb-[104px] sm:pb-[136px] md:-mx-gutter-lg lg:sticky lg:top-0 lg:flex lg:h-svh lg:flex-col lg:justify-center lg:pt-24 lg:pb-[168px]"
+        className="relative -mx-gutter overflow-hidden pb-[104px] sm:pb-[136px] md:-mx-gutter-lg estante:sticky estante:top-0 estante:flex estante:h-svh estante:flex-col estante:justify-center estante:pt-24 estante:pb-[168px]"
       >
         {/*
           ⚠️ EL ENCABEZADO VIAJA ADENTRO DEL `sticky` Y LO PASA LA PÁGINA COMO
@@ -449,7 +451,7 @@ export default function GameShelf({
           className={[
             'px-gutter scroll-px-gutter md:px-gutter-lg md:scroll-px-gutter-lg',
             'overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-            movido ? 'lg:snap-none lg:overflow-x-visible' : 'snap-x snap-mandatory',
+            movido ? 'estante:snap-none estante:overflow-x-visible' : 'snap-x snap-mandatory',
             /* El aire para que la sombra de la tarjeta no quede recortada por
                el propio `overflow-x-auto`. Mismo recurso que `DragCarousel`. */
             'py-3 -my-3',
@@ -577,7 +579,7 @@ export default function GameShelf({
           leída en voz alta no dice nada útil.
         */}
         {movido ? (
-          <div aria-hidden="true" className="mt-10 hidden justify-center lg:flex">
+          <div aria-hidden="true" className="mt-10 hidden justify-center estante:flex">
             <span className="h-0.5 w-[min(360px,60vw)] overflow-hidden rounded-pill bg-ink/15">
               <span
                 className="block h-full origin-left bg-sunset"

@@ -1,3 +1,4 @@
+import { EventDialogProvider, VerMas } from '@/components/sections/EventDialogProvider';
 import { EventPhoto, EventWhen, SpacePill } from '@/components/shared/EventCardParts';
 import {
   cuerpoSinPrecios,
@@ -109,7 +110,8 @@ export default function UpcomingCards({
       en mobile las tarjetas siguen midiendo lo que miden.
       ══════════════════════════════════════════════════════════════════════
     */
-    <ul className="mt-[28px] grid list-none grid-cols-1 gap-[20px] p-0 sm:grid-cols-2 lg:grid-cols-3">
+    <EventDialogProvider>
+    <ul className="mt-[28px] grid list-none grid-cols-1 gap-[12px] p-0 sm:grid-cols-2 sm:gap-[20px] lg:grid-cols-3">
       {/*
         ⚠️ LA KEY LLEVA LA FECHA Y NO SÓLO EL SLUG. Desde que la lista es de
         ocurrencias, el mismo evento aparece varias veces en el mismo mes: con
@@ -123,6 +125,7 @@ export default function UpcomingCards({
         </li>
       ))}
     </ul>
+    </EventDialogProvider>
   );
 }
 
@@ -272,6 +275,29 @@ function UpcomingCard({
   */
   const promos = [...curadas, ...escritas];
 
+  /*
+    ══════════════════════════════════════════════════════════════════════════
+    ⚠️ EN MOBILE LA TARJETA ES COMPACTA, desde el 2026-09-23. Camila marcó la
+    de «Game day at the trucks» como la medida: foto al costado, fecha, hora,
+    título y DOS renglones de descripción con puntos suspensivos. Lo que no
+    entra —el resto del cuerpo, los pasos, las promos— se lee en el pop-up que
+    abre «See more». Con dieciséis eventos, la grilla pasó de 5.670px a unos
+    2.700 en un teléfono.
+
+    ⚠️ `hayMas` DECIDE SI APARECE EL LINK, y es una cuenta a propósito
+    aproximada: un párrafo de más de 60 caracteres ya no entra en dos renglones
+    de la columna de texto a 390. Si la tarjeta muestra todo lo que tiene, no
+    hay link que prometa más.
+
+    Desde `sm` no cambia nada: vuelve la tarjeta completa de siempre.
+    ══════════════════════════════════════════════════════════════════════════
+  */
+  const primero = bloques[0];
+  const hayMas =
+    bloques.length > 1 ||
+    promos.length > 0 ||
+    (primero !== undefined && (primero.tipo === 'pasos' || primero.texto.length > 60));
+
   return (
     /*
       ⚠️ `grano` NO ES DECORACIÓN ACÁ. La tarjeta es `bg-paper` sobre una
@@ -280,7 +306,7 @@ function UpcomingCard({
       recortado encima del fondo texturado, que es justo lo que `check:grano`
       detecta. Ver la regla en `scripts/check-grano.mjs`.
     */
-    <article className="grano flex h-full flex-col overflow-hidden rounded-card border border-ink/12 bg-paper transition-colors hover:border-ink/30">
+    <article className="grano grid h-full grid-cols-[112px_minmax(0,1fr)] overflow-hidden rounded-card sm:flex sm:flex-col border border-ink/12 bg-paper transition-colors hover:border-ink/30">
       {/*
         ══════════════════════════════════════════════════════════════════
         EL AFICHE, CON LAS DOS PÍLDORAS ENCIMA.
@@ -312,20 +338,25 @@ function UpcomingCard({
       */}
       <EventPhoto
         event={event}
-        sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+        sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 112px"
         brief={`Afiche de ${event.title} en ${event.space}.`}
         fondo="bg-bone"
+        ventana="max-sm:aspect-auto max-sm:h-full max-sm:min-h-28"
       >
-        <SpacePill>{event.space}</SpacePill>
-        {tipo ? (
-          <SpacePill lado="der">
-            <span className={`size-[8px] shrink-0 rounded-pill ${eventDot(event)}`} aria-hidden="true" />
-            {tipo}
-          </SpacePill>
-        ) : null}
+        {/* En la columna de 112px de mobile las píldoras no entran: el
+            espacio y el tipo se leen en el pop-up. */}
+        <span className="max-sm:hidden">
+          <SpacePill>{event.space}</SpacePill>
+          {tipo ? (
+            <SpacePill lado="der">
+              <span className={`size-[8px] shrink-0 rounded-pill ${eventDot(event)}`} aria-hidden="true" />
+              {tipo}
+            </SpacePill>
+          ) : null}
+        </span>
       </EventPhoto>
 
-      <div className="flex grow flex-col p-[18px] lg:p-[20px]">
+      <div className="flex min-w-0 grow flex-col p-[14px] sm:p-[18px] lg:p-[20px]">
         {/*
           ⚠️ ACÁ ARRIBA HABÍA UNA PLACA DE FECHA APILADA sobre la esquina de la
           foto —«THU / 30 / OCT» en tres renglones— y se fue el 2026-09-21 con
@@ -337,7 +368,7 @@ function UpcomingCard({
         */}
         <EventWhen event={event} date={date} isToday={date === today} />
 
-        <h3 className="mt-3.5 font-display text-d5 font-semibold uppercase leading-[1.05] text-ink lg:text-d4">
+        <h3 className="mt-2 font-display text-d6 font-semibold uppercase leading-[1.05] text-ink sm:mt-3.5 sm:text-d5 lg:text-d4">
           {event.title}
         </h3>
 
@@ -357,11 +388,16 @@ function UpcomingCard({
           ancho fijo para que los renglones largos sangren parejos.
         */}
         <div className="mt-[8px] flex flex-col gap-[8px] text-[16px] leading-[1.55] text-body/80">
-          {bloques.map((b) =>
+          {bloques.map((b, i) =>
             b.tipo === 'parrafo' ? (
-              <p key={b.texto}>{b.texto}</p>
+              <p
+                key={b.texto}
+                className={i === 0 ? 'max-sm:line-clamp-2 max-sm:text-[15px] max-sm:leading-[1.5]' : 'max-sm:hidden'}
+              >
+                {b.texto}
+              </p>
             ) : (
-              <ol key={b.items[0]} className="m-0 flex list-none flex-col gap-[6px] p-0">
+              <ol key={b.items[0]} className="m-0 flex list-none flex-col gap-[6px] p-0 max-sm:hidden">
                 {b.items.map((paso, i) => (
                   <li key={paso} className="flex gap-[8px] text-[15px] leading-[1.5]">
                     <span className="w-[1.2em] shrink-0 font-bold tabular-nums text-deep">
@@ -405,7 +441,7 @@ function UpcomingCard({
           ══════════════════════════════════════════════════════════════════
         */}
         {promos.length > 0 ? (
-          <>
+          <div className="max-sm:hidden">
             {/*
               ⚠️ EL RÓTULO ES DE LAS PROMOS CURADAS Y SÓLO DE ELLAS. «Game day
               at the bar» es la frase que el cliente le puso a las tres del
@@ -438,8 +474,10 @@ function UpcomingCard({
                 </li>
               ))}
             </ul>
-          </>
+          </div>
         ) : null}
+
+        {hayMas ? <VerMas event={event} date={date} className="mt-[10px] sm:hidden" /> : null}
 
         {/*
           ══════════════════════════════════════════════════════════════════

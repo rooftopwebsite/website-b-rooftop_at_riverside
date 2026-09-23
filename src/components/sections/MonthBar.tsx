@@ -265,7 +265,7 @@ export default function MonthBar({
                       scroll={false}
                       aria-current={activo ? 'page' : undefined}
                       className={[
-                        'flex items-center gap-[6px] whitespace-nowrap rounded-pill px-[10px] py-[7px] text-caption font-bold uppercase tracking-[0.1em] transition-colors lg:px-[14px]',
+                        'toque flex min-w-11 items-center justify-center gap-[6px] whitespace-nowrap rounded-pill px-[10px] py-[7px] text-caption font-bold uppercase tracking-[0.1em] transition-colors lg:px-[14px]',
                         activo ? ACTIVA : 'text-deep hover:bg-mint/60',
                       ].join(' ')}
                     >
@@ -296,7 +296,8 @@ export default function MonthBar({
           renglones, la barra fija mediría media pantalla de teléfono.
 
           ⚠️ LA SANGRÍA NEGATIVA VALE EXACTAMENTE EL PADDING DEL CONTENEDOR, QUE
-          ACÁ ES `GUTTER` —16px, y 32 desde `md`— Y ÉSE ES EL PUNTO MÁS FÁCIL DE
+          ACÁ ES `GUTTER` —desde el 2026-09-23 vale `borde`, el mismo `clamp`
+          fluido del resto del sitio— Y ÉSE ES EL PUNTO MÁS FÁCIL DE
           ERRAR DE TODO EL ARCHIVO. Si no coinciden, la tira se sale de la barra y
           arrastra scroll horizontal a TODO el documento. Ya pasó en esta misma
           página cuando la tira usaba `borde` (fluido) dentro de un contenedor
@@ -318,12 +319,18 @@ export default function MonthBar({
           arriba y 4 abajo. Desde que el seleccionado es `deep` macizo y sin
           sombra, no hay nada que recortar y el colchón era complejidad sirviendo
           a nadie. Si alguna vez la píldora vuelve a tener sombra, vuelve esto.
+
+          ⚠️ EL `py-2 -mb-2` DE AHORA ES OTRA COSA: es el lugar del área
+          táctil. Las píldoras miden 29px y llevan `toque`, que estira el blanco
+          del dedo a 44 con un pseudo por fuera de la píldora; sin el colchón,
+          el `overflow` lo recorta. El `mt` bajó los mismos 8px, así que la
+          barra mide lo que medía.
           ══════════════════════════════════════════════════════════════════════
         */}
         {filters.length > 1 ? (
           <nav
             aria-label="Filter events by type"
-            className={`-mx-gutter mt-[10px] overflow-x-auto [scrollbar-width:none] md:-mx-gutter-lg lg:mt-[12px] [&::-webkit-scrollbar]:hidden ${GUTTER}`}
+            className={`-mx-gutter mt-[2px] -mb-2 overflow-x-auto py-2 [scrollbar-width:none] md:-mx-gutter-lg lg:mt-[4px] [&::-webkit-scrollbar]:hidden ${GUTTER}`}
           >
             <ul className="m-0 flex w-max min-w-full list-none flex-nowrap gap-[6px] p-0">
               {filters.map((f) => (
@@ -340,7 +347,7 @@ export default function MonthBar({
                          tamaño elegido para esta barra. Estuvo un rato en 11 para
                          ganar alto y es exactamente la clase de valor suelto que
                          el kit no tiene. */
-                      'inline-block whitespace-nowrap rounded-pill px-[13px] py-[5px] text-caption font-bold uppercase tracking-[0.08em] transition-colors',
+                      'toque inline-block whitespace-nowrap rounded-pill px-[13px] py-[5px] text-caption font-bold uppercase tracking-[0.08em] transition-colors',
                       f.current
                         ? ACTIVA
                         : 'border border-teal600/35 text-deep hover:border-teal600 hover:bg-mint/50',
@@ -384,7 +391,7 @@ function Flecha({
       href={href}
       rel={rel}
       scroll={false}
-      className="grid size-[34px] shrink-0 place-items-center rounded-btn border border-ink/20 transition-colors hover:border-ink hover:bg-ink hover:text-paper lg:size-[38px]"
+      className="toque grid size-[34px] shrink-0 place-items-center rounded-btn border border-ink/20 transition-colors hover:border-ink hover:bg-ink hover:text-paper lg:size-[38px]"
     >
       <span className="sr-only">{label}</span>
       <svg width="9" height="14" viewBox="0 0 9 14" fill="none" aria-hidden="true">

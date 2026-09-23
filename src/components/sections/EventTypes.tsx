@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import { TIPOS_EVENTO } from '@/content/event-types';
-import { TAG } from '@/lib/tag';
 
 /**
  * ══════════════════════════════════════════════════════════════════════════
@@ -19,7 +18,7 @@ import { TAG } from '@/lib/tag';
  *     en DOS MITADES iguales a partir de `lg`;
  *   · la mitad de contenido con `justify-center`, `gap-4` y `p-7 lg:p-12`;
  *   · rótulo, titular de display en caja alta, y bajada de `lead` liviana;
- *   · la otra mitad a sangre completa, con `aspect-[16/10]` en mobile y
+ *   · la otra mitad a sangre completa, con `aspect-[2/1]` en mobile (era 16:10) y
  *     `h-full min-h-[22rem]` en desktop.
  *
  * ⚠️ LO QUE CAMBIA ES LA SUPERFICIE Y ESO ES TODO EL PEDIDO. El destacado va
@@ -148,7 +147,7 @@ export default function EventTypes() {
           <li key={tipo.id} className="lg:sticky" style={{ top: `${102 + i * 24}px` }}>
             <article
               id={tipo.id}
-              className="group relative grid scroll-mt-24 overflow-hidden rounded-shell bg-paper text-left sombra-card lg:grid-cols-2"
+              className="group relative grid scroll-mt-24 overflow-hidden rounded-shell bg-paper text-left sombra-card md:grid-cols-[minmax(0,1fr)_42%] lg:grid-cols-2"
             >
               {/* El troquel, de punta a punta de la losa. `inset-3.5` son los
                   14px que lo despegan del borde, el mismo número que en
@@ -179,19 +178,28 @@ export default function EventTypes() {
                 losa, y si una respira 28px y la otra 48 el eje del medio deja
                 de estar en el medio.
               */}
-              <div className="p-7 lg:order-2 lg:p-12">
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-ticket bg-fog lg:aspect-auto lg:h-full lg:min-h-[20rem]">
+              {/*
+                ⚠️ EN TABLET YA VA AL COSTADO, desde el 2026-09-23. Entre 768 y
+                1023 la losa apilaba una foto de 650×400 arriba del texto y las
+                cuatro medían casi cuatro pantallas de iPad. Con la foto a la
+                derecha en un 42% —y sin padding izquierdo, porque el aire del
+                medio ya lo pone el texto— la sección pasó de 3.481px a unos
+                1.700. En mobile la foto va en 2:1 y no en 16:10 por lo mismo, y
+                sin `pb`: el texto de abajo ya trae sus 28px, y sumados daban 56.
+              */}
+              <div className="p-7 max-md:pb-0 md:order-2 md:pl-0 lg:p-12">
+                <div className="relative aspect-[2/1] w-full overflow-hidden rounded-ticket bg-fog md:aspect-auto md:h-full md:min-h-64 lg:min-h-[20rem]">
                   <Image
                     src={tipo.image}
                     alt={tipo.imageAlt}
                     fill
-                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    sizes="(min-width: 1024px) 50vw, (min-width: 768px) 42vw, 100vw"
                     className="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col justify-center gap-4 p-7 lg:order-1 lg:p-12">
+              <div className="flex flex-col justify-center gap-4 p-7 md:order-1 lg:p-12">
                 <Eyebrow tone="terra" as="span">
                   {tipo.eyebrow}
                 </Eyebrow>
@@ -213,22 +221,14 @@ export default function EventTypes() {
                 </p>
 
                 {/*
-                  ⚠️ LOS FORMATOS SON ETIQUETAS Y TIENEN QUE PARECERLO: fondo
-                  tenue, radio de la familia y texto en `muted`. En píldora con
-                  contorno se leerían como botones apagados. Letra y acolchado
-                  salen de `TAG`, el molde común de los tags del sitio.
+                  ⚠️ LOS FORMATOS SE FUERON EL 2026-09-23, en todos los anchos.
+                  Camila: «eliminemos los tabs de estas cards de eventos en todos
+                  los dispositivos». Eran entre seis y ocho etiquetas por tipo
+                  —«Sales kickoffs», «Board and partner dinners»— y en un
+                  teléfono ocupaban cuatro o cinco renglones debajo de la bajada.
+                  El dato sigue en `tipo.formats` del contenido por si se
+                  necesita en otro lado; acá no se pinta.
                 */}
-                <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
-                  {tipo.formats.map((f) => (
-                    <li
-                      key={f}
-                      className={`inline-flex items-center gap-1.75 rounded-btn bg-bone ${TAG} text-muted`}
-                    >
-                      <span aria-hidden="true" className="size-1 shrink-0 rounded-pill bg-river" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
               </div>
             </article>
           </li>

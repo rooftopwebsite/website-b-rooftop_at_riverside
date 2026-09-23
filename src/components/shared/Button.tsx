@@ -111,6 +111,8 @@ export type ButtonVariant = keyof typeof VARIANTS;
 
 const BASE = [
   'inline-flex items-center justify-center gap-2.25',
+  /* El área táctil llega a 44 sin tocar el alto de 42. Ver `toque` en globals.css. */
+  'toque',
   /*
     ══════════════════════════════════════════════════════════════════════════
     ⚠️ LA ETIQUETA NUNCA SE PARTE EN DOS RENGLONES. Camila, 2026-09-21:

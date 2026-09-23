@@ -81,11 +81,18 @@ const MAX_CARDS = 8;
 const CARD_GAP = 24;
 
 /**
- * El `px-8` del track, en px. Es el aire que se le deja a la sombra de las
- * tarjetas y NO cuenta como ventana: lo usa `medirDentro` para decidir qué
- * tarjeta entra entera. Si cambia la clase, cambia este número.
+ * El padding lateral del track, LEÍDO DEL DOM. Es el aire que se le deja a la
+ * sombra de las tarjetas y NO cuenta como ventana: lo usa `medirDentro` para
+ * decidir qué tarjeta entra entera.
+ *
+ * ⚠️ ERA UNA CONSTANTE DE 32 Y ESO VACIABA EL CARRUSEL EN MOBILE Y TABLET.
+ * El track dejó de ser `px-8` y pasó a `px-borde`, que es un `clamp` de
+ * 16 a 56: a 390 vale 16 y a 768 vale 30,7. Con la ventana calculada a 32px
+ * del borde, ninguna tarjeta entraba «entera», las ocho se apagaban con
+ * `opacity-0` y la home mostraba un campo verde con los puntos abajo. Medido
+ * el 2026-09-23. Leyendo el valor computado, el número sigue al token solo.
  */
-const BORDE_TRACK = 32;
+const bordeTrack = (track: HTMLElement) => parseFloat(getComputedStyle(track).paddingLeft) || 0;
 
 /*
  * ══════════════════════════════════════════════════════════════════════════
@@ -805,11 +812,11 @@ export default function WhatsOn({
    * del largo correcto. No hay estado intermedio, no hay array capturado y no
    * hace falta volver a suscribir nada cuando la lista cambia.
    *
-   * ⚠️ LOS 32px SON EL `px-8` DEL TRACK. El track se estira 32px más allá de la
-   * caja de cada lado —ver la nota del `margin-inline` negativo— justamente para
-   * que la sombra de las tarjetas no se recorte. Esos 32px NO son ventana: una
-   * tarjeta que asoma ahí adentro está afuera. Si cambia el padding, cambia
-   * este número.
+   * ⚠️ EL BORDE ES EL `px-borde` DEL TRACK, leído con `bordeTrack`. El track se
+   * estira ese mismo valor más allá de la caja de cada lado —ver la nota del
+   * `margin-inline` negativo— justamente para que la sombra de las tarjetas no
+   * se recorte. Ese margen NO es ventana: una tarjeta que asoma ahí adentro
+   * está afuera.
    *
    * ⚠️ LA TOLERANCIA DE 1px ES POR LOS DPR FRACCIONALES de Windows (1,25 y
    * 1,5), que son la mitad del tráfico de escritorio de este sitio. Sin ella
@@ -819,8 +826,9 @@ export default function WhatsOn({
     const track = trackRef.current;
     if (!track) return;
     const caja = track.getBoundingClientRect();
-    const izq = caja.left + BORDE_TRACK - 1;
-    const der = caja.right - BORDE_TRACK + 1;
+    const borde = bordeTrack(track);
+    const izq = caja.left + borde - 1;
+    const der = caja.right - borde + 1;
     setDentro(
       [...track.children].map((hijo) => {
         const r = hijo.getBoundingClientRect();
@@ -901,7 +909,7 @@ export default function WhatsOn({
     <section
       id="whats-on"
       aria-labelledby="whats-on-title"
-      className="banda-arco relative z-[2] bg-deep grano pt-14 pb-cierre-arco text-bone on-dark lg:pt-[110px]"
+      className="banda-arco relative z-[2] bg-deep grano pt-14 pb-cierre-arco text-bone on-dark md:pt-18 lg:pt-22 desk:pt-[110px]"
     >
       <div className="caja-ancha">
         <h2

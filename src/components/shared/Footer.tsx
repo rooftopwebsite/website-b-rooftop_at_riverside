@@ -377,15 +377,25 @@ export default function Footer() {
             <SocialLinks />
           </div>
 
-          {/* ── Las tres columnas de links ───────────────────────────── */}
+          {/* ── Las tres columnas de links ─────────────────────────────
+
+              ⚠️ EN MOBILE VAN DE A DOS Y NO APILADAS, desde el 2026-09-23. En
+              una sola columna centrada el pie medía unos 1.000px de alto en un
+              teléfono: diez links en fila india después del newsletter. Es la
+              grilla de Santa María y Yava. La tercera columna ocupa el renglón
+              entero y queda centrada, para que la fila de abajo no cuelgue de
+              un solo lado. */}
           <nav
             aria-label="Footer"
-            className="grid gap-9 sm:grid-cols-3 sm:gap-6"
+            className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 sm:gap-6"
           >
-            {COLUMNAS.map(({ titulo, links }) => (
+            {COLUMNAS.map(({ titulo, links }, i) => (
               <div
                 key={titulo}
-                className="flex flex-col items-center text-center sm:items-start sm:text-left"
+                className={[
+                  'flex flex-col items-center text-center sm:items-start sm:text-left',
+                  i === COLUMNAS.length - 1 && COLUMNAS.length % 2 === 1 ? 'col-span-2 sm:col-span-1' : '',
+                ].join(' ')}
               >
                 <Heading level={2} role="label" className="text-paper">
                   {titulo}

@@ -158,7 +158,7 @@ export default function MonthCalendar({
               <th
                 key={d.corto}
                 scope="col"
-                className="pb-[8px] text-center text-[11px] font-bold uppercase tracking-[0.08em] text-body/70 lg:text-left lg:text-caption lg:tracking-[0.12em]"
+                className="pb-[8px] text-center text-caption font-bold uppercase tracking-[0.08em] text-body/70 lg:text-left lg:tracking-[0.12em]"
               >
                 {/* El nombre entero para quien escucha, las tres letras para quien mira. */}
                 <span aria-hidden="true">{d.corto}</span>

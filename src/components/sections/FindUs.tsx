@@ -90,7 +90,7 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
     <section
       id={id}
       aria-labelledby="find-us-title"
-      className="relative z-[3] banda-arco bg-bone grano pt-16 pb-cierre scroll-mt-24 lg:pt-32"
+      className="relative z-[3] banda-arco bg-bone grano pt-16 pb-cierre scroll-mt-24 md:pt-20 lg:pt-24 desk:pt-32"
     >
       {/*
         ⚠️ EL GUTTER DE MOBILE ES PROPIO Y MAYOR QUE EL DEL SITIO (24 contra

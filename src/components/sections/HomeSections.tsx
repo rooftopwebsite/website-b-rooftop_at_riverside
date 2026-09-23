@@ -63,7 +63,7 @@ export function HowThisPlaceWorks() {
         de allá y el par mediría 120px en vez de 48: el doble del mismo
         espacio en «Three of them», cinco secciones más abajo.
       */
-      className="relative z-[3] banda-arco bg-bone grano pt-16 lg:pt-32"
+      className="relative z-[3] banda-arco bg-bone grano pt-16 md:pt-20 lg:pt-24 desk:pt-32"
     >
       {/*
         ══════════════════════════════════════════════════════════════════
