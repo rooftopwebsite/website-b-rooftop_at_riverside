@@ -26,9 +26,9 @@ export const metadata: Metadata = pageMeta({
     medios critica en el hero viejo de la home.
   */
   image: {
-    url: '/images/market/hero-yard-wide.webp',
-    width: 2048,
-    height: 1084,
+    url: '/og/market.jpg',
+    width: 1200,
+    height: 630,
     alt: 'Stalls and pop-up tents set up in the yard on a market day',
   },
 });

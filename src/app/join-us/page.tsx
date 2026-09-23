@@ -15,9 +15,9 @@ import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 export const metadata: Metadata = pageMeta({
   route: '/join-us',
   image: {
-    url: '/images/venue/join-stage-day-wide.webp',
-    width: 2576,
-    height: 1364,
+    url: '/og/join-us.jpg',
+    width: 1200,
+    height: 630,
     alt: 'A singer on the stage in the yard at Rooftop at Riverside in the afternoon',
   },
 });

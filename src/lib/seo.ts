@@ -21,11 +21,26 @@ interface OgImage {
   readonly alt: string;
 }
 
+/**
+ * LA VISTA PREVIA POR DEFECTO al compartir un link del sitio.
+ *
+ * ⚠️ SE GENERA CON `npm run og` desde `_interno/og/og-default.*`. Ahí está
+ * escrito por qué JPEG, por qué 1200×630 y por qué menos de 300 KB.
+ *
+ * ⚠️ HASTA EL 2026-09-23 ESTO APUNTABA A `venue-aerial.webp` Y DECLARABA
+ * 2400×1600, cuando el archivo mide 1000×667: se genera chico porque va
+ * desenfocado de fondo en el banner de eventos. Las redes recibían una foto
+ * WebP, 3:2 y de la mitad del ancho que se les prometía. Y el `alt` hablaba de
+ * una banda tocando al atardecer en una aérea del patio vacío.
+ *
+ * ⚠️ EL `alt` DESCRIBE LA OG DISEÑADA que se subió el 2026-09-23 (el logo
+ * blanco sobre naranja). Si se cambia el diseño, se cambia esta línea.
+ */
 const OG_IMAGE: OgImage = {
-  url: '/images/venue/venue-aerial.webp',
-  width: 2400,
-  height: 1600,
-  alt: 'A band playing to a crowd at dusk at Rooftop at Riverside in Bonita Springs',
+  url: '/og/og-default.jpg',
+  width: 1200,
+  height: 630,
+  alt: 'Rooftop at Riverside logo in white on orange, with the line Eat. Drink. Paradise.',
 };
 
 /**
@@ -76,13 +91,21 @@ export function pageMeta(
       siteName: BRAND.name,
       locale: 'en_US',
       type: 'website',
-      images: [{ url: `${SITE_URL}${img.url}`, width: img.width, height: img.height, alt: img.alt }],
+      images: [
+        {
+          url: `${SITE_URL}${img.url}`,
+          width: img.width,
+          height: img.height,
+          alt: img.alt,
+          type: img.url.endsWith('.jpg') ? 'image/jpeg' : undefined,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: socialTitle,
       description,
-      images: [`${SITE_URL}${img.url}`],
+      images: [{ url: `${SITE_URL}${img.url}`, alt: img.alt }],
     },
   };
 }

@@ -30,9 +30,9 @@ import { getVenue } from '@/lib/venue';
 export const metadata: Metadata = pageMeta({
   route: '/events',
   image: {
-    url: '/images/events/events-hero-wide.webp',
-    width: 2576,
-    height: 1364,
+    url: '/og/events.jpg',
+    width: 1200,
+    height: 630,
     alt: 'Guests with name badges seated along the bar at a private event at Rooftop at Riverside',
   },
 });

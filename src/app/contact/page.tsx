@@ -13,9 +13,9 @@ import { breadcrumbJsonLd, jsonLdScript, pageMeta, venueJsonLd } from '@/lib/seo
 export const metadata: Metadata = pageMeta({
   route: '/contact',
   image: {
-    url: '/images/venue/contact-bar-day-wide.webp',
-    width: 2576,
-    height: 1364,
+    url: '/og/contact.jpg',
+    width: 1200,
+    height: 630,
     alt: 'Guests at the bar at Rooftop at Riverside on a weekday afternoon',
   },
 });

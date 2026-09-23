@@ -17,9 +17,9 @@ import { getVenue } from '@/lib/venue';
 export const metadata: Metadata = pageMeta({
   route: '/our-story',
   image: {
-    url: '/images/venue/story-yard-day-wide.webp',
-    width: 2576,
-    height: 1364,
+    url: '/og/our-story.jpg',
+    width: 1200,
+    height: 630,
     alt: 'The yard at Rooftop at Riverside seen from the rooftop, with the picnic tables and the umbrellas',
   },
 });
