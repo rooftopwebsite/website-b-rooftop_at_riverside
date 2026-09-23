@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { getPosts } from '@/lib/blog';
 import { ALL_ROUTES } from '@/lib/nav';
 import { SITE_URL } from '@/lib/seo';
 
@@ -7,7 +8,7 @@ import { SITE_URL } from '@/lib/seo';
  * de los datos: sacar un truck del roster o un evento del calendario lo saca
  * del sitemap sin que nadie se acuerde de hacerlo.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const priority = (path: string) => {
@@ -40,6 +41,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
    * lo trata como señal de calidad del sitio: cada URL del sitemap es una
    * afirmación de que ahí hay algo que vale la pena indexar.
    * ══════════════════════════════════════════════════════════════════════
+   *
+   * ⚠️ LAS NOTAS DEL BLOG SÍ VAN, y no contradicen lo de arriba: salen del
+   * mismo feed que dibuja `/blog/[slug]`, así que una URL listada es una nota
+   * que existe. Sólo las que viven bajo `/blog/`: una con canonical propio a
+   * otra página del sitio ya está en `staticRoutes`.
    */
-  return staticRoutes;
+  const posts = (await getPosts())
+    .filter((p) => p.canonicalPath.startsWith('/blog/'))
+    .map((p) => ({
+      url: `${SITE_URL}${p.canonicalPath}`,
+      lastModified: p.modifiedAt || p.publishedAt || now,
+      changeFrequency: 'yearly' as const,
+      priority: 0.5,
+    }));
+
+  return [...staticRoutes, ...posts];
 }

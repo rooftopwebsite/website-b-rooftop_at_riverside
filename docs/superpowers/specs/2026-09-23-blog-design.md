@@ -140,6 +140,8 @@ memoria de la base de datos.
 
 ## 4. Listado `/blog`
 
+> ⚠️ Superficies y cards cambiaron en la primera revisión: ver §10.
+
 | # | Sección | Componente | Superficie |
 |---|---|---|---|
 | 1 | Hero | `PlateHero` con pregunta, `title` + `titleAccent`, foto de la terraza, migas | foto + placa `bone` |
@@ -167,6 +169,8 @@ memoria de la base de datos.
   una sola línea a What's On.
 
 ## 5. Nota `/blog/[slug]`
+
+> ⚠️ Migas, portada, cierre y "More stories" cambiaron en la primera revisión: ver §10.
 
 De arriba a abajo, todo en `caja`:
 
@@ -234,3 +238,42 @@ De arriba a abajo, todo en `caja`:
 
 - Rooftop no tiene notas: el contenido se carga en el dashboard.
 - Foto del hero del listado: se usa una de la terraza que ya está en el sitio.
+
+---
+
+## 10. Primera revisión sobre capturas (mismo día)
+
+Camila miró las dos páginas corriendo, en los dos estados, y pidió:
+
+- «agregá olas para el cambio de fondos, así no queda tan básico»
+- «que la nota destacada esté en una card; las cards hacelas como las de
+  nuestro proyecto, con línea punteada»
+- sobre la nota, tachando las migas y marcando un recuadro del ancho del
+  texto sobre la foto: «el título, contenido y todo lo previo a la imagen
+  centrado, y la imagen más chica, con máximo el ancho del texto. Además no
+  pongamos al final el bloque que muestra otras notas»
+
+Cómo quedó construido. Esto manda sobre §4 y §5:
+
+| | Antes | Ahora |
+|---|---|---|
+| Listado, superficies | hero `bone` · notas `paper` · `FindUs` | hero `bone` · **`SoftWave` bone→mint** · notas en **`mint`** · `FindUs` con su arco |
+| Estado vacío | banda `paper` suelta | la misma losa troquelada, sobre la banda menta |
+| Nota destacada | foto y texto sueltos | **losa troquelada de `EventTypes`**: papel, `sombra-card`, filete punteado `inset-3.5` `border-deep/35`, foto metida con el padding del texto (`p-7 lg:p-12`) |
+| `PostCard` | card de `shared/Card` con `ring-fog` | la misma losa en chico: `rounded-door`, filete a 10px, foto `rounded-ticket` con margen |
+| Nota, cabecera | alineada a la izquierda, con migas | **centrada, sin migas visibles** (el `BreadcrumbList` del schema se queda) |
+| Nota, portada | 16:9 hasta 1280px | **3:2, con el ancho del texto** (`MEDIDA`, 42rem, el mismo `max-width` de `.prose-post`) |
+| Nota, pie | «More stories» con 3 cards | **sin otras notas**: «Back to all stories» y `FindUs` |
+
+Otras cosas que cambiaron al construir:
+
+- **`.prose-post` vive en `src/app/blog/prose-post.css`**, importado por la
+  nota, y no en `globals.css`: otra sesión estaba editando `globals.css` al
+  mismo tiempo.
+- **El OG de artículo se arma en la página**, sobre lo que devuelve `pageMeta`,
+  sin tocar `seo.ts`, por el mismo motivo.
+- **«Blog» va en `LINKS_CONOCERNOS` de `Footer.tsx`**. `FOOTER_QUICK_LINKS` de
+  `nav.ts` no la usa nadie.
+- **Tests:** `node --import ./scripts/test-hooks.mjs --test "src/**/*.test.ts"`
+  (27). No hay script en `package.json` porque lo estaba editando la otra
+  sesión.

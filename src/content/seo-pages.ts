@@ -144,6 +144,13 @@ export const PAGE_SEO = {
 
 
 
+  '/blog': {
+    h1: 'Stories from the Rooftop',
+    title: 'Blog | Rooftop at Riverside, Downtown Bonita Springs',
+    description:
+      'Stories from the rooftop bar and food truck park in Downtown Bonita Springs: the music, the trucks, the game days and the people behind them.',
+    keywords: [],
+  },
   '/contact': {
     h1: 'Say hello to the rooftop',
     title: 'Contact | Rooftop at Riverside',

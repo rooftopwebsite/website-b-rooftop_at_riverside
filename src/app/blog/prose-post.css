@@ -1,0 +1,219 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   ⚠️ EL CUERPO DE UNA NOTA DEL BLOG. Sale de `.prose-legal` y cambia lo que un
+   texto para LEER pide y un documento no: cuerpo más grande, medida de ~68
+   caracteres y citas, figuras y bloques del editor del dashboard (FAQ,
+   callout, embed), portados de `.post` de Yava.
+   El interpárrafo es 12px, menor que titular→texto (`gap-bajada`): regla de
+   todo el sitio. Nunca justificado.
+   ══════════════════════════════════════════════════════════════════════════ */
+.prose-post {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--color-body);
+  max-width: 42rem;
+  margin-inline: auto;
+  text-align: left;
+}
+
+@media (min-width: 48rem) {
+  .prose-post {
+    font-size: 18px;
+  }
+}
+
+.prose-post > *:first-child {
+  margin-top: 0;
+}
+
+.prose-post p {
+  margin-bottom: 0.75rem;
+}
+
+.prose-post h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-d4);
+  line-height: 1.08;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  margin-top: 2.5rem;
+  margin-bottom: var(--spacing-gap-bajada);
+}
+
+.prose-post h3 {
+  font-family: var(--font-body);
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-top: 1.9rem;
+  margin-bottom: var(--spacing-gap-bajada);
+}
+
+.prose-post strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.prose-post a {
+  color: var(--color-deep);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.prose-post a:hover {
+  text-decoration-color: var(--color-sunset-deep);
+  text-decoration-thickness: 2px;
+}
+
+.prose-post ul,
+.prose-post ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose-post ul {
+  list-style: disc;
+}
+
+.prose-post ol {
+  list-style: decimal;
+}
+
+.prose-post li {
+  margin-bottom: 0.5rem;
+}
+
+.prose-post li::marker {
+  color: var(--color-sunset-deep);
+}
+
+.prose-post blockquote {
+  border-left: 3px solid var(--color-sunset);
+  padding-left: 1.25rem;
+  margin-block: 1.75rem;
+  font-size: 1.125em;
+  color: var(--color-ink);
+}
+
+.prose-post hr {
+  border: 0;
+  border-top: 1px solid var(--color-fog);
+  margin-block: 2.5rem;
+}
+
+.prose-post img,
+.prose-post video,
+.prose-post iframe {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-image);
+}
+
+.prose-post figure {
+  margin-block: 2rem;
+}
+
+.prose-post figcaption {
+  margin-top: 0.5rem;
+  font-size: var(--text-caption);
+  line-height: 1.45;
+  color: var(--color-muted);
+}
+
+.prose-post table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: 1.75rem;
+  font-size: 0.9em;
+}
+
+.prose-post th,
+.prose-post td {
+  border-bottom: 1px solid var(--color-fog);
+  padding: 0.6rem 0.5rem;
+  text-align: left;
+}
+
+.prose-post th {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+/* Bloques del editor del dashboard. */
+.prose-post .faq {
+  margin-block: 2rem;
+}
+
+.prose-post .faq details {
+  border-bottom: 1px solid var(--color-fog);
+}
+
+.prose-post .faq details:first-of-type {
+  border-top: 1px solid var(--color-fog);
+}
+
+.prose-post .faq summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.prose-post .faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.prose-post .faq summary::after {
+  content: '+';
+  color: var(--color-sunset-deep);
+  font-weight: 500;
+}
+
+.prose-post .faq details[open] summary::after {
+  content: '−';
+}
+
+.prose-post .faq details > *:not(summary) {
+  padding-bottom: 1rem;
+}
+
+.prose-post .callout {
+  margin-block: 1.75rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--radius-card);
+  background: var(--color-bone);
+  border-left: 3px solid var(--color-deep);
+}
+
+.prose-post .callout > * + * {
+  margin-top: 0.5rem;
+}
+
+.prose-post .callout-tip {
+  border-left-color: var(--color-river);
+}
+
+.prose-post .callout-warning {
+  border-left-color: var(--color-sunset-deep);
+}
+
+.prose-post .embed {
+  margin-block: 2rem;
+  position: relative;
+  aspect-ratio: 16 / 9;
+}
+
+.prose-post .embed iframe,
+.prose-post .embed video {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+}

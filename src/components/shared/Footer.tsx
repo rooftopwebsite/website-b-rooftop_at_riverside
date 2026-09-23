@@ -108,6 +108,7 @@ const LINKS_EVENTOS: readonly FooterLink[] = [
  */
 const LINKS_CONOCERNOS: readonly FooterLink[] = [
   { label: 'About', href: '/our-story' },
+  { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
   { label: 'Join Us', href: '/join-us' },
   { label: 'Gift Cards', href: BRAND.giftCards, external: true },
