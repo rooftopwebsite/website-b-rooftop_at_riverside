@@ -199,7 +199,7 @@ export default function Hero({
     const caja = frame?.parentElement;
     if (!frame || !caja) return;
 
-    /* En mobile no se toca: el marco sigue siendo `aspect-video w-full`. Un
+    /* En mobile no se toca: el marco va por clase (6:5, y 16:9 desde `sm`). Un
        teléfono no tiene el problema —el hero entra— y recortar el video ahí
        sería dejarlo en una tira. */
     if (window.innerWidth < MARCO_DESKTOP) {
@@ -713,8 +713,19 @@ export default function Hero({
             desktop, antes de que `syncMarco` corra. De ahí en más el ALTO
             llega por `style` y la proporción deja de mandar: el `w-full` no se
             toca nunca, así que el marco siempre llega al lateral.
+
+            ⚠️ EN MOBILE ES 6:5 Y NO 16:9, desde el 2026-09-23. Camila: «en
+            mobile hagamos más alto el video aunque deba recortarse en los
+            laterales». A 390 el 16:9 era una franja de 201px de alto; en 6:5
+            mide 298 y `object-cover` recorta los costados. Los dos CTA siguen
+            entrando en la primera pantalla de un teléfono de 844. Desde `sm`
+            vuelve el 16:9 de siempre, y desde 1024 manda `syncMarco`.
+
+            Es la excepción a la regla de arriba —«se recorta arriba y abajo
+            o no se recorta»—, y la pidió ella: en un teléfono la franja
+            apaisada no dejaba ver el lugar.
           */
-          className="relative aspect-video w-full overflow-hidden rounded-frame bg-fog"
+          className="relative aspect-[6/5] w-full overflow-hidden rounded-frame bg-fog sm:aspect-video"
           style={marco ? { height: marco } : undefined}
         >
           {/*

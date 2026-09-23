@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
 import { Ticket, X } from '@/components/shared/Icon';
@@ -184,6 +185,25 @@ export default function EventDialog({
       aria-labelledby="event-dialog-title"
       className="ficha-evento w-[min(92vw,34rem)] rounded-frame border border-ink/12 bg-paper p-0 text-ink sombra-card"
     >
+      {/*
+        ⚠️ EL AFICHE ABRE LA FICHA, desde el 2026-09-23. Camila: «a la preview
+        le falta la imagen». La tarjeta compacta de mobile la muestra en una
+        columna de 112px, así que el pop-up es el único lugar donde se ve
+        entera. Va en 16:9, la misma ventana que `EventPhoto`, y con el radio
+        de arriba del diálogo para que no asome por las esquinas. Sin afiche
+        no se dibuja nada: la ficha arranca en el texto como antes.
+      */}
+      {event.image ? (
+        <div className="relative aspect-video w-full overflow-hidden rounded-t-frame bg-bone">
+          <Image
+            src={event.image}
+            alt={event.imageAlt ?? ''}
+            fill
+            sizes="(min-width: 640px) 34rem, 92vw"
+            className="object-cover"
+          />
+        </div>
+      ) : null}
       <div className="relative p-6 lg:p-8">
         {/*
           ⚠️ EL BOTÓN DE CERRAR ES `type="button"` Y LLAMA A `close()`. Un

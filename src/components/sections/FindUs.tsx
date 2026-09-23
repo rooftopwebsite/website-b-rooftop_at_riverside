@@ -228,7 +228,16 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
               derecha los tres quedan en tres puntos de partida distintos. Una
               dirección se lee de corrido, no en zigzag.
             */}
-            <span className="mt-1 block text-sunset-deep">Across from Riverside Park</span>
+            {/*
+              ⚠️ EL `md:mt-5` ES EL AIRE CONTRA LAS REDES EN TABLET, desde el
+              2026-09-23. Camila: «en tablet demos más espacio entre el título
+              y los tres CTA». Entre 768 y 1023 los círculos miden 52px y el
+              primer renglón unos 47, así que colgaban sobre «Park», que a ese
+              ancho llega al margen derecho. Con 20px entre los renglones queda
+              un hueco de ~15px debajo de los círculos. Desde `lg` el titular
+              es más grande que los círculos y vuelve el `mt-1`.
+            */}
+            <span className="mt-1 block text-sunset-deep md:mt-5 lg:mt-1">Across from Riverside Park</span>
           </h2>
 
           {/* ⚠️ Sin `order-*`: las redes van DESPUÉS del titular en el DOM, que
@@ -245,7 +254,13 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
               flujo, debajo del titular, que es lo que pidió Camila para
               mobile. Ver el bloque de arriba. */}
           {/*
-            ⚠️ EL `w-full` ES LO QUE MANDA LAS REDES A LA DERECHA. El
+            ⚠️ EN MOBILE LAS REDES VAN A LA IZQUIERDA, CON EL TITULAR, desde el
+            2026-09-23. Camila: «en mobile alineamos los tres CTA a la izquierda
+            junto con el título». La nota de abajo explica por qué habían ido a
+            la derecha; el `w-full` se queda porque no molesta y deja el
+            renglón entero para la lista.
+
+            ⚠️ (HISTORIA) EL `w-full` ERA LO QUE MANDABA LAS REDES A LA DERECHA. El
             `justify-end` ya estaba, pero un `<ul>` con `display: flex` dentro
             de un contenedor que no lo estira mide SU CONTENIDO: medido a
             393px, la lista arrancaba en 0 y terminaba 165px antes del borde
@@ -257,7 +272,7 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
             `w-full` no interviene: ahí la posición la fijan `top-0` y
             `right-0`.
           */}
-          <ul className="flex w-full list-none flex-wrap items-center justify-end gap-3 p-0 md:absolute md:top-0 md:right-0 md:w-auto">
+          <ul className="flex w-full list-none flex-wrap items-center justify-start gap-3 p-0 md:absolute md:top-0 md:right-0 md:w-auto">
             {SOCIAL.map(({ label, href, Icon }) => (
               <li key={label}>
                 <a

@@ -1197,6 +1197,47 @@
   --spacing-gap-cta: 24px;
 }
 
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ LOS RADIOS GRANDES ACHICAN EN MOBILE, desde el 2026-09-23. Camila: «para
+ * toda la web en general, considero que en mobile los radius de las cards y
+ * demás debería ser menos».
+ *
+ *              390    640+   1024+
+ *     frame     28     36     44     marcos de foto, losas, diálogo
+ *     shell     20     26     32     tarjetas grandes
+ *     door      16     20     24     las placas de «Three doors»
+ *     ticket    12     14     18     tickets y tarjetas chicas
+ *
+ * Los de 10 (`card`, `btn`, `input`…) no se tocan: ya son chicos.
+ *
+ * ⚠️ EL DE `frame` ES ADEMÁS EL TAMAÑO DE LA ESQUINA INVERSA de los heroes
+ * (`esquina-inversa` mide un `--radius-frame`), y eso era un problema aparte:
+ * con 44px la placa de `PlateHero` no podía pasar de ~182px a 390 sin que la
+ * esquina cayera sobre la curva de la foto, y «two stories up» se partía en
+ * tres renglones. Con 28 la placa tiene 246px.
+ *
+ * ⚠️ VAN EN `:root` Y NO EN `@theme` por lo mismo que los fluidos: el
+ * `@theme` guarda el valor de desktop y esto lo pisa abajo de cada corte.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+@media (width < 64rem) {
+  :root {
+    --radius-frame: 36px;
+    --radius-shell: 26px;
+    --radius-door: 20px;
+    --radius-ticket: 14px;
+  }
+}
+@media (width < 40rem) {
+  :root {
+    --radius-frame: 28px;
+    --radius-shell: 20px;
+    --radius-door: 16px;
+    --radius-ticket: 12px;
+  }
+}
+
 @media (min-width: 922px) {
   :root {
     --spacing-gap-kicker: 12px;

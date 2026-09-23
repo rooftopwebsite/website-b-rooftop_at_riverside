@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import PilaConCabeza from '@/components/sections/PilaConCabeza';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import { TIPOS_EVENTO } from '@/content/event-types';
@@ -92,6 +93,10 @@ export default function EventTypes() {
         monocromo; la regla vale para los heros y para las bandas.
         ══════════════════════════════════════════════════════════════════════
       */}
+      <PilaConCabeza
+        fondo="bg-mint grano"
+        cabeza={
+          <>
       <h2
         id="tipos-title"
         className="mx-auto max-w-[18ch] text-center font-display text-banda font-extrabold uppercase"
@@ -103,6 +108,9 @@ export default function EventTypes() {
         Whatever you are throwing, you get the rooftop bar, the yard and the four kitchens. What
         changes is how the day is built around them.
       </p>
+          </>
+        }
+      >
 
       {/*
         ══════════════════════════════════════════════════════════════════════
@@ -142,9 +150,16 @@ export default function EventTypes() {
         `z-index`.
         ══════════════════════════════════════════════════════════════════════
       */}
-      <ul className="mt-bloque flex list-none flex-col gap-6 p-0">
+      {/*
+        ⚠️ LA PILA YA ES DE TODOS LOS ANCHOS Y SE PEGA DEBAJO DEL ENCABEZADO,
+        desde el 2026-09-23 (ver `PilaConCabeza`). El `top` es el header (78)
+        + el alto medido del encabezado + 24px por índice. La nota de arriba
+        que dice «desde `lg`» quedó de historia: en mobile la tarjeta ya no
+        mide 700px —la foto es 2:1 y no hay chips— y la pila entra en pantalla.
+      */}
+      <ul className="flex list-none flex-col gap-6 p-0">
         {TIPOS_EVENTO.map((tipo, i) => (
-          <li key={tipo.id} className="lg:sticky" style={{ top: `${102 + i * 24}px` }}>
+          <li key={tipo.id} className="sticky" style={{ top: `calc(78px + var(--cabeza) + ${i * 24}px)` }}>
             <article
               id={tipo.id}
               className="group relative grid scroll-mt-24 overflow-hidden rounded-shell bg-paper text-left sombra-card md:grid-cols-[minmax(0,1fr)_42%] lg:grid-cols-2"
@@ -234,6 +249,7 @@ export default function EventTypes() {
           </li>
         ))}
       </ul>
+      </PilaConCabeza>
     </Section>
   );
 }

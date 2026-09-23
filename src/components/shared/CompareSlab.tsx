@@ -112,8 +112,17 @@ export default function CompareSlab({
         de nada antes del rótulo.
 
         ⚠️ EL `pb` NO SE TOCA: sigue en `none` por lo de abajo.
+
+        ⚠️ EL CONTENIDO VA EN `z-[3]`, Y ES LO QUE DEJA VER EL PIE DE LAS
+        TARJETAS. Camila, 2026-09-23: «cuidado que se están superponiendo los
+        fondos con las cards». Las tarjetas cuelgan 128px (`-mb-32`) sobre la
+        sección siguiente, que va en `z-2`; su `z-10` no alcanzaba porque
+        `Section` mete el contenido en una capa `z-[1]`, y un z-index no
+        sale de su capa. Se sube LA CAPA DE CONTENIDO y no la sección entera:
+        la sección pinta el fondo verde, y levantada taparía el arco crema de
+        la banda siguiente, que se monta encima con margen negativo.
       */}
-      <Section tone="deep" band="lg" bandTop="sm" bandBottom="none" labelledBy={id}>
+      <Section tone="deep" band="lg" bandTop="sm" bandBottom="none" labelledBy={id} innerClassName="!z-[3]">
         {/*
           ══════════════════════════════════════════════════════════════════
           ⚠️ EL ENCABEZADO VA CENTRADO Y ANTES IBA A LA IZQUIERDA. Camila,
@@ -186,7 +195,14 @@ export default function CompareSlab({
           y el sticker quedaba en 22px, o sea la mitad del que declara el token.
           72/88 devuelve esos 26px y deja arriba el aire que `bloque` promete.
         */}
-        <div className="relative z-10 mt-18 -mb-32 grid items-stretch gap-8 lg:mt-22 lg:grid-cols-2 lg:gap-10">
+        {/*
+          ⚠️ APILADAS VAN A 56px Y NO A 32, desde el 2026-09-23. El sticker de
+          la segunda cuelga la mitad de su alto por encima del borde, así que
+          de los 32 quedaban ~10 de aire real y las dos tarjetas se leían
+          pegadas. Camila: «agregá espacio acá, se ven pegadas las cards». En
+          fila (`lg`) el sticker no cae en el gap y sigue en 40.
+        */}
+        <div className="relative z-10 mt-18 -mb-32 grid items-stretch gap-14 lg:mt-22 lg:grid-cols-2 lg:gap-10">
           {[
             { col: ours, nuestro: true },
             { col: theirs, nuestro: false },
@@ -311,7 +327,9 @@ export default function CompareSlab({
                       >
                         {nuestro ? '✓' : '✕'}
                       </span>
-                      <span className="max-w-[34ch] font-body text-base leading-[1.5] text-ink">
+                      {/* 46ch y no 34, desde el 2026-09-23: en tablet la tarjeta mide ~650px
+                          y con 34 cada ítem caía en tres renglones rodeado de blanco. */}
+                      <span className="max-w-[46ch] font-body text-base leading-[1.5] text-ink">
                         <span className="sr-only">{nuestro ? 'Yes: ' : 'No: '}</span>
                         {r}
                       </span>

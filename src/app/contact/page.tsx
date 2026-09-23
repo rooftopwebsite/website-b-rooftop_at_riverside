@@ -150,18 +150,19 @@ export default async function ContactPage() {
         es exactamente media placa de DOS renglones. Con uno solo, la foto le
         pasa por encima al titular entero.
 
-        ⚠️ Y EL TEXTO PLANO TIENE QUE DAR «Say hello», que es el H1 que fija
+        ⚠️ Y EL TEXTO PLANO TIENE QUE DAR «Say hello to the rooftop», que es el H1 que fija
         `PAGE_SEO` y lo que compara `npm run check:seo`. El `<span>` parte el
         renglón y pinta el color; no agrega ni saca una palabra.
       */}
       <PlateHero
         question="Trying to reach the rooftop in Bonita Springs?"
-        title={
-          <>
-            {'Say '}
-            <span className="block text-sunset-deep">hello</span>
-          </>
-        }
+        /* ⚠️ «SAY HELLO TO / THE ROOFTOP» Y NO «SAY / HELLO», desde el
+           2026-09-23. Camila: «este título va mejor en una sola línea, o
+           cambialo para que siga como los demás en dos líneas pero más largo
+           para lograr más impacto». Con dos palabras sueltas la placa medía
+           lo que una palabra y el hero se veía vacío al lado de los otros. */
+        title={'Say hello to '}
+        titleAccent="the rooftop"
         lead="Three inboxes, so your message lands with the person who can answer it instead of a shared one. If it is urgent, the phone is faster than all of it."
         photo="/images/venue/contact-bar-day-wide.webp"
         photoAlt="Guests at the bar at Rooftop at Riverside on a weekday afternoon"
@@ -207,7 +208,15 @@ export default async function ContactPage() {
         titleId="write-title"
         lead="Write to us and a person here reads it. We come back within one business day."
         aside={
-          <div className="flex flex-col gap-9">
+          /*
+            ⚠️ EN TABLET VA EN DOS COLUMNAS, desde el 2026-09-23 —los buzones a
+            la izquierda y la dirección a la derecha—, con el teléfono e
+            Instagram a lo ancho arriba. Camila: «en tablet poné en dos columnas
+            esta info». Apilado a 820 era una columna angosta con media fila
+            vacía al lado. Desde `lg` vuelve a ser la columna de al lado del
+            formulario.
+          */
+          <div className="flex flex-col gap-9 md:grid md:grid-cols-2 md:gap-x-8 lg:flex">
             {/*
               ── Lo que sobrevive del collage ───────────────────────────────
               ⚠️ ESTO ERA EL ENCABEZADO DE LA PÁGINA y ahora encabeza la
@@ -224,10 +233,19 @@ export default async function ContactPage() {
               grande: los 60px de alto son todos área de toque, bastante más
               que los 44 del mínimo.
             */}
-            <div className="flex items-center gap-3">
+            {/*
+              ⚠️ INSTAGRAM PASÓ DE CÍRCULO A PÍLDORA CON EL USUARIO, desde el
+              2026-09-23. Camila: «el CTA del teléfono queda enorme, así que lo
+              achicaremos de ancho para darle lugar al CTA de IG, al que además
+              del ícono le agregaremos el @ con el usuario». Los dos van del
+              mismo alto y se reparten el renglón en tablet; en el teléfono y en
+              la columna angosta de desktop van uno arriba del otro, porque
+              «@rooftopatriverside» no entra al lado del número.
+            */}
+            <div className="grid gap-3 md:col-span-2 md:grid-cols-2 lg:grid-cols-1">
               <a
                 href={venue.phoneHref}
-                className="flex h-[60px] flex-1 items-center justify-center rounded-pill border-2 border-dashed border-ink/30 bg-mint px-4 font-display text-d6 font-semibold uppercase leading-none text-ink transition-colors hover:bg-river/30 sm:text-d5"
+                className="flex h-[60px] items-center justify-center rounded-pill border-2 border-dashed border-ink/30 bg-mint px-4 font-display text-d6 font-semibold uppercase leading-none text-ink transition-colors hover:bg-river/30 sm:text-d5"
               >
                 {venue.phone}
               </a>
@@ -235,12 +253,11 @@ export default async function ContactPage() {
                 href={BRAND.social.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex size-[60px] shrink-0 items-center justify-center rounded-full border-2 border-dashed border-ink/30 bg-cream text-ink transition-colors hover:bg-sunset"
+                className="flex h-[60px] items-center justify-center gap-2.5 rounded-pill border-2 border-dashed border-ink/30 bg-cream px-4 font-body text-base font-bold text-ink transition-colors hover:bg-sunset"
               >
-                <Instagram className="size-6" aria-hidden="true" />
-                <span className="sr-only">
-                  @{instagramHandle()} on Instagram (opens in a new tab)
-                </span>
+                <Instagram className="size-6 shrink-0" aria-hidden="true" />
+                <span className="truncate">@{instagramHandle()}</span>
+                <span className="sr-only"> on Instagram (opens in a new tab)</span>
               </a>
             </div>
 
@@ -279,7 +296,7 @@ export default async function ContactPage() {
               ))}
             </ul>
 
-            <hr className="w-full border-0 border-t border-ink/15" />
+            <hr className="w-full border-0 border-t border-ink/15 md:hidden lg:block" />
 
             {/* ── La dirección ─────────────────────────────────────────── */}
             <div>
@@ -294,7 +311,7 @@ export default async function ContactPage() {
                 </p>
                 <p className="mt-[10px] text-[16px] text-body/80">{venue.neighborhood}</p>
               </address>
-              <p className="mt-[14px] text-[15px] leading-[1.6] text-body/75">
+              <p className="mt-[14px] text-[16px] leading-[1.6] text-body/75">
                 Cancellations and weather calls go up on{' '}
                 <a
                   href={BRAND.social.instagram}

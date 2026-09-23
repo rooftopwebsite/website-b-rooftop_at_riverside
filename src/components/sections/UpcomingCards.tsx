@@ -306,7 +306,7 @@ function UpcomingCard({
       recortado encima del fondo texturado, que es justo lo que `check:grano`
       detecta. Ver la regla en `scripts/check-grano.mjs`.
     */
-    <article className="grano grid h-full grid-cols-[112px_minmax(0,1fr)] overflow-hidden rounded-card sm:flex sm:flex-col border border-ink/12 bg-paper transition-colors hover:border-ink/30">
+    <article className="grano relative grid h-full grid-cols-[112px_minmax(0,1fr)] overflow-hidden rounded-card sm:flex sm:flex-col border border-ink/12 bg-paper transition-colors hover:border-ink/30">
       {/*
         ══════════════════════════════════════════════════════════════════
         EL AFICHE, CON LAS DOS PÍLDORAS ENCIMA.
@@ -477,7 +477,9 @@ function UpcomingCard({
           </div>
         ) : null}
 
-        {hayMas ? <VerMas event={event} date={date} className="mt-[10px] sm:hidden" /> : null}
+        {/* En mobile toda la tarjeta abre el pop-up; el link se VE sólo si hay
+            algo más que leer. Ver `VerMas`. Desde `sm` no existe. */}
+        <VerMas event={event} date={date} visible={hayMas} className={hayMas ? 'mt-[10px] sm:hidden' : 'sm:hidden'} />
 
         {/*
           ══════════════════════════════════════════════════════════════════
@@ -501,7 +503,7 @@ function UpcomingCard({
           ══════════════════════════════════════════════════════════════════
         */}
         {isTicketed(event) && event.ticketUrl ? (
-          <p className="m-0 mt-auto pt-[14px]">
+          <p className="relative z-10 m-0 mt-auto pt-[14px]">
             <a
               href={event.ticketUrl}
               target="_blank"

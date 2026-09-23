@@ -62,10 +62,10 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     name: 'The rooftop patio',
     floor: 'Second floor',
     body: 'Open air, with the rooftop bar at your back and the yard two stories below. Where a group ends up when the bar inside is full.',
-    // TODO: confirmar con cliente. No hay ninguna foto del patio de arriba en
-    // la entrega del 2026-09-10: las 36 son de la barra o del patio de abajo.
-    photo: null,
-    photoAlt: null,
+    // Entró el 2026-09-23 desde el banco (_RCZ4760): la mesa de la terraza de
+    // arriba, al sol. Ver la entrada en `scripts/build-media.mjs`.
+    photo: '/images/venue/patio-rooftop-table.webp',
+    photoAlt: 'A table set with burgers, fries and cocktails on the rooftop patio',
     photoBrief:
       "El patio de arriba al aire libre, con mesas y gente, mirando hacia el patio de abajo.",
   },

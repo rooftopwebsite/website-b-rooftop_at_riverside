@@ -77,8 +77,11 @@ import {
  */
 const MAX_CARDS = 8;
 
-/** El aire entre tarjetas, en px. Lo necesita el cálculo del scroll. */
-const CARD_GAP = 24;
+/**
+ * El aire entre tarjetas, LEÍDO DEL DOM: es 16px en mobile y 24 desde `md`
+ * (`gap-4 md:gap-6` en el track). Lo necesita el cálculo del scroll.
+ */
+const gapTrack = (track: HTMLElement) => parseFloat(getComputedStyle(track).columnGap) || 0;
 
 /**
  * El padding lateral del track, LEÍDO DEL DOM. Es el aire que se le deja a la
@@ -115,7 +118,20 @@ const bordeTrack = (track: HTMLElement) => parseFloat(getComputedStyle(track).pa
  * allá dice dos, los puntos cuentan mal.
  * ══════════════════════════════════════════════════════════════════════════
  */
-const ANCHO = 'w-full md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)]';
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EN MOBILE LA SIGUIENTE ASOMA Y NO HAY FLECHAS, desde el 2026-09-23.
+ * Camila: «en mobile quita las flechas de los carrus, que estén solo los
+ * bullets debajo, y que en pantalla entre una card entera y un par de px de la
+ * siguiente, asomando por el lateral para que invite a hacer scroll con el dedo
+ * sin tocar flechas».
+ *
+ * La tarjeta mide el ancho de la caja MENOS 20px y el gap baja a 16: la
+ * siguiente arranca a 16px del filo de la tarjeta y deja ver 20px antes del
+ * borde de la pantalla. La pista de que hay más la da el dibujo, no un control.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const ANCHO = 'w-[calc(100%-20px)] md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)]';
 
 /** Cuántas tarjetas entran por vista en cada breakpoint. Espeja `ANCHO`. */
 const VISIBLES = [
@@ -704,8 +720,9 @@ export default function WhatsOn({
    * estado sincronizado con un `resize`.
    */
   const step = () => {
-    const card = trackRef.current?.firstElementChild;
-    return card ? card.getBoundingClientRect().width + CARD_GAP : 320;
+    const track = trackRef.current;
+    const card = track?.firstElementChild;
+    return track && card ? card.getBoundingClientRect().width + gapTrack(track) : 320;
   };
 
   const scrollByCard = useCallback((dir: 1 | -1) => {
@@ -825,6 +842,15 @@ export default function WhatsOn({
   const medirDentro = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
+    /*
+      ⚠️ EN MOBILE NO SE APAGA NADA: la tarjeta que asoma por el borde es la
+      invitación a deslizar, y apagada no invitaría a nada. El apagado era por
+      la sombra de la siguiente colándose en el gap, y eso en desktop sigue.
+    */
+    if (!window.matchMedia('(min-width: 768px)').matches) {
+      setDentro([...track.children].map(() => true));
+      return;
+    }
     const caja = track.getBoundingClientRect();
     const borde = bordeTrack(track);
     const izq = caja.left + borde - 1;
@@ -1102,7 +1128,7 @@ export default function WhatsOn({
             cualquier medida y el carrusel corta justo en el filo.
             ══════════════════════════════════════════════════════════════
           */
-          className="-mx-borde -mt-2 -mb-5 flex snap-x snap-mandatory gap-6 overflow-x-auto px-borde pt-3.5 pb-13 scroll-px-borde [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="-mx-borde -mt-2 -mb-5 flex snap-x snap-mandatory gap-4 overflow-x-auto md:gap-6 px-borde pt-3.5 pb-13 scroll-px-borde [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {events.map((o, i) => (
             /*
@@ -1201,7 +1227,7 @@ export default function WhatsOn({
             type="button"
             onClick={() => scrollByCard(-1)}
             disabled={!canPrev}
-            className="grid size-13 shrink-0 place-items-center rounded-pill bg-cream text-deep transition-all duration-300 ease-brand hover:bg-paper active:scale-95 disabled:pointer-events-none disabled:bg-transparent disabled:text-muted-dark disabled:ring-1 disabled:ring-muted-dark/50"
+            className="hidden size-13 shrink-0 place-items-center rounded-pill bg-cream md:grid text-deep transition-all duration-300 ease-brand hover:bg-paper active:scale-95 disabled:pointer-events-none disabled:bg-transparent disabled:text-muted-dark disabled:ring-1 disabled:ring-muted-dark/50"
           >
             <span className="sr-only">Previous events</span>
             <ArrowLeft />
@@ -1262,7 +1288,7 @@ export default function WhatsOn({
             type="button"
             onClick={() => scrollByCard(1)}
             disabled={!canNext}
-            className="grid size-13 shrink-0 place-items-center rounded-pill bg-cream text-deep transition-all duration-300 ease-brand hover:bg-paper active:scale-95 disabled:pointer-events-none disabled:bg-transparent disabled:text-muted-dark disabled:ring-1 disabled:ring-muted-dark/50"
+            className="hidden size-13 shrink-0 place-items-center rounded-pill bg-cream md:grid text-deep transition-all duration-300 ease-brand hover:bg-paper active:scale-95 disabled:pointer-events-none disabled:bg-transparent disabled:text-muted-dark disabled:ring-1 disabled:ring-muted-dark/50"
           >
             <span className="sr-only">Next events</span>
             <ArrowRight />

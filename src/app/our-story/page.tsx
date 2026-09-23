@@ -209,12 +209,8 @@ export default async function OurStoryPage() {
       */}
       <PlateHero
         question="Who is behind the rooftop in Bonita Springs?"
-        title={
-          <>
-            {'A Magnus '}
-            <span className="block text-sunset-deep">family project</span>
-          </>
-        }
+        title={'A Magnus '}
+        titleAccent="family project"
         photo="/images/venue/story-yard-day-wide.webp"
         photoAlt="The yard at Rooftop at Riverside seen from the rooftop: picnic tables and umbrellas on the turf, with the building's roof edge on the right"
       />
@@ -271,6 +267,10 @@ export default async function OurStoryPage() {
         no desaparece de la página, cambia de contenido.
         ══════════════════════════════════════════════════════════════════
       */}
+      {/* ⚠️ LA OLA ENTRE EL RELATO (`bone`) Y LA CITA (`cream`), desde el
+          2026-09-23. Camila: «faltan olas acá». Era el único cambio de
+          superficie de la página que cortaba en recto. */}
+      <SoftWave from="bone" to="cream" className="relative -mb-px" />
       <Section tone="cream" band="xl" aria-label="What this place is for">
         <Reveal>
           <figure className="m-0 text-center">
@@ -281,7 +281,10 @@ export default async function OurStoryPage() {
               &ldquo;
             </span>
             <blockquote className="m-0">
-              <p className="m-0 mx-auto max-w-[24ch] font-display text-d3 font-extrabold uppercase leading-[1.05] text-ink lg:text-d2">
+              {/* 28 / 36 / 46 / 58 desde el 2026-09-23; arrancaba en 46. Camila: «en
+                  mobile esta frase debe ser más chica». A 46 eran diez renglones
+                  en un teléfono, o sea una pantalla entera de cita. */}
+              <p className="m-0 mx-auto max-w-[24ch] font-display text-d5 font-extrabold uppercase leading-[1.05] text-ink sm:text-d4 md:text-d3 lg:text-d2">
                 {CHRIS.quote}
               </p>
             </blockquote>
@@ -349,7 +352,7 @@ export default async function OurStoryPage() {
 
       <Section tone="deep" band="lg" labelledBy="people-title">
         <div className="text-center">
-          <Heading level={2} id="people-title" className="text-d3 lg:text-d2">
+          <Heading level={2} id="people-title" className="text-banda">
             Meet <span className="text-sunset">the team</span>
           </Heading>
           {/*
@@ -360,7 +363,15 @@ export default async function OurStoryPage() {
             gepassioneerde foodtruckers»— y con dos personas no contaba nada:
             debajo se ven exactamente dos tarjetas. Y encima se leía raro, como
             si hubiera un equipo más grande del que estos dos fueran una parte.
+
+            ⚠️ VUELVE UNA BAJADA, PERO QUE NO CUENTA, desde el 2026-09-23.
+            Camila: «a esta sección le falta una bajada». Dice quiénes son los
+            dos —la familia que armó el lugar y quien lo corre— sin prometer un
+            equipo más grande, que era el problema de la anterior.
           */}
+          <p className="bajada mx-auto mt-gap-bajada max-w-[46ch] text-paper/85">
+            The family that dreamed the place up, and the person who runs it every night.
+          </p>
         </div>
 
         {/*
@@ -395,7 +406,13 @@ export default async function OurStoryPage() {
           `<span>` absoluto porque necesita quedar DEBAJO del texto, y un
           pseudo-elemento de Tailwind no se ordena tan cómodo.
 
-          ⚠️ EL ACENTO ES `sunset` CON TEXTO `ink`, y el prompt pedía «texto
+          ⚠️ EL ACENTO PASÓ A `mint` EL 2026-09-23. Camila: «no le pongas naranja
+          en el hover o en mobile a cada card, vibra mucho y compite; usemos uno
+          de los verdes o celeste secundario». Sobre la banda `deep`, dos
+          placas naranjas eran lo más fuerte de la página. `ink` sobre `mint`
+          da 15:1. Lo de abajo queda de historia:
+
+          ⚠️ EL ACENTO ERA `sunset` CON TEXTO `ink`, y el prompt pedía «texto
           blanco». No se puede: el token lo dice en su propia línea —«el texto
           encima va NEGRO: blanco da 2.54:1»—. El prompt venía de otro sistema
           de color, donde el naranja de hover es #CC4700 y el blanco encima da
@@ -447,7 +464,7 @@ export default async function OurStoryPage() {
                 <div className="absolute inset-x-0 bottom-0 translate-y-19 bg-paper p-5 transition-transform duration-200 ease-brand max-lg:translate-y-0 group-hover:translate-y-0 group-focus-within:translate-y-0">
                   <span
                     aria-hidden="true"
-                    className="absolute inset-0 bg-sunset opacity-0 transition-opacity duration-200 ease-brand max-lg:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100"
+                    className="absolute inset-0 bg-mint opacity-0 transition-opacity duration-200 ease-brand max-lg:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100"
                   />
 
                   <div className="relative">

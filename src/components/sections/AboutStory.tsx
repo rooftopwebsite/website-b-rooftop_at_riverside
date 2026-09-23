@@ -1,6 +1,4 @@
-import Section from '@/components/shared/Section';
-import { Heading } from '@/components/shared/Type';
-import { Reveal } from '@/components/shared/Motion';
+import IntroSplit from '@/components/shared/IntroSplit';
 import { STORY_LEAD } from '@/content/people';
 
 /**
@@ -83,35 +81,15 @@ export default function AboutStory({ id = 'story-title' }: { readonly id?: strin
    * ══════════════════════════════════════════════════════════════════════
    */
   return (
-    <Section tone="bone" band="lg" labelledBy={id}>
-      <Reveal>
-        {/*
-          ⚠️ UN TERCIO Y DOS TERCIOS, Y NO MITADES. Es la proporción de la
-          referencia y es la que hace que el titular se lea como un rótulo del
-          bloque en vez de como una columna de contenido: a mitades, cuatro
-          renglones de display a 46px compiten con la prosa de al lado.
-
-          ⚠️ `items-start` y no `items-center`: los dos bloques tienen que
-          arrancar en la misma línea de base de arriba. Centrados, el titular
-          —que es más corto— queda flotando a media altura del párrafo.
-        */}
-        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.9fr)] lg:gap-20">
-          {/*
-            ⚠️ EL TITULAR SUBIÓ A `d3/d2` (46 → 58px) EL 2026-09-22. En la
-            referencia la columna izquierda es un rótulo GRANDE de dos o tres
-            renglones y es la mitad del peso del bloque; a `d4/d3` quedaba del
-            tamaño de un título de sección cualquiera y la prosa de al lado se
-            lo comía.
-
-            ⚠️ LA MEDIDA BAJÓ DE 14ch A 12ch para acompañar: a más cuerpo, menos
-            caracteres por renglón, o el titular se estira y deja de leerse como
-            una columna.
-          */}
-          <Heading level={2} id={id} className="max-w-[12ch] text-d3 lg:text-d2">
-            A rooftop built over a food truck park
-          </Heading>
-
-          <div>
+    /*
+      ⚠️ ARRIBA VA UN ESCALÓN MÁS CHICO (`bandTop="sm"`), desde el 2026-09-23.
+      Camila: «reducí el espacio entre esta sección y el hero, que estén casi
+      pegados, sólo que no se vea apenas entrás a la página». El hero ya deja
+      ~40px de fondo visibles debajo de la foto en la primera pantalla y su
+      propio `pb` sigue abajo, así que con 48 a 64px de acá el titular sigue
+      cayendo fuera del primer vistazo.
+    */
+    <IntroSplit id={id} title="A rooftop built over " accent="a food truck park">
             {/*
               ⚠️ LA PROSA VA EN `intro` (25px) Y YA NO EN `lead` (22px), y los
               dos párrafos del bloque van al MISMO cuerpo. En la referencia este
@@ -150,9 +128,6 @@ export default function AboutStory({ id = 'story-title' }: { readonly id?: strin
               What went up on that corner is a bar on the roof of a yard with four independent
               kitchens in it, across the street from Riverside Park.
             </p>
-          </div>
-        </div>
-      </Reveal>
-    </Section>
+    </IntroSplit>
   );
 }

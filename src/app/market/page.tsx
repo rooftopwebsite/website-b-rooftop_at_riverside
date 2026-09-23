@@ -120,12 +120,8 @@ export default async function MarketPage() {
       */}
       <PlateHero
         question="Looking for a local makers market in Bonita Springs?"
-        title={
-          <>
-            {'Meet the '}
-            <span className="block text-sunset-deep">makers</span>
-          </>
-        }
+        title={'Meet the '}
+        titleAccent="makers"
         lead="An afternoon of handmade things in the yard, with the trucks cooking and the bar open upstairs. And if you are the one who makes the thing, this is where you set up a table."
         photo="/images/market/hero-yard-wide.webp"
         photoAlt="Stalls and pop-up tents in the yard on a market day, with racks of clothes and two vendors at their stand"
@@ -164,7 +160,20 @@ export default async function MarketPage() {
         ══════════════════════════════════════════════════════════════════
       */}
       <SoftWave from="bone" to="deep" className="relative -mb-px" />
-      <Section tone="deep" band="lg" labelledBy="wall-title">
+      {/*
+        ⚠️ `width="full"` Y EL ENCABEZADO EN SU PROPIA `caja`, desde el
+        2026-09-23. Camila: «que el carru llegue al borde de la pantalla, que
+        no se corte». Con la caja de la sección, a 1559px la tira frenaba en
+        los 1280 de contenido y se cortaba antes del vidrio. Es la salida que
+        ya usa el estante de `/game-truck` (ver la nota en `GameShelf`): la
+        sección mide el viewport y sólo el encabezado se encaja.
+
+        ⚠️ EN DESKTOP LA BAJADA VA AL COSTADO DEL TITULAR, y en el mismo pedido:
+        «en desk la bajada quiero que esté al lateral, no debajo». Abajo de `lg`
+        sigue debajo.
+      */}
+      <Section tone="deep" band="lg" labelledBy="wall-title" width="full">
+        <div className="caja lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
         <SectionHead
           eyebrow="A market day"
           eyebrowTone="cream"
@@ -182,8 +191,12 @@ export default async function MarketPage() {
             —que es una de las tres cosas que seguimos sin saber—. Por eso
             termina en «these are past markets», en pasado.
           */
-          lead="Jewelry, prints, plants, clothes, homeware and food, set out by the people who made them. These are past markets in the yard."
         />
+          <p className="bajada m-0 mt-gap-bajada max-w-[52ch] text-paper/85 lg:mt-0 lg:pb-2">
+            Jewelry, prints, plants, clothes, homeware and food, set out by the people who made
+            them. These are past markets in the yard.
+          </p>
+        </div>
 
         {/*
           ══════════════════════════════════════════════════════════════════
@@ -223,7 +236,10 @@ export default async function MarketPage() {
           el gutter sólo en su encabezado (ver la nota de `caja-ancha`).
           ══════════════════════════════════════════════════════════════════
         */}
-        <div aria-hidden="true" className="mt-bloque -mx-gutter overflow-hidden py-13 md:-mx-gutter-lg">
+        {/* ⚠️ `mt-2 pt-6` Y NO `mt-bloque` + `py-13` arriba (2026-09-23): «achicá los
+            espacios entre carru y título». Arriba la sombra casi no sube, así que
+            el colchón de 52px sólo hace falta abajo. */}
+        <div aria-hidden="true" className="-mx-gutter mt-2 overflow-hidden pt-6 pb-13 md:-mx-gutter-lg">
           <div className="rt-marquee-rev flex w-max items-center gap-4 lg:gap-6">
             {[...SHOTS, ...SHOTS].map((s, i) => (
               <div
@@ -296,6 +312,7 @@ export default async function MarketPage() {
       */}
       <Section tone="bone" band="lg" labelledBy="steps-title" className="banda-arco z-[2]">
         <SectionHead
+          align="center"
           eyebrow="Set up with us"
           eyebrowTone="plum"
           id="steps-title"

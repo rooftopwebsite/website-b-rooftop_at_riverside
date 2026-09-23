@@ -188,12 +188,8 @@ export default async function SunsetBarPage() {
       */}
       <PlateHero
         question="Looking for a rooftop bar in Bonita Springs?"
-        title={
-          <>
-            {"Bonita's only "}
-            <span className="block text-sunset-deep">rooftop</span>
-          </>
-        }
+        title={"Bonita's only "}
+        titleAccent="rooftop"
         photo="/images/venue/bar-cocktails-wide.webp"
         photoAlt="Four cocktails on a table on the rooftop at golden hour, with the bar and the umbrellas behind"
       />
@@ -383,9 +379,21 @@ export default async function SunsetBarPage() {
             `py-2.5` y dos renglones el borde es un semicírculo más alto, que
             es lo mismo que hace la píldora del horario en las cards de
             eventos cuando el texto es largo.
+
+            ⚠️ EL CUERPO CRECE EN TRES ESCALONES —18 hasta 1023, 22 en `lg`,
+            28 en `desk`— desde el
+            2026-09-23, y antes era `text-d5` fijo. Camila: «creo que no está
+            adaptando su tamaño en mobile, y eso hace que en tablet y mobile se
+            vea muy grande la pastilla vs el título». El titular es `banda`,
+            que es fluido (45px a 390, ~100 en desktop), y la pastilla se
+            quedaba en 28: en un teléfono medía más de la mitad del titular y
+            en desktop un cuarto. Ahora guarda la misma proporción: entre 0,33 y
+            0,45 del titular en todos los anchos. Y a 768 queda en 18 contra los
+            28 del «NFC North HQ» de la card de abajo, que es lo que Camila
+            marcó con la flecha: un dato no puede ser más grande que un título.
             ══════════════════════════════════════════════════════════════════
           */}
-          <p className="mt-5 inline-block rounded-pill bg-cream px-6 py-2.5 text-center font-display text-d5 uppercase tracking-eyebrow text-deep lg:px-7 lg:py-3">
+          <p className="mt-5 inline-block rounded-pill bg-cream px-5 py-2 text-center font-display text-d7 uppercase tracking-eyebrow text-deep sm:px-6 sm:py-2.5 lg:px-7 lg:py-3 lg:text-d6 desk:text-d5">
             <span className="block sm:inline">{happyHour.days}</span>
             <span aria-hidden="true" className="hidden sm:inline">
               {' '}
@@ -542,7 +550,9 @@ export default async function SunsetBarPage() {
                     holgado, así que no es un problema de contenido: el precio
                     es una unidad y se rompía porque nadie se lo había dicho.
                   */}
-                  <span className="font-display text-d2 leading-none whitespace-nowrap tabular-nums text-sunset-deep">
+                  {/* ⚠️ 36 / 46 / 58 desde el 2026-09-23; era 58 fijo. Camila: «los
+                      precios de la promo en mobile quedaron muy grandes». */}
+                  <span className="font-display text-d4 leading-none whitespace-nowrap tabular-nums text-sunset-deep sm:text-d3 lg:text-d2">
                     {d.price}
                   </span>
                   {/*
@@ -552,7 +562,7 @@ export default async function SunsetBarPage() {
                     renglones cómodos. En `sm:` el cuerpo grande era parte de
                     lo que no entraba.
                   */}
-                  <span className="font-body text-d6 text-ink desk:text-d5">{d.what}</span>
+                  <span className="font-body text-d7 text-ink sm:text-d6 desk:text-d5">{d.what}</span>
                 </li>
               ))}
             </ul>

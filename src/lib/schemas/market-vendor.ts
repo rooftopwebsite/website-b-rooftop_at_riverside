@@ -18,7 +18,7 @@ import { PRODUCT_CATEGORIES, VENDOR_NEEDS } from '@/content/market';
 export const marketVendorSchema = z.object({
   business: z.string().trim().min(2, 'Tell us the name of your business.'),
   name: z.string().trim().min(2, 'Enter your name so we know who is writing.'),
-  email: z.string().trim().email('Enter a valid email address, like you@example.com.'),
+  email: z.string().trim().email('Enter a valid email.'),
   phone: z
     .string()
     .trim()

@@ -290,12 +290,8 @@ export default async function WhatsOnPage({
       */}
       <PlateHero
         question="Looking for live music tonight in Bonita Springs?"
-        title={
-          <>
-            {"What's on "}
-            <span className="block text-sunset-deep">this week</span>
-          </>
-        }
+        title={"What's on "}
+        titleAccent="this week"
         lead={`${musicaLarga}, Bingo on Wednesdays, and one Wednesday a month that belongs to the dogs.`}
         photo="/images/venue/whats-on-yard-wide.webp"
         photoAlt="A full yard on an event afternoon: long table, tent and people under the umbrellas"

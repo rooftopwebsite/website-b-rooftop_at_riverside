@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/shared/Button';
 import {
   createContext,
   useContext,
@@ -407,7 +408,7 @@ export function FileField(
           err ? BAD : OK,
         ].join(' ')}
       />
-      {p.maxMb ? <p className="text-[14px] text-body/75">Up to {p.maxMb} MB.</p> : null}
+      {p.maxMb ? <p className="text-[16px] text-body/75">Up to {p.maxMb} MB.</p> : null}
       {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
     </Wrap>
   );
@@ -807,6 +808,8 @@ export function FieldRows({
   const { uid } = useContext(Ctx);
   const { eid, err } = useField(name);
   const grid = 'grid gap-[12px] sm:grid-cols-2 lg:grid-cols-4';
+  /** El rótulo de cada celda: el mismo de los campos sueltos del formulario. */
+  const LABEL_CELDA = 'font-body text-[16px] font-bold text-ink';
 
   return (
     <fieldset id={uid + '-' + name} className="flex flex-col gap-[8px]">
@@ -815,12 +818,27 @@ export function FieldRows({
         {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
       </legend>
 
-      <div className={`mt-[6px] hidden ${grid} lg:grid`} aria-hidden="true">
-        {cols.map((c) => (
-          <span key={c.key} className="font-body text-caption font-bold uppercase tracking-[0.08em] text-body/70">
-            {c.label}
-          </span>
-        ))}
+      {/*
+        ⚠️ LOS RÓTULOS DE COLUMNA VAN EN EL ESTILO DE RÓTULO DE CAMPO DEL SITIO
+        (16px, negrita, caja baja) Y CENTRADOS SOBRE SU COLUMNA, desde el
+        2026-09-23. Camila: «los títulos de cada columna deben estar centrados,
+        y en desk usás un estilo de font y en tablet y mobile otro». Eran
+        caption en caja alta en desktop y 15px regular en las fichas de mobile:
+        el mismo rótulo con dos dibujos. Ahora es `LABEL_CELDA` en los dos.
+
+        ⚠️ LA FILA LLEVA EL MISMO HUECO DEL NÚMERO (16px + 12 de gap) que los
+        renglones de abajo. Sin él cada rótulo quedaba 28px corrido a la
+        izquierda de su columna, que es el desfasaje de la captura.
+      */}
+      <div className="mt-[6px] hidden gap-[12px] lg:flex" aria-hidden="true">
+        <span className="w-[16px] shrink-0" />
+        <div className={`flex-1 ${grid}`}>
+          {cols.map((c) => (
+            <span key={c.key} className={`${LABEL_CELDA} text-center`}>
+              {c.label}
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-col gap-[16px] lg:gap-[12px]">
@@ -833,7 +851,7 @@ export function FieldRows({
             */}
             <span
               aria-hidden="true"
-              className="mt-[10px] w-[16px] shrink-0 font-body text-[15px] font-bold tabular-nums text-body/70"
+              className="mt-[10px] w-[16px] shrink-0 font-body text-[16px] font-bold tabular-nums text-body/70"
             >
               {i + 1}.
             </span>
@@ -843,7 +861,7 @@ export function FieldRows({
                 const fid = `${uid}-${campo}-${i}`;
                 return (
                   <div key={c.key} className="flex flex-col gap-[6px]">
-                    <label htmlFor={fid} className="font-body text-[15px] text-body/80 lg:sr-only">
+                    <label htmlFor={fid} className={`${LABEL_CELDA} lg:sr-only`}>
                       {c.label}
                       <span className="sr-only">, row {i + 1}</span>
                     </label>
@@ -868,16 +886,26 @@ export function FieldRows({
 
 /* ── El botón, que conoce el estado de envío ────────────────────────────── */
 
+/*
+ * ⚠️ VA AL ANCHO DE LA TARJETA (`w-full`), desde el 2026-09-23. Camila: «los
+ * CTA de los forms al ancho total de la card, con los márgenes que le
+ * correspondan». El margen lo pone el padding de la tarjeta que envuelve el
+ * formulario, así que el botón no suma nada propio: llena la caja y ya.
+ */
+
+/*
+ * ⚠️ ES EL `Button` DEL SISTEMA Y NO UN `<button>` ESCRITO A MANO, desde el
+ * 2026-09-23. Camila, sobre «Apply for a booth»: «este CTA es diferente al
+ * resto, la font y su animación». Tenía sus propias clases —negrita 700,
+ * caja baja, sin el `Rodillo` del hover—, así que los cinco botones de envío
+ * eran los únicos CTA del sitio que no rodaban ni iban en caja alta.
+ */
 export function SubmitButton({ idle, busy }: { readonly idle: string; readonly busy: string }) {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="inline-flex h-10.5 items-center justify-center whitespace-nowrap rounded-pill bg-sunset px-[28px] font-body text-cta font-bold tracking-cta text-ink transition-colors hover:bg-sunset-hover disabled:cursor-not-allowed disabled:opacity-60"
-    >
+    <Button type="submit" variant="primary" size="lg" disabled={pending} className="w-full">
       {pending ? busy : idle}
-    </button>
+    </Button>
   );
 }
 
@@ -897,13 +925,32 @@ export function FormShell({
 }) {
   const uid = useId();
   const summaryRef = useRef<HTMLDivElement | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
   const errors = state.fieldErrors ?? {};
   const keys = Object.keys(errors);
 
-  // Al volver con errores el foco va al resumen: quien navega con teclado o
-  // lector de pantalla tiene que enterarse sin salir a buscar qué pasó.
+  /*
+    ══════════════════════════════════════════════════════════════════════════
+    ⚠️ YA NO HAY RESUMEN CON LA LISTA DE ERRORES, desde el 2026-09-23. Camila:
+    «cuando pasa esto en los forms no quiero que salga ese cartel con la lista,
+    sólo se indica en cada input». El cartel repetía, arriba, lo que cada campo
+    ya dice debajo en rojo, y empujaba el formulario entero hacia abajo.
+
+    ⚠️ LO QUE HACÍA EL RESUMEN POR LA ACCESIBILIDAD SE CONSERVA DE OTRA FORMA:
+    el foco va al PRIMER CAMPO CON ERROR (en el orden del formulario), que
+    anuncia su etiqueta y su mensaje por `aria-describedby`; y el aviso general
+    («Please check the highlighted fields») sigue en la región `aria-live` de
+    arriba. Quien navega con teclado cae donde tiene que corregir.
+
+    ⚠️ SI EL ERROR NO ES DE UN CAMPO —el servidor no contestó, el envío falló—
+    no hay campo al que llevar el foco, y ahí sí se muestra una línea de aviso.
+    ══════════════════════════════════════════════════════════════════════════
+  */
   useEffect(() => {
-    if (state.status === 'error') summaryRef.current?.focus();
+    if (state.status !== 'error') return;
+    const primero = formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
+    if (primero) primero.focus();
+    else summaryRef.current?.focus();
   }, [state]);
 
   return (
@@ -913,8 +960,8 @@ export function FormShell({
         {state.status === 'error' ? state.message : ''}
       </p>
 
-      <form action={action} noValidate className="flex flex-col gap-[28px]">
-        {state.status === 'error' ? (
+      <form ref={formRef} action={action} noValidate className="flex flex-col gap-[28px]">
+        {state.status === 'error' && keys.length === 0 ? (
           <div
             ref={summaryRef}
             tabIndex={-1}
@@ -922,17 +969,6 @@ export function FormShell({
             className="rounded-card border-2 border-tomato bg-tomato/5 p-[20px]"
           >
             <p className="font-body text-[16px] font-bold text-terra">{state.message}</p>
-            {keys.length > 0 ? (
-              <ul className="mt-[10px] flex flex-col gap-[4px]">
-                {keys.map((k) => (
-                  <li key={k}>
-                    <a href={'#' + uid + '-' + k} className="link-texto text-[16px] text-terra">
-                      {labels[k] ? labels[k] + ': ' + errors[k] : errors[k]}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
           </div>
         ) : null}
 

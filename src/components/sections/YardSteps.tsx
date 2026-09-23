@@ -79,7 +79,21 @@ import { TAG } from '@/lib/tag';
  * entran tres y allá dice dos, los puntos cuentan mal. Es el mismo sistema que
  * usa el carrusel de `WhatsOn`, con el mismo `gap-6` (24px).
  */
-const ANCHO = 'w-full md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)]';
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EN MOBILE LA SIGUIENTE ASOMA Y NO HAY FLECHAS, desde el 2026-09-23.
+ * Camila: «en mobile quita las flechas de los carrus, que estén solo los
+ * bullets debajo, y que en pantalla entre una card entera y un par de px de la
+ * siguiente, asomando por el lateral para que invite a hacer scroll con el dedo
+ * sin tocar flechas».
+ *
+ * La tarjeta mide el ancho de la caja MENOS 20px y el gap baja a 16: la
+ * siguiente arranca a 16px del filo de la tarjeta y deja ver 20px antes del
+ * borde de la pantalla. La pista de que hay más la da el dibujo, no un control. Es la misma
+ * regla que el carrusel de eventos de `WhatsOn`.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+const ANCHO = 'w-[calc(100%-20px)] md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)]';
 
 /** Cuántos tickets entran por vista en cada breakpoint. Espeja `ANCHO`. */
 const VISIBLES = [
@@ -174,7 +188,9 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
   const paso = () => {
     const t = track();
     const card = t?.firstElementChild;
-    return card ? card.getBoundingClientRect().width + GAP : 320;
+    /* El gap se lee: 16px en mobile y 24 desde `md`. `GAP` queda de piso. */
+    const gap = t ? parseFloat(getComputedStyle(t).columnGap) || GAP : GAP;
+    return card ? card.getBoundingClientRect().width + gap : 320;
   };
 
   const medir = useCallback(() => {
@@ -329,7 +345,7 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
             así que no hay tarjeta siguiente que pueda asomar por el hueco. Lo
             único que entra en esos 56px es la sombra.
           */
-          className="caja-ancha scroll-px-borde flex snap-x snap-mandatory list-none gap-6 overflow-x-auto pt-2 pb-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="caja-ancha scroll-px-borde flex snap-x snap-mandatory list-none gap-4 overflow-x-auto md:gap-6 pt-2 pb-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
         {STEPS.map((step) => (
           <RevealItem
@@ -558,7 +574,7 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
             type="button"
             onClick={() => correr(-1)}
             disabled={!canPrev}
-            className="grid size-13 place-items-center rounded-pill bg-deep text-cream ring-1 ring-deep transition-all duration-300 ease-brand hover:bg-sunset hover:text-ink active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+            className="hidden size-13 place-items-center rounded-pill bg-deep md:grid text-cream ring-1 ring-deep transition-all duration-300 ease-brand hover:bg-sunset hover:text-ink active:scale-95 disabled:pointer-events-none disabled:opacity-30"
           >
             <span className="sr-only">Previous step</span>
             <ArrowLeft />
@@ -597,7 +613,7 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
             type="button"
             onClick={() => correr(1)}
             disabled={!canNext}
-            className="grid size-13 place-items-center rounded-pill bg-deep text-cream ring-1 ring-deep transition-all duration-300 ease-brand hover:bg-sunset hover:text-ink active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+            className="hidden size-13 place-items-center rounded-pill bg-deep md:grid text-cream ring-1 ring-deep transition-all duration-300 ease-brand hover:bg-sunset hover:text-ink active:scale-95 disabled:pointer-events-none disabled:opacity-30"
           >
             <span className="sr-only">Next step</span>
             <ArrowRight />

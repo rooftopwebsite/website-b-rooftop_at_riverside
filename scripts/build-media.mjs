@@ -212,6 +212,20 @@ const FOTOS = [
     q: 78,
   },
 
+  /* ── El patio de arriba, para la pestaña de `/our-story` ────────────────
+     ⚠️ ENTRÓ EL 2026-09-23 Y ERA EL ÚNICO ESPACIO SIN FOTO. Camila: «debe ser
+     una foto de terraza con mesas, sé que hay». Es la mesa de la terraza de
+     arriba, al sol, con las sillas blancas del rooftop detrás: de las 118 del
+     banco es la única que muestra ese piso con mesas. La del yoga que se probó
+     antes es del patio de abajo. Mismo 3:4 que las otras pestañas. */
+  {
+    src: '_RCZ4760.JPG',
+    out: 'public/images/venue/patio-rooftop-table.webp',
+    w: 1080,
+    h: 1440,
+    q: 78,
+  },
+
   /* ── La foto del hero de `/whats-on`: el mismo 17:9 ─────────────────────
      ⚠️ ES LA SEGUNDA DERIVADA PARA `PlateHero` Y VA EN LA MISMA MEDIDA que la
      del bar, por el mismo motivo: el marco topea en 1288 CSS y el archivo va
@@ -352,7 +366,11 @@ const FOTOS = [
     out: 'public/images/venue/join-stage-day-wide.webp',
     w: 2576,
     h: 1364,
-    foco: 0.345,
+    /* ⚠️ 0.46 Y NO 0.345, desde el 2026-09-23. Camila: «ojo con esta imagen,
+       que no se corte tanto la persona». Con 0.345 la franja iba del cielo al
+       pecho del cantante; con 0.46 va del ala del sombrero a la cintura, y el
+       cielo que sobraba arriba pasa a ser cuerpo. */
+    foco: 0.46,
     q: 78,
   },
 
@@ -632,6 +650,12 @@ const FOTOS = [
      ⚠️ `foco: 0.42` deja adentro las dos pantallas encendidas Y las cabezas.
      Centrado corta justo a la altura de los hombros y se pierde el punto. */
   { src: 'gt-inside.jpg', out: 'public/images/game-truck/truck-night.webp', w: 1400, h: 1050, foco: 0.42, q: 78 },
+  /* El hero de `/game-truck` desde el 2026-09-23: la misma escena que la
+     tarjeta de `/events` —alguien jugando adentro del trailer—, en el 17:9 de
+     `PlateHero`. Camila: «la imagen elegida para el hero está muy fea, pongamos
+     la que usamos en events». La del trailer cerrado (`truck-wide`) queda sin
+     uso en el hero. */
+  { src: 'gt-inside.jpg', out: 'public/images/game-truck/truck-inside-wide.webp', w: 2048, h: 1084, foco: 0.45, q: 78 },
 
   /* El lateral rotulado, 3:4. Es la que lista lo que el camión hace —«daily
      play, private parties, watch parties, tournaments»— escrito en la chapa. */

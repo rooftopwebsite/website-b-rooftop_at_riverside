@@ -64,8 +64,8 @@ import { PhotoPending } from '@/components/shared/PendingData';
  * la referencia.
  *
  * Con UN renglón la foto taparía el titular entero, así que el corte se pasa
- * desde la página —`title={<>Bonita&rsquo;s only<br />rooftop</>}`— y no se
- * deja librado a dónde caiga el reflow.
+ * desde la página en dos props —`title` y `titleAccent`— y no se deja librado
+ * a dónde caiga el reflow.
  *
  * ⚠️ EL NÚMERO VA EN `em` Y NO EN PÍXELES a propósito: `em` se mide contra el
  * tamaño del titular, que es un `clamp` de 45 a 112px. En píxeles el
@@ -88,6 +88,7 @@ import { PhotoPending } from '@/components/shared/PendingData';
 export default function PlateHero({
   question,
   title,
+  titleAccent,
   titleId = 'page-title',
   lead,
   photo = null,
@@ -105,6 +106,15 @@ export default function PlateHero({
    * ruta y lo que compara `npm run check:seo`.
    */
   readonly title: ReactNode;
+  /**
+   * El SEGUNDO renglón del H1, el que va en color y el que muerde la foto.
+   *
+   * ⚠️ ES UNA PROP APARTE DESDE EL 2026-09-23 porque la placa lo abraza SOLO
+   * a él. Ver la nota del `<h1>`. El texto del H1 sigue siendo `title` +
+   * `titleAccent`, que es lo que compara `check:seo` contra `PAGE_SEO`: el
+   * primer renglón tiene que terminar en espacio.
+   */
+  readonly titleAccent: ReactNode;
   /**
    * El `id` del H1 y el destino del `aria-labelledby` de la sección.
    *
@@ -177,76 +187,128 @@ export default function PlateHero({
           {question}
         </p>
 
+        {/*
+          ══════════════════════════════════════════════════════════════════
+          ⚠️ LA PLACA ABRAZA SÓLO EL SEGUNDO RENGLÓN, desde el 2026-09-23.
+          Camila, sobre /sunset-bar: «que la forma de recorte de la imagen
+          abrace más a la palabra rooftop; hay mucho espacio a los laterales,
+          las demás páginas están mejor en este punto».
+
+          Antes la placa era el `<h1>` entero, así que medía lo que midiera
+          el renglón MÁS LARGO. Y lo que muerde la foto es sólo el segundo:
+          el primero cae arriba, sobre el `bone` de la sección. Con «Bonita's
+          only» largo arriba y «rooftop» corto abajo, la placa tenía el ancho
+          del primero alrededor de la palabra del segundo. En las otras
+          páginas el segundo renglón es el largo —«two stories up», «family
+          project»— y por eso no se notaba.
+
+          Hacerla del segundo renglón arregla dos cosas más:
+
+            · El primer renglón ya no reserva las dos esquinas. Tenía el tope
+              de `100% − 2×radius` por la placa, y a 390 eso dejaba 270px:
+              «Bonita's only» no entraba y el titular caía en TRES renglones.
+              Camila: «en mobile sube el only para que queden dos líneas».
+            · Las esquinas ya no caen sobre las puntas redondeadas de la foto.
+              Con una placa casi tan ancha como la caja, cada esquina quedaba
+              encima del radio de 44px del marco, donde no hay borde recto que
+              morder, y se veía como una cuña suelta.
+
+          ⚠️ EL CUERPO NO ES `text-banda` DESDE EL 2026-09-23: es la misma recta
+          en desktop (101px a 1440) pero más baja en el teléfono —38px a 390
+          contra 51—. A 51, «Southwest Florida's / first gaming truck» caía en
+          CINCO renglones en /game-truck. La interlínea 0.88 va escrita a mano
+          porque el token de `banda` la traía consigo.
+
+          ⚠️ LA PLACA FRENA A DOS RADIOS DE CADA BORDE (`100% − 4×radius`), y
+          no a uno como antes. La esquina mide un radio y la foto tiene un
+          radio de curva en cada punta: si la placa llega más allá, la esquina
+          cae ENCIMA de la curva, donde no hay borde recto que morder, y se ve
+          como una cuña suelta. Pasaba a 390 en /game-truck y /our-story, con
+          las dos esquinas clavadas en x=16 y x=330. Medido el 2026-09-23.
+
+          ⚠️ SI LA PALABRA NO ENTRA, LA PLACA VA EN DOS RENGLONES (`text-balance`)
+          y el contrato de arriba sigue en pie: el `<h1>` conserva el
+          `mb-[-0.94em]`, así que la foto arranca a media altura del ÚLTIMO
+          renglón, y las esquinas cuelgan de `100% − 0.94em` de la placa, que
+          es ese mismo punto —la placa es el último hijo del `<h1>` y termina
+          donde termina él—. Con uno o con dos renglones, las esquinas caen en
+          el borde de la foto.
+          ══════════════════════════════════════════════════════════════════
+        */}
         <h1
           id={titleId}
-          className="relative z-10 mx-auto mt-5 mb-[-0.94em] w-fit max-w-[calc(100%-2*var(--radius-frame))] rounded-b-frame bg-bone grano px-[0.3em] pb-[0.12em] text-center font-display text-banda font-extrabold uppercase text-ink lg:mt-7"
+          className="relative z-10 mx-auto mt-5 mb-[-0.94em] text-center font-display text-[clamp(2.25rem,0.9rem+6vw,7rem)] leading-[0.88] font-extrabold uppercase text-ink lg:mt-7"
         >
-          {title}
+          <span className="block">{title}</span>
+          <span className="relative mx-auto block w-fit max-w-[calc(100%-4*var(--radius-frame))] text-balance rounded-b-frame bg-bone grano px-[0.3em] pb-[0.12em] text-sunset-deep">
+            {titleAccent}
 
-          {/*
-            ══════════════════════════════════════════════════════════════
-            ⚠️ LAS DOS ESQUINAS INVERSAS. Camila las marcó sobre la página con
-            dos flechas rojas en los ángulos vivos, igual que las había pasado
-            para el hero de la home: «colocá los elementos vectoriales que
-            usamos en el home en esas dos esquinas».
-
-            ES EL MISMO PROBLEMA QUE EN LA HOME y la misma pieza. Esta placa
-            muerde el borde de arriba de la foto, así que donde sus dos
-            costados cruzan ese borde quedan dos ángulos de 90°, y un ángulo
-            vivo entre dos superficies delata que una está tapando a la otra.
-            Con el radio invertido el hueso no termina: se curva y entra en la
-            foto. La nota larga de por qué es una máscara y no un
-            `border-radius` está en `globals.css`, en la utilidad.
-
-            ⚠️ VAN COLGADAS DE LA PLACA Y NO ADENTRO DE LA FOTO. La placa es
-            `w-fit`: su ancho es el del titular, que cambia con el texto, con
-            el viewport y con si la display ya cargó. Metidas en la caja de la
-            foto habría que medirlo en JS como hace la home con su recorte;
-            colgadas de `left-full` y `right-full` se acomodan solas.
-
-            ⚠️ Y POR ESO LA PLACA SE TOPA EN `100% − 2×--radius-frame` Y NO EN
-            `max-w-full`, que es lo que tenía. Colgadas del costado, las dos
-            esquinas no cuentan para el ancho de la placa: si la placa llega al
-            borde del contenedor, las esquinas quedan directamente afuera de la
-            página. Pasaba en /sunset-bar a 360px —el titular medía 275 y el
-            hueco que quedaba era de 43, uno menos que los 44 de la pieza— y
-            arrastraba 1px de scroll horizontal a todo el documento; a 320px
-            eran 16. Reservando los dos anchos de esquina, el titular parte un
-            renglón antes en celular y las piezas caen siempre adentro de la
-            caja de la foto, que es donde tienen que morder.
-
-            Decisión de Camila, 2026-09-21, sobre las tres opciones: recortar
-            el hero, angostar el titular o dejar el píxel. Eligió angostar.
-
-            ⚠️ LA ALTURA ES `100% − 0.94em`, QUE ES EL MISMO NÚMERO DEL
-            `mb-[-0.94em]` de esta placa, o sea exactamente donde arranca la
-            foto. Está escrito en `em` por el mismo motivo que el margen: se
-            mide contra el titular, que es un `clamp` de 45 a 112px, y en
-            píxeles daría bien en una medida y mal en las otras. Los dos
-            números se mueven juntos — si cambia el solapamiento, cambia acá.
-
-            ⚠️ LA IZQUIERDA VA ESPEJADA Y LA DE LA HOME NO. `globals.css`
-            avisa que las dos esquinas de la home son la misma pieza SIN
-            ROTAR, y esto no la contradice: allá el recorte está en una
-            ESQUINA del marco y sus dos ángulos vivos miran para el mismo
-            lado. Acá la placa está CENTRADA, así que los dos ángulos son
-            simétricos y el de la izquierda es el espejo del de la derecha.
-
-            Es espejo (`scale-x-[-1]`), no rotación. La advertencia de
-            `globals.css` es contra ROTAR, que es lo que invierte la dirección
-            del mordisco y se lee como la foto metiéndose en el hueso. Un
-            espejo horizontal deja el disco abajo, que es de donde viene la
-            foto en los dos lados.
-            ══════════════════════════════════════════════════════════════
-          */}
-          <span
-            aria-hidden="true"
-            className="esquina-inversa top-[calc(100%-0.94em)] left-full"
-          />
-          <span
-            aria-hidden="true"
-            className="esquina-inversa top-[calc(100%-0.94em)] right-full scale-x-[-1]"
-          />
+            {/*
+              ══════════════════════════════════════════════════════════════
+              ⚠️ LAS DOS ESQUINAS INVERSAS. Camila las marcó sobre la página con
+              dos flechas rojas en los ángulos vivos, igual que las había pasado
+              para el hero de la home: «colocá los elementos vectoriales que
+              usamos en el home en esas dos esquinas».
+  
+              ES EL MISMO PROBLEMA QUE EN LA HOME y la misma pieza. Esta placa
+              muerde el borde de arriba de la foto, así que donde sus dos
+              costados cruzan ese borde quedan dos ángulos de 90°, y un ángulo
+              vivo entre dos superficies delata que una está tapando a la otra.
+              Con el radio invertido el hueso no termina: se curva y entra en la
+              foto. La nota larga de por qué es una máscara y no un
+              `border-radius` está en `globals.css`, en la utilidad.
+  
+              ⚠️ VAN COLGADAS DE LA PLACA Y NO ADENTRO DE LA FOTO. La placa es
+              `w-fit`: su ancho es el del titular, que cambia con el texto, con
+              el viewport y con si la display ya cargó. Metidas en la caja de la
+              foto habría que medirlo en JS como hace la home con su recorte;
+              colgadas de `left-full` y `right-full` se acomodan solas.
+  
+              ⚠️ Y POR ESO LA PLACA SE TOPA EN `100% − 2×--radius-frame` Y NO EN
+              `max-w-full`, que es lo que tenía. Colgadas del costado, las dos
+              esquinas no cuentan para el ancho de la placa: si la placa llega al
+              borde del contenedor, las esquinas quedan directamente afuera de la
+              página. Pasaba en /sunset-bar a 360px —el titular medía 275 y el
+              hueco que quedaba era de 43, uno menos que los 44 de la pieza— y
+              arrastraba 1px de scroll horizontal a todo el documento; a 320px
+              eran 16. Reservando los dos anchos de esquina, el titular parte un
+              renglón antes en celular y las piezas caen siempre adentro de la
+              caja de la foto, que es donde tienen que morder.
+  
+              Decisión de Camila, 2026-09-21, sobre las tres opciones: recortar
+              el hero, angostar el titular o dejar el píxel. Eligió angostar.
+  
+              ⚠️ LA ALTURA ES `100% − 0.94em` DE LA PLACA, que es donde arranca
+              la foto: la placa es el último hijo del `<h1>`, así que su pie es
+              el del `<h1>`, y el `mb-[-0.94em]` sube la foto 0,94em desde ahí.
+              Está escrito en `em` por el mismo motivo que el margen: se
+              mide contra el titular, que es un `clamp` de 45 a 112px, y en
+              píxeles daría bien en una medida y mal en las otras. Los dos
+              números se mueven juntos — si cambia el solapamiento, cambia acá.
+  
+              ⚠️ LA IZQUIERDA VA ESPEJADA Y LA DE LA HOME NO. `globals.css`
+              avisa que las dos esquinas de la home son la misma pieza SIN
+              ROTAR, y esto no la contradice: allá el recorte está en una
+              ESQUINA del marco y sus dos ángulos vivos miran para el mismo
+              lado. Acá la placa está CENTRADA, así que los dos ángulos son
+              simétricos y el de la izquierda es el espejo del de la derecha.
+  
+              Es espejo (`scale-x-[-1]`), no rotación. La advertencia de
+              `globals.css` es contra ROTAR, que es lo que invierte la dirección
+              del mordisco y se lee como la foto metiéndose en el hueso. Un
+              espejo horizontal deja el disco abajo, que es de donde viene la
+              foto en los dos lados.
+              ══════════════════════════════════════════════════════════════
+            */}
+              <span
+              aria-hidden="true"
+              className="esquina-inversa top-[calc(100%-0.94em)] left-full"
+            />
+            <span
+              aria-hidden="true"
+              className="esquina-inversa top-[calc(100%-0.94em)] right-full scale-x-[-1]"
+            />
+          </span>
         </h1>
 
         {/*

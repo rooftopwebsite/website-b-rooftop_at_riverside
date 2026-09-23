@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import JoinSwitch, { parseLane } from '@/components/sections/JoinSwitch';
 import { ArtistForm, JobForm } from '@/components/sections/JoinForms';
 import { ButtonLink } from '@/components/shared/Button';
 import FormSlab from '@/components/shared/FormSlab';
 import PlateHero from '@/components/shared/PlateHero';
-import Section, { GUTTER } from '@/components/shared/Section';
+import { GUTTER } from '@/components/shared/Section';
 import SoftWave from '@/components/shared/SoftWave';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import { fraseEntretenimiento } from '@/content/entertainment';
@@ -147,12 +146,8 @@ export default async function JoinUsPage({
       */}
       <PlateHero
         question="Looking for a bar job or a stage in Bonita Springs?"
-        title={
-          <>
-            {'Work here, '}
-            <span className="block text-sunset-deep">play here</span>
-          </>
-        }
+        title={'Work here, '}
+        titleAccent="play here"
         photo="/images/venue/join-stage-day-wide.webp"
         photoAlt="A singer on the stage in the yard at Rooftop at Riverside in the afternoon"
       />
@@ -193,12 +188,23 @@ export default async function JoinUsPage({
         justamente lo que había.
         ══════════════════════════════════════════════════════════════════
       */}
-      <div className={`grano bg-bone pt-[36px] lg:pt-[52px] ${GUTTER}`}>
-        <div className="caja">
-          <Heading level={2} id="apply-title" className="max-w-[16ch] text-d4 lg:text-d3">
+      {/*
+        ⚠️ LA OLA SUBIÓ: VA ENTRE EL HERO Y ESTE ENCABEZADO, desde el
+        2026-09-23. Camila: «esto debería estar en la zona blanca post ondas,
+        con título en el tamaño correcto y centrado; es el primer título de toda
+        la sección». Antes el encabezado y el conmutador quedaban en el `bone`
+        del hero y la ola cortaba recién debajo, así que se leían como el pie
+        del hero y no como la apertura del formulario. Ahora abren la banda
+        blanca, centrados y con el cuerpo de un titular de sección (`banda`).
+      */}
+      <SoftWave from="bone" to="paper" className="relative -mb-px" />
+
+      <div className={`grano bg-paper pt-12 md:pt-16 lg:pt-20 ${GUTTER}`}>
+        <div className="caja text-center">
+          <Heading level={2} id="apply-title" className="mx-auto max-w-[18ch] text-balance text-banda">
             What are you <span className="text-sunset-deep">here for</span>
           </Heading>
-          <p className="bajada mt-gap-bajada max-w-[56ch] font-body text-lead font-light">
+          <p className="bajada mx-auto mt-gap-bajada max-w-[56ch] font-body text-lead font-light">
             We hire when we hire, and we book {musicaLarga.toLowerCase()}. Either way a person
             reads what comes in.
           </p>
@@ -207,8 +213,6 @@ export default async function JoinUsPage({
 
       <JoinSwitch lane={lane} />
 
-      {/* La ola: acá termina el encabezado y empieza el formulario. */}
-      <SoftWave from="bone" to="paper" className="relative -mb-px" />
 
       {/* ══ El carril elegido ════════════════════════════════════════════ */}
 
@@ -456,29 +460,9 @@ export default async function JoinUsPage({
         </FormSlab>
       )}
 
-      {/* ══ Cierre ═══════════════════════════════════════════════════════ */}
-
-      <Section tone="deep" band="md" labelledBy="join-next">
-        <div className="flex flex-col items-start gap-[24px] lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <Heading level={2} id="join-next" className="max-w-[20ch] text-d4 lg:text-d3">
-              Not what you were looking for?
-            </Heading>
-            <p className="mt-[12px] max-w-[46ch] text-[16px] leading-[1.7] text-paper/80">
-              Makers looking for a booth go to the market page. Everything else goes to the contact
-              form, and a person reads it.
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-wrap gap-[12px]">
-            <ButtonLink href="/market#apply" variant="primary">
-              Market booths
-            </ButtonLink>
-            <ButtonLink href="/contact" variant="ghostDark">
-              Contact
-            </ButtonLink>
-          </div>
-        </div>
-      </Section>
+      {/* ⚠️ EL CIERRE «NOT WHAT YOU WERE LOOKING FOR?» SE FUE EL 2026-09-23.
+          Camila: «eliminemos esta sección». Mandaba al market y a contacto,
+          que ya están en el header y en el pie. */}
     </>
   );
 }

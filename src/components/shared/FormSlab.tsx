@@ -140,7 +140,12 @@ export default function FormSlab({
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.5fr)] lg:gap-16">
         <div>
           <Eyebrow tone={eyebrowTone}>{eyebrow}</Eyebrow>
-          <Heading level={2} id={titleId} className="mt-gap-kicker text-d4 lg:text-d3">
+          {/* ⚠️ ESCALÓN 2 DE TITULAR DE SECCIÓN, desde el 2026-09-23: 36 / 46 / 58.
+             Camila: «revisá el uso de los H». Los H2 de sección iban en cinco
+             tamaños sin regla; ahora son dos: `text-banda` para la sección que
+             abre a lo ancho, y este para la que comparte fila con un
+             formulario o una foto. */}
+          <Heading level={2} id={titleId} className="mt-gap-kicker text-d4 md:text-d3 lg:text-d2">
             {title}
           </Heading>
           {lead ? (

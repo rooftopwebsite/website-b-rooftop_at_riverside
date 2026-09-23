@@ -117,6 +117,14 @@ const MARCAS = ['bg-sunset', 'bg-river', 'bg-deep'] as const;
  * aplica igual aunque sea un dibujo: al 2.54:1 del blanco sobre naranja, un
  * trazo de 1,6px no se ve.
  */
+/*
+ * ⚠️ (2026-09-23) EL TILE YA NO VUELA FUERA DE LA TARJETA: va ADENTRO, en la
+ * esquina de arriba a la derecha, que es la que ninguna tarjeta ocupa —la
+ * cifra y su pie arrancan a la izquierda—. Camila: «cuidá que los cuadraditos
+ * de iconos no pisen datos, colocalos en las esquinas de las cards que no
+ * pisan info». Volando 20px pisaba la tarjeta de arriba en cuanto las cuatro
+ * se apilaban. Lo de abajo queda de historia.
+ */
 function Tile({
   Icon,
   tone,
@@ -130,8 +138,7 @@ function Tile({
     <span
       aria-hidden="true"
       className={[
-        'absolute -top-4 z-10 grid size-14 place-items-center rounded-card md:-top-5',
-        lado === 'left' ? '-left-4 md:-left-5' : '-right-4 md:-right-5',
+        'absolute top-4 right-4 z-10 grid size-12 place-items-center rounded-card lg:top-5 lg:right-5 lg:size-14',
         tone === 'sunset' ? 'bg-sunset text-ink' : 'bg-cream text-deep',
       ].join(' ')}
     >
@@ -212,11 +219,18 @@ export default function SpecSlab({
         ⚠️ EL HUECO ES `gap-4 lg:gap-6`, o sea 16 → 24: el `clamp(16px, 2vw,
         24px)` del archivo, resuelto con los escalones que el sitio ya usa.
       */}
-      <div className="mt-bloque grid items-start gap-4 lg:grid-cols-2 lg:gap-6">
+      {/*
+        ⚠️ LAS DOS COLUMNAS ARRANCAN EN `md` Y NO EN `lg`, desde el
+        2026-09-23. Camila: «debemos modificar la ubicación de las cards, en la
+        forma actual hay mucho espacio blanco». En tablet eran cuatro tarjetas
+        apiladas a lo ancho con la cifra a la izquierda y el resto vacío. El
+        desfase de 64px sigue sólo en `lg`.
+      */}
+      <div className="mt-bloque grid items-start gap-4 md:grid-cols-2 lg:gap-6">
         <StaggerGroup className="flex flex-col gap-4 lg:gap-6">
           {/* ── 1 · LA CIFRA CON EL TILE NARANJA ───────────────────────── */}
           <RevealItem>
-            <article className={`relative bg-deeper ${CAJA}`}>
+            <article className={`relative bg-deeper pr-20 lg:pr-24 ${CAJA}`}>
               <Tile Icon={cifraIcon} tone="sunset" lado="left" />
               <p className={`m-0 ${CIFRA} text-cream`}>{cifra.value}</p>
               <p className={`m-0 mt-3 max-w-[34ch] ${PIE} text-bone/85`}>{cifra.label}</p>
@@ -299,7 +313,7 @@ export default function SpecSlab({
               <dl className="m-0 flex flex-col gap-5">
                 {datos.map(([rotulo, valor]) => (
                   <div key={rotulo}>
-                    <dt className="font-body text-micro font-bold uppercase tracking-cta text-muted-dark">
+                    <dt className="font-body text-caption font-bold uppercase tracking-cta text-muted-dark">
                       {rotulo}
                     </dt>
                     <dd className="m-0 mt-1.5 font-body text-lead font-light leading-[1.4] text-paper">
@@ -313,7 +327,7 @@ export default function SpecSlab({
 
           {/* ── 4 · LA SEGUNDA CIFRA, CON EL TILE CREMA ─────────────────── */}
           <RevealItem>
-            <article className={`relative bg-deeper ${CAJA}`}>
+            <article className={`relative bg-deeper pr-20 lg:pr-24 ${CAJA}`}>
               <Tile Icon={segundaIcon} tone="cream" lado="right" />
               <p className={`m-0 ${CIFRA} text-cream`}>{segunda.value}</p>
               <p className={`m-0 mt-3 max-w-[34ch] ${PIE} text-bone/85`}>{segunda.label}</p>

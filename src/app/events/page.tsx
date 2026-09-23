@@ -200,12 +200,8 @@ export default async function EventsPage({
 
       <PlateHero
         question="Looking for a private event venue in Bonita Springs?"
-        title={
-          <>
-            {'Your event, '}
-            <span className="block text-sunset-deep">two stories up</span>
-          </>
-        }
+        title={'Your event, '}
+        titleAccent="two stories up"
         lead="A rooftop bar, a gated yard and four independent kitchens in downtown Bonita Springs, across from Riverside Park."
         photo="/images/events/events-hero-wide.webp"
         photoAlt="Guests with name badges seated along the bar at a private event at Rooftop at Riverside"
@@ -499,15 +495,19 @@ export default async function EventsPage({
             automática. Los fees no se esconden, que era el otro criterio de
             este bloque: siguen escritos, con su número, en la última tarjeta.
 
-            ⚠️ SIGUE A DOS COLUMNAS (`lg:col-span-2`). Son cinco cápsulas y un
-            párrafo: en media fila las cápsulas caen en tres renglones y la nota
-            queda debajo, que es justo el aire desparejo que esta grilla viene
-            corrigiendo.
+            ⚠️ YA NO VA A DOS COLUMNAS: OCUPA EL HUECO AL LADO DE «THREE WAYS TO
+            RUN THE BAR», desde el 2026-09-23. Camila: «pongamos la card de
+            add-ons en formato cuadrado como las 4 de arriba, ocupando ese
+            espacio sobrante en desk». Las opciones son tres en una grilla de
+            dos, así que la tercera quedaba sola en su fila con media fila
+            vacía al lado. Va en vertical como las otras: rótulo y cápsulas
+            arriba, la nota al pie (`mt-auto`), y la grilla le da el alto de
+            su compañera.
           */}
-          <RevealItem as="li" className="h-full lg:col-span-2">
+          <RevealItem as="li" className="h-full">
             <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
-              <div className="flex h-full flex-col gap-5 lg:flex-row lg:items-center lg:gap-12">
-                <div className="lg:flex-1">
+              <div className="flex h-full flex-col gap-5">
+                <div>
                   <Heading level={3} role="label" className="text-cream">
                     Add-ons
                   </Heading>
@@ -522,7 +522,7 @@ export default async function EventsPage({
                     ))}
                   </ul>
                 </div>
-                <p className="m-0 font-body text-base font-light leading-[1.6] text-bone/85 lg:max-w-[34ch]">
+                <p className="m-0 mt-auto border-t border-dashed border-bone/25 pt-4 font-body text-base font-light leading-[1.6] text-bone/85">
                   {ENHANCEMENTS_NOTE}
                 </p>
               </div>
@@ -615,7 +615,7 @@ export default async function EventsPage({
       <Section band="lg" labelledBy="game-truck-title">
         <div
           id="game-truck"
-          className="relative scroll-mt-24 rounded-frame bg-bone grano p-6 sm:p-9 lg:p-12"
+          className="relative scroll-mt-24 rounded-frame bg-bone grano p-6 pb-10 sm:p-9 sm:pb-12 lg:p-12"
         >
           {/* El filete punteado, separado del borde. `inset-3.5` son los 14px
               que lo despegan, el mismo número del banner de `/food-trucks` y
@@ -625,11 +625,19 @@ export default async function EventsPage({
             className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
           />
 
-          <div className="relative grid items-center gap-7 sm:grid-cols-2 sm:gap-9 lg:gap-14">
+          {/*
+            ⚠️ DESDE `sm` LA FOTO OCUPA EL ALTO DE LA TARJETA, desde el
+            2026-09-23. Camila, sobre la tablet: «ojo con esta imagen, que esté
+            ocupando el vertical como en desk». En 4:3 fijo y con la grilla en
+            `items-center`, a 820 el texto medía más que la foto y la foto
+            quedaba flotando con aire arriba y abajo. Ahora la grilla estira y
+            el texto se centra solo (`self-center`).
+          */}
+          <div className="relative grid items-center gap-7 sm:grid-cols-2 sm:items-stretch sm:gap-9 lg:gap-14">
             {/* ⚠️ LA FOTO VA PRIMERA EN LOS DOS ANCHOS, apilada y en dos
                 columnas. Es un banner y no una sección: se lee de un saque, y
                 la imagen es lo que dice de qué habla antes de leer nada. */}
-            <div className="relative aspect-[4/3] overflow-hidden rounded-shell sombra-card">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-shell sombra-card sm:aspect-auto sm:h-full sm:min-h-64">
               <Image
                 src="/images/game-truck/truck-night.webp"
                 alt="Two guests in Rooftop shirts playing on the gaming truck screens at night"
@@ -639,12 +647,12 @@ export default async function EventsPage({
               />
             </div>
 
-            <div>
+            <div className="self-center">
               <Eyebrow tone="magenta">Add-on</Eyebrow>
               <Heading
                 level={2}
                 id="game-truck-title"
-                className="mt-gap-kicker max-w-[16ch] text-d4 lg:text-d3"
+                className="mt-gap-kicker max-w-[16ch] text-d4 md:text-d3 lg:text-d2"
               >
                 Park a <span className="text-sunset-deep">gaming truck</span> in the yard
               </Heading>
@@ -749,7 +757,16 @@ export default async function EventsPage({
         */
         lead="Send it over and you get real numbers back, within one business day."
         aside={
-          <div className="flex flex-col gap-9">
+          /*
+            ⚠️ EN TABLET VA EN DOS COLUMNAS, desde el 2026-09-23. Camila: «¿qué
+            tal si en tablet ponemos la card ahí, en dos columnas esta info?».
+            Entre 768 y 1023 esta columna va apilada ARRIBA del formulario y a
+            ancho completo, así que los contactos ocupaban media fila y dejaban
+            la otra media vacía. Al lado del contacto, el packet se ve antes de
+            empezar a llenar, que es cuando le sirve a quien tiene que
+            reenviarlo. Desde `lg` vuelve a ser la columna angosta de al lado.
+          */
+          <div className="flex flex-col gap-9 md:grid md:grid-cols-2 md:items-start md:gap-8 lg:flex">
             {/*
               ⚠️ ACÁ ARRIBA IBA UN RÓTULO «OR SKIP THE FORM» Y SE FUE. Camila,
               misma captura: «quita ese titulito que invita a hacer otra cosa;

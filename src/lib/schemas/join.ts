@@ -87,7 +87,7 @@ const archivo = (tipos: readonly string[], etiqueta: string, maxMb: number, form
 /* ── Piezas que comparten los dos ───────────────────────────────────────── */
 
 const nombre = (campo: string) => z.string().trim().min(2, `Enter your ${campo}.`);
-const mail = z.string().trim().email('Enter a valid email address, like you@example.com.');
+const mail = z.string().trim().email('Enter a valid email.');
 const telefono = z
   .string()
   .trim()

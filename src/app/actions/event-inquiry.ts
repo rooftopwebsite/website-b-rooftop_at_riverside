@@ -34,7 +34,7 @@ import type { ActionState } from './types';
 
 const inquirySchema = z.object({
   name: z.string().trim().min(2, 'Your name is required.'),
-  email: z.string().trim().email('Enter a valid email address, like you@example.com.'),
+  email: z.string().trim().email('Enter a valid email.'),
   phone: z
     .string()
     .trim()

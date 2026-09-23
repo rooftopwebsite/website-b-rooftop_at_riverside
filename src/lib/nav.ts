@@ -204,7 +204,16 @@ export const NAV_MORE: readonly NavLink[] = NAV_MORE_GROUPS.flatMap((g) => g.lin
  * lugar del primario lo ocupa la vertical que más factura.
  */
 export const NAV_CTA = {
-  primary: { label: 'Plan an Event', href: '/events#inquire' },
+  /*
+   * ⚠️ VA A `/events` ARRIBA Y NO A `#inquire`, desde el 2026-09-23. Camila:
+   * «este CTA del header debe llevar a la página de eventos pero desde el hero,
+   * no scrollear al form; los demás que invitan sí, porque queremos que vea y
+   * complete directo el form». El header es navegación: quien lo aprieta
+   * todavía no decidió, así que llega a la página y la lee. Los CTA de adentro
+   * de las páginas —el hero de /events, las bandas de eventos— siguen yendo a
+   * `#inquire`. Lo usan la barra y el botón del menú mobile.
+   */
+  primary: { label: 'Plan an Event', href: '/events' },
   secondary: { label: "What's On", href: '/whats-on' },
 } as const;
 

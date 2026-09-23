@@ -41,7 +41,7 @@ import type { ActionState } from './types';
 
 const newsletterSchema = z.object({
   firstName: z.string().trim().min(2, 'Enter your first name.'),
-  email: z.string().trim().email('Enter a valid email address, like you@example.com.'),
+  email: z.string().trim().email('Enter a valid email.'),
   /* El mismo honeypot que el formulario de eventos. Ver la nota de arriba. */
   website: z.string().max(0).optional().default(''),
 });

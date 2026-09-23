@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
@@ -135,6 +135,22 @@ const FLECHA =
 export default function VenueTabs({ id = 'place-title' }: { readonly id?: string }) {
   const [activo, setActivo] = useState(0);
   const [encima, setEncima] = useState<number | null>(null);
+  /* El carrusel de mobile: qué tarjeta está a la vista, para los puntos. */
+  const [vista, setVista] = useState(0);
+  const tira = useRef<HTMLUListElement | null>(null);
+  const alScroll = () => {
+    const t = tira.current;
+    const card = t?.firstElementChild as HTMLElement | null;
+    if (!t || !card) return;
+    const paso = card.getBoundingClientRect().width + 16;
+    setVista(Math.min(TOTAL - 1, Math.round(t.scrollLeft / paso)));
+  };
+  const irA = (i: number) => {
+    const t = tira.current;
+    const card = t?.firstElementChild as HTMLElement | null;
+    if (!t || !card) return;
+    t.scrollTo({ left: i * (card.getBoundingClientRect().width + 16), behavior: 'smooth' });
+  };
   const base = useId();
   const area = VENUE_AREAS[activo]!;
 
@@ -187,7 +203,7 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
           avisar, y una flecha apagada en una fila que se ve entera confunde más
           de lo que informa.
         */}
-        <div className="flex shrink-0 gap-2">
+        <div className="flex shrink-0 gap-2 max-md:hidden">
           <button type="button" onClick={() => mover(-1)} className={FLECHA}>
             <span className="sr-only">Previous place</span>
             <ArrowLeft className="size-4" />
@@ -199,12 +215,72 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
         </div>
       </div>
 
-      {/* ── El acordeón ──────────────────────────────────────────────── */}
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ── EN MOBILE: UN CARRUSEL COMÚN, desde el 2026-09-23.
+
+        Camila: «en mobile esto debería ser un carrusel común, no así,
+        carrusel horizontal». El acordeón apilado dejaba un panel abierto y
+        cuatro franjas de 52px con el nombre, y la descripción suelta abajo:
+        se leía como una lista rota. Acá cada lugar es una tarjeta entera
+        —foto, placa con piso y nombre, y su texto debajo— y la siguiente
+        asoma 20px, con los puntos abajo. Es la misma regla que los
+        carruseles de la home. Desde `md` sigue el acordeón.
+
+        ⚠️ ES MARCADO DUPLICADO Y NO EL MISMO CON OTRAS CLASES: el acordeón es
+        un `tablist` con un solo panel, y un carrusel son cinco artículos con
+        su texto cada uno. El que no se ve va con `hidden` y el árbol de
+        accesibilidad no lo lee.
+        ══════════════════════════════════════════════════════════════════
+      */}
+      <div className="mt-6 md:hidden">
+        <ul
+          ref={tira}
+          onScroll={alScroll}
+          className="-mx-gutter flex snap-x snap-mandatory list-none gap-4 overflow-x-auto px-gutter pb-1 scroll-px-gutter [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {VENUE_AREAS.map((a) => (
+            <li key={a.slug} className="w-[calc(100%-20px)] shrink-0 snap-start">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-ticket bg-fog">
+                {a.photo ? (
+                  <Image src={a.photo} alt={a.photoAlt ?? ''} fill sizes="90vw" className="object-cover" />
+                ) : (
+                  <PhotoPending brief={a.photoBrief} ratio="" className="absolute inset-0 h-full rounded-none border-0" />
+                )}
+                <span className="absolute bottom-3 left-3 flex max-w-[calc(100%-1.5rem)] flex-col gap-1 rounded-btn bg-bone px-3.5 py-2.5">
+                  <span className="font-body text-caption font-bold uppercase tracking-eyebrow text-deep/70">{a.floor}</span>
+                  <span className="font-display text-d6 font-bold uppercase leading-none text-deep">{a.name}</span>
+                </span>
+              </div>
+              <p className="bajada m-0 mt-4 font-body text-base font-light">{a.body}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-5 flex justify-center gap-2">
+          {VENUE_AREAS.map((a, i) => (
+            <button
+              key={a.slug}
+              type="button"
+              onClick={() => irA(i)}
+              aria-current={i === vista ? 'true' : undefined}
+              className="grid size-11 place-items-center"
+            >
+              <span className="sr-only">{a.name}</span>
+              <span
+                aria-hidden="true"
+                className={`size-2.5 rounded-pill transition-colors ${i === vista ? 'bg-sunset-deep' : 'bg-deep/30'}`}
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── El acordeón, desde `md` ─────────────────────────────────── */}
       <div
         role="tablist"
         aria-label="Places in the building"
         onMouseLeave={() => setEncima(null)}
-        className="mt-6 flex h-[460px] flex-col gap-2 sm:h-[540px] md:h-[300px] md:flex-row lg:h-[380px] lg:gap-3 desk:h-[440px]"
+        className="mt-6 hidden md:flex md:h-[300px] md:flex-row md:gap-2 lg:h-[380px] lg:gap-3 desk:h-[440px]"
       >
         {VENUE_AREAS.map((a, i) => {
           const abierta = i === activo;
@@ -415,7 +491,7 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
         anunciándose al cambiar de panel.
         ══════════════════════════════════════════════════════════════════
       */}
-      <div role="tabpanel" id={panelId} aria-labelledby={tabId(activo)} className="mt-5">
+      <div role="tabpanel" id={panelId} aria-labelledby={tabId(activo)} className="mt-5 max-md:hidden">
         {/*
           ⚠️ VA EN `text-base` Y NO EN `text-lead`, o sea UN ESCALÓN POR DEBAJO
           de la bajada del encabezado de la sección. Pedido de Camila,

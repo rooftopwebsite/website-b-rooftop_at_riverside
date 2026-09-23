@@ -9,13 +9,13 @@ import { CONTACT_REASON_VALUES } from '@/content/contact-reasons';
  * literalmente los mismos texto por texto. Duplicarlos era la forma más fácil
  * de que se desincronizaran.
  *
- * ⚠️ Los mensajes dicen QUÉ hacer, no que algo falló. «Enter a valid email
- * address, like you@example.com» contra «Invalid email». Es la regla de la
+ * ⚠️ Los mensajes dicen QUÉ hacer, no que algo falló. «Enter a valid email»
+ * contra «Invalid email» (se acortó el 2026-09-23: el largo partía la fila). Es la regla de la
  * fase: nunca «algo salió mal».
  */
 export const contactSchema = z.object({
   name: z.string().trim().min(2, 'Enter your name so we know who is writing.'),
-  email: z.string().trim().email('Enter a valid email address, like you@example.com.'),
+  email: z.string().trim().email('Enter a valid email.'),
   /** Opcional de verdad: vacío pasa, con contenido tiene que parecer un teléfono. */
   phone: z
     .string()

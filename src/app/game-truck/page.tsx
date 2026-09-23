@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
+import IntroSplit from '@/components/shared/IntroSplit';
 import Image from 'next/image';
 import Link from 'next/link';
 import GameShelf from '@/components/sections/GameShelf';
 import SpecSlab from '@/components/sections/SpecSlab';
 import { ButtonLink } from '@/components/shared/Button';
 import { Balloons, GridFour, Ticket } from '@/components/shared/Icon';
-import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
+import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { PendingData } from '@/components/shared/PendingData';
 import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
@@ -245,12 +246,13 @@ export default async function GameTruckPage() {
       */}
       <PlateHero
         question="Looking for a gaming truck party in Bonita Springs?"
-        title={
-          <>
-            {"Southwest Florida's "}
-            <span className="block text-sunset-deep">first gaming truck</span>
-          </>
-        }
+        /* ⚠️ «GAME NIGHT / ON WHEELS», desde el 2026-09-23. Camila: «este
+           título en mobile no funciona, es demasiado largo y con palabras muy
+           largas». «Southwest Florida's first gaming truck» caía en cinco
+           renglones en un teléfono. Lo de «el primero de la región» no se
+           pierde: sigue en la bajada y en el SEO de la página. */
+        title={'Game night '}
+        titleAccent="on wheels"
         /*
           ══════════════════════════════════════════════════════════════════
           ⚠️ YA HAY FOTO DEL CAMIÓN, Y ES ÉSTA. 2026-09-22: se bajaron las 81
@@ -280,8 +282,8 @@ export default async function GameTruckPage() {
           camión es del venue.
           ══════════════════════════════════════════════════════════════════
         */
-        photo="/images/game-truck/truck-wide.webp"
-        photoAlt="The Rooftop gaming truck parked in the yard with its window and awning open"
+        photo="/images/game-truck/truck-inside-wide.webp"
+        photoAlt="A player at the screens inside the Rooftop gaming truck"
       />
 
       {/* ══ 2. El relato ═════════════════════════════════════════════════ */}
@@ -351,14 +353,8 @@ export default async function GameTruckPage() {
         separara.
         ══════════════════════════════════════════════════════════════════
       */}
-      <Section tone="bone" band="lg" labelledBy="inside-title">
-        <Reveal>
-          <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.9fr)] lg:gap-20">
-            <Heading level={2} id="inside-title" className="max-w-[9ch] text-d3 lg:text-d2">
-              Inside the truck
-            </Heading>
-
-            <div>
+      {/* Ver `IntroSplit`: el mismo bloque que abre `/our-story`. */}
+      <IntroSplit id="inside-title" title="Inside " accent="the truck">
               {/*
                 ⚠️ EL PRIMER PÁRRAFO ERA LA BAJADA DEL HERO. Camila, 2026-09-22:
                 «integremos estos dos textos, me parece mucho mejor el cortito
@@ -431,10 +427,7 @@ export default async function GameTruckPage() {
                   See the games
                 </ButtonLink>
               </div>
-            </div>
-          </div>
-        </Reveal>
-      </Section>
+      </IntroSplit>
 
       {/* ══ 3. La ficha técnica, en la única banda oscura ═════════════════ */}
 
@@ -728,7 +721,12 @@ export default async function GameTruckPage() {
                 {RATES.map((r) => (
                   <div
                     key={r.label}
-                    className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-dashed border-ink/15 py-4 last:border-b-0 last:pb-0"
+                    /* ⚠️ APILADO HASTA `desk`, desde el 2026-09-23: rótulo arriba y precio
+                       abajo. Camila: «en tablet esto debe estar en vertical como el
+                       de abajo». Con `flex-wrap` el primer renglón entraba en fila
+                       y el segundo no, así que dos precios iguales se veían con
+                       dos dibujos. */
+                    className="flex flex-col gap-1.5 border-b border-dashed border-ink/15 py-4 last:border-b-0 last:pb-0 desk:flex-row desk:items-baseline desk:justify-between desk:gap-6"
                   >
                     <dt className="font-display text-d6 font-semibold uppercase leading-none text-ink">
                       {r.label}
@@ -742,7 +740,7 @@ export default async function GameTruckPage() {
                     */}
                     <dd className="m-0 shrink-0 font-display text-d5 font-semibold uppercase tabular-nums text-sunset-deep">
                       ${r.price}
-                      <span className="ml-2 font-body text-dato font-normal normal-case tracking-normal text-body/75">
+                      <span className="ml-2 font-body text-base font-normal normal-case tracking-normal text-body/75">
                         {r.unit}
                         {r.note ? `, ${r.note}` : ''}
                       </span>

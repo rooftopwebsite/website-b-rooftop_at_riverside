@@ -145,7 +145,7 @@ export const PAGE_SEO = {
 
 
   '/contact': {
-    h1: 'Say hello',
+    h1: 'Say hello to the rooftop',
     title: 'Contact | Rooftop at Riverside',
     description:
       'The address, the hours and a form that reaches the person who can answer it. Downtown Bonita Springs, across from Riverside Park.',
@@ -158,7 +158,7 @@ export const PAGE_SEO = {
    * «our specially designed truck», no una sala.
    */
   '/game-truck': {
-    h1: "Southwest Florida's first gaming truck",
+    h1: 'Game night on wheels',
     title: 'Gaming Truck | Rooftop at Riverside, Bonita Springs',
     description:
       'Xbox Series X, PlayStation 5 and Nintendo Switch 2 on six screens with a Game Coach on site. $10 per person for 30 minutes, or a two hour party from $400.',

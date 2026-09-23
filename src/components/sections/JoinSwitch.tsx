@@ -120,7 +120,7 @@ const ACTIVA = 'bg-deep text-paper';
 
 export default function JoinSwitch({ lane }: { readonly lane: JoinLane }) {
   return (
-    <div className={`grano bg-bone pb-[28px] lg:pb-[36px] ${GUTTER}`}>
+    <div className={`grano bg-paper pt-gap-cta pb-[28px] lg:pb-[36px] ${GUTTER}`}>
       <div className="caja">
         {/*
           ⚠️ ES UNA `<nav>` CON LISTA Y NO UN `role="tablist"`. Un tablist
@@ -142,7 +142,7 @@ export default function JoinSwitch({ lane }: { readonly lane: JoinLane }) {
             el `<ul>` se estira a la caja entera y queda una cápsula de 1168px
             con dos píldoras apretadas a la izquierda.
           */}
-          <ul className="m-0 flex w-fit list-none gap-[4px] rounded-pill border border-teal600/30 p-[3px]">
+          <ul className="m-0 mx-auto flex w-fit list-none gap-[4px] rounded-pill border border-teal600/30 p-[3px]">
             {CARRILES.map((c) => {
               const activo = c.id === lane;
               return (
