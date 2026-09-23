@@ -82,7 +82,7 @@ export function pageMeta(
   return {
     title: fromTable ? { absolute: title } : title,
     description,
-    alternates: { canonical: url },
+    ...(args.noIndex ? {} : { alternates: { canonical: url } }),
     ...(args.noIndex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: socialTitle,
