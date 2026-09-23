@@ -79,6 +79,7 @@ for (const [route, expected] of Object.entries(PAGE_SEO)) {
       h1s,
       description: document.querySelector('meta[name=description]')?.content ?? '',
       canonical: document.querySelector('link[rel=canonical]')?.getAttribute('href') ?? '',
+      noindex: /noindex/.test(document.querySelector('meta[name=robots]')?.content ?? ''),
       text: document.body.innerText,
     };
   });
@@ -93,7 +94,8 @@ for (const [route, expected] of Object.entries(PAGE_SEO)) {
   if (!data.description) issues.push('sin meta description');
   else if (data.description !== expected.description) issues.push('meta description distinta de la tabla');
 
-  const wantCanonical = `${SITE}${route === '/' ? '' : route}`;
+  // Una página noindex no declara canonical: serían dos señales opuestas (2026-09-23).
+  const wantCanonical = data.noindex ? '' : `${SITE}${route === '/' ? '' : route}`;
   if (data.canonical !== wantCanonical) {
     issues.push(`canonical: ${data.canonical || '(ninguno)'} ≠ ${wantCanonical}`);
   }
