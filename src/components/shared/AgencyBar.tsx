@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { AGENCY } from '@/lib/brand';
 import { GUTTER } from './Section';
 
@@ -45,7 +44,7 @@ import { GUTTER } from './Section';
  */
 export default function AgencyBar() {
   const poweredBy = (
-    <Link
+    <a
       href={AGENCY.url}
       target="_blank"
       rel="noopener noreferrer"
@@ -72,7 +71,7 @@ export default function AgencyBar() {
         height={74}
         className="h-[24px] w-auto shrink-0"
       />
-    </Link>
+    </a>
   );
 
   const año = new Date().getFullYear();

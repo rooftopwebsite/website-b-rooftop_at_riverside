@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import EventDialog, { type EventoAbierto } from '@/components/sections/EventDialog';
 import { Ticket } from '@/components/shared/Icon';
@@ -473,12 +472,12 @@ function Chip({
 
   if (isTicketed(event) && event.ticketUrl) {
     return (
-      <Link href={event.ticketUrl} target="_blank" rel="noopener noreferrer" className={clases}>
+      <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer" className={clases}>
         {cuerpo}
         <span className="sr-only">
           Buy tickets for {event.title} on Eventbrite (opens in a new tab)
         </span>
-      </Link>
+      </a>
     );
   }
 

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Marquee, RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import Section, { GUTTER } from '@/components/shared/Section';
 import { SectionHead } from '@/components/shared/Type';
@@ -196,13 +195,13 @@ export function HowThisPlaceWorks() {
             párrafo de arriba termina de explicar cómo funciona el lugar y la
             salida natural de eso es venir, no cotizar un evento.
           */}
-          <Link
+          <a
             href="#find-us"
             className="group inline-flex w-fit items-center gap-2.5 border-b-2 border-sunset pb-1 font-body text-dato font-medium text-ink transition-colors duration-200 hover:border-ink"
           >
             Come see it for yourself
             <ArrowRight className="size-3.75 transition-transform duration-200 group-hover:translate-x-1" />
-          </Link>
+          </a>
         </RevealItem>
       </StaggerGroup>
     </section>

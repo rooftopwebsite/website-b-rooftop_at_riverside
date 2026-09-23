@@ -534,9 +534,9 @@ function EventCard({
     }`;
 
   return entradas ? (
-    <Link href={entradas} target="_blank" rel="noopener noreferrer" className={clases} inert={fuera || undefined}>
+    <a href={entradas} target="_blank" rel="noopener noreferrer" className={clases} inert={fuera || undefined}>
       {contenido}
-    </Link>
+    </a>
   ) : (
     <Link href={href} className={clases} inert={fuera || undefined}>
       {contenido}

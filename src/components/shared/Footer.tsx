@@ -415,7 +415,7 @@ export default function Footer({ hasBlog }: { readonly hasBlog: boolean }) {
                           completo y aviso para lector de pantalla, como en el
                           resto de las salidas del sitio. */}
                       {external ? (
-                        <Link
+                        <a
                           href={href}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -423,7 +423,7 @@ export default function Footer({ hasBlog }: { readonly hasBlog: boolean }) {
                         >
                           {label}
                           <span className="sr-only"> (opens in a new tab)</span>
-                        </Link>
+                        </a>
                       ) : (
                         <Link href={href} className={LINK_BASE}>
                           {label}

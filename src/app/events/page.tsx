@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import EventSpaces from '@/components/sections/EventSpaces';
@@ -806,15 +805,15 @@ export default async function EventsPage({
                 That is a reservation, not a buyout. Call or write and we sort it out without the
                 form.
               </p>
-              <Link
+              <a
                 href={`mailto:${venue.emailEvents}`}
                 className="link-texto mt-1.5 font-body text-base"
               >
                 {venue.emailEvents}
-              </Link>
-              <Link href={venue.phoneHref} className="link-texto font-body text-base">
+              </a>
+              <a href={venue.phoneHref} className="link-texto font-body text-base">
                 {venue.phone}
-              </Link>
+              </a>
             </div>
 
             {/*

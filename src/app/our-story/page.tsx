@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import AboutStory from '@/components/sections/AboutStory';
@@ -484,12 +483,12 @@ export default async function OurStoryPage() {
                       </p>
                       {persona.email ? (
                         <p className="m-0 mt-1.5 font-body text-base leading-[1.4]">
-                          <Link
+                          <a
                             href={`mailto:${persona.email}`}
                             className="link-texto break-all text-ink"
                           >
                             {persona.email}
-                          </Link>
+                          </a>
                         </p>
                       ) : null}
                     </div>

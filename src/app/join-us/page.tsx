@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import JoinSwitch, { parseLane } from '@/components/sections/JoinSwitch';
 import { ArtistForm, JobForm } from '@/components/sections/JoinForms';
@@ -371,9 +370,9 @@ export default async function JoinUsPage({
           footer={
             <>
               Prefer to send a resume by mail?{' '}
-              <Link href={`mailto:${venue.emailHiring}`} className="link-texto break-words font-bold">
+              <a href={`mailto:${venue.emailHiring}`} className="link-texto break-words font-bold">
                 {venue.emailHiring}
-              </Link>
+              </a>
             </>
           }
         >
@@ -448,9 +447,9 @@ export default async function JoinUsPage({
                 <Eyebrow tone="deep">Already on the calendar?</Eyebrow>
                 <p className="mt-[8px] max-w-[42ch] text-[16px] leading-[1.7] text-body/80">
                   If you already have a date with us and something is unclear, write to{' '}
-                  <Link href={`mailto:${venue.email}`} className="link-texto font-bold break-words">
+                  <a href={`mailto:${venue.email}`} className="link-texto font-bold break-words">
                     {venue.email}
-                  </Link>
+                  </a>
                   .
                 </p>
               </div>

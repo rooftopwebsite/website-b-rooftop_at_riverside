@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
@@ -465,7 +464,7 @@ export default async function TruckCards({
                       y el botón de volver. Es la misma decisión que la carta del
                       bar, tomada el mismo día.
                     */
-                    <Link
+                    <a
                       href={carta.pdfUrl}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -476,7 +475,7 @@ export default async function TruckCards({
                       <span className="sr-only">
                         for {t ? nombreVisible(t) : carta.name} (opens in a new tab)
                       </span>
-                    </Link>
+                    </a>
                   ) : (
                     <button
                       type="button"

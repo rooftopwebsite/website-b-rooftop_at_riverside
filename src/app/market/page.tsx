@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import MarketVendorForm from '@/components/sections/MarketVendorForm';
@@ -672,12 +671,12 @@ export default async function MarketPage() {
             la página se lo sugiera.
           */
           <div className="flex flex-col gap-1.5">
-            <Link href={`mailto:${venue.email}`} className="link-texto font-body text-base">
+            <a href={`mailto:${venue.email}`} className="link-texto font-body text-base">
               {venue.email}
-            </Link>
-            <Link href={venue.phoneHref} className="link-texto font-body text-base">
+            </a>
+            <a href={venue.phoneHref} className="link-texto font-body text-base">
               {venue.phone}
-            </Link>
+            </a>
           </div>
         }
       >

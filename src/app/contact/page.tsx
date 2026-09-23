@@ -242,13 +242,13 @@ export default async function ContactPage() {
               «@rooftopatriverside» no entra al lado del número.
             */}
             <div className="grid gap-3 md:col-span-2 md:grid-cols-2 lg:grid-cols-1">
-              <Link
+              <a
                 href={venue.phoneHref}
                 className="flex h-[60px] items-center justify-center rounded-pill border-2 border-dashed border-ink/30 bg-mint px-4 font-display text-d6 font-semibold uppercase leading-none text-ink transition-colors hover:bg-river/30 sm:text-d5"
               >
                 {venue.phone}
-              </Link>
-              <Link
+              </a>
+              <a
                 href={BRAND.social.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -257,7 +257,7 @@ export default async function ContactPage() {
                 <Instagram className="size-6 shrink-0" aria-hidden="true" />
                 <span className="truncate">@{instagramHandle()}</span>
                 <span className="sr-only"> on Instagram (opens in a new tab)</span>
-              </Link>
+              </a>
             </div>
 
             {/*
@@ -285,12 +285,12 @@ export default async function ContactPage() {
                   <span className="block font-body text-caption font-medium uppercase tracking-eyebrow text-body/60">
                     {b.label}
                   </span>
-                  <Link
+                  <a
                     href={'mailto:' + b.address}
                     className="link-texto mt-1 block break-words font-body text-[16px] leading-[1.5] text-ink"
                   >
                     {b.address}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -312,7 +312,7 @@ export default async function ContactPage() {
               </address>
               <p className="mt-[14px] text-[16px] leading-[1.6] text-body/75">
                 Cancellations and weather calls go up on{' '}
-                <Link
+                <a
                   href={BRAND.social.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -320,7 +320,7 @@ export default async function ContactPage() {
                 >
                   @{instagramHandle()}
                   <span className="sr-only">(opens in a new tab)</span>
-                </Link>{' '}
+                </a>{' '}
                 first.
               </p>
             </div>

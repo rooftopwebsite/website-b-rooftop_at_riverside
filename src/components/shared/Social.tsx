@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { BRAND } from '@/lib/brand';
 
@@ -77,7 +76,7 @@ function SocialLink({
   readonly children: ReactNode;
 }) {
   return (
-    <Link
+    <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
@@ -87,6 +86,6 @@ function SocialLink({
         {children}
       </svg>
       <span className="sr-only">{label} (opens in a new tab)</span>
-    </Link>
+    </a>
   );
 }

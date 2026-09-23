@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { submitMarketVendor } from '@/app/actions/market-vendor';
 import {
   CheckboxGroup,
@@ -61,9 +60,9 @@ export default function MarketVendorForm() {
         <p className="mt-gap-bajada max-w-[52ch] text-lead text-body/80">{state.message}</p>
         <p className="mt-3 max-w-[52ch] text-[16px] leading-[1.65] text-body/75">
           If you would rather talk it through, call{' '}
-          <Link href={venue.phoneHref} className="link-texto font-bold">
+          <a href={venue.phoneHref} className="link-texto font-bold">
             {venue.phone}
-          </Link>
+          </a>
           .
         </p>
       </SentPanel>

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { getVenue, venueAddressLine } from '@/lib/venue';
 import { ButtonLink } from '@/components/shared/Button';
 import HoursCard from '@/components/shared/HoursCard';
@@ -276,7 +275,7 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
           <ul className="flex w-full list-none flex-wrap items-center justify-start gap-3 p-0 md:absolute md:top-0 md:right-0 md:w-auto">
             {SOCIAL.map(({ label, href, Icon }) => (
               <li key={label}>
-                <Link
+                <a
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -284,7 +283,7 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
                 >
                   <Icon className="size-5.5 lg:size-6.5" />
                   <span className="sr-only">{label} (opens in a new tab)</span>
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
@@ -322,18 +321,18 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
               <span className="mb-2.5 block font-body text-caption font-medium uppercase tracking-eyebrow text-cream">
                 Contact
               </span>
-              <Link
+              <a
                 href={venue.phoneHref}
                 className="block font-body text-dato leading-[1.6] text-paper transition-colors duration-200 hover:text-cream"
               >
                 {venue.phone}
-              </Link>
-              <Link
+              </a>
+              <a
                 href={`mailto:${venue.email}`}
                 className="block font-body text-dato leading-[1.6] text-paper transition-colors duration-200 hover:text-cream"
               >
                 {venue.email}
-              </Link>
+              </a>
             </div>
 
             <div>
