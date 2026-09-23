@@ -11,6 +11,7 @@
     "events:banners": "node --env-file-if-exists=.env.local scripts/propagar-banner-evento.mjs --todos",
     "media": "node scripts/build-media.mjs",
     "og": "node scripts/build-og.mjs",
+    "icons": "node scripts/build-icons.mjs",
     "greca": "node scripts/build-greca.mjs",
     "horizonte": "node scripts/build-horizonte.mjs",
     "media:import": "node scripts/import-assets.mjs",
