@@ -39,8 +39,8 @@ const readFeed = cache(async (): Promise<readonly PostFull[]> => {
 });
 
 /**
- * Para el listado y el sitemap. NUNCA TIRA: si el feed no contesta, el listado
- * muestra su estado vacío, como toda lectura de la base en este sitio.
+ * Para el listado, el sitemap y el layout. NUNCA TIRA: si el feed no contesta
+ * devuelve `[]`, y sin notas el blog entero se esconde (ver `sinBlog`).
  */
 export async function getPosts(): Promise<readonly PostFull[]> {
   try {

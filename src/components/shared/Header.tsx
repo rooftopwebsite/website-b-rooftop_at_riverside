@@ -15,6 +15,7 @@ import {
   NAV_MORE_FEATURED,
   NAV_MORE_GROUPS,
   NAV_PRIMARY,
+  sinBlog,
 } from '@/lib/nav';
 import { ButtonLink } from './Button';
 import { CaretDown } from './Icon';
@@ -157,7 +158,12 @@ const NAV_ITEM = [
   'whitespace-nowrap transition-colors duration-200',
 ].join(' ');
 
-export default function Header() {
+/** `hasBlog`: si el feed tiene al menos una nota. Sin notas el link no se ve, ver `sinBlog`. */
+export default function Header({ hasBlog }: { readonly hasBlog: boolean }) {
+  const moreGroups = hasBlog
+    ? NAV_MORE_GROUPS
+    : NAV_MORE_GROUPS.map((g) => ({ ...g, links: sinBlog(g.links) }));
+  const moreLinks = hasBlog ? NAV_MORE : sinBlog(NAV_MORE);
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -168,7 +174,7 @@ export default function Header() {
   const route = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
   const isCurrent = (href: string) => route === href || route.startsWith(`${href}/`);
   const moreActive =
-    NAV_MORE.some((l) => isCurrent(l.href)) || isCurrent(NAV_MORE_FEATURED.href);
+    moreLinks.some((l) => isCurrent(l.href)) || isCurrent(NAV_MORE_FEATURED.href);
 
   useEffect(() => {
     const onOutside = (e: MouseEvent) => {
@@ -659,7 +665,7 @@ export default function Header() {
             grupo, se agrega un `max-content` y la tarjeta se achica sola.
           */}
           <div className="caja-ancha grid gap-x-10 gap-y-9 pt-11 pb-11 desk:grid-cols-[repeat(2,minmax(0,15rem))_1fr]">
-            {NAV_MORE_GROUPS.map((group) => (
+            {moreGroups.map((group) => (
               <div key={group.label}>
                 {/*
                   El rótulo NO es un link: es una etiqueta. Ver `nav.ts`.
@@ -942,8 +948,8 @@ export default function Header() {
                   vez de inexistente. */}
               {([
                 ...NAV_PRIMARY,
-                ...NAV_MORE,
-                ...([...NAV_PRIMARY, ...NAV_MORE].some((l) => l.href === NAV_MORE_FEATURED.href)
+                ...moreLinks,
+                ...([...NAV_PRIMARY, ...moreLinks].some((l) => l.href === NAV_MORE_FEATURED.href)
                   ? []
                   : [NAV_MORE_FEATURED]),
               ] as readonly NavLinkDato[]).map(({ label, href, external }) => (

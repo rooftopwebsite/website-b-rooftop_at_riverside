@@ -199,6 +199,18 @@ export const NAV_MORE_FEATURED = {
 export const NAV_MORE: readonly NavLink[] = NAV_MORE_GROUPS.flatMap((g) => g.links);
 
 /**
+ * ⚠️ EL BLOG NO SE VE HASTA QUE HAYA UNA NOTA. Camila, 2026-09-23: «ocultemos
+ * todo lo de blog hasta que haya al menos una nota». El layout pregunta al
+ * feed y le baja `hasBlog` al Header y al Footer, que filtran sus links con
+ * esto. `/blog` da 404 y sale del sitemap por el mismo motivo. El día que el
+ * dashboard publica la primera nota, todo aparece solo en diez minutos.
+ */
+export const BLOG_HREF = '/blog';
+
+export const sinBlog = <T extends { readonly href: string }>(links: readonly T[]): readonly T[] =>
+  links.filter((l) => l.href !== BLOG_HREF);
+
+/**
  * Los dos CTA fijos, con jerarquía distinta.
  *
  * ⚠️ NO hay «Book Now». El venue es walk-in y no toma reservas de mesa; el

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getPosts } from '@/lib/blog';
-import { ALL_ROUTES } from '@/lib/nav';
+import { ALL_ROUTES, BLOG_HREF } from '@/lib/nav';
 import { SITE_URL } from '@/lib/seo';
 
 /**
@@ -19,7 +19,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return 0.6;
   };
 
-  const staticRoutes = ALL_ROUTES.map((path) => ({
+  const posts = await getPosts();
+
+  // Sin notas, `/blog` da 404 y no va. Ver `sinBlog` en `nav.ts`.
+  const routes = posts.length > 0 ? ALL_ROUTES : ALL_ROUTES.filter((path) => path !== BLOG_HREF);
+
+  const staticRoutes = routes.map((path) => ({
     url: `${SITE_URL}${path === '/' ? '' : path}`,
     lastModified: now,
     // El calendario cambia todos los meses; el resto, rara vez.
@@ -47,7 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
    * que existe. Sólo las que viven bajo `/blog/`: una con canonical propio a
    * otra página del sitio ya está en `staticRoutes`.
    */
-  const posts = (await getPosts())
+  const postRoutes = posts
     .filter((p) => p.canonicalPath.startsWith('/blog/'))
     .map((p) => ({
       url: `${SITE_URL}${p.canonicalPath}`,
@@ -56,5 +61,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     }));
 
-  return [...staticRoutes, ...posts];
+  return [...staticRoutes, ...postRoutes];
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import BlogEmpty from '@/components/blog/BlogEmpty';
+import { notFound } from 'next/navigation';
 import FeaturedPost from '@/components/blog/FeaturedPost';
 import PostCard from '@/components/blog/PostCard';
 import FindUs from '@/components/sections/FindUs';
@@ -32,11 +32,23 @@ export const metadata: Metadata = pageMeta({
  * color). La NOTA no: ver `blog/[slug]/page.tsx`.
  *
  * Ritmo de superficies: hero en `bone` · ola · notas en `mint` · `FindUs` en
- * `bone` con su arco. Sin notas, `BlogEmpty` va en la misma banda menta.
+ * `bone` con su arco.
+ *
+ * ⚠️ SIN NOTAS, 404. Camila, 2026-09-23: «ocultemos todo lo de blog hasta que
+ * haya al menos una nota». Antes había un estado vacío («Stories are on their
+ * way»); se fue con esa decisión, junto con los links del Header y el Footer y
+ * la línea del sitemap. Ver `sinBlog` en `nav.ts`. Si el feed no contesta
+ * también da 404, igual que se esconden los links: el blog entero aparece y
+ * desaparece junto.
+ *
+ * ⚠️ SIN MIGAS VISIBLES. Camila, 2026-09-23, sobre «Home / Blog» encima de la
+ * pregunta: «no quiero que esté nunca». Por eso el titular dice BLOG: es el
+ * hero el que avisa dónde estás. El `BreadcrumbList` del schema se queda.
  */
 export default async function BlogPage() {
   const posts = await getPosts();
   const { featured, rest } = splitFeatured(posts);
+  if (!featured) notFound();
 
   return (
     <>
@@ -47,11 +59,10 @@ export default async function BlogPage() {
 
       <PlateHero
         question="What is going on at the rooftop in Bonita Springs?"
-        title={'Stories from the '}
-        titleAccent="Rooftop"
+        title={'The Rooftop '}
+        titleAccent="Blog"
         photo="/images/venue/front-night-wide.webp"
         photoAlt="The corner of Rooftop at Riverside on Old US 41 at night, with orange umbrellas along the rooftop terrace and people at the patio tables below"
-        crumbs={[{ name: 'Blog', path: '/blog' }]}
       />
 
       {/*
@@ -63,34 +74,23 @@ export default async function BlogPage() {
       */}
       <SoftWave from="bone" to="mint" className="relative -mb-px" />
 
-      <Section
-        tone="mint"
-        bandTop="sm"
-        bandBottom="lg"
-        {...(featured ? { label: 'Stories' } : { labelledBy: 'blog-empty-title' })}
-      >
-        {featured ? (
-          <>
-            <Reveal>
-              <FeaturedPost post={featured} />
-            </Reveal>
+      <Section tone="mint" bandTop="sm" bandBottom="lg" label="Stories">
+        <Reveal>
+          <FeaturedPost post={featured} />
+        </Reveal>
 
-            {rest.length > 0 ? (
-              <div className="mt-cierre">
-                <SectionHead title="More stories" id="more-stories" level={2} />
-                <StaggerGroup className="mt-bloque grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {rest.map((post) => (
-                    <RevealItem key={post.slug}>
-                      <PostCard post={post} />
-                    </RevealItem>
-                  ))}
-                </StaggerGroup>
-              </div>
-            ) : null}
-          </>
-        ) : (
-          <BlogEmpty />
-        )}
+        {rest.length > 0 ? (
+          <div className="mt-cierre">
+            <SectionHead title="More stories" id="more-stories" level={2} />
+            <StaggerGroup className="mt-bloque grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {rest.map((post) => (
+                <RevealItem key={post.slug}>
+                  <PostCard post={post} />
+                </RevealItem>
+              ))}
+            </StaggerGroup>
+          </div>
+        ) : null}
       </Section>
 
       <FindUs />

@@ -11,6 +11,7 @@ import UtilityBar from '@/components/shared/UtilityBar';
 import { BRAND } from '@/lib/brand';
 import VenueProvider from '@/components/shared/VenueProvider';
 import { getVenue } from '@/lib/venue';
+import { getPosts } from '@/lib/blog';
 import { SITE_URL, jsonLdScript, venueJsonLd } from '@/lib/seo';
 import './globals.css';
 
@@ -101,9 +102,13 @@ export const viewport: Viewport = {
  * ⚠️ ES ASYNC PORQUE LEE LA BASE. `getVenue()` resuelve el local UNA vez por
  * render y lo baja a todo el árbol: los componentes de servidor lo vuelven a
  * pedir (y `fetch` dedupea), y los de cliente lo leen del proveedor.
+ *
+ * También pregunta si el blog tiene notas: sin ninguna, el Header y el Footer
+ * no muestran el link. Ver `sinBlog` en `nav.ts`.
  */
 export default async function RootLayout({ children }: { readonly children: React.ReactNode }) {
-  const venue = await getVenue();
+  const [venue, posts] = await Promise.all([getVenue(), getPosts()]);
+  const hasBlog = posts.length > 0;
 
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
@@ -136,7 +141,7 @@ export default async function RootLayout({ children }: { readonly children: Reac
             `UtilityBar` no vende nada: son las tres redes, Gift Cards y FAQ.
             El razonamiento está en el encabezado de ese archivo. */}
         <UtilityBar />
-        <Header />
+        <Header hasBlog={hasBlog} />
 
         {/*
           Sin padding acá, y ahora por el motivo CONTRARIO al de antes.
@@ -169,7 +174,7 @@ export default async function RootLayout({ children }: { readonly children: Reac
           Lo que no cambió es que sigue FUERA de `<main>`: es cierre de sitio y
           no contenido de la página, igual que el footer.
         */}
-        <Footer />
+        <Footer hasBlog={hasBlog} />
 
         {/*
           ⚠️ VA ÚLTIMO Y FUERA DE `<main>`. Es `fixed`, así que su lugar en el

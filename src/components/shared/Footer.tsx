@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { SITE_LEGAL_DOCS } from '@/content/legal-docs';
 import { BRAND } from '@/lib/brand';
 import { CAJA_ALTA_CLS } from '@/lib/flags';
+import { sinBlog } from '@/lib/nav';
 import AgencyBar from './AgencyBar';
 import { ButtonLink } from './Button';
 import NewsletterSignup from './NewsletterSignup';
@@ -176,7 +177,10 @@ const COLUMNAS = [
 const LINK_BASE =
   `block py-1.75 font-body text-base font-bold leading-[1.4] text-paper/70 transition-colors duration-200 hover:text-paper ${CAJA_ALTA_CLS}`;
 
-export default function Footer() {
+/** `hasBlog`: si el feed tiene al menos una nota. Sin notas el link no se ve, ver `sinBlog`. */
+export default function Footer({ hasBlog }: { readonly hasBlog: boolean }) {
+  const columnas = hasBlog ? COLUMNAS : COLUMNAS.map((c) => ({ ...c, links: sinBlog(c.links) }));
+
   return (
     /*
       ⚠️ `rounded-t-band` SE MUDÓ ACÁ desde `NewsletterSignup`. El arco de 88px
@@ -390,12 +394,12 @@ export default function Footer() {
             aria-label="Footer"
             className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 sm:gap-6"
           >
-            {COLUMNAS.map(({ titulo, links }, i) => (
+            {columnas.map(({ titulo, links }, i) => (
               <div
                 key={titulo}
                 className={[
                   'flex flex-col items-center text-center sm:items-start sm:text-left',
-                  i === COLUMNAS.length - 1 && COLUMNAS.length % 2 === 1 ? 'col-span-2 sm:col-span-1' : '',
+                  i === columnas.length - 1 && columnas.length % 2 === 1 ? 'col-span-2 sm:col-span-1' : '',
                 ].join(' ')}
               >
                 <Heading level={2} role="label" className="text-paper">
