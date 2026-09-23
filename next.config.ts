@@ -27,6 +27,20 @@ function truckUrl(slug: string): string {
 }
 
 const nextConfig: NextConfig = {
+  /*
+   * ⚠️ EL TECHO DE LAS SERVER ACTIONS SUBE DE 1 MB A 4,5 MB, que es el techo
+   * de un request en Vercel: pasar de ahí no sirve, porque la plataforma corta
+   * antes. Con 1 MB, cualquier CV en PDF de más de una página tiraba la action
+   * entera. Lo que el navegador deja enviar está un poco por debajo
+   * (`MAX_REQUEST_MB` en `lib/schemas/join.ts`) para dejar lugar al resto del
+   * cuerpo multipart.
+   */
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '4.5mb',
+    },
+  },
+
   images: {
     formats: ['image/avif', 'image/webp'],
 

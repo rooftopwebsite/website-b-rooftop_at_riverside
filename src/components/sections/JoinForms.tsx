@@ -1,8 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
 import { submitArtist, submitJob } from '@/app/actions/join';
-import { IDLE } from '@/app/actions/types';
 import {
   CheckboxMatrix,
   DateField,
@@ -10,24 +8,30 @@ import {
   FileField,
   FormShell,
   RadioGroup,
+  SentPanel,
   SubmitButton,
   TextAreaField,
   TextField,
+  useSubmission,
 } from '@/components/form/Fields';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import {
+  artistFromForm,
+  artistSchema,
   DAYS,
   EDU_COLS,
   EDU_ROWS,
   EMPLOYMENT_TYPE,
   HISTORY_COLS,
   HISTORY_ROWS,
+  jobFromForm,
+  jobSchema,
   MAX_FILE_MB,
   MAX_IMAGE_MB,
+  MAX_REQUEST_MB,
   SHIFTS,
   YES_NO,
 } from '@/lib/schemas/join';
-import type { ActionState } from '@/app/actions/types';
 
 /**
  * Los DOS formularios de `/join-us`, uno por carril.
@@ -49,10 +53,9 @@ import type { ActionState } from '@/app/actions/types';
  * qué buzón fue y que si el archivo no pasó, responda el mail. Un «gracias, te
  * vamos a contactar» genérico no le sirve a ninguno de los dos.
  *
- * ⚠️ EL MENSAJE DE ÉXITO DEL TRABAJO ADMITE QUE EL ARCHIVO PUEDE NO HABER
- * LLEGADO. Hoy el adjunto se valida pero no se guarda: no hay destino de envío
- * definido. Decirle «recibimos tu CV» cuando el servidor lo descarta sería
- * mentir, y el costo lo paga la persona que se queda esperando.
+ * ⚠️ DESDE EL 2026-09-23 LOS ARCHIVOS LLEGAN ADJUNTOS AL MAIL. Hasta ese día
+ * se validaban y se descartaban, y el mensaje de éxito lo admitía. Ahora el
+ * éxito sólo menciona el CV si de verdad viajó (ver `submitJob`).
  * ══════════════════════════════════════════════════════════════════════════
  */
 
@@ -66,16 +69,13 @@ function Exito({
   readonly children: React.ReactNode;
 }) {
   return (
-    <div
-      role="status"
-      className="rounded-card border border-ink/15 bg-cream sombra-card p-[28px] lg:p-[36px]"
-    >
+    <SentPanel className="rounded-card border border-ink/15 bg-cream sombra-card p-[28px] lg:p-[36px]">
       <Eyebrow tone="deep">{eyebrow}</Eyebrow>
       <Heading level={3} className="mt-gap-kicker text-d5 lg:text-d4">
         {titulo}
       </Heading>
       <p className="mt-gap-bajada max-w-[52ch] text-lead text-body/80">{children}</p>
-    </div>
+    </SentPanel>
   );
 }
 
@@ -133,7 +133,8 @@ const JOB_LABELS: Record<string, string> = {
 };
 
 export function JobForm() {
-  const [state, action] = useActionState<ActionState, FormData>(submitJob, IDLE);
+  const submission = useSubmission(submitJob);
+  const { state } = submission;
 
   if (state.status === 'ok') {
     return (
@@ -144,7 +145,12 @@ export function JobForm() {
   }
 
   return (
-    <FormShell state={state} action={action} labels={JOB_LABELS}>
+    <FormShell
+      submission={submission}
+      schema={jobSchema}
+      fromForm={jobFromForm}
+      maxUploadMb={MAX_REQUEST_MB}
+    >
       <div className="grid gap-[16px] sm:grid-cols-2">
         <TextField
           name="position"
@@ -312,7 +318,8 @@ const ART_LABELS: Record<string, string> = {
 };
 
 export function ArtistForm() {
-  const [state, action] = useActionState<ActionState, FormData>(submitArtist, IDLE);
+  const submission = useSubmission(submitArtist);
+  const { state } = submission;
 
   if (state.status === 'ok') {
     return (
@@ -323,7 +330,12 @@ export function ArtistForm() {
   }
 
   return (
-    <FormShell state={state} action={action} labels={ART_LABELS}>
+    <FormShell
+      submission={submission}
+      schema={artistSchema}
+      fromForm={artistFromForm}
+      maxUploadMb={MAX_REQUEST_MB}
+    >
       <div className="grid gap-[16px] sm:grid-cols-2">
         <TextField
           name="firstName"
@@ -381,12 +393,14 @@ export function ArtistForm() {
           label={ART_LABELS.logo}
           accept="image/jpeg,image/png,image/webp,image/avif"
           maxMb={MAX_IMAGE_MB}
+          compress
         />
         <FileField
           name="photo"
           label={ART_LABELS.photo}
           accept="image/jpeg,image/png,image/webp,image/avif"
           maxMb={MAX_IMAGE_MB}
+          compress
         />
       </div>
 

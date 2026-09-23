@@ -3,16 +3,20 @@
 import { Button } from '@/components/shared/Button';
 import {
   createContext,
+  useActionState,
   useContext,
   useEffect,
   useId,
   useRef,
   useState,
+  useTransition,
+  type FormEvent,
   type ReactNode,
 } from 'react';
 import { useFormStatus } from 'react-dom';
 import { CaretDown } from '@/components/shared/Icon';
-import type { ActionState } from '@/app/actions/types';
+import { fieldErrorsFrom, IDLE, type ActionState } from '@/app/actions/types';
+import { compressImage } from '@/lib/compress-image';
 
 /*
  * ══════════════════════════════════════════════════════════════════════════
@@ -52,11 +56,24 @@ import type { ActionState } from '@/app/actions/types';
  * ══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * ⚠️ LOS ESTADOS DEL CONTROL, TODOS ACÁ Y EN UN SOLO LUGAR (2026-09-23):
+ *
+ *   · reposo     → borde `ink/25`
+ *   · hover      → borde `ink/45`: dice «esto se toca» antes del clic
+ *   · foco       → borde `ink` pleno, más el anillo global de `:focus-visible`
+ *   · error      → borde de 2px `tomato` + el texto debajo (nunca sólo color)
+ *   · enviando   → `disabled` por el `<fieldset>` de `FormShell`: se atenúa y
+ *                  no se puede editar lo que ya está viajando
+ *
+ * ⚠️ EL ERROR PISA AL HOVER Y AL FOCO a propósito: un campo en rojo que se
+ * vuelve gris al pasar el mouse parece corregido y no lo está.
+ */
 const INPUT_BASE =
-  'h-10.5 w-full rounded-pill border bg-paper px-[22px] font-body text-[16px] transition-colors';
+  'h-10.5 w-full rounded-pill border bg-paper px-[22px] font-body text-[16px] transition-colors disabled:cursor-not-allowed disabled:opacity-60';
 const BOX_BASE =
-  'w-full rounded-shell border bg-paper px-[22px] py-[16px] font-body text-[16px] leading-[1.6] transition-colors';
-const OK = 'border-ink/25 focus:border-ink';
+  'w-full rounded-shell border bg-paper px-[22px] py-[16px] font-body text-[16px] leading-[1.6] transition-colors disabled:cursor-not-allowed disabled:opacity-60';
+const OK = 'border-ink/25 hover:border-ink/45 focus:border-ink';
 const BAD = 'border-2 border-tomato';
 
 /* ── El contexto: ids y errores, para no pasarlos campo por campo ────────── */
@@ -64,9 +81,11 @@ const BAD = 'border-2 border-tomato';
 interface FormCtx {
   readonly uid: string;
   readonly errors: Record<string, string>;
+  /** `true` mientras el envío está viajando. Lo lee `SubmitButton`. */
+  readonly pending: boolean;
 }
 
-const Ctx = createContext<FormCtx>({ uid: 'form', errors: {} });
+const Ctx = createContext<FormCtx>({ uid: 'form', errors: {}, pending: false });
 
 function useField(name: string) {
   const { uid, errors } = useContext(Ctx);
@@ -308,8 +327,28 @@ export function DateField(p: BaseFieldProps & { readonly min?: string }) {
   );
 }
 
-export function TextAreaField(p: BaseFieldProps & { readonly rows?: number }) {
+/**
+ * El contador de caracteres de una caja con techo.
+ *
+ * ⚠️ APARECE RECIÉN AL 80% DEL TECHO. Un «0 / 4000» debajo de cada caja vacía
+ * es ruido que sugiere que hay que escribir mucho; lo que sirve es el aviso
+ * cuando falta poco para chocar. El `maxLength` del control ya impide pasarse:
+ * esto es para que el corte no sorprenda.
+ */
+function Contador({ id, largo, max }: { readonly id: string; readonly largo: number; readonly max: number }) {
+  if (largo < max * 0.8) return null;
+  return (
+    <p id={id} className={`text-right text-[14px] tabular-nums ${largo >= max ? 'font-bold text-terra' : 'text-body/70'}`}>
+      {largo} / {max}
+    </p>
+  );
+}
+
+export function TextAreaField(
+  p: BaseFieldProps & { readonly rows?: number; readonly maxLength?: number },
+) {
   const { fid, eid, err, aria } = useField(p.name);
+  const [largo, setLargo] = useState(0);
   return (
     <Wrap>
       <Label htmlFor={fid} required={p.required} hint={p.hint}>
@@ -320,6 +359,8 @@ export function TextAreaField(p: BaseFieldProps & { readonly rows?: number }) {
         name={p.name}
         rows={p.rows ?? 5}
         required={p.required}
+        maxLength={p.maxLength}
+        onInput={p.maxLength ? (e) => setLargo(e.currentTarget.value.length) : undefined}
         /* ⚠️ ESTABA DECLARADO EN `BaseFieldProps` Y NO LLEGABA AL CONTROL: se
            podía pasar `autoComplete` a un `TextAreaField`, TypeScript lo
            aceptaba y el navegador no autocompletaba nada. Lo destapó la
@@ -329,6 +370,7 @@ export function TextAreaField(p: BaseFieldProps & { readonly rows?: number }) {
         {...aria}
         className={[BOX_BASE, err ? BAD : OK].join(' ')}
       />
+      {p.maxLength ? <Contador id={`${fid}-count`} largo={largo} max={p.maxLength} /> : null}
       {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
     </Wrap>
   );
@@ -386,7 +428,15 @@ export function SelectField({
 }
 
 export function FileField(
-  p: BaseFieldProps & { readonly accept?: string; readonly maxMb?: number },
+  p: BaseFieldProps & {
+    readonly accept?: string;
+    readonly maxMb?: number;
+    /**
+     * Si es una foto, `FormShell` la achica en el navegador antes de enviar.
+     * Ver `lib/compress-image.ts` y la nota de `MAX_REQUEST_MB`.
+     */
+    readonly compress?: boolean;
+  },
 ) {
   const { fid, eid, err, aria } = useField(p.name);
   return (
@@ -400,6 +450,7 @@ export function FileField(
         type="file"
         accept={p.accept}
         required={p.required}
+        data-compress={p.compress ? '' : undefined}
         {...aria}
         className={[
           BOX_BASE,
@@ -884,6 +935,71 @@ export function FieldRows({
   );
 }
 
+/* ── El envío: el hook que lo sostiene ──────────────────────────────────── */
+
+/** La server action de un formulario, con la firma de `useActionState`. */
+export type FormAction = (prev: ActionState, fd: FormData) => Promise<ActionState>;
+
+/*
+ * ⚠️ LOS DOS DICEN QUE LO ESCRITO SIGUE AHÍ, porque es lo primero que alguien
+ * se pregunta cuando un formulario largo falla, y la respuesta ahora es sí.
+ */
+const OFFLINE =
+  'You look offline, so nothing was sent. Your answers are still here: try again once you are back online.';
+const SIN_RESPUESTA =
+  'We could not reach our server, so nothing was sent. Your answers are still here: give it another try in a moment.';
+
+/**
+ * El estado de un envío, de punta a punta.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ REEMPLAZA AL `useActionState` SUELTO QUE USABA CADA FORMULARIO, y
+ * resuelve dos fallas que ése tenía, las dos del 2026-09-23:
+ *
+ *   1. SE BORRABA TODO LO ESCRITO. Con `<form action={…}>`, React 19 vacía
+ *      los campos no controlados al terminar la action, SALGA BIEN O MAL.
+ *      Alguien que llenaba los quince campos de `/events` y chocaba con un
+ *      error del servidor se quedaba con el formulario en blanco. Acá el
+ *      envío sale por `onSubmit` con `preventDefault`, y lo escrito queda.
+ *
+ *   2. UN CORTE DE RED TIRABA LA PÁGINA. Si la action no contesta (sin
+ *      conexión, un 413 por un archivo grande, un 500), la promesa se rechaza
+ *      y `useActionState` la manda al error boundary: la persona veía la
+ *      pantalla de error del sitio entero. Acá se ataja y se convierte en un
+ *      mensaje dentro del formulario.
+ *
+ * ⚠️ `formAction` SIGUE EXISTIENDO Y VA EN EL `action` DEL `<form>`. Es la
+ * red de cuando no carga el JavaScript: el POST sale igual y la respuesta se
+ * renderiza en el servidor. Con JavaScript nunca se usa, porque `onSubmit`
+ * lo intercepta antes.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export function useSubmission(action: FormAction) {
+  const [ssr, formAction] = useActionState(action, IDLE);
+  const [local, setLocal] = useState<ActionState | null>(null);
+  const [pending, start] = useTransition();
+
+  function submit(fd: FormData) {
+    start(async () => {
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        setLocal({ status: 'error', message: OFFLINE });
+        return;
+      }
+      try {
+        const res = await action(IDLE, fd);
+        setLocal(res);
+      } catch (err) {
+        console.error('[form] el envío no llegó al servidor:', err);
+        setLocal({ status: 'error', message: SIN_RESPUESTA });
+      }
+    });
+  }
+
+  return { state: local ?? ssr, formAction, pending, submit } as const;
+}
+
+export type Submission = ReturnType<typeof useSubmission>;
+
 /* ── El botón, que conoce el estado de envío ────────────────────────────── */
 
 /*
@@ -899,35 +1015,128 @@ export function FieldRows({
  * resto, la font y su animación». Tenía sus propias clases —negrita 700,
  * caja baja, sin el `Rodillo` del hover—, así que los cinco botones de envío
  * eran los únicos CTA del sitio que no rodaban ni iban en caja alta.
+ *
+ * ⚠️ EL `pending` SALE DEL CONTEXTO Y NO SÓLO DE `useFormStatus`. Como el envío
+ * sale por `onSubmit` (ver `useSubmission`), `useFormStatus` ya no se entera;
+ * queda como respaldo para el POST sin JavaScript.
+ *
+ * ⚠️ MIENTRAS ENVÍA NO BAJA AL 50% DE OPACIDAD del `disabled` genérico: un
+ * botón medio borrado con «Sending…» se lee como roto. Queda al 85% con la
+ * rueda girando, que dice «está pasando algo» y no «no se puede».
  */
 export function SubmitButton({ idle, busy }: { readonly idle: string; readonly busy: string }) {
-  const { pending } = useFormStatus();
+  const ctx = useContext(Ctx);
+  const { pending: nativo } = useFormStatus();
+  const pending = ctx.pending || nativo;
   return (
-    <Button type="submit" variant="primary" size="lg" disabled={pending} className="w-full">
-      {pending ? busy : idle}
+    <Button
+      type="submit"
+      variant="primary"
+      size="lg"
+      disabled={pending}
+      className={pending ? 'w-full disabled:opacity-85' : 'w-full'}
+    >
+      {pending ? (
+        <>
+          <span
+            aria-hidden="true"
+            className="size-[16px] shrink-0 rounded-full border-2 border-ink/25 border-t-ink motion-safe:animate-spin"
+          />
+          {busy}
+        </>
+      ) : (
+        idle
+      )}
     </Button>
   );
 }
 
-/* ── La cáscara: resumen de errores, honeypot y aria-live ───────────────── */
+/* ── El panel de enviado ────────────────────────────────────────────────── */
+
+/**
+ * La caja que reemplaza al formulario cuando el envío salió.
+ *
+ * ⚠️ TOMA EL FOCO Y SE TRAE A LA VISTA AL APARECER. El formulario de `/events`
+ * mide dos pantallas y el panel una fracción: sin esto, quien apretó enviar
+ * al pie se quedaba mirando el espacio vacío que dejó el formulario, sin saber
+ * si salió. El foco además hace que el lector de pantalla lo lea entero.
+ *
+ * ⚠️ `role="status"` Y NO `alert`: es una confirmación esperada, no una
+ * interrupción.
+ */
+export function SentPanel({
+  className,
+  children,
+}: {
+  readonly className?: string;
+  readonly children: ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.focus({ preventScroll: true });
+    const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ block: 'center', behavior: quieto ? 'auto' : 'smooth' });
+  }, []);
+  return (
+    <div
+      ref={ref}
+      role="status"
+      tabIndex={-1}
+      className={['outline-none', className].filter(Boolean).join(' ')}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ── La cáscara: validación, honeypot y aria-live ───────────────────────── */
+
+/** Lo único que `FormShell` necesita de un schema de zod. */
+interface Schema {
+  safeParse(v: unknown):
+    | { readonly success: true }
+    | {
+        readonly success: false;
+        readonly error: { readonly issues: readonly { path: PropertyKey[]; message: string }[] };
+      };
+}
+
+/** El aviso general cuando el navegador encuentra errores antes de enviar. */
+const REVISAR = 'Some fields need another look before this can go out.';
+
+const porDefecto = (fd: FormData): unknown => Object.fromEntries(fd);
 
 export function FormShell({
-  state,
-  action,
+  submission,
+  schema,
+  fromForm = porDefecto,
+  maxUploadMb,
   children,
-  labels,
 }: {
-  readonly state: ActionState;
-  readonly action: (fd: FormData) => void;
+  readonly submission: Submission;
+  /**
+   * El MISMO schema que valida la server action. Con él el navegador marca
+   * los errores antes de enviar, con el mismo texto que usaría el servidor.
+   */
+  readonly schema?: Schema;
+  /** Del `FormData` al objeto que valida el schema. El mismo de la action. */
+  readonly fromForm?: (fd: FormData) => unknown;
+  /** El techo del request, sumando todos los archivos. Ver `MAX_REQUEST_MB`. */
+  readonly maxUploadMb?: number;
   readonly children: ReactNode;
-  /** Etiqueta legible por campo, para el resumen de errores de arriba. */
-  readonly labels: Readonly<Record<string, string>>;
 }) {
+  const { state, formAction, pending, submit } = submission;
   const uid = useId();
   const summaryRef = useRef<HTMLDivElement | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
-  const errors = state.fieldErrors ?? {};
-  const keys = Object.keys(errors);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [aviso, setAviso] = useState('');
+  /** Ya se intentó enviar una vez: desde ahí, salir de un campo vacío también avisa. */
+  const intentado = useRef(false);
+  /** Pide llevar el foco al primer error en el próximo render. */
+  const [foco, setFoco] = useState(0);
 
   /*
     ══════════════════════════════════════════════════════════════════════════
@@ -939,8 +1148,8 @@ export function FormShell({
     ⚠️ LO QUE HACÍA EL RESUMEN POR LA ACCESIBILIDAD SE CONSERVA DE OTRA FORMA:
     el foco va al PRIMER CAMPO CON ERROR (en el orden del formulario), que
     anuncia su etiqueta y su mensaje por `aria-describedby`; y el aviso general
-    («Please check the highlighted fields») sigue en la región `aria-live` de
-    arriba. Quien navega con teclado cae donde tiene que corregir.
+    sigue en la región `aria-live` de arriba. Quien navega con teclado cae
+    donde tiene que corregir.
 
     ⚠️ SI EL ERROR NO ES DE UN CAMPO —el servidor no contestó, el envío falló—
     no hay campo al que llevar el foco, y ahí sí se muestra una línea de aviso.
@@ -948,31 +1157,160 @@ export function FormShell({
   */
   useEffect(() => {
     if (state.status !== 'error') return;
-    const primero = formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
-    if (primero) primero.focus();
-    else summaryRef.current?.focus();
+    setErrors(state.fieldErrors ?? {});
+    setAviso(state.message);
+    setFoco((n) => n + 1);
   }, [state]);
 
+  useEffect(() => {
+    if (foco === 0) return;
+    const primero = formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
+    if (primero) {
+      primero.focus({ preventScroll: true });
+      primero.scrollIntoView({ block: 'center' });
+    } else summaryRef.current?.focus();
+  }, [foco]);
+
+  /** Todos los errores del formulario tal cual está ahora. */
+  function validar(fd: FormData): Record<string, string> {
+    if (!schema) return {};
+    const crudo = fromForm(fd) as Record<string, unknown>;
+    // La trampa no se valida en el navegador: un bot no corre este código, y
+    // si alguien con autocompletar la llenara, no tiene cómo verla para vaciarla.
+    const r = schema.safeParse({ ...crudo, website: '' });
+    return r.success ? {} : fieldErrorsFrom(r.error.issues);
+  }
+
+  /*
+   * ⚠️ LA CLAVE DEL ERROR NO SIEMPRE ES EL `name` DEL CONTROL. Las celdas de
+   * las tablas se llaman `edu.degree` y el schema valida `education` entero;
+   * ésas no se validan al salir de la celda, sólo al enviar.
+   */
+  function actualizar(nombre: string, mostrar: boolean) {
+    if (!nombre || nombre === 'website' || nombre.includes('.') || !formRef.current) return;
+    const todos = validar(new FormData(formRef.current));
+    setErrors((prev) => {
+      const siguiente = { ...prev };
+      const err = todos[nombre];
+      if (!err) delete siguiente[nombre];
+      else if (prev[nombre] || mostrar) siguiente[nombre] = err;
+      return siguiente;
+    });
+  }
+
+  /*
+   * ⚠️ AL SALIR DE UN CAMPO SE VALIDA SÓLO SI SE ESCRIBIÓ ALGO. Pasar con Tab
+   * por un campo obligatorio sin llenarlo no es un error todavía: la persona
+   * puede volver. Recién después del primer intento de envío, un vacío sí se
+   * marca al salir. Lo contrario, rojo en todo lo que se toca, es la forma más
+   * rápida de que un formulario largo se sienta como un examen.
+   */
+  function onBlur(e: FormEvent<HTMLFormElement>) {
+    const t = e.target as HTMLInputElement;
+    if (t.type === 'checkbox' || t.type === 'radio' || t.type === 'file') return;
+    actualizar(t.name, intentado.current || t.value.trim() !== '');
+  }
+
+  /*
+   * ⚠️ AL ESCRIBIR, SÓLO SE LIMPIA O SE CORRIGE UN ERROR QUE YA ESTABA. Un
+   * campo no se pone en rojo a mitad de la palabra; uno que ya estaba en rojo
+   * se pone bien apenas queda bien.
+   *
+   * ⚠️ LAS CASILLAS, LOS RADIOS, LOS DESPLEGABLES Y LOS ARCHIVOS SÍ SE VALIDAN
+   * AL CAMBIAR: no tienen un «terminé de escribir», y un archivo de 20 MB
+   * tiene que avisar en el momento en que se elige, no al apretar enviar.
+   */
+  function onChange(e: FormEvent<HTMLFormElement>) {
+    const t = e.target as HTMLInputElement;
+    const inmediato =
+      t.type === 'checkbox' || t.type === 'radio' || t.type === 'file' || t.tagName === 'SELECT';
+    if (inmediato) actualizar(t.name, true);
+    else if (errors[t.name]) actualizar(t.name, true);
+  }
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (pending) return;
+    intentado.current = true;
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+
+    const encontrados = validar(fd);
+    if (Object.keys(encontrados).length > 0) {
+      setErrors(encontrados);
+      setAviso(REVISAR);
+      setFoco((n) => n + 1);
+      return;
+    }
+
+    // Las fotos se achican antes de salir. Ver `lib/compress-image.ts`.
+    for (const input of form.querySelectorAll<HTMLInputElement>('input[type="file"][data-compress]')) {
+      const f = fd.get(input.name);
+      if (f instanceof File && f.size > 0) fd.set(input.name, await compressImage(f));
+    }
+
+    if (maxUploadMb) {
+      const archivos = [...fd.entries()].filter(
+        (x): x is [string, File] => x[1] instanceof File && x[1].size > 0,
+      );
+      const total = archivos.reduce((s, [, f]) => s + f.size, 0);
+      if (total > maxUploadMb * 1024 * 1024) {
+        const mayor = [...archivos].sort((a, b) => b[1].size - a[1].size)[0]![0];
+        setErrors({
+          [mayor]: `Your files add up to ${(total / 1024 / 1024).toFixed(1)} MB and the limit is ${maxUploadMb} MB. Try a smaller file here.`,
+        });
+        setAviso(REVISAR);
+        setFoco((n) => n + 1);
+        return;
+      }
+    }
+
+    setErrors({});
+    setAviso('');
+    submit(fd);
+  }
+
+  const general =
+    state.status === 'error' && Object.keys(state.fieldErrors ?? {}).length === 0 && !pending;
+
   return (
-    <Ctx.Provider value={{ uid, errors }}>
+    <Ctx.Provider value={{ uid, errors, pending }}>
       {/* Existe siempre, con o sin mensaje. Ver la nota de accesibilidad. */}
       <p aria-live="polite" className="sr-only">
-        {state.status === 'error' ? state.message : ''}
+        {pending ? 'Sending.' : aviso}
       </p>
 
-      <form ref={formRef} action={action} noValidate className="flex flex-col gap-[28px]">
-        {state.status === 'error' && keys.length === 0 ? (
+      <form
+        ref={formRef}
+        action={formAction}
+        onSubmit={onSubmit}
+        onBlur={onBlur}
+        onChange={onChange}
+        noValidate
+        aria-busy={pending}
+        className="flex flex-col gap-[28px]"
+      >
+        {general ? (
           <div
             ref={summaryRef}
             tabIndex={-1}
             role="alert"
-            className="rounded-card border-2 border-tomato bg-tomato/5 p-[20px]"
+            className="rounded-card border-2 border-tomato bg-tomato/5 p-[20px] outline-none"
           >
             <p className="font-body text-[16px] font-bold text-terra">{state.message}</p>
           </div>
         ) : null}
 
-        {children}
+        {/*
+          ⚠️ EL `<fieldset disabled>` APAGA TODOS LOS CONTROLES DE UNA VEZ
+          mientras se envía, botón incluido. Lo escrito ya viajó en el
+          `FormData`; lo que se evita es que alguien corrija un dato a mitad
+          del envío y crea que la corrección salió. `contents` para que no
+          rompa el `gap` de la columna.
+        */}
+        <fieldset disabled={pending} className="contents">
+          {children}
+        </fieldset>
 
         {/* Honeypot. `sr-only` no alcanza: un lector de pantalla igual lo lee. */}
         <div aria-hidden="true" className="hidden">
@@ -983,6 +1321,7 @@ export function FormShell({
     </Ctx.Provider>
   );
 }
+
 
 /* ── Los campos EN FRASE, que hoy usa sólo `/contact` ────────────────────── */
 
@@ -1152,8 +1491,11 @@ export function InlineSelect({
  * El mensaje: la etiqueta sigue siendo parte de la frase, pero la caja va
  * abajo y a todo el ancho. Un `<textarea>` no entra en un renglón de texto.
  */
-export function SentenceArea(p: BaseFieldProps & { readonly rows?: number }) {
+export function SentenceArea(
+  p: BaseFieldProps & { readonly rows?: number; readonly maxLength?: number },
+) {
   const { fid, eid, err, aria } = useField(p.name);
+  const [largo, setLargo] = useState(0);
   return (
     <div className="flex flex-col gap-[12px]">
       <span className={FRASE}>
@@ -1166,9 +1508,12 @@ export function SentenceArea(p: BaseFieldProps & { readonly rows?: number }) {
         name={p.name}
         rows={p.rows ?? 6}
         required={p.required}
+        maxLength={p.maxLength}
+        onInput={p.maxLength ? (e) => setLargo(e.currentTarget.value.length) : undefined}
         {...aria}
         className={[BOX_BASE, err ? BAD : OK].join(' ')}
       />
+      {p.maxLength ? <Contador id={`${fid}-count`} largo={largo} max={p.maxLength} /> : null}
       {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
     </div>
   );

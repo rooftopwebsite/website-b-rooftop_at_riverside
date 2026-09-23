@@ -41,3 +41,8 @@ export const contactSchema = z.object({
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;
+
+/** Del `FormData` al objeto que valida el schema. Lo usan el cliente y la action. */
+export function contactFromForm(fd: FormData) {
+  return Object.fromEntries(fd);
+}

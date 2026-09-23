@@ -2,17 +2,19 @@
 
 import Link from 'next/link';
 import { useVenue } from '@/components/shared/VenueProvider';
-import { useActionState, useState } from 'react';
+import { useState } from 'react';
 import { submitContact } from '@/app/actions/contact';
-import { IDLE } from '@/app/actions/types';
 import {
   FormShell,
   InlineField,
   InlineSelect,
+  SentPanel,
   SentenceArea,
   SentenceRow,
   SubmitButton,
+  useSubmission,
 } from '@/components/form/Fields';
+import { contactFromForm, contactSchema } from '@/lib/schemas/contact';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import { CONTACT_REASONS, reasonByValue } from '@/content/contact-reasons';
 
@@ -78,14 +80,15 @@ const FRASE = {
 
 export default function ContactForm() {
   const venue = useVenue();
-  const [state, action] = useActionState(submitContact, IDLE);
+  const submission = useSubmission(submitContact);
+  const { state } = submission;
   const [reason, setReason] = useState('');
 
   const redirect = reasonByValue(reason)?.redirect;
 
   if (state.status === 'ok') {
     return (
-      <div role="status" className="rounded-shell border border-ink/15 bg-cream p-[32px] lg:p-[40px]">
+      <SentPanel className="rounded-shell border border-ink/15 bg-cream p-[32px] lg:p-[40px]">
         <Eyebrow tone="deep">Message sent</Eyebrow>
         <Heading level={2} className="mt-gap-kicker text-d5 lg:text-d4">
           It landed
@@ -98,12 +101,12 @@ export default function ContactForm() {
           </a>
           .
         </p>
-      </div>
+      </SentPanel>
     );
   }
 
   return (
-    <FormShell state={state} action={action} labels={LABELS}>
+    <FormShell submission={submission} schema={contactSchema} fromForm={contactFromForm}>
       {/*
         ⚠️ UN CAMPO POR RENGLÓN, y no dos como la referencia.
 
@@ -169,7 +172,7 @@ export default function ContactForm() {
         </div>
       ) : (
         <>
-          <SentenceArea name="message" label={FRASE.message} required rows={6} />
+          <SentenceArea name="message" label={FRASE.message} required rows={6} maxLength={4000} />
           {/*
             ⚠️ EL BOTÓN VA CENTRADO, que es lo que hace la referencia y no es
             un capricho: la losa tiene el filete punteado a los cuatro lados y

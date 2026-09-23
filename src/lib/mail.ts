@@ -25,6 +25,13 @@ function client(): Resend | null {
   return new Resend(key);
 }
 
+/** Un adjunto ya leído a memoria. Ver `fileToAttachment` en `submissions.ts`. */
+export interface MailAttachment {
+  readonly filename: string;
+  readonly content: Buffer;
+  readonly contentType?: string;
+}
+
 export interface MailResult {
   readonly ok: boolean;
   /** Mensaje para mostrarle a la persona. Nunca expone detalles del proveedor. */
@@ -36,12 +43,15 @@ export async function sendMail({
   subject,
   text,
   replyTo,
+  attachments,
 }: {
-  readonly to: string;
+  /** Uno o varios buzones. Ver `lib/inboxes.ts`. */
+  readonly to: string | readonly string[];
   readonly subject: string;
   /** Texto plano. Sin HTML: estos son mails internos, no una campaña. */
   readonly text: string;
   readonly replyTo?: string;
+  readonly attachments?: readonly MailAttachment[];
 }): Promise<MailResult> {
   const resend = client();
   const from = process.env.RESEND_FROM;
@@ -58,10 +68,19 @@ export async function sendMail({
   try {
     const { error } = await resend.emails.send({
       from,
-      to: [to],
+      to: typeof to === 'string' ? [to] : [...to],
       subject,
       text,
       ...(replyTo ? { replyTo } : {}),
+      ...(attachments && attachments.length > 0
+        ? {
+            attachments: attachments.map((a) => ({
+              filename: a.filename,
+              content: a.content,
+              ...(a.contentType ? { contentType: a.contentType } : {}),
+            })),
+          }
+        : {}),
     });
 
     if (error) {
@@ -72,6 +91,12 @@ export async function sendMail({
       };
     }
 
+    /*
+     * ⚠️ SE LOGUEA EL DESTINO Y NO EL CONTENIDO. Es lo que permite contestar
+     * «¿a dónde fue la consulta del sábado?» mirando el log de Vercel, sin
+     * dejar datos personales de nadie escritos en él.
+     */
+    console.info(JSON.stringify({ event: 'mail.sent', to, subject: subject.slice(0, 80) }));
     return { ok: true, message: 'Sent.' };
   } catch (err) {
     console.error('[mail] Excepción al enviar:', err);

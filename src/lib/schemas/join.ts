@@ -46,16 +46,38 @@ import { z } from 'zod';
  * ══════════════════════════════════════════════════════════════════════════
  */
 
-/** 5 MB para el currículum, el techo que pidió Camila. */
-export const MAX_FILE_MB = 5;
+/**
+ * ══════════════════════════════════════════════════════════════════════════
+ * ⚠️ EL TECHO DE VERDAD NO LO PONEMOS NOSOTROS: LO PONE VERCEL, 4,5 MB POR
+ * REQUEST. Es el cuerpo entero —campos más archivos— y lo que pasa de ahí
+ * se corta con un 413 antes de llegar a la action. Desde el 2026-09-23 los
+ * archivos viajan adjuntos en el mail (antes se descartaban), así que ese
+ * techo pasó a importar.
+ *
+ * Por eso hay DOS números:
+ *   · lo que se deja ELEGIR (el del CV y el de las fotos, abajo), y
+ *   · lo que se deja ENVIAR, sumado, que es `MAX_REQUEST_MB`.
+ *
+ * ⚠️ LAS FOTOS SE ACHICAN EN EL NAVEGADOR ANTES DE SALIR. Ver
+ * `lib/compress-image.ts`: una foto de teléfono de 8 MB llega al mail en
+ * menos de 1 MB y a 2400px del lado largo, que es más de lo que hace falta
+ * para decidir si una banda entra. Un PDF no se puede achicar, y por eso el
+ * CV bajó de 5 a 4 MB.
+ * ══════════════════════════════════════════════════════════════════════════
+ */
+export const MAX_REQUEST_MB = 4;
+
+/** 4 MB para el currículum. Era 5, el que pidió Camila; ver la nota de arriba. */
+export const MAX_FILE_MB = 4;
 
 /**
- * 15 MB para el logo y la foto de la banda.
+ * 15 MB para el logo y la foto de la banda, ANTES de achicarlas.
  *
  * ⚠️ NO ES UN NÚMERO NUESTRO: es el que declara el formulario del cliente
  * debajo de sus dos campos de subida, «Upload supported file (Max 15MB)». Si
  * acá pusiéramos 5, alguien que ya subió su foto en el sitio viejo se comería
- * un rechazo por un límite que nadie le avisó que bajó.
+ * un rechazo por un límite que nadie le avisó que bajó. Se sostiene porque el
+ * navegador las achica antes de enviar; lo que llega al servidor es mucho menos.
  */
 export const MAX_IMAGE_MB = 15;
 
@@ -250,7 +272,10 @@ export const jobSchema = z.object({
   email: mail,
   address: z.string().trim().min(5, 'Enter your street address.'),
   cityState: z.string().trim().min(2, 'Enter your city and state.'),
-  zipcode: z.string().trim().min(5, 'Enter your ZIP code.'),
+  zipcode: z
+    .string()
+    .trim()
+    .regex(/^\d{5}(-\d{4})?$/, 'Enter a 5-digit ZIP code.'),
 
   license: siNo('Do you have a valid driver license or ID card?'),
   eligible: siNo('Are you eligible for employment in the U.S.?'),
@@ -290,8 +315,22 @@ export const jobSchema = z.object({
  * ══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * ⚠️ UN LINK SE PIDE QUE PAREZCA UN LINK, NO QUE SEA UNA URL PERFECTA. Se
+ * acepta con o sin `https://` —nadie lo escribe— y también un @usuario, que es
+ * como la gente pasa su Instagram. Lo que se rechaza es lo que seguro no lleva
+ * a ningún lado: texto con espacios o sin un solo punto.
+ */
+const PARECE_LINK = /^(@[\w.]{2,}|(https?:\/\/)?[^\s/]+\.[^\s]{2,})$/i;
+
 const linkOpcional = (campo: string) =>
-  z.string().trim().max(300, `That ${campo} is too long.`).optional().default('');
+  z
+    .string()
+    .trim()
+    .max(300, `That ${campo} is too long.`)
+    .refine((v) => v === '' || PARECE_LINK.test(v), 'Paste the full link, or an @username.')
+    .optional()
+    .default('');
 
 export const artistSchema = z.object({
   firstName: nombre('first name'),
@@ -312,3 +351,64 @@ export const artistSchema = z.object({
 
 export type JobInput = z.infer<typeof jobSchema>;
 export type ArtistInput = z.infer<typeof artistSchema>;
+
+/* ── Del FormData al objeto a validar ───────────────────────────────────── */
+
+/*
+ * ⚠️ VIVEN ACÁ Y NO EN LA ACTION desde el 2026-09-23: el navegador valida con
+ * el mismo schema antes de enviar, y para eso tiene que armar el mismo objeto.
+ * Si cada lado cruzara las tablas a su manera, un error podría aparecer en un
+ * lado y no en el otro.
+ */
+
+/**
+ * Las tablas del papel, de columnas paralelas a filas.
+ *
+ * ⚠️ CADA COLUMNA LLEGA COMO UN `name` REPETIDO —`edu.degree` dos veces,
+ * `job.company` tres— y acá se cruzan por índice: la fila 0 es la primera celda
+ * de cada columna.
+ *
+ * ⚠️ LAS FILAS VACÍAS SE DESCARTAN, y eso incluye las medio vacías al revés:
+ * si alguien escribió sólo la empresa, la fila entra con los otros tres campos
+ * en blanco. Lo que se tira es la fila donde no se escribió NADA, que es lo
+ * normal cuando el papel ofrece tres renglones y la persona tuvo dos trabajos.
+ */
+export function tableRows(
+  formData: FormData,
+  prefijo: string,
+  cols: readonly { readonly key: string }[],
+): TableRow[] {
+  const columnas = cols.map((c) => formData.getAll(`${prefijo}.${c.key}`).map(String));
+  const alto = Math.max(0, ...columnas.map((c) => c.length));
+
+  const out: TableRow[] = [];
+  for (let i = 0; i < alto; i++) {
+    const fila: Record<string, string> = {};
+    let algo = false;
+    cols.forEach((c, j) => {
+      const v = (columnas[j]?.[i] ?? '').trim();
+      fila[c.key] = v;
+      if (v) algo = true;
+    });
+    if (algo) out.push(fila);
+  }
+  return out;
+}
+
+/**
+ * ⚠️ LOS CAMPOS MÚLTIPLES SE LEEN CON `getAll`. `Object.fromEntries` se queda
+ * con el último valor de cada nombre, así que alguien que tilda seis turnos
+ * habría enviado uno solo.
+ */
+export function jobFromForm(fd: FormData) {
+  return {
+    ...Object.fromEntries(fd),
+    availability: fd.getAll('availability').map(String),
+    education: tableRows(fd, 'edu', EDU_COLS),
+    history: tableRows(fd, 'job', HISTORY_COLS),
+  };
+}
+
+export function artistFromForm(fd: FormData) {
+  return Object.fromEntries(fd);
+}

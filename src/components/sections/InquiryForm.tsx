@@ -6,14 +6,15 @@ import {
   DateField,
   FormShell,
   SelectField,
+  SentPanel,
   SubmitButton,
   TextAreaField,
   TextField,
   useRadioGroup,
+  useSubmission,
 } from '@/components/form/Fields';
-import { IDLE } from '@/app/actions/types';
 import { Eyebrow, Heading } from '@/components/shared/Type';
-import { useActionState } from 'react';
+import { hoyEnFlorida, inquiryFromForm, inquirySchema } from '@/lib/schemas/event-inquiry';
 import {
   AREAS_OF_INTEREST,
   BAR_TIERS,
@@ -128,12 +129,14 @@ export default function InquiryForm({
 }: {
   readonly defaultAreas?: readonly string[];
 } = {}) {
-  const [state, action] = useActionState(submitEventInquiry, IDLE);
+  const submission = useSubmission(submitEventInquiry);
+  const { state } = submission;
+  /* El `min` de las fechas: hoy en Florida, el mismo corte que valida el schema. */
+  const hoy = hoyEnFlorida();
 
   if (state.status === 'ok') {
     return (
-      <div
-        role="status"
+      <SentPanel
         className="rounded-card border border-ink/15 bg-cream sombra-card p-[32px] lg:p-[48px]"
       >
         <Eyebrow tone="deep">Request received</Eyebrow>
@@ -142,18 +145,18 @@ export default function InquiryForm({
         </Heading>
         <p className="mt-gap-bajada max-w-[54ch] text-lead text-body/80">{state.message}</p>
         <p className="mt-3 max-w-[54ch] text-[16px] leading-[1.65] text-body/75">
-          {/* ⚠️ ACÁ SE PROMETÍA UN PDF ADJUNTO EN LA RESPUESTA y hoy nada lo
-              adjunta: el envío real todavía no está enchufado (ver
-              `lib/submissions.ts`). Prometer un archivo que no llega es la
+          {/* ⚠️ ACÁ SE PROMETÍA UN PDF ADJUNTO EN LA RESPUESTA y nada lo
+              adjunta: la consulta llega al buzón de eventos y la respuesta la
+              escribe una persona. Prometer un archivo que no llega es la
               clase de detalle por el que alguien deja de contestar. */}
           Rental rates, food options and the fees are all on this page if you want them now.
         </p>
-      </div>
+      </SentPanel>
     );
   }
 
   return (
-    <FormShell state={state} action={action} labels={LABELS}>
+    <FormShell submission={submission} schema={inquirySchema} fromForm={inquiryFromForm}>
       {/* ── Quién sos ─────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[16px]">
         <Grupo>About you</Grupo>
@@ -184,8 +187,8 @@ export default function InquiryForm({
         {/* Las dos fechas juntas, y las dos horas juntas. Ver la nota de
             arriba: eran cuatro campos en una grilla de tres. */}
         <div className="grid gap-[16px] sm:grid-cols-2">
-          <DateField name="date" label={LABELS.date} required />
-          <DateField name="altDate" label={LABELS.altDate} />
+          <DateField name="date" label={LABELS.date} required min={hoy} />
+          <DateField name="altDate" label={LABELS.altDate} min={hoy} />
         </div>
         <div className="grid gap-[16px] sm:grid-cols-2">
           <TextField name="startTime" label={LABELS.startTime} type="time" />
@@ -261,7 +264,7 @@ export default function InquiryForm({
       {/* ── Cierre ────────────────────────────────────────────────────── */}
       <fieldset className="flex flex-col gap-[16px]">
         <Grupo>Anything else</Grupo>
-        <TextAreaField name="comments" label={LABELS.comments} rows={4} />
+        <TextAreaField name="comments" label={LABELS.comments} rows={4} maxLength={4000} />
         <SelectField
           name="referral"
           label={LABELS.referral}

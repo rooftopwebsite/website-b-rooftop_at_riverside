@@ -1,16 +1,17 @@
 'use client';
 
-import { useActionState } from 'react';
 import { submitMarketVendor } from '@/app/actions/market-vendor';
-import { IDLE } from '@/app/actions/types';
 import {
   CheckboxGroup,
   FormShell,
   SelectField,
+  SentPanel,
   SubmitButton,
   TextAreaField,
   TextField,
+  useSubmission,
 } from '@/components/form/Fields';
+import { marketVendorFromForm, marketVendorSchema } from '@/lib/schemas/market-vendor';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import { PRODUCT_CATEGORIES, VENDOR_NEEDS } from '@/content/market';
 import { useVenue } from '@/components/shared/VenueProvider';
@@ -33,7 +34,7 @@ const LABELS: Record<string, string> = {
   name: 'Your name',
   email: 'Email',
   phone: 'Phone',
-  website: 'Website or Instagram',
+  link: 'Website or Instagram',
   category: 'What you sell',
   products: 'Describe your products',
   dates: 'Which market dates',
@@ -44,12 +45,12 @@ const LABELS: Record<string, string> = {
 
 export default function MarketVendorForm() {
   const venue = useVenue();
-  const [state, action] = useActionState(submitMarketVendor, IDLE);
+  const submission = useSubmission(submitMarketVendor);
+  const { state } = submission;
 
   if (state.status === 'ok') {
     return (
-      <div
-        role="status"
+      <SentPanel
         className="rounded-card border border-ink/15 bg-cream sombra-card p-[32px] lg:p-[40px]"
       >
         <Eyebrow tone="deep">Request received</Eyebrow>
@@ -64,12 +65,16 @@ export default function MarketVendorForm() {
           </a>
           .
         </p>
-      </div>
+      </SentPanel>
     );
   }
 
   return (
-    <FormShell state={state} action={action} labels={LABELS}>
+    <FormShell
+      submission={submission}
+      schema={marketVendorSchema}
+      fromForm={marketVendorFromForm}
+    >
       <fieldset className="flex flex-col gap-[16px]">
         <legend className="eyebrow mb-[6px] text-body/75">Your business</legend>
         <TextField name="business" label={LABELS.business} required autoComplete="organization" />
@@ -80,8 +85,8 @@ export default function MarketVendorForm() {
         <div className="grid gap-[16px] sm:grid-cols-2">
           <TextField name="phone" label={LABELS.phone} type="tel" required autoComplete="tel" />
           <TextField
-            name="website"
-            label={LABELS.website}
+            name="link"
+            label={LABELS.link}
             required
             hint="A link or an @handle"
           />
@@ -102,6 +107,7 @@ export default function MarketVendorForm() {
           label={LABELS.products}
           required
           rows={4}
+          maxLength={2000}
           hint="A sentence or two is plenty"
         />
       </fieldset>
@@ -129,7 +135,7 @@ export default function MarketVendorForm() {
             { value: 'no', label: 'No, I do not' },
           ]}
         />
-        <TextAreaField name="message" label={LABELS.message} rows={3} />
+        <TextAreaField name="message" label={LABELS.message} rows={3} maxLength={2000} />
       </fieldset>
 
       <div className="flex flex-wrap items-center gap-[16px]">

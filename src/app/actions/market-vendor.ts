@@ -1,6 +1,7 @@
 'use server';
 
-import { marketVendorSchema } from '@/lib/schemas/market-vendor';
+import { publicInbox } from '@/lib/inboxes';
+import { marketVendorFromForm, marketVendorSchema } from '@/lib/schemas/market-vendor';
 import { rateLimited, sendSubmission } from '@/lib/submissions';
 import { getVenue } from '@/lib/venue';
 import { fieldErrorsFrom, type ActionState } from './types';
@@ -8,32 +9,24 @@ import { fieldErrorsFrom, type ActionState } from './types';
 /**
  * La solicitud de puesto del Neighborhood Market.
  *
- * ⚠️ `needs` SE LEE CON `getAll`, no con `Object.fromEntries`. Un grupo de
- * casillas llega como varios valores con el mismo nombre y `fromEntries` se
- * queda sólo con el último: alguien que tilda electricidad, mesa y carpa
- * habría enviado nada más «carpa». Es el error clásico de este control.
+ * ⚠️ El objeto a validar lo arma `marketVendorFromForm`, el mismo que usa el
+ * cliente: ahí está la nota de por qué `needs` se lee con `getAll`.
  */
 export async function submitMarketVendor(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const crudo = {
-    ...Object.fromEntries(formData),
-    needs: formData.getAll('needs').map(String),
-  };
-
-  const parsed = marketVendorSchema.safeParse(crudo);
+  const parsed = marketVendorSchema.safeParse(marketVendorFromForm(formData));
 
   if (!parsed.success) {
+    const fieldErrors = fieldErrorsFrom(parsed.error.issues);
+    // El honeypot se contesta con un ok falso, igual que en los otros cuatro.
+    if (fieldErrors.website) return { status: 'ok', message: 'Thanks. Your request is in.' };
     return {
       status: 'error',
       message: 'Some fields need another look before this can go out.',
-      fieldErrors: fieldErrorsFrom(parsed.error.issues),
+      fieldErrors,
     };
-  }
-
-  if (parsed.data.website_hp) {
-    return { status: 'ok', message: 'Thanks. Your request is in.' };
   }
 
   const venue = await getVenue();
@@ -45,30 +38,31 @@ export async function submitMarketVendor(
     };
   }
 
+  const d = parsed.data;
   const result = await sendSubmission({
     form: 'market-vendor',
-    to: venue.email,
-    replyTo: parsed.data.email,
-    subject: `Market vendor: ${parsed.data.business}`,
+    inbox: 'market',
+    replyTo: d.email,
+    subject: `Market vendor: ${d.business}`,
     data: {
-      business: parsed.data.business,
-      name: parsed.data.name,
-      email: parsed.data.email,
-      phone: parsed.data.phone,
-      website: parsed.data.website,
-      category: parsed.data.category,
-      products: parsed.data.products,
-      dates: parsed.data.dates,
-      needs: parsed.data.needs.length > 0 ? parsed.data.needs.join(', ') : '(nothing)',
-      insurance: parsed.data.insurance,
-      message: parsed.data.message || '(none)',
+      Business: d.business,
+      Name: d.name,
+      Email: d.email,
+      Phone: d.phone,
+      'Website or Instagram': d.link,
+      Sells: d.category,
+      Products: d.products,
+      'Market dates': d.dates,
+      Needs: d.needs.length > 0 ? d.needs.join(', ') : '(nothing)',
+      Insurance: d.insurance === 'yes' ? 'Yes' : 'No',
+      'Anything else': d.message || '(none)',
     },
   });
 
   if (!result.ok) {
     return {
       status: 'error',
-      message: `We could not send that. Email us at ${venue.email} and it gets to the same place.`,
+      message: `We could not send that. Email us at ${publicInbox('market')} and it gets to the same place.`,
     };
   }
 

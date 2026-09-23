@@ -26,10 +26,18 @@ export const marketVendorSchema = z.object({
       (v) => v.replace(/\D/g, '').length >= 10,
       'Enter a phone number with at least 10 digits.',
     ),
-  website: z
+  /*
+   * ⚠️ SE LLAMA `link` Y ANTES SE LLAMABA `website`, QUE ERA UN BUG QUE
+   * RECHAZABA TODOS LOS ENVÍOS. `FormShell` dibuja el honeypot con
+   * `name="website"` al final del formulario, así que el `FormData` traía dos
+   * `website`: el real y la trampa vacía. `Object.fromEntries` se queda con el
+   * último, el vacío, y el `min(2)` fallaba siempre. Corregido el 2026-09-23.
+   */
+  link: z
     .string()
     .trim()
-    .min(2, 'A website or an Instagram handle, so we can see what you make.'),
+    .min(2, 'A website or an Instagram handle, so we can see what you make.')
+    .max(300, 'That link is too long.'),
   category: z.enum(PRODUCT_CATEGORIES, { message: 'Choose what you sell.' }),
   products: z
     .string()
@@ -48,7 +56,22 @@ export const marketVendorSchema = z.object({
     .default([]),
   insurance: z.enum(['yes', 'no'], { message: 'Let us know if you carry insurance.' }),
   message: z.string().trim().max(2000).optional().default(''),
-  website_hp: z.string().max(0).optional().default(''),
+  /** El honeypot, con el nombre que le da `FormShell`. Ver la nota de `link`. */
+  website: z.string().max(0).optional().default(''),
 });
 
 export type MarketVendorInput = z.infer<typeof marketVendorSchema>;
+
+/**
+ * Del `FormData` al objeto que valida el schema. Lo usan el cliente y la action.
+ *
+ * ⚠️ `needs` SE LEE CON `getAll`, no con `Object.fromEntries`. Un grupo de
+ * casillas llega como varios valores con el mismo nombre y `fromEntries` se
+ * queda sólo con el último.
+ */
+export function marketVendorFromForm(fd: FormData) {
+  return {
+    ...Object.fromEntries(fd),
+    needs: fd.getAll('needs').map(String),
+  };
+}
