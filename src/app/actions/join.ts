@@ -14,6 +14,7 @@ import {
 import { fileToAttachment, rateLimited, sendSubmission } from '@/lib/submissions';
 import type { MailAttachment } from '@/lib/mail';
 import { getVenue } from '@/lib/venue';
+import { firmaCoincide } from '@/lib/file-signature';
 import { fieldErrorsFrom, type ActionState } from './types';
 
 /**
@@ -55,15 +56,33 @@ function tablaTexto(rows: readonly TableRow[], cols: readonly { key: string; lab
 
 /** Los adjuntos que sí vinieron, con un nombre que se entienda en la bandeja. */
 async function adjuntos(
-  formData: FormData,
-  campos: readonly { readonly name: string; readonly prefijo: string }[],
+  campos: readonly { readonly file: File | undefined; readonly prefijo: string }[],
 ): Promise<MailAttachment[]> {
   const out: MailAttachment[] = [];
   for (const c of campos) {
-    const a = await fileToAttachment(formData.get(c.name));
+    const a = await fileToAttachment(c.file);
     if (a) out.push({ ...a, filename: `${c.prefijo} ${a.filename}` });
   }
   return out;
+}
+
+async function revisarFirmas(
+  campos: readonly {
+    readonly name: string;
+    readonly file: File | undefined;
+    readonly etiqueta: string;
+    readonly formato: string;
+  }[],
+): Promise<Record<string, string>> {
+  const errores: Record<string, string> = {};
+  for (const c of campos) {
+    if (!c.file || c.file.size === 0) continue;
+    const cabeza = new Uint8Array(await c.file.slice(0, 16).arrayBuffer());
+    if (!firmaCoincide(cabeza, c.file.type)) {
+      errores[c.name] = `${c.etiqueta} doesn't look like ${c.formato}.`;
+    }
+  }
+  return errores;
 }
 
 export async function submitJob(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -78,6 +97,22 @@ export async function submitJob(_prev: ActionState, formData: FormData): Promise
     };
   }
 
+  const firmas = await revisarFirmas([
+    {
+      name: 'resume',
+      file: parsed.data.resume,
+      etiqueta: 'Your resume',
+      formato: 'a PDF or a Word document',
+    },
+  ]);
+  if (Object.keys(firmas).length > 0) {
+    return {
+      status: 'error',
+      message: 'Some fields need another look before this can go out.',
+      fieldErrors: firmas,
+    };
+  }
+
   const venue = await getVenue();
   if (await rateLimited()) {
     return {
@@ -87,7 +122,7 @@ export async function submitJob(_prev: ActionState, formData: FormData): Promise
   }
 
   const d = parsed.data;
-  const archivos = await adjuntos(formData, [{ name: 'resume', prefijo: 'Resume' }]);
+  const archivos = await adjuntos([{ file: d.resume, prefijo: 'Resume' }]);
 
   const result = await sendSubmission({
     form: 'job',
@@ -148,6 +183,18 @@ export async function submitArtist(_prev: ActionState, formData: FormData): Prom
     };
   }
 
+  const firmas = await revisarFirmas([
+    { name: 'logo', file: parsed.data.logo, etiqueta: 'Your logo', formato: 'an image' },
+    { name: 'photo', file: parsed.data.photo, etiqueta: 'Your photo', formato: 'an image' },
+  ]);
+  if (Object.keys(firmas).length > 0) {
+    return {
+      status: 'error',
+      message: 'Some fields need another look before this can go out.',
+      fieldErrors: firmas,
+    };
+  }
+
   const venue = await getVenue();
   if (await rateLimited()) {
     return {
@@ -164,9 +211,9 @@ export async function submitArtist(_prev: ActionState, formData: FormData): Prom
    * con el asunto cortado a la mitad.
    */
   const acto = d.band || `${d.firstName} ${d.lastName}`;
-  const archivos = await adjuntos(formData, [
-    { name: 'logo', prefijo: 'Logo' },
-    { name: 'photo', prefijo: 'Photo' },
+  const archivos = await adjuntos([
+    { file: d.logo, prefijo: 'Logo' },
+    { file: d.photo, prefijo: 'Photo' },
   ]);
 
   const result = await sendSubmission({

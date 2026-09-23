@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { BRAND } from './brand';
 import { inboxFor, type Inbox } from './inboxes';
 import { sendMail, type MailAttachment } from './mail';
-import { asuntoSeguro, podar } from './saneo';
+import { asuntoSeguro, nombreSeguro, podar } from './saneo';
 
 /**
  * El punto único por donde sale TODO envío de formulario del sitio.
@@ -87,7 +87,7 @@ export async function rateLimited(): Promise<boolean> {
 export async function fileToAttachment(f: unknown): Promise<MailAttachment | null> {
   if (!(f instanceof File) || f.size === 0) return null;
   return {
-    filename: f.name || 'attachment',
+    filename: nombreSeguro(f.name),
     content: Buffer.from(await f.arrayBuffer()),
     contentType: f.type || undefined,
   };
