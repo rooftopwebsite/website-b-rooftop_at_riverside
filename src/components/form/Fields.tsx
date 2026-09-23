@@ -368,6 +368,7 @@ export function TextAreaField(
            en el papel es una caja alta y quiere `street-address`. */
         autoComplete={p.autoComplete}
         {...aria}
+        aria-describedby={[p.maxLength ? `${fid}-count` : null, err ? eid : null].filter(Boolean).join(' ') || undefined}
         className={[BOX_BASE, err ? BAD : OK].join(' ')}
       />
       {p.maxLength ? <Contador id={`${fid}-count`} largo={largo} max={p.maxLength} /> : null}
@@ -498,7 +499,7 @@ export function CheckboxGroup({
   const { uid } = useContext(Ctx);
   const { eid, err } = useField(name);
   return (
-    <fieldset className="flex flex-col gap-[8px]">
+    <fieldset aria-describedby={err ? eid : undefined} className="flex flex-col gap-[8px]">
       <legend className="font-body text-[16px] font-bold">
         {legend}
         {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
@@ -667,7 +668,7 @@ export function RadioGroup({
   const { uid } = useContext(Ctx);
   const { eid, err, aria } = useField(name);
   return (
-    <fieldset id={uid + '-' + name} className="flex flex-col gap-[8px]">
+    <fieldset aria-describedby={err ? eid : undefined} id={uid + '-' + name} className="flex flex-col gap-[8px]">
       <legend className="font-body text-[16px] font-bold">
         {legend}
         {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
@@ -740,7 +741,7 @@ export function CheckboxMatrix({
   const { uid } = useContext(Ctx);
   const { eid, err } = useField(name);
   return (
-    <fieldset id={uid + '-' + name} className="flex flex-col gap-[8px]">
+    <fieldset aria-describedby={err ? eid : undefined} id={uid + '-' + name} className="flex flex-col gap-[8px]">
       <legend className="font-body text-[16px] font-bold">
         {legend}
         {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
@@ -863,7 +864,7 @@ export function FieldRows({
   const LABEL_CELDA = 'font-body text-[16px] font-bold text-ink';
 
   return (
-    <fieldset id={uid + '-' + name} className="flex flex-col gap-[8px]">
+    <fieldset aria-describedby={err ? eid : undefined} id={uid + '-' + name} className="flex flex-col gap-[8px]">
       <legend className="font-body text-[16px] font-bold">
         {legend}
         {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
@@ -1511,6 +1512,7 @@ export function SentenceArea(
         maxLength={p.maxLength}
         onInput={p.maxLength ? (e) => setLargo(e.currentTarget.value.length) : undefined}
         {...aria}
+        aria-describedby={[p.maxLength ? `${fid}-count` : null, err ? eid : null].filter(Boolean).join(' ') || undefined}
         className={[BOX_BASE, err ? BAD : OK].join(' ')}
       />
       {p.maxLength ? <Contador id={`${fid}-count`} largo={largo} max={p.maxLength} /> : null}
