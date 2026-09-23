@@ -2,8 +2,7 @@
 
 import { z } from 'zod';
 import { getVenue } from '@/lib/venue';
-import { BRAND } from '@/lib/brand';
-import { sendMail } from '@/lib/mail';
+import { rateLimited } from '@/lib/submissions';
 import type { ActionState } from './types';
 
 /* ==========================================================================
@@ -62,6 +61,13 @@ export async function subscribeToNewsletter(
     // no enseñarle al bot dónde estuvo el problema.
     if (fieldErrors.website) return { status: 'ok', message: 'Thanks for subscribing!' };
     return { status: 'error', message: 'Please check the highlighted fields.', fieldErrors };
+  }
+
+  if (await rateLimited()) {
+    return {
+      status: 'error',
+      message: 'That is a few sign-ups in a short while. Give it ten minutes and try again.',
+    };
   }
 
   const { firstName, email } = parsed.data;

@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { BRAND } from './brand';
 import { inboxFor, type Inbox } from './inboxes';
 import { sendMail, type MailAttachment } from './mail';
-import { asuntoSeguro } from './saneo';
+import { asuntoSeguro, podar } from './saneo';
 
 /**
  * El punto único por donde sale TODO envío de formulario del sitio.
@@ -54,6 +54,7 @@ export interface SubmissionResult {
 const HITS = new Map<string, number[]>();
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_PER_WINDOW = 5;
+const MAX_CLAVES = 1000;
 
 async function clientKey(): Promise<string> {
   const h = await headers();
@@ -65,6 +66,7 @@ async function clientKey(): Promise<string> {
 export async function rateLimited(): Promise<boolean> {
   const key = await clientKey();
   const now = Date.now();
+  podar(HITS, now, WINDOW_MS, MAX_CLAVES);
   const recent = (HITS.get(key) ?? []).filter((t) => now - t < WINDOW_MS);
   if (recent.length >= MAX_PER_WINDOW) {
     HITS.set(key, recent);
