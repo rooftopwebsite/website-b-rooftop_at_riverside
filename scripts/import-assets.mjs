@@ -43,16 +43,16 @@ const OUT = 'public';
  * `q` es la calidad WebP medida. Sin `q`, el destino sigue en JPEG (ver arriba)
  * y `rot` es el cuarto de vuelta que necesita la foto.
  */
+/*
+ * ⚠️ EL 2026-09-23 SALIERON TRECE ENTRADAS: las fotos de la primera fase que
+ * ya no usa ninguna página (hero-live-music, venue-guests, venue-rooftop,
+ * venue-park, venue-story, venue-truck-line, event-a) y las fotos 2 a 4 de los
+ * trucks retirados. Se sacaron con su archivo para que correr esto de nuevo no
+ * las vuelva a publicar. Siguen en el historial de git.
+ */
 const JOBS = [
   { src: '14dedf_30ae92d396a543c09f8f84ffe49ab688~mv2.png', dst: 'brand/logo-lockup.png', w: 1200 },
   { src: '14dedf_74ed434a480f44d581972e66aef20a3f~mv2.png', dst: 'brand/isotype-truck.png', w: 900 },
-  { src: '526079_71d7c0d734ae427c8faf3067c51899b6~mv2.jpg', dst: 'images/hero-live-music.webp', w: 2400, q: 88 },// −9 %
-  { src: '526079_6cbb265faa9c48708cad5fe1923e588d~mv2.jpg', dst: 'images/venue-guests.webp', w: 2000, rot: -90, q: 86 },// −15 %
-  { src: '14dedf_bb158bb053bb41f892f60ec07f67654b~mv2.jpg', dst: 'images/venue-rooftop.webp', w: 2000, q: 84 },// −19 %
-  { src: '14dedf_33e55fe8f1f74c01b8a557fc2b20c7b2~mv2.jpg', dst: 'images/venue-park.webp', w: 2000, q: 80 },// −12 %
-  { src: '526079_0b925a7df5fc4f499420dda13fcce297~mv2.jpg', dst: 'images/venue-story.webp', w: 2000, q: 84 },// −23 %
-  { src: '11062b_e8674ba6ab55403bbb4db28ab9111ffb~mv2.jpg', dst: 'images/venue-truck-line.webp', w: 2000, q: 82 },// −19 %
-  { src: '526079_4ea03d5f20d64c4b8e58dd5f3923a5f6~mv2.jpg', dst: 'images/events/event-a.webp', w: 1800, q: 80 },// −12 %
   { src: '526079_c0bd2d9cd428427498708da539a5db7e~mv2.jpg', dst: 'images/events/event-b.webp', w: 1800, q: 72 },// −19 %
   { src: '526079_4b4989fd71894880b13ceeae691ec992~mv2.jpg', dst: 'images/events/event-c.webp', w: 1800, q: 80 },// −12 %
   { src: '526079_50eb2ec4bac240208b3bc5ec7614afd8~mv2.jpg', dst: 'images/events/event-d.webp', w: 1800, q: 82 },// −9 %
@@ -62,14 +62,8 @@ const JOBS = [
   { src: '526079_33ccb8b874144046aa86905f60f820fb~mv2.jpg', dst: 'images/trucks/el-chilango-2.webp', w: 1600, q: 80 },// −23 %
   { src: '526079_3cfc45bc0bc042a69c704066c883500d~mv2.jpeg', dst: 'images/trucks/el-chilango-3.webp', w: 1600, q: 80 },// −17 %
   { src: '11062b_567789504ad040be8bae8e94b3c393ac~mv2.jpg', dst: 'images/trucks/prime-carvery-1.jpg', w: 1600 },// se queda en JPEG: en WebP pesa más
-  { src: '11062b_8d771aba921645479337888186918d0c~mv2.jpg', dst: 'images/trucks/prime-carvery-2.webp', w: 1600, q: 84 },// −2 %
-  { src: '526079_70b7e8d636054e3ba4434ccba04a953d~mv2.jpeg', dst: 'images/trucks/prime-carvery-3.webp', w: 1600, q: 86 },// −7 %
   { src: '11062b_64de79fd442c4ef98de2d8baa77bdc5f~mv2_d_3840_5760_s_4_2.jpg', dst: 'images/trucks/seafood-1.jpg', w: 1600 },
-  { src: '11062b_cf6dcb4e04214c82b701a83832cb9b8b~mv2.jpg', dst: 'images/trucks/seafood-2.webp', w: 1600, q: 60 },// −24 %
   { src: '526079_05bd8539d47844d8b73bd063bd9c27dc~mv2.jpg', dst: 'images/trucks/tropical-1.jpg', w: 1600 },// se queda en JPEG: en WebP pesa más
-  { src: '526079_a2ef5f04336945d08b7823e57334eadb~mv2.jpg', dst: 'images/trucks/tropical-2.jpg', w: 1600 },// se queda en JPEG: en WebP pesa más
-  { src: '526079_4607a2e45e8e45c386c0e0648c4d3ef3~mv2.jpeg', dst: 'images/trucks/tropical-3.jpg', w: 1600 },// se queda en JPEG: en WebP pesa más
-  { src: '526079_d0c342a8d5494bc38b05c7579a07c45d~mv2.jpg', dst: 'images/trucks/tropical-4.jpg', w: 1600 },// se queda en JPEG: en WebP pesa más
 ];
 
 let ok = 0;

@@ -17,7 +17,7 @@
  * `<video>` queda negro. Hay que recodificar a H.264 de todos modos.
  *
  * Así que `public/multimedia/` es la carpeta de ENTRADA —está en `.gitignore`,
- * igual que `public/fonts/_drop`— y lo que se versiona son los derivados de
+ * igual que los originales de fuentes de `_interno/fuentes/`— y lo que se versiona son los derivados de
  * `public/images/venue/` y `public/videos/`.
  * ══════════════════════════════════════════════════════════════════════════
  *

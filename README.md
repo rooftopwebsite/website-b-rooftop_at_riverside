@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rooftop at Riverside
 
-## Getting Started
+Sitio de Rooftop at Riverside (Bonita Springs, FL): bar en la terraza sobre un
+parque de food trucks. Reemplaza al sitio de Wix `eatdrinkparadise.com`.
 
-First, run the development server:
+Next.js 16 (App Router) · React 19 · Tailwind 4 · Vercel. Hecho por RestoExp.
+
+## Arrancar
 
 ```bash
+npm install
+cp .env.example .env.local   # y completar lo que falte (ver abajo)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Comandos
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Comando | Qué hace |
+|---|---|
+| `npm run dev` / `build` / `start` | Lo de siempre de Next |
+| `npm run sync:events` | Trae los eventos del dashboard de RestoExp a `src/content/events.json`. Necesita `RESTOEXP_COOKIE` |
+| `npm run events:verify` | Revisa que cada evento tenga su afiche y que dos eventos no compartan foto |
+| `npm run events:banners` | Intenta igualar el afiche de todas las fechas de un mismo evento |
+| `npm run media` | Genera las fotos y videos de `public/` desde `public/multimedia/` (originales, fuera de git) |
+| `npm run og` | Genera las imágenes para compartir en redes (`public/og/`). El diseño original va en `_interno/og/` |
+| `npm run media:import` | Baja las fotos del sitio viejo a `public/images/` |
+| `npm run media:fetch-old-site` | Descarga todo el material publicado en el sitio vigente |
+| `npm run media:photo-bank` | Arma el banco de fotos único, sin repetidas |
+| `npm run greca` / `horizonte` | Regeneran dos piezas gráficas de marca |
+| `npm run a11y` · `contrast` · `check:*` | Auditorías: accesibilidad, contraste, SEO, CSS, tokens, sombras, grano, ritmo de superficies y movimiento reducido |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Las auditorías que abren páginas necesitan el server corriendo. Por defecto
+apuntan a `localhost:3157`; se cambia con `BASE=http://localhost:PUERTO`.
 
-## Learn More
+## Variables de entorno
 
-To learn more about Next.js, take a look at the following resources:
+La plantilla comentada es `.env.example`. En resumen:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **`RESEND_API_KEY`**: variable compartida del team en Vercel. No se crea a
+  nivel proyecto, porque la pisaría.
+- **`RESEND_FROM`**: tiene que ser `@restoexp.com`, el único dominio
+  verificado en Resend.
+- **`MAIL_TO_CONTACT`, `MAIL_TO_EVENTS`, `MAIL_TO_CAREERS`, `MAIL_TO_MARKET`,
+  `MAIL_TO_BOOKING`**: a qué buzón llega cada formulario. El ruteo está en
+  `src/lib/inboxes.ts`.
+- **`NEWSLETTER_SHEETS_WEBHOOK_URL`**: pendiente, la planilla todavía no existe.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Dónde está cada cosa
 
-## Deploy on Vercel
+```
+src/app/            rutas; cada formulario tiene su server action en app/actions/
+src/components/     form/ (campos compartidos), sections/ (bloques de página), shared/
+src/content/        todo el texto y los datos del sitio, en TypeScript
+src/lib/            venue, SEO, mail, schemas de formularios (lib/schemas/)
+public/             sólo lo que se publica: fotos derivadas, videos, OG, PDFs
+scripts/            generadores de medios y auditorías (ver tabla de arriba)
+docs/               decisiones del proyecto e inventario del sitio viejo
+design-audit/       capturas antes/después de la auditoría visual
+_interno/           material del cliente y de trabajo. NO se versiona ni se publica
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Reglas que no se ven en el código
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Material del cliente fuera de git.** PDFs, briefs, originales de foto y
+  fuentes con licencia van a `_interno/`. `.gitignore` y `.vercelignore` lo
+  tapan.
+- **Nada de datos inventados.** Un hueco de contenido se marca con
+  `<PhotoPending>`, `<PendingData>` o `<PendingBlock>` y se va solo cuando llega
+  el dato.
+- **Los 301 del sitio viejo no se tocan** sin revisar `next.config.ts` y
+  `docs/current-site-inventory.md`.
+- **No se corre Prettier:** el repo no lo usa y reescribiría cada archivo.
+- El contexto del cliente vive en `docs/` (empezar por
+  `docs/current-site-inventory.md` y `docs/pedido-al-cliente.md`).

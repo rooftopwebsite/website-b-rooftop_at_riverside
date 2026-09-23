@@ -1,0 +1,18 @@
+# ══════════════════════════════════════════════════════════════════════════
+# LO QUE NUNCA SUBE A VERCEL en un deploy hecho desde la máquina.
+#
+# Los deploys por git ya respetan el .gitignore, pero `vercel deploy` desde la
+# CLI empaqueta la CARPETA. Sin esto subirían los originales del cliente
+# (public/multimedia/, 681 MB) y quedarían publicados en una URL pública,
+# junto con el material interno. Mismo criterio que el bloque de _interno/
+# del .gitignore: si es del cliente o es material de trabajo, no se publica.
+# ══════════════════════════════════════════════════════════════════════════
+/_interno/
+/public/multimedia/
+/public/fonts/_drop/
+/src/content/_source/
+/design-audit/
+/docs/
+/.playwright-mcp/
+.env*
+!.env.example
