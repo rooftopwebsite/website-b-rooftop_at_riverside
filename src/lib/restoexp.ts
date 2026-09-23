@@ -1,4 +1,5 @@
 import type { Hours } from '@/types/content';
+import { fetchConTimeout } from './http';
 
 /**
  * Los datos del local, leídos de la base de RestoExp.
@@ -112,7 +113,7 @@ async function query<T>(path: string): Promise<readonly T[]> {
     return [];
   }
   try {
-    const res = await fetch(`${URL_BASE}/rest/v1/${path}`, {
+    const res = await fetchConTimeout(`${URL_BASE}/rest/v1/${path}`, {
       headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
       next: { revalidate: REVALIDATE, tags: ['restoexp'] },
     });

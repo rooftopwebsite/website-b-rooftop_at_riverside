@@ -1,6 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import { toPosts, type FeedPost, type PostFull } from './blog-format';
+import { fetchConTimeout } from './http';
 import { SITE_URL } from './seo';
 
 /**
@@ -27,7 +28,7 @@ const readFeed = cache(async (): Promise<readonly PostFull[]> => {
     throw new Error('[blog] falta NEXT_PUBLIC_SUPABASE_RESTAURANT_ID, el feed no se puede pedir');
   }
   const url = `${FEED_ORIGIN}/api/public/restaurants/${RESTAURANT_ID}/blogs`;
-  const res = await fetch(url, {
+  const res = await fetchConTimeout(url, {
     headers: { accept: 'application/json' },
     next: { revalidate: 600, tags: ['restoexp', 'blog'] },
   });

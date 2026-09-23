@@ -1,5 +1,8 @@
 import 'server-only';
 import { Resend } from 'resend';
+import { conTimeout } from './http';
+
+const TIMEOUT_MAIL_MS = 10_000;
 
 /**
  * Envío de mail con Resend.
@@ -66,7 +69,7 @@ export async function sendMail({
   }
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await conTimeout(resend.emails.send({
       from,
       to: typeof to === 'string' ? [to] : [...to],
       subject,
@@ -81,7 +84,7 @@ export async function sendMail({
             })),
           }
         : {}),
-    });
+    }), TIMEOUT_MAIL_MS);
 
     if (error) {
       console.error('[mail] Resend devolvió error:', error);

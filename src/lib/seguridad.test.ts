@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { createServer, type Server } from 'node:http';
+import type { AddressInfo } from 'node:net';
 import { asuntoSeguro, nombreSeguro, podar } from './saneo.ts';
 import { firmaCoincide } from './file-signature.ts';
+import { conTimeout, fetchConTimeout } from './http.ts';
 
 describe('asuntoSeguro', () => {
   it('reemplaza saltos de línea por un espacio', () => {
@@ -108,5 +111,81 @@ describe('firmaCoincide', () => {
   });
   it('un archivo más corto que la firma no coincide', () => {
     assert.ok(!firmaCoincide(new Uint8Array([0x25, 0x50]), 'application/pdf'));
+  });
+});
+
+function servidor(responder: (n: number, metodo: string) => { status: number; demoraMs?: number }) {
+  let n = 0;
+  const server: Server = createServer((req, res) => {
+    n += 1;
+    const { status, demoraMs = 0 } = responder(n, req.method ?? 'GET');
+    setTimeout(() => {
+      res.statusCode = status;
+      res.end('ok');
+    }, demoraMs);
+  });
+  return new Promise<{ url: string; llamadas: () => number; cerrar: () => void }>((resolve) => {
+    server.listen(0, () => {
+      const { port } = server.address() as AddressInfo;
+      resolve({
+        url: `http://127.0.0.1:${port}/`,
+        llamadas: () => n,
+        cerrar: () => server.close(),
+      });
+    });
+  });
+}
+
+describe('fetchConTimeout', () => {
+  it('devuelve la respuesta sin reintentar si sale bien', async () => {
+    const s = await servidor(() => ({ status: 200 }));
+    const res = await fetchConTimeout(s.url);
+    assert.equal(res.status, 200);
+    assert.equal(s.llamadas(), 1);
+    s.cerrar();
+  });
+  it('reintenta una vez ante un 5xx en GET', async () => {
+    const s = await servidor((n) => ({ status: n === 1 ? 503 : 200 }));
+    const res = await fetchConTimeout(s.url);
+    assert.equal(res.status, 200);
+    assert.equal(s.llamadas(), 2);
+    s.cerrar();
+  });
+  it('devuelve el 5xx si el último intento también falla', async () => {
+    const s = await servidor(() => ({ status: 500 }));
+    const res = await fetchConTimeout(s.url);
+    assert.equal(res.status, 500);
+    assert.equal(s.llamadas(), 2);
+    s.cerrar();
+  });
+  it('no reintenta un 4xx', async () => {
+    const s = await servidor(() => ({ status: 404 }));
+    const res = await fetchConTimeout(s.url);
+    assert.equal(res.status, 404);
+    assert.equal(s.llamadas(), 1);
+    s.cerrar();
+  });
+  it('no reintenta un POST aunque dé 5xx', async () => {
+    const s = await servidor(() => ({ status: 503 }));
+    const res = await fetchConTimeout(s.url, { method: 'POST' });
+    assert.equal(res.status, 503);
+    assert.equal(s.llamadas(), 1);
+    s.cerrar();
+  });
+  it('corta por timeout y tira si todos los intentos se cuelgan', async () => {
+    const s = await servidor(() => ({ status: 200, demoraMs: 500 }));
+    await assert.rejects(fetchConTimeout(s.url, {}, { ms: 100 }));
+    assert.equal(s.llamadas(), 2);
+    s.cerrar();
+  });
+});
+
+describe('conTimeout', () => {
+  it('resuelve si la promesa llega a tiempo', async () => {
+    assert.equal(await conTimeout(Promise.resolve(7), 100), 7);
+  });
+  it('rechaza si la promesa tarda más que el límite', async () => {
+    const lenta = new Promise((r) => setTimeout(() => r('tarde'), 300));
+    await assert.rejects(conTimeout(lenta, 50), /timeout/);
   });
 });
