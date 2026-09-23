@@ -98,8 +98,7 @@ export default function PageTransition() {
           <svg
             viewBox={HORIZONTE.viewBox}
             preserveAspectRatio="none"
-            className="block h-[10vh] w-full -scale-y-100"
-            style={{ color: 'var(--color-deep)' }}
+            className="block h-[10vh] w-full -scale-y-100 text-deep"
           >
             {HORIZONTE.olas.map((d, i) => (
               <path key={i} d={d} fill="currentColor" />

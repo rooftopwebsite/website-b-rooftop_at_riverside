@@ -21,14 +21,8 @@
  */
 
 /** Un bloque del esqueleto. La forma la ponen las clases. */
-export function Bone({
-  className = '',
-  style,
-}: {
-  readonly className?: string;
-  readonly style?: React.CSSProperties;
-}) {
-  return <span aria-hidden="true" className={`esqueleto block ${className}`} style={style} />;
+export function Bone({ className = '' }: { readonly className?: string }) {
+  return <span aria-hidden="true" className={`esqueleto block ${className}`} />;
 }
 
 /** Un renglón de texto: alto de línea, radio de píldora. */
@@ -101,8 +95,9 @@ function CalendarSkeleton() {
   return (
     <div className="caja-ancha py-12 lg:py-16">
       <div className="flex flex-wrap gap-3">
-        {[88, 72, 104, 80, 96].map((w) => (
-          <Bone key={w} className="h-10.5 rounded-pill" style={{ width: w }} />
+        {/* Los anchos de los filtros, en clases enteras y no en `style`. */}
+        {['w-[88px]', 'w-[72px]', 'w-[104px]', 'w-[80px]', 'w-[96px]'].map((w) => (
+          <Bone key={w} className={`h-10.5 rounded-pill ${w}`} />
         ))}
       </div>
       <div className="mt-8 flex items-center justify-between gap-4">

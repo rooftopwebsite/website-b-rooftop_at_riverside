@@ -233,8 +233,11 @@ export default function MonthBar({
               <span className="sm:hidden" aria-hidden="true">
                 {labelShort}
               </span>
-              <span className="hidden sm:inline">{label}</span>
-              <span className="sr-only sm:hidden">{label}</span>
+              {/* ⚠️ UN SOLO `label`, oculto a la vista en el teléfono y visible
+                  desde `sm`. Eran dos copias —una visible y otra `sr-only`— y
+                  el texto del h2 que lee Google decía «SEP 2026September
+                  2026September 2026». */}{' '}
+              <span className="sr-only sm:not-sr-only">{label}</span>
             </h2>
 
             <Flecha href={next.href} label={next.label} rel="next" sentido="adelante" />

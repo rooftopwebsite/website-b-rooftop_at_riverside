@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
@@ -182,27 +183,27 @@ const rayaD = (i: number) => {
 };
 
 function ToldoEdge() {
-  const { rayas, lona, punta, entrada, vuelo, asomo } = TOLDO;
+  const { rayas, lona, punta } = TOLDO;
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute z-10 block"
-      style={{
-        top: -asomo,
-        left: -vuelo,
-        right: -vuelo,
-        /*
-          El trapecio se recorta sobre el contenedor y no se dibuja adentro del
-          SVG: así la inclinación se mide en píxeles reales de pantalla —los 18
-          de `entrada`— y no en unidades de un `viewBox` que se estira.
+      /*
+        `-top-[26px]` es el `asomo` y `-inset-x-2` (8px) el `vuelo` de
+        `TOLDO`: Tailwind necesita los números literales, así que si cambian
+        allá cambian acá.
 
-          ⚠️ EL `clip-path` VA EN `style` Y NO COMO CLASE porque lleva un
-          `calc()` con porcentaje y píxeles adentro de un `polygon()`: como
-          utilidad arbitraria de Tailwind hay que codificar cada espacio con un
-          guión bajo y queda ilegible para lo que es.
-        */
-        clipPath: `polygon(${entrada}px 0, calc(100% - ${entrada}px) 0, 100% 100%, 0 100%)`,
-      }}
+        El trapecio se recorta sobre el contenedor y no se dibuja adentro del
+        SVG: así la inclinación se mide en píxeles reales de pantalla —los 18
+        de `entrada`— y no en unidades de un `viewBox` que se estira.
+
+        ⚠️ EL `clip-path` ES UNA UTILIDAD ARBITRARIA Y NO UN CSS MODULE, y se
+        probó el módulo: como esta sección vive sólo en `/food-trucks`, Next
+        lo sacaba en un chunk propio que el prefetch del header precargaba en
+        todas las páginas, y Chrome avisaba «preloaded but not used». Los `_`
+        son los espacios del `polygon()`; el 18 es `TOLDO.entrada`. Hasta el
+        2026-09-23 iba en `style`.
+      */
+      className="pointer-events-none absolute -inset-x-2 -top-[26px] z-10 block [clip-path:polygon(18px_0,calc(100%-18px)_0,100%_100%,0_100%)]"
     >
       <svg
         role="presentation"
@@ -464,7 +465,7 @@ export default async function TruckCards({
                       y el botón de volver. Es la misma decisión que la carta del
                       bar, tomada el mismo día.
                     */
-                    <a
+                    <Link
                       href={carta.pdfUrl}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -475,7 +476,7 @@ export default async function TruckCards({
                       <span className="sr-only">
                         for {t ? nombreVisible(t) : carta.name} (opens in a new tab)
                       </span>
-                    </a>
+                    </Link>
                   ) : (
                     <button
                       type="button"

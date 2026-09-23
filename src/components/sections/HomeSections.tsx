@@ -156,7 +156,7 @@ export function HowThisPlaceWorks() {
             id="how-title"
             className="m-0 font-display text-[clamp(2.5rem,6vw,4.95rem)] font-extrabold uppercase leading-[0.9] text-ink"
           >
-            Five businesses,
+            Five businesses,{' '}
             <br />
             one set of stairs.
           </h2>
@@ -239,7 +239,7 @@ export function ReviewsMarquee({
           />
         </div>
       </div>
-      <Marquee durationSeconds={45} className="mt-10" itemClassName="gap-5 pr-5">
+      <Marquee durationClassName="[--marquee-duration:45s]" className="mt-10" itemClassName="gap-5 pr-5">
         {reviews.map((r, i) => (
           <figure
             key={i}

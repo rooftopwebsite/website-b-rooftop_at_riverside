@@ -17,6 +17,7 @@ import { fraseEntretenimiento } from '@/content/entertainment';
 import { getVenue, venueAddressLine } from '@/lib/venue';
 import {
   type CalendarView,
+  diaSiguiente,
   monthGrid,
   monthKey,
   monthLabel,
@@ -29,7 +30,7 @@ import {
   todayInVenue,
   upcomingInMonth,
 } from '@/lib/calendar';
-import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
+import { SITE_URL, breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
   route: "/whats-on",
@@ -219,6 +220,12 @@ export default async function WhatsOnPage({
                 name: event.title,
                 description: event.summary,
                 startDate: `${date}T${event.startTime}:00`,
+                /* Sin hora de fin cargada, `endTime` vale lo mismo que
+                   `startTime` (ver `content/events.ts`): ahí no se declara. */
+                ...(event.endTime !== event.startTime
+                  ? { endDate: `${event.endsNextDay ? diaSiguiente(date) : date}T${event.endTime}:00` }
+                  : {}),
+                organizer: { '@type': 'Organization', name: venue.name, url: SITE_URL },
                 eventStatus: 'https://schema.org/EventScheduled',
                 eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
                 location: {

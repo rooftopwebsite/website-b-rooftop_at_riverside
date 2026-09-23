@@ -1,8 +1,9 @@
 'use client';
 
 import { motion, useInView, useReducedMotion } from 'motion/react';
-import type { CSSProperties, ElementType, ReactNode } from 'react';
+import type { ElementType, ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import estilos from './Motion.module.css';
 
 /**
  * El vocabulario de movimiento. Un mecanismo por TIPO de contenido, y nada
@@ -22,7 +23,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
  *   grillas y filas       `StaggerGroup`  desfasaje entre hijos
  *   media en contenedor   `ScaleMedia`    escala sutil
  *   bloques de texto      `Reveal`        fade + desplazamiento corto
- *   secciones designadas  `ScrollExit`    salida ligada al progreso
+ *   (`ScrollExit`, la salida ligada al progreso, no tenía usos y se borró
+ *   el 2026-09-23. Está en el historial de git si alguna sección la pide.)
  *
  * ⚠️ Todos cortocircuitan con `useReducedMotion()` devolviendo el tag PLANO,
  * no una animación de duración 0: una animación de 0ms igual dispara trabajo
@@ -74,7 +76,10 @@ export const REVEAL_AMOUNT = 0.2;
  * `inset()`, y un `inset(0 0 100% 0)` pegado esconde igual que un opacity 0.
  * ══════════════════════════════════════════════════════════════════════════
  */
-const SIN_MOVIMIENTO = { opacity: 1, transform: 'none', clipPath: 'none' } as const;
+/* El estado final vive en `Motion.module.css` (`.quieto`) como regla
+   `!important`, que pisa el estilo en línea que dejó el servidor sin escribir
+   otro `style` desde acá. */
+const quieto = (className?: string) => [className, estilos.quieto].filter(Boolean).join(' ');
 
 const revealVariants = {
   hidden: { opacity: 0, y: dist.text },
@@ -92,16 +97,9 @@ interface RevealProps {
   readonly className?: string;
   readonly id?: string;
   readonly amount?: number;
-  /**
-   * ⚠️ Existe para la GEOMETRÍA que no se puede escribir como clase. El caso
-   * que lo trajo es `StepStair`: la grilla tiene tantas columnas como pasos
-   * haya, y `grid-cols-${n}` armada con una plantilla no existe en el CSS
-   * emitido porque Tailwind no la ve al escanear el fuente.
-   *
-   * No es una puerta para estilar por inline lo que ya hay como clase: hay que
-   * pasar por acá sólo lo que depende de un valor que el componente recibe.
-   */
-  readonly style?: CSSProperties;
+  /* ⚠️ ACÁ HABÍA UNA PROP `style` para la geometría de `StepStair`. Se fue el
+     2026-09-23: `StepStair` pasó a clases enteras y el sitio no usa estilos
+     en línea. */
   /**
    * ⚠️ Existen para hacer ALCANZABLE una región que se scrollea.
    *
@@ -122,14 +120,14 @@ interface RevealProps {
    3 · Reveal de sección al scroll
    ========================================================================== */
 
-export function Reveal({ children, as = 'div', className, id, amount = REVEAL_AMOUNT, style }: RevealProps) {
+export function Reveal({ children, as = 'div', className, id, amount = REVEAL_AMOUNT }: RevealProps) {
   const reduced = useReducedMotion();
   const MotionTag = useMemo(() => motion.create(as), [as]);
 
   if (reduced) {
     const Tag = as;
     return (
-      <Tag id={id} data-reveal="" className={className} style={{ ...SIN_MOVIMIENTO, ...style }}>
+      <Tag id={id} data-reveal="" className={quieto(className)}>
         {children}
       </Tag>
     );
@@ -140,7 +138,6 @@ export function Reveal({ children, as = 'div', className, id, amount = REVEAL_AM
       id={id}
       data-reveal=""
       className={className}
-      style={style}
       initial="hidden"
       whileInView="visible"
       /* ⚠️ El default usa el token `viewport` de `lib/motion`, que dispara con
@@ -163,7 +160,6 @@ export function StaggerGroup({
   className,
   id,
   amount = REVEAL_AMOUNT,
-  style,
   tabIndex,
   'aria-label': ariaLabel,
 }: RevealProps) {
@@ -175,8 +171,7 @@ export function StaggerGroup({
     return (
       <Tag
         id={id}
-        className={className}
-        style={{ ...SIN_MOVIMIENTO, ...style }}
+        className={quieto(className)}
         tabIndex={tabIndex}
         aria-label={ariaLabel}
       >
@@ -190,7 +185,6 @@ export function StaggerGroup({
       id={id}
       data-reveal=""
       className={className}
-      style={style}
       tabIndex={tabIndex}
       aria-label={ariaLabel}
       initial="hidden"
@@ -207,12 +201,10 @@ export function RevealItem({
   children,
   as = 'div',
   className,
-  style,
 }: {
   readonly children: ReactNode;
   readonly as?: ElementType;
   readonly className?: string;
-  readonly style?: CSSProperties;
 }) {
   const reduced = useReducedMotion();
   const MotionTag = useMemo(() => motion.create(as), [as]);
@@ -220,13 +212,13 @@ export function RevealItem({
   if (reduced) {
     const Tag = as;
     return (
-      <Tag data-reveal="" className={className} style={{ ...SIN_MOVIMIENTO, ...style }}>
+      <Tag data-reveal="" className={quieto(className)}>
         {children}
       </Tag>
     );
   }
   return (
-    <MotionTag data-reveal="" className={className} style={style} variants={revealVariants}>
+    <MotionTag data-reveal="" className={className} variants={revealVariants}>
       {children}
     </MotionTag>
   );
@@ -295,7 +287,7 @@ export function RevealMedia({
   if (reduced) {
     const Tag = as;
     return (
-      <Tag data-reveal="" className={className} style={SIN_MOVIMIENTO}>
+      <Tag data-reveal="" className={quieto(className)}>
         {children}
       </Tag>
     );
@@ -350,7 +342,7 @@ export function ScaleMedia({
 }) {
   const reduced = useReducedMotion();
 
-  if (reduced) return <div data-reveal="" className={className} style={SIN_MOVIMIENTO}>{children}</div>;
+  if (reduced) return <div data-reveal="" className={quieto(className)}>{children}</div>;
 
   return (
     <motion.div
@@ -430,7 +422,7 @@ export function MaskedLines({
 
   if (reduced) {
     return (
-      <Tag data-reveal="" className={className} style={SIN_MOVIMIENTO}>
+      <Tag data-reveal="" className={quieto(className)}>
         {lines.map((line, i) => (
           <span key={i} className={['block', tone(i)].filter(Boolean).join(' ')}>
             {withSpace(line, i)}
@@ -482,7 +474,7 @@ export function HeroFadeUp({
   readonly className?: string;
 }) {
   const reduced = useReducedMotion();
-  if (reduced) return <div data-reveal="" className={className} style={SIN_MOVIMIENTO}>{children}</div>;
+  if (reduced) return <div data-reveal="" className={quieto(className)}>{children}</div>;
 
   return (
     <motion.div
@@ -511,21 +503,30 @@ export function HeroFadeUp({
  */
 export function Marquee({
   children,
-  durationSeconds = 35,
+  durationClassName = '',
   className = '',
   itemClassName = '',
 }: {
   readonly children: ReactNode;
-  readonly durationSeconds?: number;
+  /**
+   * Una clase que fija `--marquee-duration`, escrita entera por quien la usa
+   * (`[--marquee-duration:45s]`) para que Tailwind la emita. Sin ella rige el
+   * default de `.rt-marquee` en globals.css, 35s. Era `durationSeconds` y
+   * viajaba por `style` hasta el 2026-09-23.
+   */
+  readonly durationClassName?: string;
   readonly className?: string;
   readonly itemClassName?: string;
 }) {
-  const style = { '--marquee-duration': `${durationSeconds}s` } as CSSProperties;
   return (
     <div className={['group/marquee overflow-hidden', className].filter(Boolean).join(' ')}>
       <div
-        className="rt-marquee flex w-max group-hover/marquee:[animation-play-state:paused] group-focus-within/marquee:[animation-play-state:paused]"
-        style={style}
+        className={[
+          'rt-marquee flex w-max group-hover/marquee:[animation-play-state:paused] group-focus-within/marquee:[animation-play-state:paused]',
+          durationClassName,
+        ]
+          .filter(Boolean)
+          .join(' ')}
       >
         <div className={['flex shrink-0', itemClassName].filter(Boolean).join(' ')}>{children}</div>
         <div className={['flex shrink-0', itemClassName].filter(Boolean).join(' ')} aria-hidden>

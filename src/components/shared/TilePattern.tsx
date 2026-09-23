@@ -44,17 +44,17 @@ export default function TilePattern({
   return (
     <div
       aria-hidden="true"
-      className={['w-full', height, className].filter(Boolean).join(' ')}
-      style={{
-        backgroundImage: 'url(/brand/tile-pattern.svg)',
-        /* `auto 100%` ata la celda a la altura de la banda y deja que el ancho
-           salga de la proporción: la celda es cuadrada, así que se repite en
-           horizontal sin deformarse. Con `contain` o un tamaño en px habría que
-           mantener dos números en sincronía. */
-        backgroundSize: 'auto 100%',
-        backgroundRepeat: 'repeat-x',
-        backgroundPosition: 'center',
-      }}
+      /* `bg-size-[auto_100%]` ata la celda a la altura de la banda y deja que
+         el ancho salga de la proporción: la celda es cuadrada, así que se
+         repite en horizontal sin deformarse. Con `contain` o un tamaño en px
+         habría que mantener dos números en sincronía. */
+      className={[
+        'w-full bg-[url(/brand/tile-pattern.svg)] bg-size-[auto_100%] bg-center bg-repeat-x',
+        height,
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
     />
   );
 }

@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { useReducedMotion } from 'motion/react';
 import { useVenue } from '@/components/shared/VenueProvider';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
 import { ArrowUpRight, Martini, Moon, MusicNote, SunHorizon } from '@/components/shared/Icon';
+import { useCssVar } from '@/lib/css-var';
 import { venueStatus } from '@/lib/hours';
 
 /**
@@ -119,6 +119,16 @@ const MARCO_MIN = 320;
  */
 const STATUS_MS = 4600;
 
+/* La preferencia de «reducir movimiento», como fuente externa para
+   `useSyncExternalStore`. Ver la nota donde se usa. */
+const MOVIMIENTO = '(prefers-reduced-motion: reduce)';
+const suscribirMovimiento = (avisar: () => void) => {
+  const mq = window.matchMedia(MOVIMIENTO);
+  mq.addEventListener('change', avisar);
+  return () => mq.removeEventListener('change', avisar);
+};
+const prefiereQuieto = () => window.matchMedia(MOVIMIENTO).matches;
+
 export default function Hero({
   fraseMusica,
   fraseHappyHour,
@@ -140,14 +150,28 @@ export default function Hero({
   const [notch, setNotch] = useState<{ w: number; h: number } | null>(null);
   /** El alto del marco cuando lo decide la pantalla, en px. `null` = mobile. */
   const [marco, setMarco] = useState<number | null>(null);
+  /* Las tres medidas viajan como variables CSS sobre el marco y las leen sus
+     clases (el recorte es hijo del marco y las hereda). Hasta el 2026-09-23
+     iban en `style`. */
+  useCssVar(frameRef, '--marco', marco ? `${marco}px` : null);
+  useCssVar(frameRef, '--notch-w', notch ? `${notch.w}px` : null);
+  useCssVar(frameRef, '--notch-h', notch ? `${notch.h}px` : null);
 
   /*
    * ⚠️ VUELVE `useReducedMotion`, y vuelve con el video. Se había ido de este
    * archivo cuando la portada volvió a ser una foto fija, con la nota de que
    * «si algún día vuelve a haber movimiento en la portada, el hook vuelve con
    * él». Es ese día. Con la preferencia puesta, el marco muestra el póster.
+   *
+   * ⚠️ PERO NO ES EL `useReducedMotion` DE MOTION, desde el 2026-09-23. Ése
+   * devuelve `true` ya en el primer render del cliente, y el servidor —que no
+   * conoce la preferencia— había mandado el `<video>`: React encontraba un
+   * `<img>` donde el HTML tenía un `<video>` y tiraba el error #418 de
+   * hidratación en la home, siempre que alguien tuviera activado «reducir
+   * movimiento». Con `useSyncExternalStore` y su valor de servidor, React
+   * hidrata con `false` —igual que el HTML— y recién después cambia al póster.
    */
-  const reducido = useReducedMotion();
+  const reducido = useSyncExternalStore(suscribirMovimiento, prefiereQuieto, () => false);
 
   const [statusIdx, setStatusIdx] = useState(0);
   const venue = useVenue();
@@ -711,7 +735,7 @@ export default function Hero({
             ⚠️ `aspect-video` ES EL ESTADO SIN MEDIR, no el definitivo. Es lo
             que vale en mobile y lo que se pinta en el primer cuadro de
             desktop, antes de que `syncMarco` corra. De ahí en más el ALTO
-            llega por `style` y la proporción deja de mandar: el `w-full` no se
+            llega por `--marco` y la proporción deja de mandar: el `w-full` no se
             toca nunca, así que el marco siempre llega al lateral.
 
             ⚠️ EN MOBILE ES 6:5 Y NO 16:9, desde el 2026-09-23. Camila: «en
@@ -725,8 +749,7 @@ export default function Hero({
             o no se recorta»—, y la pidió ella: en un teléfono la franja
             apaisada no dejaba ver el lugar.
           */
-          className="relative aspect-[6/5] w-full overflow-hidden rounded-frame bg-fog sm:aspect-video"
-          style={marco ? { height: marco } : undefined}
+          className={`relative aspect-[6/5] w-full overflow-hidden rounded-frame bg-fog sm:aspect-video ${marco ? 'h-(--marco)' : ''}`}
         >
           {/*
             ══════════════════════════════════════════════════════════════
@@ -819,11 +842,9 @@ export default function Hero({
           */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute top-0 left-0 z-20 rounded-br-frame bg-bone grano"
-            style={{
-              width: notch ? `${notch.w}px` : '38%',
-              height: notch ? `${notch.h}px` : '76px',
-            }}
+            className={`pointer-events-none absolute top-0 left-0 z-20 rounded-br-frame bg-bone grano ${
+              notch ? 'h-(--notch-h) w-(--notch-w)' : 'h-[76px] w-[38%]'
+            }`}
           >
             {/*
               ⚠️ LAS DOS ESQUINAS INVERSAS. Camila las pasó dibujadas desde

@@ -5,6 +5,7 @@ import Footer from '@/components/shared/Footer';
 import Header from '@/components/shared/Header';
 import PageTransition from '@/components/shared/PageTransition';
 import Preloader from '@/components/shared/Preloader';
+import SkipLink from '@/components/shared/SkipLink';
 import SmoothScroll from '@/components/shared/SmoothScroll';
 import UtilityBar from '@/components/shared/UtilityBar';
 import { BRAND } from '@/lib/brand';
@@ -117,17 +118,8 @@ export default async function RootLayout({ children }: { readonly children: Reac
           dangerouslySetInnerHTML={{ __html: jsonLdScript(venueJsonLd(venue)) }}
         />
 
-        {/*
-          Skip link. Primero en el orden de tabulación y sólo visible al enfocarlo.
-          WCAG 2.4.1: sin esto, alguien navegando con teclado tiene que pasar por
-          los 13 destinos del header en cada página.
-        */}
-        <a
-          href="#main"
-          className="sr-only rounded-btn focus:not-sr-only focus:fixed focus:top-[12px] focus:left-[12px] focus:z-[200] focus:bg-ink focus:px-[18px] focus:py-[12px] focus:font-body focus:text-caption focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-paper"
-        >
-          Skip to content
-        </a>
+        {/* El skip link. Ver en su archivo por qué mueve el foco a mano. */}
+        <SkipLink />
 
         <SmoothScroll />
         <Preloader />
@@ -162,7 +154,8 @@ export default async function RootLayout({ children }: { readonly children: Reac
           Los anclajes internos siguen necesitando el `scroll-margin-top` de
           globals.css.
         */}
-        <main id="main">
+        {/* `tabIndex={-1}`: lo enfoca el skip link. No entra al orden del Tab. */}
+        <main id="main" tabIndex={-1} className="outline-none">
           {children}
         </main>
 

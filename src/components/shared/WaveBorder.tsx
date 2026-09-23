@@ -44,6 +44,31 @@ const SURFACES = {
 
 export type Surface = keyof typeof SURFACES;
 
+/*
+ * Las mismas superficies como CLASES, para no pintar con `style`. Van escritas
+ * enteras a propósito: Tailwind sólo emite las clases que lee literales en el
+ * código, así que un `bg-${surface}` armado en runtime no existiría en el CSS.
+ */
+export const SURFACE_BG: Record<Surface, string> = {
+  paper: 'bg-paper',
+  bone: 'bg-bone',
+  cream: 'bg-cream',
+  mint: 'bg-mint',
+  deep: 'bg-deep',
+  river: 'bg-river',
+  sunset: 'bg-sunset',
+};
+
+export const SURFACE_TEXT: Record<Surface, string> = {
+  paper: 'text-paper',
+  bone: 'text-bone',
+  cream: 'text-cream',
+  mint: 'text-mint',
+  deep: 'text-deep',
+  river: 'text-river',
+  sunset: 'text-sunset',
+};
+
 export default function WaveBorder({
   from,
   to,
@@ -68,8 +93,9 @@ export default function WaveBorder({
       aria-hidden="true"
       /* `grano-capa` y no `grano`: el color de llegada de la ola lo pintan los
          paths del SVG, donde un `background-image` no llega. Ver su nota. */
-      className={['grano-capa relative w-full overflow-hidden leading-[0]', className].filter(Boolean).join(' ')}
-      style={{ backgroundColor: SURFACES[from] }}
+      className={['grano-capa relative w-full overflow-hidden leading-[0]', SURFACE_BG[from], className]
+        .filter(Boolean)
+        .join(' ')}
     >
       <svg
         width="100%"

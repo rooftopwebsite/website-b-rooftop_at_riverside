@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import AboutStory from '@/components/sections/AboutStory';
@@ -483,12 +484,12 @@ export default async function OurStoryPage() {
                       </p>
                       {persona.email ? (
                         <p className="m-0 mt-1.5 font-body text-base leading-[1.4]">
-                          <a
+                          <Link
                             href={`mailto:${persona.email}`}
                             className="link-texto break-all text-ink"
                           >
                             {persona.email}
-                          </a>
+                          </Link>
                         </p>
                       ) : null}
                     </div>
@@ -575,8 +576,8 @@ export default async function OurStoryPage() {
         mismo que la home con otra forma, y en la home además están los
         horarios y las redes.
 
-        ⚠️ SE VA CON ÉL EL ÚLTIMO `MapEmbed` DE ESTA PÁGINA. El componente
-        sigue vivo: lo usa `/market`.
+        ⚠️ SE VA CON ÉL EL ÚLTIMO `MapEmbed` DE ESTA PÁGINA. Después `/market`
+        también lo dejó, y el componente se borró el 2026-09-23.
         ══════════════════════════════════════════════════════════════════
       */}
       <FindUs />

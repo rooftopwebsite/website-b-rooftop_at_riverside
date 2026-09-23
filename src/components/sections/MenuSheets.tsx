@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
@@ -66,10 +67,12 @@ import { Heading } from '@/components/shared/Type';
  * scrollear. Camila: «abro la foto y no puedo scrollear en ella». Con `h-dvh`
  * mide exactamente la pantalla y el contenido se pasa.
  *
- * ⚠️ LA IMAGEN AMPLIADA VA SIN `next/image` Y A PROPÓSITO: acá la gracia es el
- * archivo entero a 1294×2000 para poder leer la letra chica, y el optimizador
- * serviría una versión al ancho de la caja. Es el mismo criterio que la foto
- * del dashboard en `DishCard`.
+ * ⚠️ LA IMAGEN AMPLIADA NO PASA POR EL OPTIMIZADOR, Y A PROPÓSITO: acá la
+ * gracia es el archivo entero a 1294×2000 para poder leer la letra chica, y el
+ * optimizador serviría una versión recomprimida. Desde el 2026-09-23 es un
+ * `<Image unoptimized>` (el sitio no usa `<img>`), que sale como un `<img>`
+ * plano con el `src` original: el mismo WebP, byte por byte. Es el mismo
+ * criterio que la foto del dashboard en `DishCard`.
  * ══════════════════════════════════════════════════════════════════════════
  */
 
@@ -124,7 +127,7 @@ function Lamina({
 }) {
   if (pdfUrl) {
     return (
-      <a
+      <Link
         href={pdfUrl}
         target="_blank"
         rel="noopener noreferrer"
@@ -132,7 +135,7 @@ function Lamina({
         className={className}
       >
         {children}
-      </a>
+      </Link>
     );
   }
 
@@ -473,8 +476,10 @@ export default function MenuSheets({
               ══════════════════════════════════════════════════════════════
             */}
             <div className="flex min-h-full w-full items-center justify-center p-4 sm:p-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              {/* `unoptimized`: el archivo entero, sin recomprimir. Ver la
+                  nota del encabezado. */}
+              <Image
+                unoptimized
                 key={pagina.src}
                 src={pagina.src}
                 alt={pagina.alt}

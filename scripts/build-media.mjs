@@ -315,9 +315,9 @@ const FOTOS = [
      como las demás, así que hereda también el contrato de imagen.
 
      ⚠️ HIZO FALTA GENERARLA PORQUE NO QUEDABA NINGUNA LIBRE. Las tres 17:9
-     que había ya son el hero de `/sunset-bar`, `/whats-on` y `/events`, y
-     `wall-yard-night-wide.jpg` está MAL NOMBRADA: es 540×720, o sea vertical,
-     y no sirve para este marco. TODO: renombrarla, el nombre miente.
+     que había ya son el hero de `/sunset-bar`, `/whats-on` y `/events`. (La
+     `wall-yard-night-wide.jpg` que parecía candidata era vertical, 540×720,
+     y como no la usaba nadie se borró el 2026-09-23.)
 
      ⚠️ ES DE DÍA Y SIN PROTAGONISTA AL CENTRO, que son los dos criterios que
      Camila fijó al elegir el hero de `/whats-on` y que se respetaron también

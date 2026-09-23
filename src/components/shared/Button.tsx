@@ -258,7 +258,7 @@ export function ButtonLink({
 
   if (external) {
     return (
-      <a
+      <Link
         href={href}
         target="_blank"
         rel="noopener noreferrer"
@@ -268,7 +268,7 @@ export function ButtonLink({
         <Rodillo>{children}</Rodillo>
         <ExternalIcon />
         <span className="sr-only">(opens in a new tab)</span>
-      </a>
+      </Link>
     );
   }
 
@@ -410,9 +410,9 @@ export function ArrowLink({
     .join(' ');
 
   return external ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+    <Link href={href} target="_blank" rel="noopener noreferrer" className={cls}>
       {inner}
-    </a>
+    </Link>
   ) : (
     <Link href={href} className={cls}>
       {inner}

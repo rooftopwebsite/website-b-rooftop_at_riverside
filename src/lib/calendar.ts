@@ -133,6 +133,13 @@ const iso = (y: number, m: number, d: number) =>
 export const weekdayOf = (date: string) =>
   new Date(`${date}T12:00:00Z`).getUTCDay() as Weekday;
 
+/** El día siguiente, como `YYYY-MM-DD`. Para los eventos que cierran pasada la medianoche. */
+export function diaSiguiente(date: string): string {
+  const d = new Date(`${date}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return iso(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
+}
+
 /**
  * Hoy en el huso del venue, como `YYYY-MM-DD`.
  *

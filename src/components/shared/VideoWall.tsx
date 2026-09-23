@@ -44,10 +44,12 @@ import { WALL as SLOTS, type Slot } from './wall-slots';
  * movimiento pero no QUÉ es. A tres, cada tile pasa de 200px y la pieza se
  * reconoce. En mobile son dos: la tercera aparece recién en `sm`.
  */
+/* `duracion` es una CLASE que fija `--wall-duration` (la lee `.rt-wall` en
+   globals.css). Hasta el 2026-09-23 la variable se escribía en `style`. */
 const COLUMNAS = [
-  { duracion: '44s', reverse: false, visible: '' },
-  { duracion: '58s', reverse: true, visible: '' },
-  { duracion: '50s', reverse: false, visible: 'hidden sm:flex' },
+  { duracion: '[--wall-duration:44s]', reverse: false, visible: '' },
+  { duracion: '[--wall-duration:58s]', reverse: true, visible: '' },
+  { duracion: '[--wall-duration:50s]', reverse: false, visible: 'hidden sm:flex' },
 ] as const;
 
 /**
@@ -113,12 +115,12 @@ function Columna({
     <div
       className={[
         'rt-wall min-h-0 flex-1',
+        duracion,
         reverse ? 'rt-wall-reverse' : '',
         visible || 'flex',
       ]
         .filter(Boolean)
         .join(' ')}
-      style={{ '--wall-duration': duracion } as React.CSSProperties}
       /*
         ⚠️ `tabIndex` y `role`: con reduced-motion la columna deja de correr y
         pasa a scrollearse a mano, y una región scrolleable sin nada enfocable

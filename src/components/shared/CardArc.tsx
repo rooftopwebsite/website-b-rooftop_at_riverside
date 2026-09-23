@@ -61,12 +61,16 @@ function Card({ slot, index, total }: { readonly slot: Slot; readonly index: num
   return (
     <motion.li
       className="w-[16.5vw] min-w-30.5 shrink-0 origin-bottom"
-      style={{ rotate: `${angulo}deg`, y: -subida }}
       /* La entrada: las cards suben desde abajo con desfasaje del centro hacia
          afuera, así el abanico se abre en lugar de aparecer de izquierda a
-         derecha. `Math.abs` del índice relativo es lo que produce ese orden. */
-      initial={reduced ? undefined : { opacity: 0, y: -subida + 40 }}
-      animate={reduced ? undefined : { opacity: 1, y: -subida }}
+         derecha. `Math.abs` del índice relativo es lo que produce ese orden.
+
+         ⚠️ EL GIRO Y LA SUBIDA VAN EN `initial`/`animate` Y NO EN `style`,
+         desde el 2026-09-23: los aplica framer y el JSX no lleva estilo en
+         línea. Con reduced-motion los dos estados son el mismo y no hay
+         animación. */
+      initial={reduced ? { rotate: angulo, y: -subida } : { opacity: 0, rotate: angulo, y: -subida + 40 }}
+      animate={{ opacity: 1, rotate: angulo, y: -subida }}
       transition={{
         duration: dur.reveal,
         ease: ease.out,

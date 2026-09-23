@@ -241,21 +241,20 @@ export const ALL_ROUTES: readonly string[] = [
   '/food-trucks',
   '/whats-on',
   '/events',
-  '/events/spaces',
-  '/events/corporate',
-  '/events/celebrations',
-  '/events/holiday-parties',
-  '/events/fundraisers',
-  '/events/game-truck',
-  '/events/inquire',
-  '/nfc-north-hq',
   '/game-truck',
   '/market',
   '/our-story',
   '/blog',
   '/join-us',
-  '/visit',
   '/contact',
+
+  /*
+   * ⚠️ HASTA EL 2026-09-23 ACÁ HABÍA NUEVE RUTAS MÁS —`/visit`,
+   * `/nfc-north-hq` y siete `/events/*`— y las nueve son 301 en
+   * `next.config.ts`. Mismo criterio que el de trucks y eventos en
+   * `sitemap.ts`: una URL que redirige no va al sitemap. Antes de sumar una
+   * línea acá, confirmar que no esté en `redirects()`.
+   */
 
   /*
    * ⚠️ LOS TRES DOCUMENTOS DEL CAMIÓN NO ESTÁN EN NINGÚN MENÚ, y sí en esta

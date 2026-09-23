@@ -200,7 +200,8 @@ function parseWeekdays(days: string | null): readonly Weekday[] {
  * Por eso el `alt` TRANSCRIBE lo que la pieza dice.
  *
  * ⚠️ Un evento que no esté acá no se queda sin `alt`: cae en el genérico
- * «<título> — event poster», que es pobre pero honesto.
+ * «Poster for <título>», que es pobre pero honesto. Era «<título> — event
+ * poster» hasta el 2026-09-23, y el guion largo no va en ningún texto visible.
  *
  * El día que el dashboard tenga campo de texto alternativo, esto se va igual
  * que se fue el mapa de imágenes.
@@ -342,7 +343,7 @@ function adapt(r: RawEvent): VenueEvent {
      * corre el sync y aparece.
      */
     image: r.bannerUrl,
-    imageAlt: r.bannerUrl ? (ALT[slugify(r.title)] ?? `${r.title} — event poster`) : null,
+    imageAlt: r.bannerUrl ? (ALT[slugify(r.title)] ?? `Poster for ${r.title}`) : null,
     tags: r.tags,
   };
 }

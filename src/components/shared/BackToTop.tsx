@@ -1,7 +1,8 @@
 'use client';
 
 import { useReducedMotion } from 'motion/react';
-import { useSyncExternalStore } from 'react';
+import { useRef, useSyncExternalStore } from 'react';
+import { useCssVar } from '@/lib/css-var';
 import { Rodillo } from './Button';
 import { ArrowUp } from './Icon';
 
@@ -92,11 +93,10 @@ import { ArrowUp } from './Icon';
  * píxel de diferencia es un render.
  */
 
-/** A cuánto del borde derecho. Igual en las dos medidas, como la referencia. */
-const DERECHA = 37;
-
-/** El piso: a cuánto del borde inferior cuando no hay nada más abajo. */
-const PISO = 72;
+/* ⚠️ EL BORDE DERECHO (37px, igual en las dos medidas, como la referencia) Y
+   EL PISO (72px, a cuánto del borde inferior cuando no hay nada más abajo)
+   ERAN CONSTANTES y ahora viven escritos en la clase del envoltorio: Tailwind
+   necesita los números literales. */
 
 /** El aire que queda entre el botón y la zona de cierre del footer. */
 const AIRE = 20;
@@ -147,6 +147,10 @@ export default function BackToTop() {
      todo. */
   const visible = useSyncExternalStore(suscribir, pasoUnaPantalla, () => false);
   const alza = useSyncExternalStore(suscribir, alzaDelPie, () => 0);
+  /* Lo único que no se puede escribir como clase es cuánto asomó el footer:
+     viaja como `--alza` y lo lee el `bottom-[max(…)]` de abajo. */
+  const caja = useRef<HTMLDivElement | null>(null);
+  useCssVar(caja, '--alza', `${alza}px`);
 
   return (
     <div
@@ -169,8 +173,8 @@ export default function BackToTop() {
         accesibilidad, del foco y de los eventos de puntero de una sola vez.
       */
       inert={!visible}
-      style={{
-        /*
+      ref={caja}
+      /*
           ⚠️ ES UN `max()` DE CSS Y NO UNA CUENTA EN JS, y no es preferencia de
           estilo: uno de los dos candidatos depende de una variable que este
           componente no conoce y que no puede leer sin provocar un render. Los
@@ -184,11 +188,9 @@ export default function BackToTop() {
           visitante en el fondo de la página—, que es donde una suma de los dos
           dejaría el botón flotando en el medio de la pantalla.
         */
-        bottom: `max(calc(${PISO}px + var(--aviso-pie, 0px)), ${alza}px)`,
-        right: `${DERECHA}px`,
-      }}
       className={[
-        'fixed z-[60]',
+        /* El borde derecho (37) y el piso (72): ver la nota de arriba. */
+        'fixed right-[37px] bottom-[max(calc(72px+var(--aviso-pie,0px)),var(--alza,0px))] z-[60]',
         'transition-[opacity,transform] duration-[450ms] ease-brand',
         visible
           ? 'translate-y-0 opacity-100'

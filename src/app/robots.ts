@@ -7,9 +7,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        // La confirmación del formulario no aporta nada a un buscador y
-        // genera contenido duplicado si se indexa.
-        disallow: ['/events/inquire/thank-you'],
+        /* ⚠️ ACÁ HABÍA UN `disallow` A `/events/inquire/thank-you`, una ruta
+           que dejó de existir cuando el formulario pasó a `/events#inquire`.
+           La confirmación ahora es un estado del mismo formulario, sin URL. */
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

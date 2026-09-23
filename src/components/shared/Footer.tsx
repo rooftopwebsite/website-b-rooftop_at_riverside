@@ -411,7 +411,7 @@ export default function Footer() {
                           completo y aviso para lector de pantalla, como en el
                           resto de las salidas del sitio. */}
                       {external ? (
-                        <a
+                        <Link
                           href={href}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -419,7 +419,7 @@ export default function Footer() {
                         >
                           {label}
                           <span className="sr-only"> (opens in a new tab)</span>
-                        </a>
+                        </Link>
                       ) : (
                         <Link href={href} className={LINK_BASE}>
                           {label}

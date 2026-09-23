@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (path === '/') return 1;
     // Las páginas de la vertical que más factura, y el calendario, arriba.
     if (path.startsWith('/events') || path === '/whats-on') return 0.9;
-    if (path === '/food-trucks' || path === '/sunset-bar' || path === '/visit') return 0.8;
+    if (path === '/food-trucks' || path === '/sunset-bar' || path === '/contact') return 0.8;
     return 0.6;
   };
 

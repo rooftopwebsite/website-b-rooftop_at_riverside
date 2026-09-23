@@ -1,5 +1,5 @@
 import { OLA_SUAVE } from '@/lib/brand-art';
-import type { Surface } from './WaveBorder';
+import { SURFACE_BG, SURFACE_TEXT, type Surface } from './WaveBorder';
 
 /**
  * LA OLA SUAVE: UNA sola ondulación larga entre dos superficies.
@@ -79,10 +79,9 @@ export default function SoftWave({
   return (
     <div
       aria-hidden="true"
-      className={['grano-capa w-full overflow-hidden leading-[0]', className]
+      className={['grano-capa w-full overflow-hidden leading-[0]', SURFACE_BG[to], className]
         .filter(Boolean)
         .join(' ')}
-      style={{ backgroundColor: `var(--color-${to})` }}
     >
       {/*
         ⚠️ EL ESPEJO VA ADENTRO DEL SVG Y NO EN CSS: la animación `rt-wave`
@@ -95,8 +94,7 @@ export default function SoftWave({
         viewBox={OLA_SUAVE.viewBox}
         preserveAspectRatio="none"
         role="presentation"
-        className="rt-wave -ml-[5%] block h-[104px] w-[110%] sm:h-[136px] lg:h-[168px]"
-        style={{ color: `var(--color-${from})` }}
+        className={`rt-wave -ml-[5%] block h-[104px] w-[110%] sm:h-[136px] lg:h-[168px] ${SURFACE_TEXT[from]}`}
       >
         <path
           d={OLA_SUAVE.d}

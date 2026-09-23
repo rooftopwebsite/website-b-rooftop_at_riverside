@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion, useReducedMotion } from 'motion/react';
 import { dur, ease, viewport } from '@/lib/motion';
 import { HORIZONTE } from './horizonte-ola';
@@ -70,19 +71,17 @@ export default function HorizonBorder({
 }) {
   const reduced = useReducedMotion();
 
-  const SUPERFICIES = {
-    paper: 'var(--color-paper)',
-    bone: 'var(--color-bone)',
-    deep: 'var(--color-deep)',
-  } as const;
+  /* Clases completas y no `bg-${from}`: Tailwind sólo genera las que lee
+     escritas enteras en el código. */
+  const FONDO = { paper: 'bg-paper', bone: 'bg-bone', deep: 'bg-deep' } as const;
+  const TINTA = { paper: 'text-paper', bone: 'text-bone', deep: 'text-deep' } as const;
 
   return (
     <div
       aria-hidden="true"
       /* `grano-capa` y no `grano`: el color de llegada lo pintan los paths
          del SVG. Ver su nota en globals.css. */
-      className={`grano-capa relative isolate w-full overflow-hidden ${className}`}
-      style={{ backgroundColor: SUPERFICIES[from] }}
+      className={`grano-capa relative isolate w-full overflow-hidden ${FONDO[from]} ${className}`}
     >
       {/* ── La ola ───────────────────────────────────────────────────────
           `preserveAspectRatio="none"` la estira a lo ancho de la pantalla sin
@@ -92,8 +91,7 @@ export default function HorizonBorder({
       <svg
         viewBox={HORIZONTE.viewBox}
         preserveAspectRatio="none"
-        className="block h-23 w-full lg:h-33"
-        style={{ color: SUPERFICIES[to] }}
+        className={`block h-23 w-full lg:h-33 ${TINTA[to]}`}
       >
         {HORIZONTE.olas.map((d, i) => (
           <path key={i} d={d} fill="currentColor" />
@@ -136,8 +134,7 @@ export default function HorizonBorder({
         hace que la palmera crema se vea sobre el verde—.
       */}
       <motion.div
-        className="absolute left-1/2 z-10 aspect-square h-[98.6%] -translate-x-1/2"
-        style={{ top: '14.2%' }}
+        className="absolute top-[14.2%] left-1/2 z-10 aspect-square h-[98.6%] -translate-x-1/2"
         initial={reduced ? undefined : { y: 26, opacity: 0 }}
         whileInView={reduced ? undefined : { y: 0, opacity: 1 }}
         viewport={viewport}
@@ -174,8 +171,11 @@ export default function HorizonBorder({
           `Content-Disposition: attachment`. Se migran igual.
           ══════════════════════════════════════════════════════════════════
         */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* ⚠️ DESDE EL 2026-09-23 ES `<Image unoptimized>`: sale como un `<img>`
+            plano con el `src` original, sin pasar por `/_next/image`, que era
+            la ruta que lo rompía. Next 16 ya lo hace solo con los `.svg`. */}
+        <Image
+          unoptimized
           src="/brand/sun-palm.svg"
           alt=""
           width={230}

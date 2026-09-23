@@ -123,7 +123,9 @@ const cifra = (n: number) => String(n).padStart(2, '0');
  * empuja al 66 % y los otros cuatro se achican de golpe al pasar el mouse por
  * el panel que ya estás mirando, que es movimiento sin motivo.
  */
-const PESO = { abierto: 5.6, encima: 1.35, cerrado: 1 } as const;
+/* Como CLASES enteras y no un `flexGrow` en `style`: Tailwind sólo emite lo
+   que lee literal. El `transition` del botón anima el cambio igual. */
+const PESO = { abierto: 'grow-[5.6]', encima: 'grow-[1.35]', cerrado: 'grow' } as const;
 
 /** Las dos flechas de paso. Son las de los carruseles de la home, un tamaño
  *  más chicas: 52px es el tamaño de un control que vive solo en el medio de una
@@ -248,7 +250,7 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
                   <PhotoPending brief={a.photoBrief} ratio="" className="absolute inset-0 h-full rounded-none border-0" />
                 )}
                 <span className="absolute bottom-3 left-3 flex max-w-[calc(100%-1.5rem)] flex-col gap-1 rounded-btn bg-bone px-3.5 py-2.5">
-                  <span className="font-body text-caption font-bold uppercase tracking-eyebrow text-deep/70">{a.floor}</span>
+                  <span className="font-body text-caption font-bold uppercase tracking-eyebrow text-deep">{a.floor}</span>
                   <span className="font-display text-d6 font-bold uppercase leading-none text-deep">{a.name}</span>
                 </span>
               </div>
@@ -314,7 +316,6 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
                 e.preventDefault();
                 mover(paso);
               }}
-              style={{ flexGrow: peso }}
               /*
                 ⚠️ `basis-0` MÁS `flexGrow` ES LO QUE HACE EL ACORDEÓN. Con
                 `basis-auto` el ancho de partida sería el del contenido —una
@@ -329,7 +330,7 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
                 también anima el color del velo y la sombra del foco, y el
                 anillo de foco tiene que aparecer al instante.
               */
-              className="group relative min-h-[52px] shrink basis-0 cursor-pointer overflow-hidden rounded-ticket border-0 bg-fog p-0 transition-[flex-grow] duration-300 ease-brand md:min-h-0 md:min-w-[44px]"
+              className={`group relative min-h-[52px] shrink basis-0 cursor-pointer overflow-hidden rounded-ticket border-0 bg-fog p-0 transition-[flex-grow] duration-300 ease-brand md:min-h-0 md:min-w-[44px] ${peso}`}
             >
               {a.photo ? (
                 <Image
@@ -434,7 +435,7 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
                   ══════════════════════════════════════════════════════════
                 */
                 <span className="pointer-events-none absolute bottom-3 left-3 flex max-w-[calc(100%-1.5rem)] flex-col gap-1 rounded-btn bg-bone px-3.5 py-2.5 lg:bottom-5 lg:left-5">
-                  <span className="font-body text-caption font-bold uppercase tracking-eyebrow text-deep/70">
+                  <span className="font-body text-caption font-bold uppercase tracking-eyebrow text-deep">
                     {a.floor}
                   </span>
                   <span className="truncate font-display text-d6 font-bold uppercase leading-none text-deep lg:text-d5">

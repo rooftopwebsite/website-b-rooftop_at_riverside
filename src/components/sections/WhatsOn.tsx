@@ -534,9 +534,9 @@ function EventCard({
     }`;
 
   return entradas ? (
-    <a href={entradas} target="_blank" rel="noopener noreferrer" className={clases} inert={fuera || undefined}>
+    <Link href={entradas} target="_blank" rel="noopener noreferrer" className={clases} inert={fuera || undefined}>
       {contenido}
-    </a>
+    </Link>
   ) : (
     <Link href={href} className={clases} inert={fuera || undefined}>
       {contenido}
@@ -942,7 +942,7 @@ export default function WhatsOn({
           id="whats-on-title"
           className="mx-auto max-w-[16ch] text-center font-display text-banda font-extrabold uppercase"
         >
-          <span className="block text-paper">{headline.a}</span>
+          <span className="block text-paper">{headline.a}</span>{' '}
           <span className="block text-sunset">{headline.b}</span>
         </h2>
 

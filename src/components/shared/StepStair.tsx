@@ -51,6 +51,39 @@ export interface Step {
   readonly tags: readonly string[];
 }
 
+/*
+ * La geometría de la escalera como CLASES ENTERAS, indexadas por cantidad de
+ * pasos o por peldaño. Tailwind sólo emite lo que lee literal en el código.
+ * Alcanza hasta seis pasos; con más, la escalera deja de leerse igual.
+ */
+const COLUMNAS: Record<number, string> = {
+  1: 'desk:grid-cols-1',
+  2: 'desk:grid-cols-2',
+  3: 'desk:grid-cols-3',
+  4: 'desk:grid-cols-4',
+  5: 'desk:grid-cols-5',
+  6: 'desk:grid-cols-6',
+};
+
+/** El media ocupa la columna 1 desde la fila 2 hasta el último peldaño. */
+const ALTO_MEDIA: Record<number, string> = {
+  1: 'desk:row-span-1',
+  2: 'desk:row-span-2',
+  3: 'desk:row-span-3',
+  4: 'desk:row-span-4',
+  5: 'desk:row-span-5',
+};
+
+/** Cada peldaño baja una fila y corre una columna: diagonal. */
+const PELDAÑO = [
+  'desk:col-start-1 desk:row-start-1',
+  'desk:col-start-2 desk:row-start-2',
+  'desk:col-start-3 desk:row-start-3',
+  'desk:col-start-4 desk:row-start-4',
+  'desk:col-start-5 desk:row-start-5',
+  'desk:col-start-6 desk:row-start-6',
+];
+
 export default function StepStair({
   items,
   media,
@@ -80,16 +113,16 @@ export default function StepStair({
       as="ol"
       className={[
         'flex flex-col',
-        /* La grilla se arma recién en `desk`. `gridTemplateColumns` va inline
-           porque el número de columnas depende de cuántos pasos haya, y una
-           clase de Tailwind tiene que existir en el CSS emitido: `grid-cols-${n}`
-           armada con una plantilla no se genera nunca. */
+        /* La grilla se arma recién en `desk`, con tantas columnas como pasos.
+           Sale de `COLUMNAS` y no de `grid-cols-${n}`: una clase armada con
+           una plantilla no se genera nunca. Hasta el 2026-09-23 esto iba en
+           `style`. */
         'desk:grid',
+        COLUMNAS[items.length],
         className,
       ]
         .filter(Boolean)
         .join(' ')}
-      style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
     >
       {/* ⚠️ Va PRIMERO en el DOM pero se posiciona en la fila 2 con
           `gridRow`/`gridColumn`. En el orden de lectura queda antes de los
@@ -97,8 +130,7 @@ export default function StepStair({
           quien pasa el media. */}
       {media ? (
         <li
-          className="hidden desk:block desk:pr-8 desk:pt-9"
-          style={{ gridColumn: 1, gridRow: `2 / span ${Math.max(items.length - 1, 1)}` }}
+          className={`hidden desk:col-start-1 desk:row-start-2 desk:block desk:pr-8 desk:pt-9 ${ALTO_MEDIA[Math.max(items.length - 1, 1)]}`}
         >
           {media}
         </li>
@@ -120,8 +152,8 @@ export default function StepStair({
                  izquierdo ya enhebra los tres. */
               ultimo ? 'pb-0' : 'pb-7.5 desk:border-b desk:border-fog desk:pb-14',
               'desk:pl-5.5',
+              PELDAÑO[i],
             ].join(' ')}
-            style={{ gridColumn: i + 1, gridRow: i + 1 }}
           >
             <div className="grid grid-cols-[30px_minmax(0,1fr)] gap-x-2.5">
               {/*

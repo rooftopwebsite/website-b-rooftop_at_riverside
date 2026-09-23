@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Reveal } from './Motion';
 import SoftWave from './SoftWave';
-import type { Surface } from './WaveBorder';
+import { SURFACE_BG, type Surface } from './WaveBorder';
 import { Eyebrow } from './Type';
 
 /**
@@ -69,18 +69,14 @@ export default function PageHeroWave({
   readonly children?: ReactNode;
 }) {
   /*
-    ⚠️ EL FONDO SE PINTA CON `style` Y NO CON UNA CLASE DE TAILWIND. `from` es
-    una prop en runtime, así que `bg-${from}` no existiría en el CSS emitido:
-    Tailwind sólo genera las clases que encuentra escritas literalmente en el
-    código. Es el mismo motivo por el que `WaveBorder` resuelve sus dos colores
-    con variables y no con clases.
+    ⚠️ EL FONDO SALE DE `SURFACE_BG` Y NO DE `bg-${from}`. `from` es una prop
+    en runtime, así que `bg-${from}` no existiría en el CSS emitido: Tailwind
+    sólo genera las clases que encuentra escritas literalmente en el código.
+    Hasta el 2026-09-23 esto se resolvía con `style`; el mapa de `WaveBorder`
+    tiene las clases enteras y evita el estilo en línea.
   */
   return (
-    <section
-      aria-labelledby="page-title"
-      className="grano relative"
-      style={{ backgroundColor: `var(--color-${from})` }}
-    >
+    <section aria-labelledby="page-title" className={`grano relative ${SURFACE_BG[from]}`}>
       {/*
         ⚠️ EL `pb` ES GRANDE PORQUE LA ONDA SE COME EL PIE. La ola mide 104px en
         mobile y 168 en desktop, y se apoya en el borde de abajo de la sección:

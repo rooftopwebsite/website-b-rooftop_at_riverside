@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getVenue, venueAddressLine } from '@/lib/venue';
 import { ButtonLink } from '@/components/shared/Button';
 import HoursCard from '@/components/shared/HoursCard';
@@ -215,7 +216,7 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
             className="m-0 pr-6 font-display text-[clamp(2.8rem,7vw,6.6rem)] font-extrabold uppercase leading-[0.88] text-ink sm:pr-0"
           >
             {/* Las dos mitades, un solo h2. Ver la nota del encabezado. */}
-            <span className="block">Downtown,</span>
+            <span className="block">Downtown,</span>{' '}
             {/*
               ⚠️ LAS DOS MITADES ALINEAN A LA IZQUIERDA. La segunda iba
               `text-right` —era el diseño de origen: «Downtown,» arriba a la
@@ -275,7 +276,7 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
           <ul className="flex w-full list-none flex-wrap items-center justify-start gap-3 p-0 md:absolute md:top-0 md:right-0 md:w-auto">
             {SOCIAL.map(({ label, href, Icon }) => (
               <li key={label}>
-                <a
+                <Link
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -283,7 +284,7 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
                 >
                   <Icon className="size-5.5 lg:size-6.5" />
                   <span className="sr-only">{label} (opens in a new tab)</span>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -321,18 +322,18 @@ export default async function FindUs({ id = 'find-us' }: { readonly id?: string 
               <span className="mb-2.5 block font-body text-caption font-medium uppercase tracking-eyebrow text-cream">
                 Contact
               </span>
-              <a
+              <Link
                 href={venue.phoneHref}
                 className="block font-body text-dato leading-[1.6] text-paper transition-colors duration-200 hover:text-cream"
               >
                 {venue.phone}
-              </a>
-              <a
+              </Link>
+              <Link
                 href={`mailto:${venue.email}`}
                 className="block font-body text-dato leading-[1.6] text-paper transition-colors duration-200 hover:text-cream"
               >
                 {venue.email}
-              </a>
+              </Link>
             </div>
 
             <div>

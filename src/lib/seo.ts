@@ -129,12 +129,18 @@ const postalAddress = (v: Venue) =>
 const schemaHours = (v: Venue): readonly string[] => {
   const ABREV = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
   const ORDEN = [1, 2, 3, 4, 5, 6, 0];
+  /*
+   * ⚠️ HASTA EL 2026-09-23 ESTA REGEX NO TENÍA LAS BARRAS: `d{1,2}` buscaba la
+   * letra «d», nunca matcheaba y el schema salía con `openingHours: []` en
+   * todas las páginas. Los minutos son opcionales por si el dashboard devuelve
+   * «3 PM» en vez de «3:00 PM».
+   */
   const a24 = (t: string) => {
-    const m = t.trim().match(/^(d{1,2}):(d{2})s*(AM|PM)$/i);
+    const m = t.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i);
     if (!m) return null;
     let h = Number(m[1]) % 12;
     if (/pm/i.test(m[3])) h += 12;
-    return `${String(h).padStart(2, '0')}:${m[2]}`;
+    return `${String(h).padStart(2, '0')}:${m[2] ?? '00'}`;
   };
   return v.hours.flatMap((fila, i) => {
     if (/closed/i.test(fila.bar)) return [];

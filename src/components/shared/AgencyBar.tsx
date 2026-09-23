@@ -1,3 +1,5 @@
+import Image from 'next/image';
+import Link from 'next/link';
 import { AGENCY } from '@/lib/brand';
 import { GUTTER } from './Section';
 
@@ -43,7 +45,7 @@ import { GUTTER } from './Section';
  */
 export default function AgencyBar() {
   const poweredBy = (
-    <a
+    <Link
       href={AGENCY.url}
       target="_blank"
       rel="noopener noreferrer"
@@ -60,16 +62,17 @@ export default function AgencyBar() {
       <span className="font-body text-[16px] leading-none whitespace-nowrap text-[#5c5c5c]">
         powered by
       </span>
-      {/* eslint-disable-next-line @next/next/no-img-element -- SVG estático de
-          tamaño fijo: `next/image` no aporta nada acá y agrega un envoltorio. */}
-      <img
+      {/* `unoptimized`: es un SVG y el optimizador no tiene nada que hacerle.
+          Next lo sirve tal cual, sin pasar por `/_next/image`. */}
+      <Image
+        unoptimized
         src="/images/agency/resto-experience.svg"
         alt={AGENCY.label}
         width={523}
         height={74}
         className="h-[24px] w-auto shrink-0"
       />
-    </a>
+    </Link>
   );
 
   const año = new Date().getFullYear();

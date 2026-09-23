@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { EventDialogProvider, VerMas } from '@/components/sections/EventDialogProvider';
 import { EventPhoto, EventWhen, SpacePill } from '@/components/shared/EventCardParts';
 import {
@@ -504,7 +505,7 @@ function UpcomingCard({
         */}
         {isTicketed(event) && event.ticketUrl ? (
           <p className="relative z-10 m-0 mt-auto pt-[14px]">
-            <a
+            <Link
               href={event.ticketUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -513,7 +514,7 @@ function UpcomingCard({
               Get tickets
               <ArrowSquareOut className="size-[14px] shrink-0" aria-hidden="true" />
               <span className="sr-only">for {event.title} on Eventbrite (opens in a new tab)</span>
-            </a>
+            </Link>
           </p>
         ) : null}
       </div>

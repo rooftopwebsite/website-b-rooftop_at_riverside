@@ -64,6 +64,21 @@ import { TIPOS_EVENTO } from '@/content/event-types';
  * puede estar en un mail que el cliente mandó el mes pasado.
  * ══════════════════════════════════════════════════════════════════════════
  */
+/*
+ * Dónde se pega cada tarjeta: el header (78px) + el alto medido del
+ * encabezado (`--cabeza`, lo escribe `PilaConCabeza`) + 24px por índice.
+ * Clases enteras y no un `top` en `style`: Tailwind sólo emite lo que lee
+ * literal. Son cuatro tipos; la quinta y la sexta sobran por si entra otro.
+ */
+const TOPE_PILA = [
+  'top-[calc(78px+var(--cabeza))]',
+  'top-[calc(102px+var(--cabeza))]',
+  'top-[calc(126px+var(--cabeza))]',
+  'top-[calc(150px+var(--cabeza))]',
+  'top-[calc(174px+var(--cabeza))]',
+  'top-[calc(198px+var(--cabeza))]',
+];
+
 export default function EventTypes() {
   return (
     <Section tone="mint" band="lg" labelledBy="tipos-title">
@@ -159,7 +174,7 @@ export default function EventTypes() {
       */}
       <ul className="flex list-none flex-col gap-6 p-0">
         {TIPOS_EVENTO.map((tipo, i) => (
-          <li key={tipo.id} className="sticky" style={{ top: `calc(78px + var(--cabeza) + ${i * 24}px)` }}>
+          <li key={tipo.id} className={`sticky ${TOPE_PILA[Math.min(i, TOPE_PILA.length - 1)]}`}>
             <article
               id={tipo.id}
               className="group relative grid scroll-mt-24 overflow-hidden rounded-shell bg-paper text-left sombra-card md:grid-cols-[minmax(0,1fr)_42%] lg:grid-cols-2"

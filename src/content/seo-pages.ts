@@ -28,7 +28,9 @@ export interface PageSeo {
 export const PAGE_SEO = {
   '/': {
     h1: 'Bonita comes together',
-    title: 'Rooftop at Riverside | Rooftop Bar & Food Truck Park in Bonita Springs, FL',
+    // ⚠️ 51 caracteres. Tenía 74 con la marca adelante y Google lo cortaba en ~60;
+    // la marca ya la muestra como nombre del sitio (el `WebSite` del schema).
+    title: 'Rooftop Bar & Food Truck Park in Bonita Springs, FL',
     /*
      * ⚠️ SIN LOS DÍAS DEL HAPPY HOUR, Y LOS TENÍA. Decía «happy hour
      * Wednesday to Friday», que el 2026-09-17 resultó ser un dato equivocado
@@ -41,7 +43,7 @@ export const PAGE_SEO = {
      * donde alguien lo va a buscar.
      */
     description:
-      'A rooftop bar over four food trucks in downtown Bonita Springs. Live music on the calendar, happy hour on the weekend, dogs welcome in the yard. No reservations, just come up.',
+      'A rooftop bar over four food trucks in downtown Bonita Springs. Live music, weekend happy hour and dogs welcome in the yard. No reservations, just come up.',
     keywords: ['rooftop bar bonita springs', 'food truck park'],
   },
 
@@ -204,7 +206,7 @@ export const PAGE_SEO = {
     h1: 'Game zone waiver',
     title: 'Game Zone Waiver | Rooftop at Riverside',
     description:
-      'The full terms and conditions for the gaming truck: assumption of risk, property damage, release of liability and the photography release. Read it before you sign it.',
+      'The full terms for the gaming truck: assumption of risk, property damage, release of liability and the photography release. Read it before you sign.',
     keywords: ['game truck waiver'],
   },
   '/bar-games-waiver': {

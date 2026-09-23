@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useCssVar } from '@/lib/css-var';
 import { useReducedMotion, useScroll, useMotionValueEvent } from 'motion/react';
 import { GAMES } from '@/content/game-truck';
 
@@ -239,6 +240,37 @@ export default function GameShelf({
   const maxShift = movido ? Math.max(0, izq + anchoTrack - ancho) : 0;
   const shift = -maxShift * p;
 
+  /*
+   * ⚠️ EL CORRIMIENTO, EL PROGRESO Y EL GIRO VIAJAN COMO VARIABLES CSS, desde
+   * el 2026-09-23 (el sitio no usa estilos en línea). `--shift` y
+   * `--progreso` van en la raíz y los leen las clases del track y de la
+   * barra; `--giro` va en cada `<li>`.
+   *
+   * LA ROTACIÓN es el gesto del spec: sale de dónde está el CENTRO de la
+   * tarjeta respecto del centro de la pantalla.
+   *
+   * ⚠️ SE CALCULA EN JS Y NO EN CSS, y es una decisión de costo consciente. La
+   * alternativa —una variable CSS con `clamp()` en grados— mete la cuenta
+   * entera en una sola línea de `calc()` que nadie puede leer ni depurar seis
+   * meses después. Y escribirla desde este efecto, en vez de en el render de
+   * cada `<li>`, ya no le cuesta un render a nadie.
+   *
+   * ⚠️ TOPE EN ±4°, que es el número del spec. Más que eso las tarjetas se
+   * leen como un abanico de cartas y deja de parecer un estante.
+   */
+  useCssVar(alto, '--shift', movido ? `${shift.toFixed(1)}px` : null);
+  useCssVar(alto, '--progreso', movido ? p.toFixed(3) : null);
+  useLayoutEffect(() => {
+    const ul = track.current;
+    if (!ul) return;
+    Array.from(ul.children).forEach((li, i) => {
+      const centro = izq + pad + i * (CARD.w + CARD.gap) + CARD.w / 2 + shift;
+      const norm = ancho > 0 ? (centro - ancho / 2) / ancho : 0;
+      const giro = movido ? Math.max(-4, Math.min(4, norm * 7)) : 0;
+      (li as HTMLElement).style.setProperty('--giro', `${giro.toFixed(2)}deg`);
+    });
+  }, [ancho, izq, pad, shift, movido]);
+
   return (
     <div
       ref={alto}
@@ -459,37 +491,14 @@ export default function GameShelf({
         >
         <ul
           ref={track}
-          className="m-0 flex list-none gap-6 p-0"
-          style={movido ? { transform: `translateX(${shift.toFixed(1)}px)`, willChange: 'transform' } : undefined}
+          className={`m-0 flex list-none gap-6 p-0 ${movido ? 'translate-x-(--shift) will-change-transform' : ''}`}
         >
           {GAMES.map((g, i) => {
-            /*
-              LA ROTACIÓN, que es el gesto del spec: sale de dónde está el
-              CENTRO de la tarjeta respecto del centro de la pantalla.
-
-              ⚠️ SE CALCULA EN EL RENDER Y NO EN CSS, y es una decisión de
-              costo consciente: son 23 `<li>` sin estado propio, así que el
-              re-render por frame es barato. La alternativa —una variable CSS
-              con `clamp()` en grados— evita el re-render pero mete la cuenta
-              entera en una sola línea de `calc()` que nadie puede leer ni
-              depurar seis meses después.
-
-              ⚠️ TOPE EN ±4°, que es el número del spec. Más que eso las
-              tarjetas se leen como un abanico de cartas y deja de parecer un
-              estante.
-            */
-            const centro = izq + pad + i * (CARD.w + CARD.gap) + CARD.w / 2 + shift;
-            const norm = ancho > 0 ? (centro - ancho / 2) / ancho : 0;
-            const giro = movido ? Math.max(-4, Math.min(4, norm * 7)) : 0;
-
+            /* El giro lo escribe el efecto de arriba en `--giro`. */
             return (
               <li
                 key={g}
-                className="w-[240px] shrink-0 snap-start lg:w-[280px]"
-                style={{
-                  transform: `rotate(${giro.toFixed(2)}deg)`,
-                  transformOrigin: 'center center',
-                }}
+                className="w-[240px] shrink-0 origin-center snap-start rotate-[var(--giro,0deg)] lg:w-[280px]"
               >
                 {/*
                   LA CAJA. `chaflan` corta la esquina superior derecha y la
@@ -582,8 +591,7 @@ export default function GameShelf({
           <div aria-hidden="true" className="mt-10 hidden justify-center estante:flex">
             <span className="h-0.5 w-[min(360px,60vw)] overflow-hidden rounded-pill bg-ink/15">
               <span
-                className="block h-full origin-left bg-sunset"
-                style={{ transform: `scaleX(${p.toFixed(3)})` }}
+                className="block h-full origin-left scale-x-[var(--progreso,0)] bg-sunset"
               />
             </span>
           </div>

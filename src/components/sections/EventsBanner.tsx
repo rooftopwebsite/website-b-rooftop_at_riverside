@@ -331,6 +331,10 @@ export default function EventsBanner() {
               un «For you» pegado al margen derecho deja de ser un remate y
               pasa a leerse como una palabra suelta que se cayó de la frase.
             */}
+            {/* El espacio no se ve —entre dos bloques colapsa— pero sin él el
+                texto del h2 decía «placeFor you» para Google y para el lector
+                de pantalla. */}
+            {' '}
             <span className="block text-sunset desk:text-right">For you</span>
 
           </h2>

@@ -96,9 +96,9 @@ export default function ContactForm() {
         <p className="mt-gap-bajada max-w-[52ch] text-lead text-body/80">{state.message}</p>
         <p className="mt-3 max-w-[52ch] text-[16px] leading-[1.65] text-body/75">
           If it is urgent, calling is faster:{' '}
-          <a href={venue.phoneHref} className="link-texto font-bold">
+          <Link href={venue.phoneHref} className="link-texto font-bold">
             {venue.phone}
-          </a>
+          </Link>
           .
         </p>
       </SentPanel>

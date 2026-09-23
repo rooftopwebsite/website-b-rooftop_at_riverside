@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import DishCard from '@/components/shared/DishCard';
 import { Eyebrow, Heading } from '@/components/shared/Type';
@@ -187,7 +188,7 @@ export default function BarMenu({ grupos }: { readonly grupos: readonly DishGrou
             const id = anclaDe(g.title);
             const esActivo = id === activo;
             return (
-              <a
+              <Link
                 key={id}
                 href={`#${id}`}
                 data-ancla={id}
@@ -201,7 +202,7 @@ export default function BarMenu({ grupos }: { readonly grupos: readonly DishGrou
                 ].join(' ')}
               >
                 {g.title}
-              </a>
+              </Link>
             );
           })}
         </div>

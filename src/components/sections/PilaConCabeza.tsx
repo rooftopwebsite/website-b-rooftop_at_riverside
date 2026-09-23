@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCssVar } from '@/lib/css-var';
 
 /**
  * ══════════════════════════════════════════════════════════════════════════
@@ -84,6 +85,11 @@ export default function PilaConCabeza({
   }, []);
 
   const medido = alto > 0;
+  /* Las dos medidas viajan como variables CSS y las leen las clases de abajo
+     (y el `top` de cada tarjeta en `EventTypes`). Hasta el 2026-09-23 iban
+     en `style`. El `[--cabeza:0px]` de la raíz es el respaldo del servidor. */
+  useCssVar(raiz, '--cabeza', `${alto}px`);
+  useCssVar(raiz, '--cola', `${cola}px`);
   /*
     ⚠️ `top-[78px]` ES EL ALTO DEL HEADER, que es `sticky top-0` y mide 78
     en todos los anchos. Es el mismo número que ya usaba la pila.
@@ -97,19 +103,22 @@ export default function PilaConCabeza({
   );
 
   return (
-    <div ref={raiz} className="relative" style={{ '--cabeza': `${alto}px` } as CSSProperties}>
+    <div ref={raiz} className="relative [--cabeza:0px]">
       {/*
         La MISMA capa en los dos estados, sólo cambia su posición: si el
         encabezado cambiara de padre al medirse, React lo remontaría y el
         `ResizeObserver` quedaría mirando un nodo que ya no está.
       */}
       <div
-        className={medido ? 'pointer-events-none absolute inset-x-0 top-0 z-20 [&>*]:pointer-events-auto' : 'relative'}
-        style={medido ? { bottom: cola } : undefined}
+        className={
+          medido
+            ? 'pointer-events-none absolute inset-x-0 top-0 bottom-(--cola) z-20 [&>*]:pointer-events-auto'
+            : 'relative'
+        }
       >
         {encabezado}
       </div>
-      {medido ? <div aria-hidden="true" style={{ height: alto }} /> : null}
+      {medido ? <div aria-hidden="true" className="h-(--cabeza)" /> : null}
       {children}
     </div>
   );
