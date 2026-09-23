@@ -49,7 +49,8 @@
    uso personal y sin un solo metadato, otra no era la familia que decía ser
    sino una variante cirílica con EULA comercial, y la tercera es de una
    fundición que la vende. El detalle de qué decía la tabla `name` interna de
-   cada archivo está en `public/fonts/_drop/LEEME.md`, junto a los originales.
+   cada archivo está en `_interno/fuentes/LEEME.md`, junto a los originales
+   (se mudaron desde `public/fonts/_drop/` el 2026-09-23).
 
    Los reemplazos NO se eligieron de memoria, se midieron. Jost entra en el
    mismo renglón que la geométrica que reemplaza —misma `a` de un piso, misma
@@ -3256,5 +3257,51 @@ dialog.ficha-evento::backdrop {
       opacity: 0;
       transform: translateY(8px);
     }
+  }
+}
+
+/* ==========================================================================
+   ESQUELETO: el bloque gris de las pantallas de carga (`loading.tsx`)
+   ==========================================================================
+
+   ⚠️ EL BRILLO SE MUEVE CON `transform` Y NO CON `background-position`. El
+   repo anima sólo `opacity` y `transform` (ver `docs/layout-motion.md`): son
+   las dos que el navegador compone sin repintar, y una pantalla de carga es
+   justo el momento en que el hilo principal está ocupado armando la página.
+
+   ⚠️ EL COLOR ES TINTA AL 7%, no un gris propio. Sobre `bone` y sobre `paper`
+   se lee igual de tenue, y en una banda oscura se puede pisar con
+   `[--esqueleto:…]` sin sumar un token.
+
+   ⚠️ CON `prefers-reduced-motion` QUEDA QUIETO. El bloque solo ya dice «acá
+   viene algo»; el brillo es un extra, no la información. */
+@utility esqueleto {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--esqueleto, color-mix(in srgb, var(--color-ink) 7%, transparent));
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--color-paper) 55%, transparent) 50%,
+      transparent 100%
+    );
+    transform: translateX(-100%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &::after {
+      animation: rt-esqueleto 1.4s var(--ease-brand, ease-in-out) infinite;
+    }
+  }
+}
+
+@keyframes rt-esqueleto {
+  to {
+    transform: translateX(100%);
   }
 }
