@@ -113,7 +113,7 @@ export interface PostFull extends Post {
   readonly metaTitle: string;
   readonly metaDescription: string;
   readonly ogImage: string | null;
-  readonly canonicalUrl: string | null; // sólo si es del dominio propio
+  readonly canonicalPath: string; // `/blog/<slug>`, o el del dashboard si es del dominio propio
   readonly faqJsonLd: readonly unknown[];
 }
 ```
@@ -146,7 +146,7 @@ memoria de la base de datos.
 | 2 | Nota destacada | `FeaturedPost` (nuevo) | blanco |
 | 3 | Resto de las notas | `PostGrid` + `PostCard` (nuevos) | blanco |
 | 2′ | Estado vacío, en lugar de 2 y 3 | `BlogEmpty` (nuevo) | `bone` |
-| 4 | Cierre | la banda oscura de cierre de las internas | `deep` |
+| 4 | Cierre | `FindUs`, el cierre de las internas desde el 2026-09-22 | `bone` con su arco |
 
 - **Hero:** h1 «Stories from the» + acento «Rooftop» (entra en `PAGE_SEO['/blog']`
   y lo controla `check:seo`). La placa lleva sus esquinas inversas como en las
@@ -156,8 +156,9 @@ memoria de la base de datos.
   eyebrow «fecha · N min read», título en display `h2`, extracto y link
   «Read the story». Tablet y mobile: se apila, foto arriba.
 - **Grilla:** 1 columna en mobile, 2 desde 640px, 3 desde 1024px.
-  - `PostCard`: foto 3:2 con `rounded-card`, eyebrow con la fecha, título en
-    display `d6` caja alta, extracto cortado a 3 líneas.
+  - `PostCard`: foto 3:2 con `rounded-card`, eyebrow con la fecha, título con
+    `role="card"` (Jost, caja mixta: la condensada no baja de 24px), extracto
+    cortado a 3 líneas.
   - Toda la card es clickeable con **un solo** link (el del título, estirado
     con `::after`). Hover igual al de `Card`: −2px, foto ×1.03, título a `deep`.
   - Sin portada: bloque `bone` con el monograma, nunca `PhotoPending` (no es
@@ -190,7 +191,7 @@ De arriba a abajo, todo en `caja`:
    - `text-align: left`, nunca justificado.
 4. **Cierre de la nota:** link «Back to all stories» y, si hay otras notas,
    «More stories» con hasta 3 `PostCard` (las más nuevas, sin la actual).
-5. **Banda oscura de cierre**, la misma del listado.
+5. **`FindUs`**, el mismo cierre del listado.
 6. **Slug que no existe** → `notFound()`, que usa el `not-found.tsx` del sitio.
 
 ---
