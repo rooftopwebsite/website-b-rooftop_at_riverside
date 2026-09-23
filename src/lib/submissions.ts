@@ -83,13 +83,22 @@ export async function rateLimited(): Promise<boolean> {
  * ⚠️ UN INPUT DE ARCHIVO VACÍO LLEGA COMO UN `File` DE 0 BYTES, no como
  * `undefined`. Sin el chequeo de tamaño, cada envío sin archivo mandaría un
  * adjunto vacío sin nombre.
+ *
+ * ⚠️ `contentType` PISA AL `f.type` DEL NAVEGADOR CUANDO SE PASA. El `type`
+ * del navegador sale de la extensión del archivo, no de su contenido, así que
+ * quien llama y ya revisó los bytes (ver `revisarFirmas` en `join.ts`) manda
+ * acá el tipo de verdad para que el cliente de mail del destinatario abra el
+ * adjunto con el visor correcto.
  */
-export async function fileToAttachment(f: unknown): Promise<MailAttachment | null> {
+export async function fileToAttachment(
+  f: unknown,
+  contentType?: string,
+): Promise<MailAttachment | null> {
   if (!(f instanceof File) || f.size === 0) return null;
   return {
     filename: nombreSeguro(f.name),
     content: Buffer.from(await f.arrayBuffer()),
-    contentType: f.type || undefined,
+    contentType: contentType ?? (f.type || undefined),
   };
 }
 

@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { asuntoSeguro, nombreSeguro, podar } from './saneo.ts';
-import { firmaCoincide } from './file-signature.ts';
+import { firmaCoincide, tipoDetectado } from './file-signature.ts';
 import { conTimeout, fetchConTimeout } from './http.ts';
 
 describe('asuntoSeguro', () => {
@@ -111,6 +111,31 @@ describe('firmaCoincide', () => {
   });
   it('un archivo más corto que la firma no coincide', () => {
     assert.ok(!firmaCoincide(new Uint8Array([0x25, 0x50]), 'application/pdf'));
+  });
+});
+
+describe('tipoDetectado', () => {
+  const IMAGENES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+  const DE_CURRICULUM = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
+
+  it('un WebP con extensión de otra cosa igual se detecta por los bytes', () => {
+    const webp = b(...ascii('RIFF'), 0, 0, 0, 0, ...ascii('WEBP'));
+    assert.equal(tipoDetectado(webp, IMAGENES), 'image/webp');
+  });
+  it('un PDF se detecta contra la lista de currículums', () => {
+    assert.equal(tipoDetectado(b(...ascii('%PDF-1.7')), DE_CURRICULUM), 'application/pdf');
+  });
+  it('texto plano no coincide con nada', () => {
+    assert.equal(tipoDetectado(b(...ascii('hola mundo')), IMAGENES), null);
+    assert.equal(tipoDetectado(b(...ascii('hola mundo')), DE_CURRICULUM), null);
+  });
+  it('un tipo que coincide en bytes pero no está en la lista de candidatos no cuenta', () => {
+    const pdf = b(...ascii('%PDF-1.7'));
+    assert.equal(tipoDetectado(pdf, IMAGENES), null);
   });
 });
 

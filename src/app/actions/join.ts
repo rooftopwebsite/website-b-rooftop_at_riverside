@@ -6,15 +6,17 @@ import {
   artistSchema,
   EDU_COLS,
   HISTORY_COLS,
+  IMAGE_TYPES,
   jobFromForm,
   jobSchema,
+  RESUME_TYPES,
   slotLabel,
   type TableRow,
 } from '@/lib/schemas/join';
 import { fileToAttachment, rateLimited, sendSubmission } from '@/lib/submissions';
 import type { MailAttachment } from '@/lib/mail';
 import { getVenue } from '@/lib/venue';
-import { firmaCoincide } from '@/lib/file-signature';
+import { tipoDetectado } from '@/lib/file-signature';
 import { fieldErrorsFrom, type ActionState } from './types';
 
 /**
@@ -56,33 +58,52 @@ function tablaTexto(rows: readonly TableRow[], cols: readonly { key: string; lab
 
 /** Los adjuntos que sí vinieron, con un nombre que se entienda en la bandeja. */
 async function adjuntos(
-  campos: readonly { readonly file: File | undefined; readonly prefijo: string }[],
+  campos: readonly {
+    readonly file: File | undefined;
+    readonly prefijo: string;
+    readonly contentType?: string;
+  }[],
 ): Promise<MailAttachment[]> {
   const out: MailAttachment[] = [];
   for (const c of campos) {
-    const a = await fileToAttachment(c.file);
+    const a = await fileToAttachment(c.file, c.contentType);
     if (a) out.push({ ...a, filename: `${c.prefijo} ${a.filename}` });
   }
   return out;
 }
 
+/**
+ * ⚠️ SE ACEPTA SI LOS BYTES COINCIDEN CON CUALQUIERA DE LOS TIPOS PERMITIDOS
+ * PARA ESE CAMPO, no sólo con el `type` que declaró el navegador. Ese `type`
+ * sale de la extensión del archivo, y un «guardar imagen como» puede bajar un
+ * WebP con extensión `.jpg`: el navegador diría `image/jpeg`, los bytes son
+ * WebP, y comparar sólo contra lo declarado rechazaba una imagen real.
+ *
+ * Devuelve, además de los errores, el tipo REAL detectado por campo: es el
+ * que se manda como `contentType` del adjunto para que el mail lo abra bien.
+ */
 async function revisarFirmas(
   campos: readonly {
     readonly name: string;
     readonly file: File | undefined;
     readonly etiqueta: string;
     readonly formato: string;
+    readonly tipos: readonly string[];
   }[],
-): Promise<Record<string, string>> {
+): Promise<{ errores: Record<string, string>; detectados: Record<string, string> }> {
   const errores: Record<string, string> = {};
+  const detectados: Record<string, string> = {};
   for (const c of campos) {
     if (!c.file || c.file.size === 0) continue;
     const cabeza = new Uint8Array(await c.file.slice(0, 16).arrayBuffer());
-    if (!firmaCoincide(cabeza, c.file.type)) {
+    const tipo = tipoDetectado(cabeza, c.tipos);
+    if (!tipo) {
       errores[c.name] = `${c.etiqueta} doesn't look like ${c.formato}.`;
+    } else {
+      detectados[c.name] = tipo;
     }
   }
-  return errores;
+  return { errores, detectados };
 }
 
 export async function submitJob(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -97,12 +118,13 @@ export async function submitJob(_prev: ActionState, formData: FormData): Promise
     };
   }
 
-  const firmas = await revisarFirmas([
+  const { errores: firmas, detectados } = await revisarFirmas([
     {
       name: 'resume',
       file: parsed.data.resume,
       etiqueta: 'Your resume',
       formato: 'a PDF or a Word document',
+      tipos: RESUME_TYPES,
     },
   ]);
   if (Object.keys(firmas).length > 0) {
@@ -122,7 +144,9 @@ export async function submitJob(_prev: ActionState, formData: FormData): Promise
   }
 
   const d = parsed.data;
-  const archivos = await adjuntos([{ file: d.resume, prefijo: 'Resume' }]);
+  const archivos = await adjuntos([
+    { file: d.resume, prefijo: 'Resume', contentType: detectados.resume },
+  ]);
 
   const result = await sendSubmission({
     form: 'job',
@@ -183,9 +207,9 @@ export async function submitArtist(_prev: ActionState, formData: FormData): Prom
     };
   }
 
-  const firmas = await revisarFirmas([
-    { name: 'logo', file: parsed.data.logo, etiqueta: 'Your logo', formato: 'an image' },
-    { name: 'photo', file: parsed.data.photo, etiqueta: 'Your photo', formato: 'an image' },
+  const { errores: firmas, detectados } = await revisarFirmas([
+    { name: 'logo', file: parsed.data.logo, etiqueta: 'Your logo', formato: 'an image', tipos: IMAGE_TYPES },
+    { name: 'photo', file: parsed.data.photo, etiqueta: 'Your photo', formato: 'an image', tipos: IMAGE_TYPES },
   ]);
   if (Object.keys(firmas).length > 0) {
     return {
@@ -212,8 +236,8 @@ export async function submitArtist(_prev: ActionState, formData: FormData): Prom
    */
   const acto = d.band || `${d.firstName} ${d.lastName}`;
   const archivos = await adjuntos([
-    { file: d.logo, prefijo: 'Logo' },
-    { file: d.photo, prefijo: 'Photo' },
+    { file: d.logo, prefijo: 'Logo', contentType: detectados.logo },
+    { file: d.photo, prefijo: 'Photo', contentType: detectados.photo },
   ]);
 
   const result = await sendSubmission({
