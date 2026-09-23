@@ -191,3 +191,224 @@ transcrito, la cita en un documento de `docs/`. Nunca el original.
 - El pipeline recodifica y baja de tamaño; `public/` ya tiene la entrega optimizada.
 - Prohibido simular con CSS lo que debería ser una foto (p. ej. un degradado que imite
   el atardecer).
+
+---
+
+## 9. Decisiones que sostienen código (rescatadas de los comentarios, 2026-09-23)
+
+El 2026-09-23 se borraron todos los comentarios del código fuente. El texto completo sigue en el historial de git
+anterior a esa fecha: `git log -S "<símbolo o frase>" -- <archivo>` encuentra el commit, y `git show <hash>:<archivo>` lo muestra.
+
+### 9.1 Código que se conserva sin uso, a propósito
+
+Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se borran** en una limpieza de huérfanos.
+
+- `src/components/shared/DiscHero.tsx` → template del hero de disco (ex `TruckHero`), guardado al unificar los trucks. Si molesta
+  que las internas abran distinto, se lleva `PlateHero` a todas; no se vuelve a éste.
+- `src/components/shared/HorizonBorder.tsx` → ola + medallón de sol del brand book (Figma nodo 2012:4491, lo parte `npm run horizonte`).
+  Redibujarla cuesta más que guardarla. La clase `rt-sol` de `globals.css` es su gancho vacío: se conserva sin keyframe.
+- `src/components/shared/WaveBorder.tsx` → la cenefa de rulos. El componente no se monta, pero `Surface`, `SURFACE_BG` y
+  `SURFACE_TEXT` los importan `SoftWave`, `PageHeroWave` y `CompareSlab`: el archivo no se toca.
+- `src/components/shared/BandVideo.tsx` + `public/videos/hero-rooftop.mp4` (y su póster) → clip de `/hostanevent` (15 s, 1,5 MB).
+  Si vuelve a `/our-story`, entra como banda dentro de la página, nunca como encabezado.
+- `src/components/shared/VideoWall.tsx` (+ `WallVideo.tsx`) → muro de 3 columnas, la forma correcta para un hero de dos columnas.
+- `src/components/shared/CardArc.tsx` → arco de cards para un hero centrado. Comparte `wall-slots.ts` con `VideoWall`: volver a
+  cualquiera de las dos no obliga a reasignar fotos.
+- `src/components/shared/StepStair.tsx` → los pasos en escalera. Hoy sólo se importa su tipo `Step` (desde `YardSteps`).
+- `src/components/sections/FeaturedEvent.tsx` → la banda del destacado grande, sacada de `/whats-on`, guardada para otra página que
+  quiera abrir con un destacado. `shared/FeaturedEventCard` **sí** está en uso (`/sunset-bar`, `UpcomingCards`, `EventTypes`).
+- `src/components/sections/BarMenu.tsx` + `getBarMenu()` (`lib/restoexp.ts`) + `respaldoComoGrupos()` (`content/bar-menu.ts`) → la
+  carta digital del bar. Volver es cambiar `<MenuSheets />` por `<BarMenu grupos={carta} />` en `/sunset-bar`, con
+  `const carta = (await getBarMenu()) ?? respaldoComoGrupos();`.
+- `src/components/sections/TruckMenu.tsx` → carta de platos de un truck leída de la base. Espera a que vuelvan las fichas por truck.
+- `ReviewsMarquee` en `src/components/sections/HomeSections.tsx` → escrito y sin montar hasta que el cliente confirme ratings reales.
+- `src/content/faq.ts` → los datos y la auditoría de fuentes (campo `source`, `verifiedFaqs()` / `unverifiedFaqs()`). Si vuelve el
+  FAQ, sólo se renderizan las que tienen fuente. `/faq` hace 301 a `/our-story`.
+- `src/content/story.ts` → Charity Partner Program, dato real de `/giveback`. `/giveback` hace 301 a `/our-story`, que ya no lo
+  menciona: decisión abierta (re-montarlo, ruta propia o repuntar el 301). El partner del mes está vencido.
+- `public/images/venue/hero-truck-window.webp` → portada de respaldo si el video del hero se cae. La sigue generando
+  `scripts/build-media.mjs`; sólo se borra sacando antes esa entrada del script.
+- Entrada de Reggae Kitchen en `src/content/trucks.ts` (`active: false`) → si el truck aparece, vuelve con `active: true`, y su 301
+  nunca dejó de existir. `retiredTruckRedirects()` conserva el nombre para no tocar `next.config.ts` (hoy redirige todos los slugs).
+- Token `tomato-soft` (`globals.css`) → no es huérfano: lo usa la variante oscura de `PendingData`.
+- `EVENT_FAMILIES` → ya no se lista en `/events`, pero genera `EVENT_SUBTYPES`, que valida en el servidor el desplegable de `InquiryForm`.
+- `src/app/actions/newsletter.ts` → se borró una vez por error: el sitio vigente **sí** tiene el formulario. Responde error a
+  propósito mientras no exista `NEWSLETTER_SHEETS_WEBHOOK_URL` (va a planilla por Apps Script, no a Resend).
+- `src/components/shared/Motion.tsx` re-exporta `EASE_BRAND`, `DURATION`, `REVEAL_OFFSET`, `STAGGER` y `REVEAL_AMOUNT` desde
+  `lib/motion.ts` con los nombres viejos, para no romper call sites. `ScrollExit` se borró el 2026-09-23 (está en git).
+
+### 9.2 Contratos entre archivos
+
+**H1 y SEO**
+- Texto del `<h1>` de cada página ↔ `PAGE_SEO[ruta].h1` en `src/content/seo-pages.ts`: `npm run check:seo` compara el `textContent`
+  carácter por carácter. Apóstrofo recto (`'`, no `&rsquo;`); mayúsculas por CSS, nunca en el fuente.
+- `PlateHero` · `title` + `titleAccent` ↔ `PAGE_SEO`: `title` termina en espacio. El espacio va dentro del string: un nodo de texto
+  suelto entre dos `block` arma una caja anónima. Para partir renglón, `span` con `block`, nunca `<br>`.
+- `src/components/sections/Hero.tsx` · placa «TOGETHER» (`aria-hidden`) ↔ `sr-only` dentro del `<h1>`: sin el `sr-only` el h1 queda
+  en «Bonita comes» y `check:seo` falla.
+
+**Hero de placa (`src/components/shared/PlateHero.tsx`)**
+- `mb-[-0.94em]` del `<h1>` ↔ `top-[calc(100%-0.94em)]` de las dos `esquina-inversa` ↔ interlínea 0.88 + `pb-[0.12em]` de la placa:
+  0.94em es media placa de dos renglones. Si cambia uno, cambian los tres. Van en `em`, nunca en px.
+- Placa `max-w-[calc(100%-4*var(--radius-frame))]` ↔ radio del marco de la foto: si la placa llega más lejos, la esquina cae sobre la
+  curva de la foto o sale de la página (1px de scroll horizontal a 360px).
+- Placa `bg-bone grano` ↔ `bg-bone grano` de la sección: si uno cambia de superficie sin el otro, aparece el rectángulo.
+- Titular de hero que no entra en dos renglones de `text-banda` → se acorta el copy (y `PAGE_SEO` con él). No se achica el cuerpo.
+
+**Alto del header**
+- Header real de 78px ↔ `top-[78px]` (`PilaConCabeza`), `top-[calc(78px+var(--cabeza))]` (`EventTypes`), `pt-24` (`GameShelf`,
+  78 + aire), `top-[79px]` (`MonthBar`, 78 + filete). Si el header cambia de alto, se mueven todos.
+- `:target { scroll-margin-top }` en `globals.css` (lee `--spacing-header` / `--spacing-header-sm`) es el único lugar del offset de
+  anclas. Lenis lo respeta: `SmoothScroll` va **sin** `anchors.offset` (con él el destino caía al doble de distancia).
+
+**Superficies, arcos y olas**
+- `<Section tone>` y `<section class="bg-…">` de cada página ↔ `scripts/surface-rhythm.mjs` (`npm run check:surfaces`): máx. 1 `deep`
+  por página, `mint` y `cream` cuentan como crema (máx. 2), nunca dos de color pegadas. Lee el archivo con regex (comentarios y
+  ternarios incluidos) y sólo expande `<Section>`, `<FormSlab>` y componentes usados **sin props**. La home lo excede a propósito.
+- Por eso `VenueTabs` escribe su `tone` adentro (no por prop), `SpecSlab` no trae su `<Section>` (la pone el call site) y
+  `JoinSwitch` queda fuera del guard: si pasa a ser `Section`, hay que revisar el ritmo de `/join-us`.
+- Un `div` oscuro o crema dentro de una sección clara es tarjeta, no banda: no cuenta para el guard (`HowToOrder`, precios de `/game-truck`).
+- Color de arranque de cada ola (`SoftWave` `from`, `CompareSlab` `from`) ↔ superficie de la sección de **arriba**. Se mueve cada vez
+  que se reordena la página; `check:surfaces` también mira las olas.
+- `--radius-band` ↔ margen negativo de la sección que se monta ↔ `cierre-arco` (= `cierre` + `--radius-band`). La clase `.banda-arco`
+  + `:has(+ .banda-arco)` estira la anterior con **borde transparente**. Cada sección que se monta necesita `z-index` creciente.
+- `FormSlab` en `/events` pasa `panelTone="paper"` porque su sección tiene que ser `bone` (lleva `banda-arco` y el arco toma el color
+  de la sección). Default del resto: sección `paper` + panel `bone`.
+- `PADDING_CRUCE` (exportado de `CompareSlab.tsx`) ↔ margen negativo de sus tarjetas: lo consumen `/events`, `/food-trucks` y
+  `EventSpaces`. El `z-10` de las tarjetas no se saca.
+
+**Medidas atadas**
+- `TruckCards.tsx` · `-top-[26px]` = `TOLDO.asomo`, `-inset-x-2` (8px) = `TOLDO.vuelo`, el `18` del `clip-path` = `TOLDO.entrada`.
+  Tailwind necesita el literal: si cambia la constante, cambia la clase. Las rayas del toldo, siempre en número par.
+- `.troquel` (`globals.css`): radio del diente 13px ↔ paso 26px ↔ 26px descontados al relleno. El `13.5px` es antialias, no error.
+- Filete troquelado `inset-3.5` (14px) + `rounded-shell`, compartido por `CompareSlab`, `EventTypes`, `FormSlab`, happy hour de
+  `/sunset-bar`, banner de `/food-trucks` y tarjeta de `/market`; por eso esas tarjetas llevan padding 8/10.
+- `ThreeDoors.tsx` · `right-1 bottom-1` del círculo ↔ `--mordisco-sangria` (4px).
+- `/our-story` · `translate-y-19` (76px) de la placa del equipo = 56 del cajón + 20 del `p-5`.
+- Plancha del sticker del logo (`globals.css`): 109.262 % × 108.696 % (14px sobre 302.3 × 322), un porcentaje por eje; el filo en `fog`
+  suma 3px sobre las medidas desktop.
+- Topes de cuerpo de titular ↔ texto del titular + pieza al lado: `EventsBanner` (105,6px, sello) y `FindUs` (redes). Si cambia el
+  texto o la pieza, se recalcula el tope.
+- `HomeSections.tsx` · las dos columnas cierran a la misma altura: grilla **sin** `items-start` + derecha `flex-col justify-between`
+  + párrafo de ≤ ~165 caracteres.
+- `src/content/venue-areas.ts` · cada `body` ≤ ~140 caracteres ↔ `VenueTabs` a 62ch (dos renglones en desktop).
+- Frases del pill de estado del hero ≤ ~22 caracteres ↔ `text-pastilla` (tabla medida en `Hero.tsx`). Etiquetas de botón ≤ ~20
+  caracteres ↔ `whitespace-nowrap` de `Button.tsx`: si no entra, se acorta el copy.
+
+**Scroll horizontal y sombras**
+- `GameShelf.tsx` · `pad` de la cuenta del track ↔ `px-gutter md:px-gutter-lg` de la fila (no `--spacing-borde`).
+- Variante `estante:` de `globals.css` ↔ la misma media query en el JS de `GameShelf`.
+- `MonthBar.tsx` · sangría negativa de la tira de filtros ↔ padding del contenedor (`GUTTER`). Si divergen, scroll horizontal en
+  todo el documento.
+- `WhatsOn.tsx` · `px-6` del track = `gap-6` (24px); `scroll-px-6` acompaña al `px-6`; `ANCHO` decide cuántas tarjetas se ven;
+  `bordeTrack` lee el `px-borde` computado del DOM. Tope de tarjetas en 8.
+- Paddings que existen para la sombra ↔ token de sombra (alcance = `blur + spread`, lo mide `npm run check:sombras`):
+  `WhatsOn` `pt-3.5 pb-13` (`shadow-card-dark`), carrusel de `Motion.tsx` `pt-6 pb-21` (`shadow-float`), `YardSteps` `pt-2 pb-7`,
+  `PhotoDivider` `py-13` (52px). Si cambia la sombra, se recalculan.
+- `BackToTop.tsx`: 37px al borde ≥ alcance de `shadow-card` (32); por eso no usa `shadow-float`.
+
+**Colores, tokens y tipografía**
+- Bloque `@theme` de `src/app/globals.css` ↔ `src/lib/brand.ts`: `npm run check:tokens` falla si divergen. Lo que pinta es el CSS.
+- `src/lib/cn.ts` · config de `twMerge` ↔ **todos** los `--text-*` del `@theme`. Un token de tamaño que falte se toma por color y
+  borra el color de la variante (lo detecta `npm run a11y`, no el build).
+- `--font-display` / `--font-subhead` / `--font-body` (163 call sites) ↔ variables de `next/font/local` en `src/app/layout.tsx`, que
+  van en el `className` del `<html>`. Sin él, el texto cae al default sin aviso (`npm run check:css`).
+- Acento de titular: `sunset-deep` sobre claro (`BRAND.headlineAccent.onLight`), `sunset` sobre `deep`. Texto sobre `sunset`: negro.
+  Única excepción viva: la placa «TOGETHER» del hero de la home (`sunset` sobre `bone`, 2.35:1, decisión de Camila).
+- Colores de las lomeras de `GameShelf` ↔ cuadraditos de consola de `SpecSlab` (los mismos tres primeros, mismo orden). `river` sólo
+  como relleno, nunca texto.
+
+**Formularios, rutas y datos**
+- `INPUT_BASE` de `NewsletterSignup.tsx` ↔ `INPUT_BASE` de `InquiryForm.tsx`: copias deliberadas que cambian juntas (píldora, 22px de
+  padding, 42px de alto = botón, `text-[16px]`).
+- Honeypot `name="website"` que dibuja `FormShell` ↔ schemas: `lib/schemas/join.ts` lee `website`; ningún campo real puede llamarse
+  `website` (por eso el de `market-vendor.ts` es `link`).
+- `lib/schemas/contact.ts` lo usan el cliente y la server action: un solo objeto, los mismos mensajes.
+- Query params y anclas: `?apply=team|artist` (`JoinSwitch`), `/events?area=game-truck#inquire` (tilda la casilla de `InquiryForm`),
+  `#inquire` y `#spaces` en `/events`. Los `id` `game-truck` (`/events`), `packages` y `policies` (`/game-truck`) se conservan como
+  destinos; algunos emisores ya no existen: `grep` antes de renombrar.
+- `data-pie-cierre` en `Footer.tsx` ↔ `alzaDelPie()` en `BackToTop.tsx`: si se renombra, el botón cae a su piso en silencio.
+- `--aviso-pie` (`globals.css`): lo **escribe** el elemento fijo al pie (el futuro banner de cookies, alto en px y `0px` al cerrar) y
+  lo **lee** `BackToTop` sumado a su piso de 72px. `BackToTop` va en `z-[60]`, debajo del `z-[70]` del banner de la casa.
+- `SITE_LEGAL_DOCS` arma el pie del sitio y el pie de cada documento legal. La URL de gift cards de Toast vive sólo en `brand.ts`.
+- `lib/motion.ts` es la única fuente de curvas y duraciones; las dos puntas del `inset` de `RevealMedia` salen del token `clip`.
+- Labels del desplegable de bebida en `content/spaces.ts` = labels de `DRINK_OPTIONS` en `content/events-pricing.ts`; el 22 % del
+  wristband es el de `FEES`, no un número propio. Precios de `/game-truck` y `/events` salen siempre de `content/`.
+- Regla «renglón que empieza con precio = promo»: duplicada a propósito en `content/happy-hour.ts` (carga) y `UpcomingCards` (lectura).
+- Promos de `/sunset-bar`: `space === 'Sunset Bar'` + que el evento publique precios. Happy hour identificado por título. Nunca por tag.
+- Cartas de truck ↔ dashboard: emparejadas por nombre normalizado (`truckPorNombre` / `menuDeTruck`); sin match cae a `menuImage`.
+- Nombre de truck en pantalla: siempre `nombreVisible(t)`, nunca `truck.name` directo (esconde los nombres no confirmados).
+- Fechas del calendario: `from` = `todayInVenue()`, nunca `toISOString()` (Vercel corre en UTC y borra el evento de la noche).
+
+### 9.3 Trampas técnicas medidas
+
+**CSS y Tailwind**
+- Todas las utilidades de tema desaparecen sin warning → un comentario CSS dentro de `@theme` cierra el bloque antes (no se anidan) →
+  nada de comentarios dentro de `@theme`. Lo cubre `npm run check:css`.
+- `position: sticky` deja de pegarse → un ancestro con `overflow: hidden` crea contenedor de scroll → usar `overflow-x: clip` (el
+  `body` ya lo tiene; también es lo que permite `mx-[calc(50%-50vw)] w-screen` sin desborde).
+- La página queda corrida en x tras navegar → un desborde momentáneo sobrevive a los links con `scroll={false}` → el `clip` del body.
+- Sombras cortadas al ras en carruseles → `overflow-x: auto` computa `overflow-y: auto` → `py` en el track + margen negativo que lo
+  devuelva. El mismo recorte se come el `::after` de `.toque` (por eso `py-2 -mb-2` en `MonthBar`).
+- Sombra cortada con padding «suficiente» → el alcance se calculó `blur/2 + spread` → la cola real es `blur + spread`.
+- Sombra rectangular sobre una pieza con `mask` → `box-shadow` no sigue la máscara y el orden es filtro → recorte → máscara →
+  `filter: drop-shadow` en el **envoltorio** (`troquel`, sticker, `YardSteps`).
+- `mix-blend-mode` que no mezcla (footer grisado) → `z-0` en un posicionado crea contexto de apilamiento y mezcla contra nada →
+  capa en `z-index: auto` y el contenido en `relative z-[1]`.
+- Aire de cierre en cero → `padding-bottom` **pisa** el `pb-cierre` en vez de sumarse → estirar con `border-bottom` transparente.
+- Clases que no existen en el CSS → Tailwind sólo emite literales → nada de `bg-${x}`; mapas con las clases enteras (`SURFACE_BG`).
+- `-mx-6` en el DOM sin regla emitida (medido en este repo) → usar `[margin-inline:-1.5rem]`.
+- Warning «preloaded but not used» en Chrome → un CSS module de una sección de una sola ruta sale en un chunk que el prefetch del
+  header precarga en todas → utilidad arbitraria en vez de módulo.
+- `hidden` que no oculta → concatenar clases deja ganar la que aparece después en el CSS emitido → todo por `cn()` (`clsx` + `twMerge`).
+- `max-w-[16ch]` que estrangula un h1 → `ch` es relativo al font-size del propio elemento → la medida va en el span que lleva el cuerpo.
+- Disco que salta al aparecer la barra de scroll → ancho en `vw` → ancho en `%` del contenedor con `aspect-square`.
+- Superficie con `bg-*` propio queda lisa → el `grano` va por superficie, no se hereda → `grano` en cada sección/placa que pinta fondo.
+  Nunca en objetos (tarjetas, botones) ni en elementos que ya tengan `background-image`; lo vigila `check:grano`.
+- `grano-capa` rompió un `absolute` → la utilidad declaraba `position: relative` → no declara `position`; quien la usa ya está
+  posicionado. Su tile fija alfa 1 con `feFuncA` (`feTurbulence` también mete ruido en el alfa).
+- Subir la opacidad del grano baja contraste sin que `check:contrast` lo vea (lee tokens, no la capa) → alfas 0.03/0.05 topados por
+  `muted` sobre `bone` (4.67:1). Rehacer la cuenta a mano antes de tocarlos.
+- Tira de filtros que arrastra scroll horizontal → sangría negativa distinta del padding real del contenedor (ver §9.2).
+
+**React, hidratación y Next**
+- Contenido invisible con «reducir movimiento» → el servidor emite `style="opacity:0;…"` y React no borra en la hidratación un atributo
+  que el vnode no tiene → estado final con `!important` (`Motion.module.css`) + red de seguridad en la media query de `globals.css`.
+- Error #418 de hidratación en la home → `useReducedMotion` de motion ya es `true` en el primer render del cliente y cambia `<video>`
+  por `<img>` → `useSyncExternalStore` con snapshot de servidor `false` (`Hero.tsx`). Latente en `BandVideo`, `WallVideo`, `CardArc`.
+- Imagen con `clip-path` que nunca aparece dentro de un `StaggerGroup` → motion propaga etiquetas de variantes por contexto y pisa el
+  `whileInView` literal → declarar con `variants` usando las mismas etiquetas (`hidden` / `visible`).
+- SVG por `next/image` sale 0×0 sin error → el optimizador rompe los vectores → `<Image unoptimized>` para todo `.svg`.
+- SVG en `<img>` que no se estira → respeta su propio `preserveAspectRatio` → inline con `preserveAspectRatio="none"` (o `slice`
+  para que no escale en monitores anchos).
+- `Link` a un hash deja el foco en el origen → el router de Next resuelve el hash sin mover el foco → anclas, `mailto:`, `tel:` y
+  externos van como `<a>`; `Link` sólo para navegación interna.
+- Estado dependiente de la hora (hoy, abierto ahora) mal o con mismatch → el servidor no sabe la hora del visitante y la página se
+  cachea → pintar sin estado y resolver al montar (`lib/hours.ts`, `WhatsOn`, `Hero`).
+- «The result of getSnapshot should be cached» / render infinito → `getSnapshot` devolvía objeto nuevo → devolver primitivos (y
+  redondear a entero para no renderizar por medio píxel), como en `BackToTop`.
+- Carrusel que muestra todas o ninguna tarjeta → `IntersectionObserver` con el array de hijos capturado al montar se desincroniza al
+  reordenar y en Fast Refresh → medir geometría en cada pasada; tolerancia de 1px por DPR fraccional de Windows.
+- Carrusel que abre en la segunda tarjeta → reordenar hijos de un `snap-mandatory` fuerza re-anclaje, o falta `scroll-px` con el
+  `px` → efecto que vuelve `scrollLeft` a 0 cuando se resuelve `today` (no remontar con `key`: tira el foco).
+- Foco que vuelve a la nada al cerrar un diálogo → StrictMode monta dos veces y el segundo setup guarda el botón de cerrar → guardar
+  el foco de retorno sólo si `activeElement` está fuera del diálogo (`EventDialog`).
+- La página de atrás scrollea con un `<dialog>` abierto → `showModal()` inertiza pero no frena el scroll → `overflow: hidden` en el
+  body, restaurado en el `return` del efecto (mismo mecanismo que el drawer). El que scrollea es el propio `<dialog>` con `h-dvh`.
+- Preloader clavado 4 s en arranque en frío → la cortina dependía de JS para levantarse → server component con animación 100 % CSS.
+- `<video autoPlay>` sigue corriendo con reduced-motion → la media query no detiene reproducciones → componente cliente que muestra
+  el póster (misma caja).
+- Salto tras hidratar en el muro de video → decidir columnas por ancho en el cliente → renderizar todas y ocultar con CSS.
+- Recorte del hero de la home mal dimensionado → se midió con la fuente de respaldo → medir con `getBoundingClientRect` al montar,
+  en resize y en `document.fonts.ready`; offset de documento (`rect.top + scrollY`); arranque en `38%` / `76px` sin JS.
+- Animación que no se reinicia al cambiar el texto → React reusa el nodo → `key` compartida entre texto y medalla del pill.
+- Envoltorio `link ? Link : 'div'` no compila → la unión deja `href` opcional → una función aparte por rama (`FeaturedEventCard`).
+- Dos `<meta name="robots">` en el 404 → Next ya inyecta `noindex` → `not-found.tsx` declara `metadata` sin `robots`.
+- Honeypot que nunca atrapa o que rechaza todo → el schema leía otra clave, o un campo real se llamaba igual y `Object.fromEntries`
+  se quedó con el vacío → ver contrato de `website` en §9.2.
+- Zoom automático al enfocar un campo en iOS → font-size menor a 16px → `text-[16px]` en inputs.
+- Select que parece campo de texto → `appearance-none` sin flecha propia → flecha a 18px del borde con `pointer-events-none`.
+- Tarjeta entera clickeable con botón adentro → `<a>` dentro de `<a>` es HTML inválido → el link es el botón (`UpcomingCards`).
+- axe da contrastes falsos → mide a mitad del fundido de entrada; `networkidle` no significa página quieta → esperar a que terminen
+  las entradas antes de medir (`scripts/a11y.mjs`). Y axe saltea lo `aria-hidden`: la placa «TOGETHER» nunca la audita.
+- En Windows, cortar la terminal de `next start` no mata el proceso de node: sigue escuchando o deja tomado `.next`, y el build siguiente falla o sirve CSS viejo → antes de buildear, `netstat -ano` y `Stop-Process -Id <pid> -Force`; si ya pasó, borrar `.next`.
