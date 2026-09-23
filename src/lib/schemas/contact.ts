@@ -14,12 +14,13 @@ import { CONTACT_REASON_VALUES } from '@/content/contact-reasons';
  * fase: nunca «algo salió mal».
  */
 export const contactSchema = z.object({
-  name: z.string().trim().min(2, 'Enter your name so we know who is writing.'),
-  email: z.string().trim().email('Enter a valid email.'),
+  name: z.string().trim().min(2, 'Enter your name so we know who is writing.').max(100, 'Keep this under 100 characters.'),
+  email: z.string().trim().email('Enter a valid email.').max(254, 'That email is too long.'),
   /** Opcional de verdad: vacío pasa, con contenido tiene que parecer un teléfono. */
   phone: z
     .string()
     .trim()
+    .max(30, 'That phone number is too long.')
     .refine(
       (v) => v === '' || v.replace(/\D/g, '').length >= 10,
       'Enter a phone number with at least 10 digits, or leave it empty.',

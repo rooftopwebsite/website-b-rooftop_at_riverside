@@ -39,8 +39,8 @@ import type { ActionState } from './types';
    script y el paso a paso están en `docs/pedido-al-cliente.md`. */
 
 const newsletterSchema = z.object({
-  firstName: z.string().trim().min(2, 'Enter your first name.'),
-  email: z.string().trim().email('Enter a valid email.'),
+  firstName: z.string().trim().min(2, 'Enter your first name.').max(100, 'Keep this under 100 characters.'),
+  email: z.string().trim().email('Enter a valid email.').max(254, 'That email is too long.'),
   /* El mismo honeypot que el formulario de eventos. Ver la nota de arriba. */
   website: z.string().max(0).optional().default(''),
 });

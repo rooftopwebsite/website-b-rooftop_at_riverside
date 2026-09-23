@@ -108,11 +108,12 @@ const archivo = (tipos: readonly string[], etiqueta: string, maxMb: number, form
 
 /* ── Piezas que comparten los dos ───────────────────────────────────────── */
 
-const nombre = (campo: string) => z.string().trim().min(2, `Enter your ${campo}.`);
-const mail = z.string().trim().email('Enter a valid email.');
+const nombre = (campo: string) => z.string().trim().min(2, `Enter your ${campo}.`).max(100, 'Keep this under 100 characters.');
+const mail = z.string().trim().email('Enter a valid email.').max(254, 'That email is too long.');
 const telefono = z
   .string()
   .trim()
+  .max(30, 'That phone number is too long.')
   .refine((v) => v.replace(/\D/g, '').length >= 10, 'Enter a phone number with at least 10 digits.');
 
 /**
@@ -258,7 +259,7 @@ export const jobSchema = z.object({
    * libre alguien puede escribir «anything behind the bar», que es lo que
    * realmente escribe la gente.
    */
-  position: z.string().trim().min(2, 'What kind of work are you after?'),
+  position: z.string().trim().min(2, 'What kind of work are you after?').max(200, 'Keep this under 200 characters.'),
   employmentType: z.enum(['part-time', 'full-time'], {
     message: 'Part-time or full-time?',
   }),
@@ -270,8 +271,8 @@ export const jobSchema = z.object({
   lastName: nombre('last name'),
   phone: telefono,
   email: mail,
-  address: z.string().trim().min(5, 'Enter your street address.'),
-  cityState: z.string().trim().min(2, 'Enter your city and state.'),
+  address: z.string().trim().min(5, 'Enter your street address.').max(200, 'Keep this under 200 characters.'),
+  cityState: z.string().trim().min(2, 'Enter your city and state.').max(200, 'Keep this under 200 characters.'),
   zipcode: z
     .string()
     .trim()
@@ -284,7 +285,7 @@ export const jobSchema = z.object({
   education: tabla(EDU_ROWS),
   history: tabla(HISTORY_ROWS),
 
-  startDate: z.string().trim().min(1, 'When could you start?'),
+  startDate: z.string().trim().min(1, 'When could you start?').max(200, 'Keep this under 200 characters.'),
 
   /**
    * ⚠️ UN SOLO CAMPO PARA LAS DOS COSAS. El pie del papel dice «attach your

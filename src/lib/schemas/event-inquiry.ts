@@ -25,11 +25,12 @@ import {
  */
 export const inquirySchema = z
   .object({
-    name: z.string().trim().min(2, 'Your name is required.'),
-    email: z.string().trim().email('Enter a valid email.'),
+    name: z.string().trim().min(2, 'Your name is required.').max(100, 'Keep this under 100 characters.'),
+    email: z.string().trim().email('Enter a valid email.').max(254, 'That email is too long.'),
     phone: z
       .string()
       .trim()
+      .max(30, 'That phone number is too long.')
       .refine((v) => v.replace(/\D/g, '').length >= 10, 'Enter a phone number with at least 10 digits.'),
     company: z.string().trim().max(160).optional().default(''),
     /**
@@ -65,8 +66,8 @@ export const inquirySchema = z
       .optional()
       .default('')
       .refine((v) => v === '' || v >= hoyEnFlorida(), 'Pick a date from today on.'),
-    startTime: z.string().trim().optional().default(''),
-    endTime: z.string().trim().optional().default(''),
+    startTime: z.string().trim().max(200, 'Keep this under 200 characters.').optional().default(''),
+    endTime: z.string().trim().max(200, 'Keep this under 200 characters.').optional().default(''),
     guests: z.enum(GUEST_RANGES, { message: 'Choose a guest count.' }),
     foodTier: z.enum(FOOD_TIERS.map((t) => t.value) as [string, ...string[]], {
       message: 'Choose a food tier.',

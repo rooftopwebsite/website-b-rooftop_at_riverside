@@ -16,12 +16,13 @@ import { PRODUCT_CATEGORIES, VENDOR_NEEDS } from '@/content/market';
  * es el caso más común y no tiene que tildar nada para poder enviar.
  */
 export const marketVendorSchema = z.object({
-  business: z.string().trim().min(2, 'Tell us the name of your business.'),
-  name: z.string().trim().min(2, 'Enter your name so we know who is writing.'),
-  email: z.string().trim().email('Enter a valid email.'),
+  business: z.string().trim().min(2, 'Tell us the name of your business.').max(200, 'Keep this under 200 characters.'),
+  name: z.string().trim().min(2, 'Enter your name so we know who is writing.').max(100, 'Keep this under 100 characters.'),
+  email: z.string().trim().email('Enter a valid email.').max(254, 'That email is too long.'),
   phone: z
     .string()
     .trim()
+    .max(30, 'That phone number is too long.')
     .refine(
       (v) => v.replace(/\D/g, '').length >= 10,
       'Enter a phone number with at least 10 digits.',
@@ -44,7 +45,7 @@ export const marketVendorSchema = z.object({
     .trim()
     .min(20, 'Describe what you sell in a sentence or two, at least.')
     .max(2000, 'Keep it under 2000 characters.'),
-  dates: z.string().trim().min(2, 'Tell us which market dates you are after.'),
+  dates: z.string().trim().min(2, 'Tell us which market dates you are after.').max(200, 'Keep this under 200 characters.'),
   /**
    * Casillas múltiples. Un `<input type="checkbox">` repetido llega como
    * varios valores con el mismo nombre, y `Object.fromEntries` se queda con
