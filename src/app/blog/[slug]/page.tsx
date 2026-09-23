@@ -137,7 +137,7 @@ export default async function PostPage({ params }: Props) {
               src={post.image}
               alt={post.imageAlt}
               fill
-              priority
+              preload
               sizes="(min-width: 768px) 672px, 100vw"
               className="object-cover"
             />

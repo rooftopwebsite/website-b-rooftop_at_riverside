@@ -45,7 +45,7 @@ export default function Preloader() {
           alt=""
           width={303}
           height={322}
-          priority
+          loading="eager"
           className="rt-preloader-logo w-[150px] lg:w-[190px]"
         />
       </div>

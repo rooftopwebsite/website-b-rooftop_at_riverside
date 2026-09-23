@@ -297,7 +297,7 @@ export default function Hero({
 
   useEffect(() => {
     setStatus(venueStatus(venue.hours, 'bar'));
-  }, []);
+  }, [venue.hours]);
 
   useEffect(() => {
     const id = setInterval(() => setStatusIdx((i) => i + 1), STATUS_MS);
@@ -812,7 +812,7 @@ export default function Hero({
               src="/videos/hero-home.jpg"
               alt="The Rooftop at Riverside sign hanging over the sidewalk on Old 41, with the balcony and the palms behind it"
               fill
-              priority
+              preload
               sizes="(min-width: 1400px) 1288px, 100vw"
               className="object-cover"
             />

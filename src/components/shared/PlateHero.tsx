@@ -441,7 +441,7 @@ export default function PlateHero({
               src={photo}
               alt={photoAlt ?? ''}
               fill
-              priority
+              preload
               sizes="(min-width: 1400px) 1288px, 100vw"
               className="object-cover"
             />

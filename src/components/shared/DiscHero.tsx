@@ -195,7 +195,7 @@ export default function DiscHero({
                       src={photo}
                       alt={photoAlt ?? ''}
                       fill
-                      priority
+                      preload
                       sizes="(min-width: 1024px) 544px, 92vw"
                       className="object-cover"
                     />

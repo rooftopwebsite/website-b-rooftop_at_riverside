@@ -419,7 +419,7 @@ export default function Header({ hasBlog }: { readonly hasBlog: boolean }) {
                 alt=""
                 width={240}
                 height={254}
-                priority
+                loading="eager"
                 className="relative h-13 w-auto desk:h-20"
               />
             </span>

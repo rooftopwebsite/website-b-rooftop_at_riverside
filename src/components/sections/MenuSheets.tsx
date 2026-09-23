@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
@@ -127,7 +126,7 @@ function Lamina({
 }) {
   if (pdfUrl) {
     return (
-      <Link
+      <a
         href={pdfUrl}
         target="_blank"
         rel="noopener noreferrer"
@@ -135,7 +134,7 @@ function Lamina({
         className={className}
       >
         {children}
-      </Link>
+      </a>
     );
   }
 
@@ -397,7 +396,6 @@ export default function MenuSheets({
                 alt={pagina.alt}
                 width={ANCHO}
                 height={ALTO}
-                priority={indice === 0}
                 sizes="(min-width: 640px) 560px, 92vw"
                 className="block h-auto w-full"
               />

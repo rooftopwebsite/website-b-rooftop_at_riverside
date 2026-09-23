@@ -129,7 +129,7 @@ export default function PageHero({
               src={image as string}
               alt={imageAlt ?? ''}
               fill
-              priority
+              preload
               sizes="(max-width: 1343px) 100vw, 46vw"
               className="object-cover"
             />
