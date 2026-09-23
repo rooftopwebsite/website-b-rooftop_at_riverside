@@ -383,7 +383,7 @@ export default async function GameTruckPage() {
                 parked in the yard. Ten dollars gets you on a controller.
               </p>
 
-              <p className="m-0 mt-8 max-w-[52ch] font-body text-intro font-light text-ink">
+              <p className="m-0 mt-3 max-w-[52ch] font-body text-intro font-light text-ink">
                 The venue built the trailer for this. Get on for half an hour without booking
                 anything, or take the whole truck for two hours and bring your own crowd. The Game
                 Coach stays on board the whole time: sets up the screens, changes the game when the

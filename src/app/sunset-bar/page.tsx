@@ -297,6 +297,11 @@ export default async function SunsetBarPage() {
             hay vacío que llenar: el titular y la pastilla ocupan el ancho y los
             stickers se les montarían encima.
 
+            ⚠️ DESDE EL 2026-09-23 VAN EN TODOS LOS ANCHOS, más chicos abajo de
+            `desk`. Camila: «agregá los stickers que en tablet y mobile no
+            están». Se cuelgan de las esquinas de arriba de la banda, sobre la
+            ola, que es donde no tapan el titular.
+
             ⚠️ `aria-hidden` Y `pointer-events-none`: son decoración pura. No
             dicen nada que el texto no diga y no tienen que aparecer en el árbol
             de accesibilidad ni comerse un clic.
@@ -314,7 +319,7 @@ export default async function SunsetBarPage() {
           */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute top-[-236px] left-0 hidden w-[184px] -rotate-6 desk:block"
+            className="pointer-events-none absolute top-[-104px] left-0 w-[76px] -rotate-6 sm:top-[-150px] sm:w-[118px] desk:top-[-236px] desk:w-[184px]"
           >
             <span className="sticker-oscuro rt-flotar block">
               <Image
@@ -328,7 +333,7 @@ export default async function SunsetBarPage() {
           </span>
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute top-[-172px] right-0 hidden w-[164px] rotate-6 desk:block"
+            className="pointer-events-none absolute top-[-88px] right-0 w-[68px] rotate-6 sm:top-[-120px] sm:w-[104px] desk:top-[-172px] desk:w-[164px]"
           >
             <span className="sticker-oscuro rt-flotar-2 block">
               <Image
@@ -393,13 +398,17 @@ export default async function SunsetBarPage() {
             marcó con la flecha: un dato no puede ser más grande que un título.
             ══════════════════════════════════════════════════════════════════
           */}
-          <p className="mt-5 inline-block rounded-pill bg-cream px-5 py-2 text-center font-display text-d7 uppercase tracking-eyebrow text-deep sm:px-6 sm:py-2.5 lg:px-7 lg:py-3 lg:text-d6 desk:text-d5">
-            <span className="block sm:inline">{happyHour.days}</span>
-            <span aria-hidden="true" className="hidden sm:inline">
+          {/* ⚠️ UN SOLO RENGLÓN DESDE EL 2026-09-23. Camila: «pongamos esta pastilla
+              en una línea, que con el nuevo tamaño entra». Los dos `block` de
+              arriba eran para el cuerpo de 28px; a 18 la frase mide ~300px y
+              el `tracking` baja un poco en el teléfono para que sobre aire. */}
+          <p className="mt-5 inline-block whitespace-nowrap rounded-pill bg-cream px-4 py-2 text-center font-display text-d7 uppercase tracking-[0.06em] text-deep sm:px-6 sm:py-2.5 sm:tracking-eyebrow lg:px-7 lg:py-3 lg:text-d6 desk:text-d5">
+            <span>{happyHour.days}</span>
+            <span aria-hidden="true">
               {' '}
               ·{' '}
             </span>
-            <span className="block sm:inline">{happyHour.time}</span>
+            <span>{happyHour.time}</span>
           </p>
 
           {/*

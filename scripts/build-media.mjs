@@ -218,12 +218,20 @@ const FOTOS = [
      arriba, al sol, con las sillas blancas del rooftop detrás: de las 118 del
      banco es la única que muestra ese piso con mesas. La del yoga que se probó
      antes es del patio de abajo. Mismo 3:4 que las otras pestañas. */
+  /* ⚠️ Y SE REEMPLAZÓ EL MISMO DÍA POR UN CUADRO DEL VIDEO DEL HERO. Camila no
+     encontró la terraza en el banco pero sí en el video de la home: es el
+     segundo 44,0 de `_interno/video-sitio/home-hero-1080p.mp4` —la mesa con
+     sombrilla contra la baranda, con Old 41 detrás—, sacado a PNG sin pérdida
+     y elegido entre 56 cuadros por nitidez (varianza del laplaciano). El
+     original es 1920×1080, así que la derivada 3:4 sale de 810×1080 y va a
+     esa medida: agrandarla sólo inventaría píxeles. */
   {
-    src: '_RCZ4760.JPG',
+    src: 'terraza-video-44s.png',
     out: 'public/images/venue/patio-rooftop-table.webp',
-    w: 1080,
-    h: 1440,
-    q: 78,
+    w: 810,
+    h: 1080,
+    position: 'centre',
+    q: 82,
   },
 
   /* ── La foto del hero de `/whats-on`: el mismo 17:9 ─────────────────────

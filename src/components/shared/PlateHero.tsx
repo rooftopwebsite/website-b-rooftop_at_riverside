@@ -213,11 +213,13 @@ export default function PlateHero({
               encima del radio de 44px del marco, donde no hay borde recto que
               morder, y se veía como una cuña suelta.
 
-          ⚠️ EL CUERPO NO ES `text-banda` DESDE EL 2026-09-23: es la misma recta
-          en desktop (101px a 1440) pero más baja en el teléfono —38px a 390
-          contra 51—. A 51, «Southwest Florida's / first gaming truck» caía en
-          CINCO renglones en /game-truck. La interlínea 0.88 va escrita a mano
-          porque el token de `banda` la traía consigo.
+          ⚠️ EL CUERPO ES `text-banda` Y NO SE ACHICA. Estuvo unas horas del
+          2026-09-23 en un `clamp` propio más bajo en el teléfono (38px a 390)
+          para que «Southwest Florida's first gaming truck» no cayera en cinco
+          renglones. Camila lo frenó: «este tamaño de título de hero está re mal,
+          no puede ser tan chico». El arreglo correcto era el copy: el título de
+          /game-truck pasó a «Game night on wheels». Si un titular no entra, se
+          acorta el titular, no se achica el hero.
 
           ⚠️ LA PLACA FRENA A DOS RADIOS DE CADA BORDE (`100% − 4×radius`), y
           no a uno como antes. La esquina mide un radio y la foto tiene un
@@ -237,7 +239,7 @@ export default function PlateHero({
         */}
         <h1
           id={titleId}
-          className="relative z-10 mx-auto mt-5 mb-[-0.94em] text-center font-display text-[clamp(2.25rem,0.9rem+6vw,7rem)] leading-[0.88] font-extrabold uppercase text-ink lg:mt-7"
+          className="relative z-10 mx-auto mt-5 mb-[-0.94em] text-center font-display text-banda font-extrabold uppercase text-ink lg:mt-7"
         >
           <span className="block">{title}</span>
           <span className="relative mx-auto block w-fit max-w-[calc(100%-4*var(--radius-frame))] text-balance rounded-b-frame bg-bone grano px-[0.3em] pb-[0.12em] text-sunset-deep">

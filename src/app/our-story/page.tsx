@@ -284,7 +284,10 @@ export default async function OurStoryPage() {
               {/* 28 / 36 / 46 / 58 desde el 2026-09-23; arrancaba en 46. Camila: «en
                   mobile esta frase debe ser más chica». A 46 eran diez renglones
                   en un teléfono, o sea una pantalla entera de cita. */}
-              <p className="m-0 mx-auto max-w-[24ch] font-display text-d5 font-extrabold uppercase leading-[1.05] text-ink sm:text-d4 md:text-d3 lg:text-d2">
+              {/* ⚠️ Desde `md` la cita va al ancho de la caja (2026-09-23). Camila: «en
+                  tablet y desk haz que la frase se adapte al max ancho». Con
+                  24ch quedaban siete renglones angostos en el medio de la banda. */}
+              <p className="m-0 mx-auto max-w-[24ch] text-balance font-display text-d5 font-extrabold uppercase leading-[1.05] text-ink sm:text-d4 md:max-w-none md:text-d3 lg:text-d2">
                 {CHRIS.quote}
               </p>
             </blockquote>

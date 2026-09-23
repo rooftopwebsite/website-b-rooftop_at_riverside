@@ -141,7 +141,7 @@ export default function InquiryForm({
           We&rsquo;ll come back within one business day
         </Heading>
         <p className="mt-gap-bajada max-w-[54ch] text-lead text-body/80">{state.message}</p>
-        <p className="mt-[16px] max-w-[54ch] text-[16px] leading-[1.65] text-body/75">
+        <p className="mt-3 max-w-[54ch] text-[16px] leading-[1.65] text-body/75">
           {/* ⚠️ ACÁ SE PROMETÍA UN PDF ADJUNTO EN LA RESPUESTA y hoy nada lo
               adjunta: el envío real todavía no está enchufado (ver
               `lib/submissions.ts`). Prometer un archivo que no llega es la

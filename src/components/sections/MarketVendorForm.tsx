@@ -57,7 +57,7 @@ export default function MarketVendorForm() {
           We&rsquo;ll be in touch
         </Heading>
         <p className="mt-gap-bajada max-w-[52ch] text-lead text-body/80">{state.message}</p>
-        <p className="mt-[16px] max-w-[52ch] text-[16px] leading-[1.65] text-body/75">
+        <p className="mt-3 max-w-[52ch] text-[16px] leading-[1.65] text-body/75">
           If you would rather talk it through, call{' '}
           <a href={venue.phoneHref} className="link-texto font-bold">
             {venue.phone}
