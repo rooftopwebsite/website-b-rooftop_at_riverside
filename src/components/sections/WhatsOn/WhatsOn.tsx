@@ -3,139 +3,16 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
-import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
-import { EventPhoto, EventWhen, SpacePill } from '@/components/shared/EventCardParts';
+import { ArrowRight } from '@/components/shared/Icon';
 import { activeTrucks } from '@/content/trucks';
 import {
   type VenueEvent,
   type Weekday,
   shortDate,
 } from '@/content/events';
-
-const MAX_CARDS = 8;
-
-const gapTrack = (track: HTMLElement) => parseFloat(getComputedStyle(track).columnGap) || 0;
-
-const bordeTrack = (track: HTMLElement) => parseFloat(getComputedStyle(track).paddingLeft) || 0;
-
-const ANCHO = 'w-[calc(100%-20px)] md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)]';
-
-const VISIBLES = [
-  { mq: '(min-width: 1024px)', n: 3 },
-  { mq: '(min-width: 768px)', n: 2 },
-] as const;
-
-function venueToday(): { readonly weekday: Weekday; readonly date: string } {
-  const label = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York',
-    weekday: 'short',
-  }).format(new Date());
-  const map: Record<string, Weekday> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-  const date = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/New_York',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date());
-  return { weekday: map[label] ?? 0, date };
-}
-
-const CLOSED_DAYS: readonly Weekday[] = [1, 2];
-
-function EventCard({
-  event,
-  date,
-  isToday,
-  fuera,
-}: {
-  readonly event: VenueEvent;
-  readonly date: string;
-  readonly isToday: boolean;
-  readonly fuera: boolean;
-}) {
-  const entradas = event.ticketUrl;
-  const href = entradas ?? '/whats-on';
-  const cta = entradas ? 'Get tickets' : 'See the calendar';
-
-  const contenido = (
-    <>
-      <EventPhoto
-        event={event}
-        sizes="(min-width: 1024px) 400px, 260px"
-        brief={`${event.title} en ${event.space}, de noche, con gente.`}
-        tone="dark"
-        imgClassName="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
-      >
-        <SpacePill>{event.space}</SpacePill>
-      </EventPhoto>
-      <div className="relative z-10 flex flex-1 flex-col bg-deeper px-7 pt-6.5 pb-7">
-        <EventWhen event={event} date={date} isToday={isToday} fecha="text-cream" />
-
-        <h3 className="m-0 mt-3.5 font-display text-d4 font-bold uppercase leading-none text-paper">
-          {event.title}
-        </h3>
-        <p className="m-0 mt-3 line-clamp-2 min-h-[2lh] font-body text-base font-light text-paper/92">
-          {event.summary === event.title ? '' : event.summary}
-        </p>
-        <span className="mt-auto inline-flex w-fit items-center gap-2.25 border-b-2 border-sunset pt-4.5 pb-0.75 font-body text-base font-semibold text-cream transition-colors duration-300 ease-brand group-hover:text-sunset">
-          {cta}
-          <ArrowRight className="size-4 shrink-0 transition-transform duration-300 ease-brand group-hover:translate-x-1" />
-          {entradas ? <span className="sr-only">(opens in a new tab)</span> : null}
-        </span>
-      </div>
-    </>
-  );
-
-  const clases =
-    `group relative flex flex-col shrink-0 snap-start overflow-hidden rounded-shell bg-deeper sombra-card transition-[transform,opacity] duration-300 ease-brand hover:-translate-y-1.5 ${ANCHO} ${
-      fuera ? 'pointer-events-none opacity-0' : ''
-    }`;
-
-  return entradas ? (
-    <a href={entradas} target="_blank" rel="noopener noreferrer" className={clases} inert={fuera || undefined}>
-      {contenido}
-    </a>
-  ) : (
-    <Link href={href} className={clases} inert={fuera || undefined}>
-      {contenido}
-    </Link>
-  );
-}
-
-function CalendarCard({
-  fuera,
-  musicaLarga,
-}: {
-  readonly fuera: boolean;
-  readonly musicaLarga: string;
-}) {
-  return (
-    <Link
-      href="/whats-on"
-      inert={fuera || undefined}
-      className={`group flex shrink-0 snap-start flex-col justify-between gap-8 rounded-shell bg-sunset p-7 sombra-card text-ink transition-[background-color,opacity] duration-300 ease-brand hover:bg-sunset-hover lg:p-9 ${ANCHO} ${
-        fuera ? 'pointer-events-none opacity-0' : ''
-      }`}
-    >
-      <span className="font-body text-caption font-medium uppercase tracking-eyebrow text-ink">
-        Every week
-      </span>
-
-      <span>
-        <span className="block font-display text-d2 font-extrabold uppercase leading-[0.9]">
-          See the whole calendar
-        </span>
-        <span className="mt-4 block max-w-[26ch] font-body text-base font-light">
-          {musicaLarga}, Bingo on Wednesdays and DJ sets late on Saturdays.
-        </span>
-      </span>
-
-      <span className="grid size-13 place-items-center rounded-pill bg-ink text-sunset transition-transform duration-300 ease-brand group-hover:translate-x-1.5">
-        <ArrowRight className="size-5" />
-      </span>
-    </Link>
-  );
-}
+import { CalendarCard, EventCard } from './TarjetaEvento';
+import { Controles } from './Controles';
+import { CLOSED_DAYS, MAX_CARDS, VISIBLES, bordeTrack, gapTrack, venueToday } from './utils';
 
 export default function WhatsOn({
   proximos,
@@ -298,49 +175,16 @@ export default function WhatsOn({
 
           <CalendarCard musicaLarga={musicaLarga} fuera={dentro.length > 0 && !dentro[events.length]} />
         </div>
-        {maxIndex > 0 ? (
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-6.5 sm:gap-5">
-          <button
-            type="button"
-            onClick={() => scrollByCard(-1)}
-            disabled={!canPrev}
-            className="hidden size-13 shrink-0 place-items-center rounded-pill bg-cream md:grid text-deep transition-all duration-300 ease-brand hover:bg-paper active:scale-95 disabled:pointer-events-none disabled:bg-transparent disabled:text-muted-dark disabled:ring-1 disabled:ring-muted-dark/50"
-          >
-            <span className="sr-only">Previous events</span>
-            <ArrowLeft />
-          </button>
-          <div className="flex gap-2">
-            {slides.map((slide, i) => (
-              <button
-                key={slide}
-                type="button"
-                onClick={() => scrollToCard(i)}
-                aria-current={i === index ? 'true' : undefined}
-                className="group -mx-1 grid size-9 place-items-center rounded-pill sm:size-11"
-              >
-                <span className="sr-only">{slide}</span>
-                <span
-                  className={[
-                    'block size-2.25 rounded-pill transition-all duration-300 ease-brand',
-                    'group-hover:scale-140',
-                    i === index ? 'bg-sunset' : 'bg-muted-dark/40 group-hover:bg-muted-dark',
-                  ].join(' ')}
-                />
-              </button>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => scrollByCard(1)}
-            disabled={!canNext}
-            className="hidden size-13 shrink-0 place-items-center rounded-pill bg-cream md:grid text-deep transition-all duration-300 ease-brand hover:bg-paper active:scale-95 disabled:pointer-events-none disabled:bg-transparent disabled:text-muted-dark disabled:ring-1 disabled:ring-muted-dark/50"
-          >
-            <span className="sr-only">Next events</span>
-            <ArrowRight />
-          </button>
-        </div>
-        ) : null}
+        <Controles
+          maxIndex={maxIndex}
+          slides={slides}
+          index={index}
+          canPrev={canPrev}
+          canNext={canNext}
+          onPrev={() => scrollByCard(-1)}
+          onNext={() => scrollByCard(1)}
+          onDot={(i) => scrollToCard(i)}
+        />
       </div>
       <div
         id="trucks"
