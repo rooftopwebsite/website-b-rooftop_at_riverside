@@ -1,10 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
 import { ArrowRight } from '@/components/shared/Icon';
-import { activeTrucks } from '@/content/trucks';
 import {
   type VenueEvent,
   type Weekday,
@@ -125,8 +123,6 @@ export default function WhatsOn({
     ? { a: 'Closed today,', b: 'back Wednesday' }
     : { a: 'Coming up', b: 'in the yard' };
 
-  const trucks = activeTrucks();
-
   return (
     <section
       id="whats-on"
@@ -185,27 +181,6 @@ export default function WhatsOn({
           onNext={() => scrollByCard(1)}
           onDot={(i) => scrollToCard(i)}
         />
-      </div>
-      <div
-        id="trucks"
-        className="caja-ancha mt-12 border-t border-muted-dark/35 pt-7 lg:mt-22 lg:pt-11"
-      >
-        <div className="flex flex-wrap items-baseline justify-between gap-5">
-          <span className="font-body text-caption font-medium uppercase tracking-eyebrow text-muted-dark">
-            In the yard
-          </span>
-          <Link
-            href="/food-trucks"
-            className="group flex items-center gap-2 font-body text-base text-cream transition-colors duration-200 hover:text-paper"
-          >
-            All {trucks.length === 4 ? 'four' : trucks.length} trucks
-            <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-1" />
-          </Link>
-        </div>
-        <p className="mt-4.5 max-w-[62ch] font-body text-lead font-light text-paper">
-          {trucks.map((t) => t.name).join(' · ')}. The roster rotates, and each truck takes its own
-          orders and its own payment.
-        </p>
       </div>
     </section>
   );
