@@ -18,7 +18,7 @@ export default function PhotoDivider() {
         width={196}
         height={196}
         unoptimized
-        className="rt-sway absolute -top-14.5 left-4 z-40 hidden w-32.5 lg:left-30 lg:block lg:w-49"
+        className="rt-sway absolute -top-10 right-4 z-40 w-22 sm:-top-11 sm:w-25 md:-top-12 md:right-auto md:left-10 md:w-30 lg:-top-14.5 lg:left-30 lg:w-49"
       />
       <div className="relative h-[42rem] w-full md:h-[56rem] lg:h-[66vw] lg:max-h-[60rem] lg:min-h-[56rem]">
         <Image
@@ -66,7 +66,7 @@ export default function PhotoDivider() {
           className="rt-wave block max-h-[177px] w-[114%] max-w-none -ml-[7%]"
         />
       </div>
-      <div className="pointer-events-none absolute bottom-[-1px] left-1/2 z-30 w-[18%] -translate-x-1/2 translate-y-[32.9%] md:w-[11%] md:translate-y-[22.3%] lg:w-[16.11%] lg:max-w-[232px] lg:translate-y-[30.9%]">
+      <div className="pointer-events-none absolute bottom-[-1px] left-1/2 z-30 w-[18%] -translate-x-1/2 translate-y-[32.9%] sm:w-[17%] md:w-[15%] md:translate-y-[30.9%] lg:w-[16.11%] lg:max-w-[232px] lg:translate-y-[30.9%]">
         <Image
           src="/brand/emblem.svg"
           alt=""
