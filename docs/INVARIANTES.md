@@ -234,7 +234,7 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
 - `EVENT_FAMILIES` → ya no se lista en `/events`, pero genera `EVENT_SUBTYPES`, que valida en el servidor el desplegable de `InquiryForm`.
 - `src/app/actions/newsletter.ts` → se borró una vez por error: el sitio vigente **sí** tiene el formulario. Responde error a
   propósito mientras no exista `NEWSLETTER_SHEETS_WEBHOOK_URL` (va a planilla por Apps Script, no a Resend).
-- `src/components/shared/Motion.tsx` re-exporta `EASE_BRAND`, `DURATION`, `REVEAL_OFFSET`, `STAGGER` y `REVEAL_AMOUNT` desde
+- `src/components/shared/Motion/` re-exporta `EASE_BRAND`, `DURATION`, `REVEAL_OFFSET`, `STAGGER` y `REVEAL_AMOUNT` desde
   `lib/motion.ts` con los nombres viejos, para no romper call sites. `ScrollExit` se borró el 2026-09-23 (está en git).
 
 ### 9.2 Contratos entre archivos
@@ -300,10 +300,10 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
 - Variante `estante:` de `globals.css` ↔ la misma media query en el JS de `GameShelf`.
 - `MonthBar.tsx` · sangría negativa de la tira de filtros ↔ padding del contenedor (`GUTTER`). Si divergen, scroll horizontal en
   todo el documento.
-- `WhatsOn.tsx` · `px-6` del track = `gap-6` (24px); `scroll-px-6` acompaña al `px-6`; `ANCHO` decide cuántas tarjetas se ven;
+- `WhatsOn/` · `px-6` del track = `gap-6` (24px); `scroll-px-6` acompaña al `px-6`; `ANCHO` decide cuántas tarjetas se ven;
   `bordeTrack` lee el `px-borde` computado del DOM. Tope de tarjetas en 8.
 - Paddings que existen para la sombra ↔ token de sombra (alcance = `blur + spread`, lo mide `npm run check:sombras`):
-  `WhatsOn` `pt-3.5 pb-13` (`shadow-card-dark`), carrusel de `Motion.tsx` `pt-6 pb-21` (`shadow-float`), `YardSteps` `pt-2 pb-7`,
+  `WhatsOn` `pt-3.5 pb-13` (`shadow-card-dark`), carrusel de `Motion/` `pt-6 pb-21` (`shadow-float`), `YardSteps` `pt-2 pb-7`,
   `PhotoDivider` `py-13` (52px). Si cambia la sombra, se recalculan.
 - `BackToTop.tsx`: 37px al borde ≥ alcance de `shadow-card` (32); por eso no usa `shadow-float`.
 
