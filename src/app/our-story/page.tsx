@@ -60,7 +60,7 @@ export default async function OurStoryPage() {
                 {CHRIS.quote?.replace(/ (\S+) (\S+)$/, ' $1 $2')}
               </p>
             </blockquote>
-            <figcaption className="mt-8 font-body text-caption font-bold uppercase tracking-eyebrow text-cream">
+            <figcaption className="mt-8 font-body text-caption font-bold uppercase tracking-eyebrow text-paper">
               <cite className="not-italic">{CHRIS.name}</cite>, {CHRIS.role}
             </figcaption>
           </figure>
