@@ -90,7 +90,7 @@ export default function MenuSheets({
         <Heading level={2} id="carta-title" className="text-banda text-ink">
           The bar menu
         </Heading>
-        <p className="mx-auto mt-gap-bajada max-w-[58ch] text-lead text-body/80">
+        <p className="mx-auto mt-gap-bajada max-w-[58ch] text-pretty text-lead text-body/80">
           Cocktails made daily with fresh juice and house syrups, upstairs, by us. Drafts from
           breweries down the road, and the cans everybody actually orders.
         </p>
@@ -100,12 +100,10 @@ export default function MenuSheets({
               aria-hidden="true"
               className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-paper/25"
             />
-            <span
+            <Martini
               aria-hidden="true"
-              className="relative grid size-18 shrink-0 place-items-center rounded-pill bg-cream text-deep transition-transform duration-300 ease-brand group-hover:-rotate-8 lg:size-22"
-            >
-              <Martini className="size-9 lg:size-11" />
-            </span>
+              className="pointer-events-none absolute -bottom-12 -left-10 size-60 -rotate-12 text-paper/[0.07] transition-transform duration-500 ease-brand group-hover:-rotate-6 sm:top-1/2 sm:bottom-auto sm:-left-12 sm:size-64 sm:-translate-y-[46%] lg:-left-10 lg:size-72"
+            />
             <span className="relative flex flex-1 flex-col">
               <span className="font-body text-caption font-bold uppercase tracking-eyebrow text-cream">
                 {pdfUrl ? 'Opens as a PDF' : `${PAGINAS.length} pages`}
@@ -113,7 +111,7 @@ export default function MenuSheets({
               <span className="mt-gap-kicker font-display text-d4 font-extrabold uppercase leading-[0.95] text-paper lg:text-d3">
                 See the full menu
               </span>
-              <span className="mt-gap-bajada font-body text-base font-light text-paper/80">
+              <span className="mt-gap-bajada text-balance font-body text-base font-light text-paper/80">
                 Cocktails and specials, beer, wine and happy hour.
               </span>
             </span>
