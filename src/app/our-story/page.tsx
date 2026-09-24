@@ -45,28 +45,28 @@ export default async function OurStoryPage() {
         photoAlt="The yard at Rooftop at Riverside seen from the rooftop: picnic tables and umbrellas on the turf, with the building's roof edge on the right"
       />
       <AboutStory />
-      <SoftWave from="bone" to="mint" className="relative -mb-px" />
-      <Section tone="mint" band="xl" aria-label="What this place is for">
+      <SoftWave from="bone" to="teal600" className="relative -mb-px" />
+      <Section tone="teal" band="xl" aria-label="What this place is for">
         <Reveal>
           <figure className="m-0 text-center">
             <span
               aria-hidden="true"
-              className="block font-display text-d1 font-extrabold leading-[0.6] text-sunset-deep"
+              className="block font-display text-d1 font-extrabold leading-[0.6] text-cream"
             >
               &ldquo;
             </span>
             <blockquote className="m-0">
-              <p className="m-0 mx-auto max-w-[24ch] text-balance font-display text-d5 font-extrabold uppercase leading-[1.05] text-ink sm:text-d4 md:max-w-none md:text-d3 lg:text-d2">
-                {CHRIS.quote}
+              <p className="m-0 mx-auto max-w-[24ch] text-balance font-display text-d5 font-extrabold uppercase leading-[1.05] text-paper sm:text-d4 md:max-w-none md:text-d3 lg:text-d2">
+                {CHRIS.quote?.replace(/ (\S+) (\S+)$/, ' $1 $2')}
               </p>
             </blockquote>
-            <figcaption className="mt-8 font-body text-caption font-bold uppercase tracking-eyebrow text-deep">
+            <figcaption className="mt-8 font-body text-caption font-bold uppercase tracking-eyebrow text-cream">
               <cite className="not-italic">{CHRIS.name}</cite>, {CHRIS.role}
             </figcaption>
           </figure>
         </Reveal>
       </Section>
-      <SoftWave from="mint" to="deep" className="relative -mb-px" />
+      <SoftWave from="teal600" to="deep" className="relative -mb-px" />
 
       <Section tone="deep" band="lg" labelledBy="people-title">
         <div className="text-center">

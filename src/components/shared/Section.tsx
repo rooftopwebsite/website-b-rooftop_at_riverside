@@ -5,6 +5,7 @@ const TONES = {
   bone: 'bg-bone grano text-body',
   cream: 'bg-cream grano text-body',
   mint: 'bg-mint grano text-body',
+  teal: 'bg-teal600 grano text-paper on-dark',
   deep: 'bg-deep grano text-paper on-dark',
   none: '',
 } as const;
