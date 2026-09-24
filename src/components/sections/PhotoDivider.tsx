@@ -11,7 +11,7 @@ const PHOTOS = [
 
 export default function PhotoDivider() {
   return (
-    <section aria-hidden="true" className="relative z-[1] bg-ink">
+    <section aria-hidden="true" className="relative z-[4] bg-ink">
       <Image
         src="/brand/seal.svg"
         alt=""
