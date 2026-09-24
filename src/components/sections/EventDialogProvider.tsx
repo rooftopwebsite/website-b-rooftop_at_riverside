@@ -1,9 +1,12 @@
 'use client';
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import EventDialog, { type EventoAbierto } from '@/components/sections/EventDialog';
+import dynamic from 'next/dynamic';
+import type { EventoAbierto } from '@/components/sections/EventDialog';
 import { ArrowRight } from '@/components/shared/Icon';
 import type { VenueEvent } from '@/content/events';
+
+const EventDialog = dynamic(() => import('@/components/sections/EventDialog'), { ssr: false });
 
 const AbrirEvento = createContext<((a: EventoAbierto) => void) | null>(null);
 
@@ -12,7 +15,7 @@ export function EventDialogProvider({ children }: { readonly children: ReactNode
   return (
     <AbrirEvento.Provider value={setAbierto}>
       {children}
-      <EventDialog abierto={abierto} onClose={() => setAbierto(null)} />
+      {abierto ? <EventDialog abierto={abierto} onClose={() => setAbierto(null)} /> : null}
     </AbrirEvento.Provider>
   );
 }

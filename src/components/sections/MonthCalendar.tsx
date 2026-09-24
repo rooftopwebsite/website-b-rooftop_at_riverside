@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import EventDialog, { type EventoAbierto } from '@/components/sections/EventDialog';
+import dynamic from 'next/dynamic';
+import type { EventoAbierto } from '@/components/sections/EventDialog';
 import { Ticket } from '@/components/shared/Icon';
 import { formatTime, isTicketed, standsOut, type VenueEvent } from '@/content/events';
 import { dayNumber, monthDay, weekdayLong } from '@/lib/calendar';
 import { colorKey, eventDot } from '@/lib/event-color';
+
+const EventDialog = dynamic(() => import('@/components/sections/EventDialog'), { ssr: false });
 
 const WEEKDAY_HEADERS = [
   { corto: 'Sun', largo: 'Sunday' },
@@ -53,7 +56,7 @@ export default function MonthCalendar({
 
   return (
     <div className="mt-[28px]">
-      <EventDialog abierto={abierto} onClose={() => setAbierto(null)} />
+      {abierto ? <EventDialog abierto={abierto} onClose={() => setAbierto(null)} /> : null}
       <table className="hidden w-full table-fixed border-collapse lg:table">
         <caption className="sr-only">
           Events at {venueName} in {label}
