@@ -2,60 +2,19 @@
 
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Martini } from '@/components/shared/Icon';
 import { Heading } from '@/components/shared/Type';
 
 const PAGINAS = [
   {
     src: '/menus/sunset-bar-1.webp',
-    rotulo: 'Cocktails and specials',
     alt: 'Page one of the Sunset Bar menu: signature cocktails with their ingredients and prices, and the specials.',
   },
   {
     src: '/menus/sunset-bar-2.webp',
-    rotulo: 'Beer, wine and happy hour',
     alt: 'Page two of the Sunset Bar menu: bottled beer, draft beer, seltzers and canned beer, wine by the glass, and the happy hour box.',
   },
 ] as const;
-
-function Lamina({
-  pdfUrl,
-  rotulo,
-  onAmpliar,
-  className,
-  children,
-}: {
-  readonly pdfUrl: string | null;
-  readonly rotulo: string;
-  readonly onAmpliar: () => void;
-  readonly className: string;
-  readonly children: ReactNode;
-}) {
-  if (pdfUrl) {
-    return (
-      <a
-        href={pdfUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`Open the full menu, ${rotulo} (opens in a new tab)`}
-        className={className}
-      >
-        {children}
-      </a>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={onAmpliar}
-      aria-label={`Enlarge the menu: ${rotulo}`}
-      className={className}
-    >
-      {children}
-    </button>
-  );
-}
 
 const ANCHO = 1294;
 const ALTO = 2000;
@@ -63,8 +22,33 @@ const ALTO = 2000;
 const FLECHA =
   'grid size-12 shrink-0 place-items-center rounded-pill bg-bone text-deep shadow-md transition-all duration-300 ease-brand hover:bg-paper active:scale-95 disabled:pointer-events-none disabled:opacity-40 lg:size-13';
 
-const FLECHA_CARTA =
-  'grid size-12 shrink-0 place-items-center rounded-pill bg-deep text-paper shadow-lg ring-1 ring-ink/15 transition-all duration-300 ease-brand hover:bg-deeper hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-30 lg:size-14';
+const CARD =
+  'group relative flex w-full flex-col items-center gap-6 overflow-hidden rounded-frame bg-deep grano px-7 py-10 text-center sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1.5 sm:flex-row sm:gap-8 sm:px-10 sm:py-11 sm:text-left lg:gap-10 lg:px-12 lg:py-13';
+
+function CardCarta({
+  pdfUrl,
+  onAbrir,
+  children,
+}: {
+  readonly pdfUrl: string | null;
+  readonly onAbrir: () => void;
+  readonly children: ReactNode;
+}) {
+  if (pdfUrl) {
+    return (
+      <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className={CARD}>
+        {children}
+        <span className="sr-only"> (opens in a new tab)</span>
+      </a>
+    );
+  }
+
+  return (
+    <button type="button" onClick={onAbrir} className={CARD}>
+      {children}
+    </button>
+  );
+}
 
 export default function MenuSheets({
   pdfUrl = null,
@@ -110,54 +94,36 @@ export default function MenuSheets({
           Cocktails made daily with fresh juice and house syrups, upstairs, by us. Drafts from
           breweries down the road, and the cans everybody actually orders.
         </p>
-        <div className="mx-auto mt-9 grid w-full max-w-[560px] grid-cols-[auto_minmax(0,1fr)_auto] items-center justify-items-center gap-x-3 gap-y-5 md:max-w-[720px] md:grid-cols-[auto_minmax(0,560px)_auto] md:gap-x-5 lg:mt-12 lg:max-w-[760px]">
-          <button
-            type="button"
-            onClick={() => setIndice((i) => Math.max(0, i - 1))}
-            disabled={indice === 0}
-            aria-label="Previous page of the menu"
-            className={`${FLECHA_CARTA} col-start-1 row-start-1`}
-          >
-            <ArrowLeft className="size-5 lg:size-6" />
-          </button>
-          <p
-            aria-live="polite"
-            className="col-start-2 row-start-1 m-0 text-center font-body text-caption font-semibold tracking-eyebrow text-ink/70 uppercase md:col-span-3 md:col-start-1 md:row-start-2"
-          >
-            Page {indice + 1} of {PAGINAS.length}
-          </p>
-
-          <button
-            type="button"
-            onClick={() => setIndice((i) => Math.min(PAGINAS.length - 1, i + 1))}
-            disabled={indice === PAGINAS.length - 1}
-            aria-label="Next page of the menu"
-            className={`${FLECHA_CARTA} col-start-3 row-start-1`}
-          >
-            <ArrowRight className="size-5 lg:size-6" />
-          </button>
-
-          <div className="col-span-3 col-start-1 row-start-2 w-full md:col-span-1 md:col-start-2 md:row-start-1">
-            <Lamina
-              pdfUrl={pdfUrl}
-              rotulo={pagina.rotulo}
-              onAmpliar={() => setAbierto(true)}
-              className="group block w-full cursor-zoom-in overflow-hidden rounded-shell bg-paper sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1"
+        <div className="mx-auto mt-9 w-full max-w-[760px] lg:mt-12">
+          <CardCarta pdfUrl={pdfUrl} onAbrir={() => setAbierto(true)}>
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-paper/25"
+            />
+            <span
+              aria-hidden="true"
+              className="relative grid size-18 shrink-0 place-items-center rounded-pill bg-cream text-deep transition-transform duration-300 ease-brand group-hover:-rotate-8 lg:size-22"
             >
-              <Image
-                key={pagina.src}
-                src={pagina.src}
-                alt={pagina.alt}
-                width={ANCHO}
-                height={ALTO}
-                sizes="(min-width: 640px) 560px, 92vw"
-                className="block h-auto w-full"
-              />
-              <span className="block px-5 py-4 text-center font-body text-caption font-medium text-muted transition-colors duration-200 group-hover:text-terra">
-                {pdfUrl ? 'Tap to open the full menu' : 'Tap to enlarge'}
+              <Martini className="size-9 lg:size-11" />
+            </span>
+            <span className="relative flex flex-1 flex-col">
+              <span className="font-body text-caption font-bold uppercase tracking-eyebrow text-cream">
+                {pdfUrl ? 'Opens as a PDF' : `${PAGINAS.length} pages`}
               </span>
-            </Lamina>
-          </div>
+              <span className="mt-gap-kicker font-display text-d4 font-extrabold uppercase leading-[0.95] text-paper lg:text-d3">
+                See the full menu
+              </span>
+              <span className="mt-gap-bajada font-body text-base font-light text-paper/80">
+                Cocktails and specials, beer, wine and happy hour.
+              </span>
+            </span>
+            <span
+              aria-hidden="true"
+              className="relative grid size-16 shrink-0 place-items-center rounded-pill bg-sunset text-ink transition-all duration-300 ease-brand group-hover:scale-110 group-hover:bg-cream lg:size-18"
+            >
+              <ArrowUpRight className="size-6 transition-transform duration-300 ease-brand group-hover:translate-x-0.5 group-hover:-translate-y-0.5 lg:size-7" />
+            </span>
+          </CardCarta>
         </div>
       </div>
       {pdfUrl ? null : (
