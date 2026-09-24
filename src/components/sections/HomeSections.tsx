@@ -7,7 +7,7 @@ export function HowThisPlaceWorks() {
   return (
     <section
       aria-labelledby="how-title"
-      className="relative z-[3] banda-arco bg-bone grano pt-16 md:pt-20 lg:pt-24 desk:pt-32"
+      className="relative bg-bone grano pt-16 md:pt-20 lg:pt-24 desk:pt-30"
     >
       <StaggerGroup className="caja-ancha grid grid-cols-1 gap-7 lg:grid-cols-2 lg:gap-18">
         <RevealItem>

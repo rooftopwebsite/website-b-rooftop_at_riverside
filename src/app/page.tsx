@@ -28,10 +28,10 @@ export default async function HomePage() {
     <>
       <Hero fraseMusica={musicaCorta} fraseHappyHour={happyHour} />
       <WhatsOn proximos={proximos} musicaLarga={musicaLarga} />
+      <ThreeDoors />
+      <PhotoDivider />
       <HowThisPlaceWorks />
       <YardSteps fraseMusica={musicaLarga} />
-      <PhotoDivider />
-      <ThreeDoors />
       <EventsBanner />
       <FindUs />
     </>

@@ -51,7 +51,7 @@ export default function ThreeDoors() {
   return (
     <section
       aria-labelledby="doors-title"
-      className="relative bg-bone grano pt-16 pb-cierre md:pt-20 lg:pt-24 desk:pt-30"
+      className="relative z-[3] banda-arco bg-bone grano pt-16 pb-cierre md:pt-20 lg:pt-24 desk:pt-32"
     >
       <div className="caja-ancha">
         <Reveal>
