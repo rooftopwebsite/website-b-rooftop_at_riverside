@@ -84,6 +84,11 @@ for (const [route, expected] of Object.entries(PAGE_SEO)) {
     };
   });
 
+  // El blog se esconde (noindex, sin H1) mientras no haya notas: no es un error.
+  if (data.noindex && data.h1s.length === 0) {
+    console.log(`⏸  ${route} escondida (noindex, sin contenido): se saltea`);
+    continue;
+  }
   if (data.title !== expected.title) {
     issues.push(`title\n      esperado: ${expected.title}\n      real:     ${data.title}`);
   }

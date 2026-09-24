@@ -14,15 +14,19 @@ import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const revalidate = 600;
 
-export const metadata: Metadata = pageMeta({
-  route: '/blog',
-  image: {
-    url: '/images/venue/front-night-wide.webp',
-    width: 2048,
-    height: 1084,
-    alt: 'The corner of Rooftop at Riverside on Old US 41 at night, with orange umbrellas along the rooftop terrace and people at the patio tables below',
-  },
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const hayNotas = (await getPosts()).length > 0;
+  return pageMeta({
+    route: '/blog',
+    noIndex: !hayNotas,
+    image: {
+      url: '/images/venue/front-night-wide.webp',
+      width: 2048,
+      height: 1084,
+      alt: 'The corner of Rooftop at Riverside on Old US 41 at night, with orange umbrellas along the rooftop terrace and people at the patio tables below',
+    },
+  });
+}
 
 export default async function BlogPage() {
   const posts = await getPosts();
