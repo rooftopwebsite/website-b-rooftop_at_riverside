@@ -45,8 +45,8 @@ export default async function OurStoryPage() {
         photoAlt="The yard at Rooftop at Riverside seen from the rooftop: picnic tables and umbrellas on the turf, with the building's roof edge on the right"
       />
       <AboutStory />
-      <SoftWave from="bone" to="cream" className="relative -mb-px" />
-      <Section tone="cream" band="xl" aria-label="What this place is for">
+      <SoftWave from="bone" to="mint" className="relative -mb-px" />
+      <Section tone="mint" band="xl" aria-label="What this place is for">
         <Reveal>
           <figure className="m-0 text-center">
             <span
@@ -66,7 +66,7 @@ export default async function OurStoryPage() {
           </figure>
         </Reveal>
       </Section>
-      <SoftWave from="cream" to="deep" className="relative -mb-px" />
+      <SoftWave from="mint" to="deep" className="relative -mb-px" />
 
       <Section tone="deep" band="lg" labelledBy="people-title">
         <div className="text-center">
