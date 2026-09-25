@@ -339,6 +339,10 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
 - Cartas de truck ↔ dashboard: emparejadas por nombre normalizado (`truckPorNombre` / `menuDeTruck`); sin match cae a `menuImage`.
 - Nombre de truck en pantalla: siempre `nombreVisible(t)`, nunca `truck.name` directo (esconde los nombres no confirmados).
 - Fechas del calendario: `from` = `todayInVenue()`, nunca `toISOString()` (Vercel corre en UTC y borra el evento de la noche).
+- Caché de lo que viene del dashboard: 60 s (`REVALIDATE` en `lib/restoexp.ts`, `lib/blog.ts` y el `revalidate` de `/blog`). Con
+  3600 un cambio de horario tardó más de una hora: es stale-while-revalidate, así que el primer visitante tras vencer recibe la
+  versión vieja. No subirlo sin un webhook de revalidación del dashboard.
+- Horario de los trucks: sale de `content/hours.ts`, no de la base (`location_hours` tiene un solo horario por sede, el del bar).
 
 ### 9.3 Trampas técnicas medidas
 

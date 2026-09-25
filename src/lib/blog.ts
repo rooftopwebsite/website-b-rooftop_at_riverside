@@ -15,7 +15,7 @@ const readFeed = cache(async (): Promise<readonly PostFull[]> => {
   const url = `${FEED_ORIGIN}/api/public/restaurants/${RESTAURANT_ID}/blogs`;
   const res = await fetchConTimeout(url, {
     headers: { accept: 'application/json' },
-    next: { revalidate: 600, tags: ['restoexp', 'blog'] },
+    next: { revalidate: 60, tags: ['restoexp', 'blog'] },
   });
   if (!res.ok) throw new Error(`[blog] el feed respondió ${res.status} (${url})`);
   const body = (await res.json()) as { data?: unknown };

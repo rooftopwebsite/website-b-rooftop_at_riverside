@@ -10,7 +10,7 @@ import { BRAND } from '@/lib/brand';
 import { SITE_URL, breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 import '../prose-post.css';
 
-export const revalidate = 600;
+export const revalidate = 60;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {

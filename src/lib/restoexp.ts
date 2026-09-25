@@ -5,7 +5,7 @@ const URL_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const RESTAURANT_ID = process.env.NEXT_PUBLIC_SUPABASE_RESTAURANT_ID;
 
-const REVALIDATE = 3600;
+const REVALIDATE = 60;
 
 export interface RestoexpLocation {
   readonly id: string;
