@@ -24,12 +24,12 @@ export default function EventTypes() {
         id="tipos-title"
         className="mx-auto max-w-[18ch] text-center font-display text-banda font-extrabold uppercase"
       >
-        <span className="text-ink">Four kinds of event,</span>{' '}
-        <span className="text-sunset-deep">the whole place</span>
+        <span className="text-ink">Four kinds of events,</span>{' '}
+        <span className="text-sunset-deep">one rooftop</span>
       </h2>
       <p className="mx-auto mt-6 max-w-[60ch] text-center font-body text-lead font-light text-ink">
-        Whatever you are throwing, you get the rooftop bar, the yard and the four kitchens. What
-        changes is how the day is built around them.
+        Most parties here happen upstairs, at the bar and on the patio, with the four kitchens
+        cooking in the yard below. What changes is how the day is built around them.
       </p>
           </>
         }

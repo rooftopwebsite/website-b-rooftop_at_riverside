@@ -254,6 +254,9 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
   curva de la foto o sale de la página (1px de scroll horizontal a 360px).
 - Placa `bg-bone grano` ↔ `bg-bone grano` de la sección: si uno cambia de superficie sin el otro, aparece el rectángulo.
 - Titular de hero que no entra en dos renglones de `text-banda` → se acorta el copy (y `PAGE_SEO` con él). No se achica el cuerpo.
+- `photoMobileRatio` elige el marco de mobile (`portrait` 4:5 por defecto, `landscape` 3:2). `landscape` es para una foto
+  horizontal donde el 4:5 cortaría gente a los costados (`/events`, 2026-09-28): el marco baja y la bajada con los dos CTA entra en
+  la primera pantalla. Si hiciera falta otra foto para mobile, se recorta del original y no de la de desktop.
 
 **Alto del header**
 - Header real de 78px ↔ `top-[78px]` (`PilaConCabeza`), `top-[calc(78px+var(--cabeza))]` (`EventTypes`), `pt-24` (`GameShelf`,

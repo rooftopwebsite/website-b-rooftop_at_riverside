@@ -4,6 +4,11 @@ import type { ReactNode } from 'react';
 import type { Crumb } from '@/components/shared/PageHero';
 import { PhotoPending } from '@/components/shared/PendingData';
 
+const RATIO_MOVIL = {
+  portrait: 'aspect-[4/5]',
+  landscape: 'aspect-[3/2]',
+} as const;
+
 export default function PlateHero({
   question,
   title,
@@ -11,6 +16,7 @@ export default function PlateHero({
   titleId = 'page-title',
   lead,
   photo = null,
+  photoMobileRatio = 'portrait',
   photoAlt,
   photoBrief,
   crumbs,
@@ -22,6 +28,7 @@ export default function PlateHero({
   readonly titleId?: string;
   readonly lead?: ReactNode;
   readonly photo?: string | null;
+  readonly photoMobileRatio?: keyof typeof RATIO_MOVIL;
   readonly photoAlt?: string | null;
   readonly photoBrief?: string | null;
   readonly crumbs?: readonly Crumb[];
@@ -82,7 +89,8 @@ export default function PlateHero({
         </h1>
         <div
           className={[
-            'relative aspect-[4/5] w-full overflow-hidden rounded-frame',
+            'relative w-full overflow-hidden rounded-frame',
+            RATIO_MOVIL[photoMobileRatio],
             photo ? 'bg-fog' : '',
             'sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[17/9] lg:max-h-[calc(100svh-378px)]',
           ]

@@ -3,6 +3,7 @@ import { Car, Martini, MusicNote, Truck, UserCircle } from '@/components/shared/
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading } from '@/components/shared/Type';
+import { BUYOUT_OPTIONS } from '@/content/spaces';
 
 export default function EventSpaces() {
   return (
@@ -12,15 +13,46 @@ export default function EventSpaces() {
         band="lg"
         bandTop="none"
         innerClassName={PADDING_CRUCE}
-        labelledBy="incluye-title"
+        labelledBy="buyout-title"
         className="banda-arco z-[2] pb-cierre"
       >
         <h2
-          id="incluye-title"
+          id="buyout-title"
           className="mx-auto max-w-[14ch] text-center font-display text-banda font-extrabold uppercase"
         >
+          <span className="text-ink">Pick how much</span>{' '}
+          <span className="text-sunset-deep">of the place</span>
+        </h2>
+        <p className="bajada mx-auto mt-gap-bajada max-w-[56ch] text-center text-body/80">
+          Three ways to book it. Know which one you want before you send the form, and the quote
+          comes back faster.
+        </p>
+        <StaggerGroup as="ul" className="mt-bloque grid list-none gap-5 p-0 md:grid-cols-3">
+          {BUYOUT_OPTIONS.map((o) => (
+            <RevealItem as="li" key={o.slug} className="h-full">
+              <article className="relative flex h-full flex-col gap-2.5 rounded-shell bg-paper p-7 sombra-card lg:p-9">
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
+                />
+                <Eyebrow tone="terra">{o.label}</Eyebrow>
+                <Heading level={3} className="m-0 text-d5 leading-[1.02] text-ink">
+                  {o.title}
+                </Heading>
+                <p className="m-0 font-body text-base font-light leading-[1.6] text-body/80">
+                  {o.body}
+                </p>
+              </article>
+            </RevealItem>
+          ))}
+        </StaggerGroup>
+
+        <h2
+          id="incluye-title"
+          className="mx-auto mt-band-sm max-w-[14ch] lg:mt-band text-center font-display text-banda font-extrabold uppercase"
+        >
           <span className="text-ink">What comes with</span>{' '}
-          <span className="text-sunset-deep">every space</span>
+          <span className="text-sunset-deep">every booking</span>
         </h2>
         <StaggerGroup
           as="ul"

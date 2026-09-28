@@ -33,7 +33,7 @@ export const metadata: Metadata = pageMeta({
     url: '/og/events.jpg',
     width: 1200,
     height: 630,
-    alt: 'Guests with name badges seated along the bar at a private event at Rooftop at Riverside',
+    alt: 'Five friends in football jerseys and event wristbands smiling around a table on the rooftop patio at Rooftop at Riverside',
   },
 });
 
@@ -60,9 +60,10 @@ export default async function EventsPage({
         question="Looking for a private event venue in Bonita Springs?"
         title={'Your event, '}
         titleAccent="two stories up"
-        lead="A rooftop bar, a gated yard and four independent kitchens in downtown Bonita Springs, across from Riverside Park."
-        photo="/images/events/events-hero-wide.webp"
-        photoAlt="Guests with name badges seated along the bar at a private event at Rooftop at Riverside"
+        lead="Book the whole venue, just the upstairs, or the rooftop patio, in downtown Bonita Springs across from Riverside Park."
+        photo="/images/events/events-hero.webp"
+        photoMobileRatio="landscape"
+        photoAlt="Five friends in football jerseys and event wristbands smiling around a table on the rooftop patio at Rooftop at Riverside"
       >
         <ButtonLink href="#inquire" variant="primary" size="lg">
           Take me to the form
@@ -77,25 +78,16 @@ export default async function EventsPage({
         from="mint"
         id="how-events-work"
         eyebrow="How it works"
-        accent="Not a ballroom."
-        title="A venue with four kitchens"
-        lead="We're a venue with a bar, not a caterer. Here's the honest split."
+        accent="Why"
+        title="Rooftop?"
+        lead="We're a venue with a bar, not a caterer. Here is what that gets you."
         ours={{
-          label: 'Here',
+          label: 'Why Rooftop',
           rows: [
             'Four independent kitchens in the yard, so nobody is handed a plate they did not choose',
             'The bar is ours and our team runs it: open bar, drink tickets or consumption',
             'A stage with sound already on it, and gates that close for a ticketed door',
             'One point of contact from the first email to load-out',
-          ],
-        }}
-        theirs={{
-          label: 'A ballroom',
-          rows: [
-            'One kitchen and one set menu: everyone eats from the same list',
-            'The bar, the catering and the room are quoted as one package',
-            'A stage, a PA and a DJ booth get rented in for the night',
-            'The room, the caterer and the AV each come with their own contact',
           ],
         }}
       />
@@ -167,7 +159,7 @@ export default async function EventsPage({
                         {r.name}
                       </p>
                       <p className="m-0 shrink-0 font-display text-d6 font-bold leading-none tabular-nums text-sunset">
-                        {r.price ?? 'Ask'}
+                        {r.price ?? 'Ask us'}
                       </p>
                       <p className="m-0 basis-full font-body text-base font-light leading-[1.55] text-bone/85">
                         {r.body}

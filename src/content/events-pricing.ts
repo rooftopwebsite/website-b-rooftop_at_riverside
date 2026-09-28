@@ -45,8 +45,8 @@ export const FOOD_OPTIONS: readonly FoodOption[] = [
   {
     slug: 'upscale-catering',
     name: 'Upscale catering',
-    price: 'From $1,500',
-    body: 'A buffet option with specialty menus, provided by in house catering.',
+    price: null,
+    body: 'A buffet with specialty menus from an outside caterer, priced on what your group needs.',
   },
 ];
 
@@ -72,8 +72,8 @@ export const DRINK_OPTIONS: readonly FoodOption[] = [
   {
     slug: 'drink-tickets',
     name: 'Drink tickets',
-    price: '$14 each',
-    body: 'One ticket is one drink, top shelf aside. They get sold in fives, so ten, fifteen or twenty at a time.',
+    price: 'From $14',
+    body: 'One ticket is one drink, top shelf aside, bought in packs for the whole group.',
   },
   {
     slug: 'wristband',

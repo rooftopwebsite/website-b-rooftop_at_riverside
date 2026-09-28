@@ -82,6 +82,27 @@ export const SPACES: readonly Space[] = [
 
 export const spaceBySlug = (slug: string) => SPACES.find((s) => s.slug === slug);
 
+export const BUYOUT_OPTIONS = [
+  {
+    slug: 'full-venue',
+    label: 'Full venue',
+    title: 'The whole place',
+    body: 'The rooftop bar, the patio, the yard and the trucks, closed to the public and yours for the night.',
+  },
+  {
+    slug: 'upstairs',
+    label: 'Upstairs',
+    title: 'The second floor',
+    body: 'The Sunset Bar and the rooftop patio, private, with the four kitchens cooking in the yard below.',
+  },
+  {
+    slug: 'patio',
+    label: 'Patio',
+    title: 'The rooftop patio',
+    body: 'The open air patio next to the bar, for a smaller group that still wants the view.',
+  },
+] as const;
+
 export const EVENT_TYPES = [
   'Corporate event',
   'Holiday party',
@@ -109,14 +130,9 @@ export const FOOD_TIERS = [
     hint: 'Your guests order from the trucks on the night.',
   },
   {
-    value: 'Catered',
-    label: 'Catered',
-    hint: 'A set menu, plated or buffet, coordinated with the trucks.',
-  },
-  {
-    value: "Chef's Table",
-    label: "Chef's Table",
-    hint: 'A custom menu built with the truck owners for your event.',
+    value: 'Small Bites',
+    label: 'Small Bites',
+    hint: 'The trucks send out small bites for the whole group.',
   },
 ] as const;
 

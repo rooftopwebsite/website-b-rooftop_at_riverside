@@ -27,7 +27,7 @@ export default function CompareSlab({
   readonly lead?: string;
   readonly id: string;
   readonly ours: CompareColumn;
-  readonly theirs: CompareColumn;
+  readonly theirs?: CompareColumn;
   readonly from?: Surface;
 }) {
   return (
@@ -48,11 +48,19 @@ export default function CompareSlab({
           </Heading>
           {lead ? <p className="bajada mx-auto mt-gap-bajada text-paper/85">{lead}</p> : null}
         </div>
-        <div className="relative z-10 mt-18 -mb-32 grid items-stretch gap-14 lg:mt-22 lg:grid-cols-2 lg:gap-10">
-          {[
-            { col: ours, nuestro: true },
-            { col: theirs, nuestro: false },
-          ].map(({ col, nuestro }) => (
+        <div
+          className={[
+            'relative z-10 mt-18 -mb-32 grid items-stretch gap-14 lg:mt-22 lg:gap-10',
+            theirs ? 'lg:grid-cols-2' : 'mx-auto max-w-[40rem]',
+          ].join(' ')}
+        >
+          {(theirs
+            ? [
+                { col: ours, nuestro: true },
+                { col: theirs, nuestro: false },
+              ]
+            : [{ col: ours, nuestro: true }]
+          ).map(({ col, nuestro }) => (
             <div
               key={col.label}
               className="relative flex flex-col rounded-frame bg-bone grano px-6 pt-11 pb-10 text-center sm:px-10 sm:pt-12"

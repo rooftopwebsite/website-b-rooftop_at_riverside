@@ -295,17 +295,23 @@ const FOTOS = [
      tapando el tercio izquierdo, y `DSC04095` es el concurso de panchos del 4
      de julio, que es una fiesta pública y no un evento privado.
 
-     ⚠️ EL ORIGINAL ES VERTICAL —4000×6000— así que de acá sale una franja del
-     35 % del alto. `foco: 0.46` es lo que deja el cielorraso arriba y la barra
-     con las credenciales abajo; más arriba entra sólo techo y más abajo se
-     pierde la escena. */
+     ⚠️ REEMPLAZADA EL 2026-09-28. Maddie pidió un hero donde se vea gente
+     pasándola bien, en desktop y en mobile: con `_RCZ7372` el mobile quedaba
+     en el pase de un trago. Camila eligió `DSC09787`: cinco amigos en la mesa
+     del rooftop patio, de día, con las pulseras naranjas de evento puestas.
+
+     ⚠️ EL ORIGINAL ES HORIZONTAL Y CHICO —1616×1080—, así que va entero en
+     3:2 y sin agrandar: el marco lo recorta a 4:3, 16:9 o 17:9 según el
+     ancho, siempre al centro. En mobile `/events` pasa `photoMobileRatio=
+     "landscape"` y el marco es 3:2: con el 4:5 de siempre quedaba gente
+     cortada a los costados. Camila, 2026-09-28: «hagamos la imagen en mobile
+     más baja, que en pantalla se vea la bajada y los dos CTA». */
   {
-    src: '_RCZ7372.JPG',
-    out: 'public/images/events/events-hero-wide.webp',
-    w: 2576,
-    h: 1364,
-    foco: 0.46,
-    q: 78,
+    src: 'DSC09787.JPG',
+    out: 'public/images/events/events-hero.webp',
+    w: 1616,
+    h: 1080,
+    q: 80,
   },
 
   /* ── La foto del hero de `/contact`: la cuarta 17:9 ─────────────────────
@@ -851,7 +857,6 @@ const WEBP = {
   'public/images/venue/hero-truck-window.webp': 78,       // −18 %
   'public/images/venue/bar-cocktails-wide.webp': 74,      // −13 %
   'public/images/venue/whats-on-yard-wide.webp': 78,      // −18 %
-  'public/images/events/events-hero-wide.webp': 80,       // −18 %
   'public/images/venue/contact-bar-day-wide.webp': 86,    // −8 %
   'public/images/venue/join-stage-day-wide.webp': 68,     // −17 %
   'public/images/venue/story-yard-day-wide.webp': 78,     // −16 %
@@ -897,7 +902,12 @@ let entrada = 0;
 let salida = 0;
 
 console.log('── FOTOS ──────────────────────────────────────────────────────');
+/* `node scripts/build-media.mjs <texto>` regenera sólo las fotos cuyo destino
+   contiene ese texto, y saltea los videos. */
+const SOLO = process.argv[2];
+
 for (const f of FOTOS) {
+  if (SOLO && !f.out.includes(SOLO)) continue;
   const src = `${IN}/${f.src}`;
   if (!existsSync(src)) {
     console.error(`  ✗ falta el original: ${f.src}`);
@@ -942,7 +952,7 @@ for (const f of FOTOS) {
 }
 
 console.log('\n── VIDEOS ─────────────────────────────────────────────────────');
-for (const v of VIDEOS) {
+for (const v of SOLO ? [] : VIDEOS) {
   const src = `${IN}/${v.src}`;
   if (!existsSync(src)) {
     console.error(`  ✗ falta el original: ${v.src}`);

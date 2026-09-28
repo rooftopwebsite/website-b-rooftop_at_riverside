@@ -14,7 +14,7 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
     id: 'corporate',
   eyebrow: "Corporate",
   title: "Take the team somewhere they'll actually want to go",
-  lead: "The second floor closes to the public and the four kitchens serve at once, so nobody gets handed a plate they did not choose.",
+  lead: "Get the team out of the office and onto the roof. Cold drinks, four kitchens and room to actually talk, so the outing does the team building for you.",
   image: "/images/events/event-b.webp",
   imageAlt: "A corporate group gathered on the rooftop at Rooftop at Riverside",
   highlights: [
