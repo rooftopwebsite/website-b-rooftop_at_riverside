@@ -134,6 +134,11 @@ export const FOOD_TIERS = [
     label: 'Small Bites',
     hint: 'The trucks send out small bites for the whole group.',
   },
+  {
+    value: 'Catered',
+    label: 'Catered',
+    hint: 'A set menu, plated or buffet, coordinated with the trucks.',
+  },
 ] as const;
 
 export const BAR_TIERS = [

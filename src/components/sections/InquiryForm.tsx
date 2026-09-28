@@ -176,7 +176,7 @@ function FoodTier() {
       <p className="text-[15px] leading-[1.55] text-body/75">
         The trucks cook. We coordinate them. Pick how involved you want that to be.
       </p>
-      <div className="grid gap-[12px] sm:grid-cols-2">
+      <div className="grid gap-[12px] sm:grid-cols-3">
         {FOOD_TIERS.map((tier) => (
           <label
             key={tier.value}

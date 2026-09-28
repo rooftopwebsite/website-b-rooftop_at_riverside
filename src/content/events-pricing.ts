@@ -46,7 +46,7 @@ export const FOOD_OPTIONS: readonly FoodOption[] = [
     slug: 'upscale-catering',
     name: 'Upscale catering',
     price: null,
-    body: 'A buffet with specialty menus from an outside caterer, priced on what your group needs.',
+    body: 'A buffet with specialty menus, priced on what your group needs.',
   },
 ];
 
