@@ -31,8 +31,9 @@ export default function NewsletterSignup() {
   return (
     <section
       aria-labelledby={`${id}-title`}
-      className="rounded-shell bg-teal600 sombra-card px-6 py-10 [--lead-ink:var(--color-paper)] sm:px-9 lg:px-12 lg:py-12"
+      className="relative isolate overflow-hidden rounded-shell bg-teal600 sombra-card px-6 py-10 [--lead-ink:var(--color-paper)] sm:px-9 lg:px-12 lg:py-12"
     >
+      <span aria-hidden="true" className="piedra pointer-events-none absolute inset-0 -z-10" />
           <div className="grid items-center gap-9 md:grid-cols-[1fr_1.15fr] md:gap-10 lg:gap-16">
             <div>
               <Heading level={2} id={`${id}-title`} className="m-0 text-d3 text-paper">

@@ -271,6 +271,12 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
 - Por eso `VenueTabs` escribe su `tone` adentro (no por prop), `SpecSlab` no trae su `<Section>` (la pone el call site) y
   `JoinSwitch` queda fuera del guard: si pasa a ser `Section`, hay que revisar el ritmo de `/join-us`.
 - Un `div` oscuro o crema dentro de una sección clara es tarjeta, no banda: no cuenta para el guard (`HowToOrder`, precios de `/game-truck`).
+- Textura `piedra` (Figma nodo 2057:27897, `public/textures/piedra.webp`) va sólo en la cita de `/our-story` (`Section tone="teal"`) y
+  en la card del newsletter del footer (Camila, 2026-09-28). Está remapeada a grises por debajo del 50 %: en `hard-light` sólo
+  oscurece, y el blanco sobre `teal600` nunca baja de 4.59:1. La versión de Figma aclaraba y dejaba el texto en 2.6:1.
+  `SoftWave` la repite en su lado `teal600` para que no quede una tira lisa pegada a la cita: debajo de la ola cuando `to` es teal, y
+  recortada con `public/textures/ola-suave-mask.svg` cuando `from` es teal. La máscara es el `OLA_SUAVE.d` ya volteado: si cambia la
+  ola, se regenera.
 - Color de arranque de cada ola (`SoftWave` `from`, `CompareSlab` `from`) ↔ superficie de la sección de **arriba**. Se mueve cada vez
   que se reordena la página; `check:surfaces` también mira las olas.
 - `--radius-band` ↔ margen negativo de la sección que se monta ↔ `cierre-arco` (= `cierre` + `--radius-band`). La clase `.banda-arco`

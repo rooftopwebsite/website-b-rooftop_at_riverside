@@ -421,6 +421,13 @@
   background-blend-mode: multiply, screen;
 }
 
+@utility piedra {
+  background-image: url('/textures/piedra.webp');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: hard-light;
+}
+
 @utility grano-capa {
   isolation: auto;
 }

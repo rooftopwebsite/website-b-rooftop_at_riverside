@@ -84,6 +84,9 @@ export default function Section({
         .filter(Boolean)
         .join(' ')}
     >
+      {tone === 'teal' ? (
+        <span aria-hidden="true" className="piedra pointer-events-none absolute inset-0" />
+      ) : null}
       <div className={['relative z-[1]', WIDTHS[width], innerClassName].filter(Boolean).join(' ')}>
         {children}
       </div>
