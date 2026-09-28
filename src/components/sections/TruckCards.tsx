@@ -5,7 +5,8 @@ import Section from '@/components/shared/Section';
 import { SectionHead } from '@/components/shared/Type';
 import { cartasDeTrucks } from '@/content/menus';
 import { nombreVisible } from '@/content/trucks';
-import { HOURS } from '@/content/hours';
+import { getVenue } from '@/lib/venue';
+import type { Hours } from '@/types/content';
 
 const TOLDO = {
   rayas: 10,
@@ -47,9 +48,9 @@ function ToldoEdge() {
   );
 }
 
-function tramosDeTrucks() {
+function tramosDeTrucks(hours: readonly Hours[]) {
   const out: { label: string; horario: string; primero: string }[] = [];
-  HOURS.filter((h) => !/closed/i.test(h.trucks)).forEach((row) => {
+  hours.filter((h) => !/closed/i.test(h.trucks)).forEach((row) => {
     const ultimo = out[out.length - 1];
     if (ultimo && ultimo.horario === row.trucks) {
       ultimo.label = `${ultimo.primero} to ${row.day}`;
@@ -70,7 +71,7 @@ export default async function TruckCards({
   readonly head?: boolean;
 }) {
   const cartas = await cartasDeTrucks();
-  const tramos = tramosDeTrucks();
+  const tramos = tramosDeTrucks((await getVenue()).hours);
 
   return (
     <Section tone={tone} band="lg" bandTop={head ? undefined : 'none'} labelledBy={id}>

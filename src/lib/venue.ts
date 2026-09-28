@@ -1,7 +1,7 @@
 import { HOURS } from '@/content/hours';
 import type { Hours } from '@/types/content';
 import { BRAND } from './brand';
-import { getHours, getLocation } from './restoexp';
+import { getHours, getLocation, getTrucksLocation } from './restoexp';
 
 export interface Venue {
   readonly name: string;
@@ -25,12 +25,17 @@ export interface Venue {
 const telHref = (phone: string) => `tel:+1${phone.replace(/\D/g, '')}`;
 
 export async function getVenue(): Promise<Venue> {
-  const loc = await getLocation();
+  const [loc, sedeTrucks] = await Promise.all([getLocation(), getTrucksLocation()]);
 
-  const deLaBase = loc ? await getHours(loc.id) : null;
-  const hours: readonly Hours[] = deLaBase
-    ? deLaBase.map((fila, i) => ({ ...fila, trucks: HOURS[i]?.trucks ?? '' }))
-    : HOURS;
+  const [delBar, deLosTrucks] = await Promise.all([
+    loc ? getHours(loc.id) : null,
+    sedeTrucks ? getHours(sedeTrucks.id) : null,
+  ]);
+  const hours: readonly Hours[] = HOURS.map((fila, i) => ({
+    day: fila.day,
+    bar: delBar?.[i]?.range ?? fila.bar,
+    trucks: deLosTrucks?.[i]?.range ?? fila.trucks,
+  }));
 
   const phone = loc?.phone ?? BRAND.contact.phone;
 

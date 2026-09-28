@@ -351,7 +351,10 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
 - Caché de lo que viene del dashboard: 60 s (`REVALIDATE` en `lib/restoexp.ts`, `lib/blog.ts` y el `revalidate` de `/blog`). Con
   3600 un cambio de horario tardó más de una hora: es stale-while-revalidate, así que el primer visitante tras vencer recibe la
   versión vieja. No subirlo sin un webhook de revalidación del dashboard.
-- Horario de los trucks: sale de `content/hours.ts`, no de la base (`location_hours` tiene un solo horario por sede, el del bar).
+- Horario de los trucks: sale de la sede «Food Trucks» del dashboard (`location_hours` guarda un horario por sede). Se reconoce por
+  nombre normalizado (`esSedeDeTrucks`: contiene «foodtruck»); cualquier otra sede es la del bar. Sin fila, cada columna cae a
+  `content/hours.ts` por separado. Los menús de los trucks no cuelgan de esa sede: `menus` no tiene `location_id`, se emparejan por
+  nombre con el truck (ver arriba).
 
 ### 9.3 Trampas técnicas medidas
 

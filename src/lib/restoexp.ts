@@ -1,4 +1,3 @@
-import type { Hours } from '@/types/content';
 import { fetchConTimeout } from './http';
 
 const URL_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -69,11 +68,22 @@ async function query<T>(path: string): Promise<readonly T[]> {
   }
 }
 
-export async function getLocation(): Promise<RestoexpLocation | null> {
-  const rows = await query<RestoexpLocation>(
-    `locations?restaurant_id=eq.${RESTAURANT_ID}&select=*&limit=1`,
+const esSedeDeTrucks = (l: RestoexpLocation) => normalizar(l.name).includes('foodtruck');
+
+async function getLocations(): Promise<readonly RestoexpLocation[]> {
+  return query<RestoexpLocation>(
+    `locations?restaurant_id=eq.${RESTAURANT_ID}&select=*&order=sort_order,created_at`,
   );
-  return rows[0] ?? null;
+}
+
+export async function getLocation(): Promise<RestoexpLocation | null> {
+  const sedes = await getLocations();
+  return sedes.find((l) => !esSedeDeTrucks(l)) ?? null;
+}
+
+export async function getTrucksLocation(): Promise<RestoexpLocation | null> {
+  const sedes = await getLocations();
+  return sedes.find(esSedeDeTrucks) ?? null;
 }
 
 const DIAS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -87,7 +97,12 @@ function reloj(t: string | null): string {
   return `${h12}:${m} ${ampm}`;
 }
 
-export async function getHours(location: string): Promise<readonly Hours[] | null> {
+export interface DayHours {
+  readonly day: string;
+  readonly range: string;
+}
+
+export async function getHours(location: string): Promise<readonly DayHours[] | null> {
   const rows = await query<LocationHourRow>(
     `location_hours?location_id=eq.${location}&select=day_of_week,open_time,close_time,is_closed&order=day_of_week`,
   );
@@ -100,8 +115,7 @@ export async function getHours(location: string): Promise<readonly Hours[] | nul
     const r = porDia.get(d);
     return {
       day: DIAS[d],
-      bar: !r || r.is_closed ? 'Closed' : `${reloj(r.open_time)} – ${reloj(r.close_time)}`,
-      trucks: '',
+      range: !r || r.is_closed ? 'Closed' : `${reloj(r.open_time)} – ${reloj(r.close_time)}`,
     };
   });
 }
