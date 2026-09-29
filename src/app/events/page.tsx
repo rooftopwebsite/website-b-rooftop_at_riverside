@@ -264,7 +264,13 @@ export default async function EventsPage({
         titleId="inquire-title"
         lead="Send it over and you get real numbers back, within one business day."
         aside={
-          <div className="flex flex-col gap-9 md:grid md:grid-cols-2 md:items-start md:gap-8 lg:flex">
+          <div
+            className={
+              EVENTS_PDF
+                ? 'flex flex-col gap-9 md:grid md:grid-cols-2 md:items-start md:gap-8 lg:flex'
+                : 'flex flex-col gap-9'
+            }
+          >
             <div className="flex flex-col gap-1.5">
               <p className="font-body text-base font-bold leading-[1.5] text-ink">
                 Fewer than {SMALL_PARTY_MAX} guests?
@@ -283,6 +289,7 @@ export default async function EventsPage({
                 {venue.phone}
               </a>
             </div>
+            {EVENTS_PDF ? (
             <div className="rounded-shell bg-mint p-6">
               <Eyebrow tone="deep">Download</Eyebrow>
               <Heading level={3} role="card" className="mt-2.5">
@@ -307,6 +314,7 @@ export default async function EventsPage({
                 </p>
               </div>
             </div>
+            ) : null}
           </div>
         }
       >

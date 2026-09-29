@@ -64,12 +64,14 @@ export const ENHANCEMENTS: readonly { readonly name: string; readonly body: stri
 export const ENHANCEMENTS_NOTE =
   'Pricing depends on availability and group size, so these get quoted with your request.';
 
-export const EVENTS_PDF = {
-  label: 'Events Packages',
-  href: 'https://www.eatdrinkparadise.com/_files/ugd/526079_a57cd7cf0ea149ec9fc0a6edb745d1c1.pdf',
-  format: 'PDF',
-  size: '13 MB',
-} as const;
+export interface EventsPdf {
+  readonly label: string;
+  readonly href: string;
+  readonly format: string;
+  readonly size: string;
+}
+
+export const EVENTS_PDF: EventsPdf | null = null;
 
 export const DRINK_OPTIONS: readonly FoodOption[] = [
   {

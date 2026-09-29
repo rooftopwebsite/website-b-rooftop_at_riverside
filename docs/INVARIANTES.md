@@ -349,6 +349,8 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
 - `lib/motion.ts` es la única fuente de curvas y duraciones; las dos puntas del `inset` de `RevealMedia` salen del token `clip`.
 - Labels del desplegable de bebida en `content/spaces.ts` = labels de `DRINK_OPTIONS` en `content/events-pricing.ts`; los fees
   (gratuity, tax, reservation fee) se sacaron de `/events` el 2026-09-29 por pedido de Maddie; no se vuelven a publicar sin que lo pida. Precios de `/game-truck` y `/events` salen siempre de `content/`.
+- `EVENTS_PDF = null` (2026-09-29, Camila): el Events Packet del cliente quedó viejo y contradice los precios de `/events`, así que
+  la tarjeta de descarga no se muestra. Cuando llegue el nuevo, se vuelve a poner `{ label, href, format, size }` y reaparece sola.
 - Regla «renglón que empieza con precio = promo»: duplicada a propósito en `content/happy-hour.ts` (carga) y `UpcomingCards` (lectura).
 - Promos de `/sunset-bar`: `space === 'Sunset Bar'` + que el evento publique precios. Happy hour identificado por título. Nunca por tag.
 - Cartas de truck ↔ dashboard: emparejadas por nombre normalizado (`truckPorNombre` / `menuDeTruck`); sin match cae a `menuImage`.
