@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from 'react';
 import { CaretDown } from '@/components/shared/Icon';
 import { useField } from './contexto';
-import { InlineLabel, ErrorText, Contador } from './Primitivos';
+import { InlineLabel, ErrorText, Contador, muestraContador } from './Primitivos';
 import { INPUT_BASE, BOX_BASE, OK, BAD, FRASE } from './constantes';
 import type { BaseFieldProps, Option } from './tipos';
 
@@ -119,7 +119,7 @@ export function SentenceArea(
         maxLength={p.maxLength}
         onInput={p.maxLength ? (e) => setLargo(e.currentTarget.value.length) : undefined}
         {...aria}
-        aria-describedby={[p.maxLength ? `${fid}-count` : null, err ? eid : null].filter(Boolean).join(' ') || undefined}
+        aria-describedby={[muestraContador(largo, p.maxLength) ? `${fid}-count` : null, err ? eid : null].filter(Boolean).join(' ') || undefined}
         className={[BOX_BASE, err ? BAD : OK].join(' ')}
       />
       {p.maxLength ? <Contador id={`${fid}-count`} largo={largo} max={p.maxLength} /> : null}

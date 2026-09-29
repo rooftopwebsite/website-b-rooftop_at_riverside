@@ -5,14 +5,21 @@ export function Marquee({
   durationClassName = '',
   className = '',
   itemClassName = '',
+  label,
 }: {
   readonly children: ReactNode;
   readonly durationClassName?: string;
   readonly className?: string;
   readonly itemClassName?: string;
+  readonly label: string;
 }) {
   return (
-    <div className={['group/marquee overflow-hidden', className].filter(Boolean).join(' ')}>
+    <div
+      tabIndex={0}
+      role="region"
+      aria-label={label}
+      className={['group/marquee overflow-hidden', className].filter(Boolean).join(' ')}
+    >
       <div
         className={[
           'rt-marquee flex w-max group-hover/marquee:[animation-play-state:paused] group-focus-within/marquee:[animation-play-state:paused]',

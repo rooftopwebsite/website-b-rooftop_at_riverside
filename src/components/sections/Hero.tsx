@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useVenue } from '@/components/shared/VenueProvider';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
-import { ArrowUpRight, Martini, Moon, MusicNote, SunHorizon } from '@/components/shared/Icon';
+import { ArrowUpRight, Martini, Moon, MusicNote, Pause, Play, SunHorizon } from '@/components/shared/Icon';
 import { useCssVar } from '@/lib/css-var';
 import { venueStatus } from '@/lib/hours';
 
@@ -33,6 +33,8 @@ export default function Hero({
   readonly fraseHappyHour: string;
 }) {
   const frameRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [quieto, setQuieto] = useState(false);
   const plateRef = useRef<HTMLParagraphElement | null>(null);
   const [notch, setNotch] = useState<{ w: number; h: number } | null>(null);
   const [marco, setMarco] = useState<number | null>(null);
@@ -107,9 +109,17 @@ export default function Hero({
   }, [venue.hours]);
 
   useEffect(() => {
+    if (quieto || reducido) return;
     const id = setInterval(() => setStatusIdx((i) => i + 1), STATUS_MS);
     return () => clearInterval(id);
-  }, []);
+  }, [quieto, reducido]);
+
+  const alternarMovimiento = () => {
+    const video = videoRef.current;
+    if (quieto) video?.play().catch(() => {});
+    else video?.pause();
+    setQuieto(!quieto);
+  };
 
   const HAPPY = { text: fraseHappyHour, Icon: Martini, medalla: 'bg-cream text-ink' };
   const MUSIC = { text: fraseMusica, Icon: MusicNote, medalla: 'bg-river text-ink' };
@@ -149,8 +159,9 @@ export default function Hero({
           Bonita comes
           <span className="sr-only"> together</span>
         </h1>
+        <p className="sr-only">{messages.map((m) => m.text).join('. ')}</p>
         <p
-          aria-live="polite"
+          aria-hidden="true"
           className="mb-1.5 flex flex-1 basis-85 items-center gap-2.5 rounded-pill bg-mint py-1.5 pr-1.5 pl-5 sm:mb-0 sm:self-stretch lg:gap-3.5 lg:py-2 lg:pr-2 lg:pl-6.5"
         >
           <span className="min-w-0 flex-1 truncate font-body text-pastilla font-medium whitespace-nowrap text-ink">
@@ -189,6 +200,7 @@ export default function Hero({
             />
           ) : (
             <video
+              ref={videoRef}
               src="/videos/hero-home.mp4"
               poster="/videos/hero-home.jpg"
               autoPlay
@@ -210,6 +222,17 @@ export default function Hero({
             <span className="esquina-inversa top-0 left-full" />
             <span className="esquina-inversa top-full left-0" />
           </div>
+          {reducido ? null : (
+            <button
+              type="button"
+              onClick={alternarMovimiento}
+              aria-pressed={quieto}
+              className="absolute right-3 bottom-3 z-30 grid size-11 cursor-pointer place-items-center rounded-pill bg-deep/85 text-cream ring-1 ring-cream/25 backdrop-blur-[3px] transition-colors hover:bg-deep lg:right-4 lg:bottom-4"
+            >
+              <span className="sr-only">Pause the video and the rotating messages</span>
+              {quieto ? <Play className="size-4" /> : <Pause className="size-4" />}
+            </button>
+          )}
         </div>
       </div>
       <div className="flex flex-wrap items-end justify-between gap-8 pt-6.5 pb-cierre lg:pt-11">

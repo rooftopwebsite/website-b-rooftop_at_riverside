@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useField } from './contexto';
-import { Label, ErrorText, Wrap, Contador } from './Primitivos';
+import { Label, ErrorText, Wrap, Contador, muestraContador } from './Primitivos';
 import { BOX_BASE, OK, BAD } from './constantes';
 import type { BaseFieldProps } from './tipos';
 
@@ -25,7 +25,7 @@ export function TextAreaField(
         onInput={p.maxLength ? (e) => setLargo(e.currentTarget.value.length) : undefined}
         autoComplete={p.autoComplete}
         {...aria}
-        aria-describedby={[p.maxLength ? `${fid}-count` : null, err ? eid : null].filter(Boolean).join(' ') || undefined}
+        aria-describedby={[muestraContador(largo, p.maxLength) ? `${fid}-count` : null, err ? eid : null].filter(Boolean).join(' ') || undefined}
         className={[BOX_BASE, err ? BAD : OK].join(' ')}
       />
       {p.maxLength ? <Contador id={`${fid}-count`} largo={largo} max={p.maxLength} /> : null}

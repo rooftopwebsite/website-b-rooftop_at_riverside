@@ -211,7 +211,7 @@ function AgendaCard({
       <span className="flex min-w-0 flex-col">
         <span className="flex flex-wrap items-baseline gap-x-[8px] font-body text-caption font-bold uppercase tracking-[0.06em] tabular-nums text-body/70">
           {formatTime(event.startTime)}
-          <span className="font-medium tracking-[0.04em] text-body/55">{monthDay(date)}</span>
+          <span className="font-medium tracking-[0.04em] text-body/70">{monthDay(date)}</span>
         </span>
         <span className="mt-[3px] font-display text-d6 uppercase leading-[1.1] text-ink">
           {event.title}
@@ -251,7 +251,7 @@ function Chip({
   );
 
   const clases = [
-    'flex w-full gap-[6px] rounded-[5px] px-[5px] py-[3px] text-left text-[12px] leading-[1.35]',
+    'flex w-full gap-[6px] rounded-[5px] px-[5px] py-[4px] text-left text-[12px] leading-[1.35]',
     standsOut(event) ? 'bg-cream' : '',
     isTicketed(event) ? 'text-deep underline underline-offset-2 hover:text-terra' : 'text-ink',
   ]

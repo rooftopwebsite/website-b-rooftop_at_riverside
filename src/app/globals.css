@@ -721,6 +721,10 @@
     animation: rt-marquee-rev var(--marquee-duration, 44s) linear infinite;
     will-change: transform;
   }
+
+  :hover > .rt-marquee-rev {
+    animation-play-state: paused;
+  }
 }
 
 @keyframes rt-sway {

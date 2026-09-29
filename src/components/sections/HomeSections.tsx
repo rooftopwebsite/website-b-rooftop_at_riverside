@@ -57,7 +57,7 @@ export function ReviewsMarquee({
           />
         </div>
       </div>
-      <Marquee durationClassName="[--marquee-duration:45s]" className="mt-10" itemClassName="gap-5 pr-5">
+      <Marquee label="Reviews" durationClassName="[--marquee-duration:45s]" className="mt-10" itemClassName="gap-5 pr-5">
         {reviews.map((r, i) => (
           <figure
             key={i}

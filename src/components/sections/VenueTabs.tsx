@@ -77,6 +77,8 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
         <ul
           ref={tira}
           onScroll={alScroll}
+          tabIndex={0}
+          aria-label="Places in the building"
           className="-mx-gutter flex snap-x snap-mandatory list-none gap-4 overflow-x-auto px-gutter pb-1 scroll-px-gutter [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {VENUE_AREAS.map((a) => (

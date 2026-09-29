@@ -61,6 +61,22 @@ export function X(props: IconProps) {
   );
 }
 
+export function Pause(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M8 5v14M16 5v14" />
+    </Svg>
+  );
+}
+
+export function Play(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M7 5.5v13a.5.5 0 0 0 .76.43l10.4-6.5a.5.5 0 0 0 0-.86L7.76 5.07A.5.5 0 0 0 7 5.5Z" />
+    </Svg>
+  );
+}
+
 export function CaretDown(props: IconProps) {
   return (
     <Svg strokeWidth="2" {...props}>
