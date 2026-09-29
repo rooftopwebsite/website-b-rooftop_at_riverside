@@ -20,12 +20,13 @@ export default function EventSpaces() {
           id="buyout-title"
           className="mx-auto max-w-[14ch] text-center font-display text-banda font-extrabold uppercase"
         >
-          <span className="text-ink">Pick how much</span>{' '}
-          <span className="text-sunset-deep">of the place</span>
+          <span className="text-ink">3 space options,</span>{' '}
+          <span className="text-sunset-deep">1 venue</span>
         </h2>
         <p className="bajada mx-auto mt-gap-bajada max-w-[56ch] text-center text-body/80">
-          Three ways to book it. Know which one you want before you send the form, and the quote
-          comes back faster.
+          Whatever the occasion, we have a space to make it yours. Choose from our Full Upstairs,
+          Rooftop Patio, or Full Venue Rental options, giving you the flexibility to create the
+          perfect setting for celebrations, gatherings, corporate events, and everything in between.
         </p>
         <StaggerGroup as="ul" className="mt-bloque grid list-none gap-5 p-0 md:grid-cols-3">
           {BUYOUT_OPTIONS.map((o) => (

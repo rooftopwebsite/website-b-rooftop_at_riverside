@@ -321,14 +321,21 @@ const FOTOS = [
      amigas bajo las sombrillas turquesa, de día, con las caras al centro.
      Va en 3:2 y no en 4:5 porque el marco mobile de `/events` sigue siendo
      el bajo («que en pantalla se vea la bajada y los dos CTA»); `foco` sube
-     la franja hasta las caras. */
+     la franja hasta las caras.
+
+     ⚠️ LAS CABEZAS VAN ENTERAS Y DEBAJO DE LA PLACA. Camila, 2026-09-29:
+     «que nunca se corten las cabezas, necesitamos que siempre las caras estén
+     centradas y enteras en el recorte». La placa del titular muerde hasta el
+     21,5 % del alto del marco a 360 px (medido), así que la cabeza más alta
+     tiene que arrancar por debajo del 26 %. Con `foco: 0.35` arranca al 27 %
+     y el mentón más bajo queda al 76 %. Si se cambia `foco`, volver a medir. */
   {
     src: 'guests-group-day.jpg',
     out: 'public/images/events/events-hero-mobile.webp',
     w: 1080,
     h: 720,
     q: 80,
-    foco: 0.4,
+    foco: 0.35,
   },
 
   /* ── La foto del hero de `/contact`: la cuarta 17:9 ─────────────────────
