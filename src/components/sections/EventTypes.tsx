@@ -24,12 +24,13 @@ export default function EventTypes() {
         id="tipos-title"
         className="mx-auto max-w-[18ch] text-center font-display text-banda font-extrabold uppercase"
       >
-        <span className="text-ink">Four kinds of events,</span>{' '}
-        <span className="text-sunset-deep">one rooftop</span>
+        <span className="text-ink">3 space options,</span>{' '}
+        <span className="text-sunset-deep">1 venue</span>
       </h2>
       <p className="mx-auto mt-6 max-w-[60ch] text-center font-body text-lead font-light text-ink">
-        Most parties here happen upstairs, at the bar and on the patio, with the four kitchens
-        cooking in the yard below. What changes is how the day is built around them.
+        Whatever the occasion, we have a space to make it yours. Choose from our Full Upstairs,
+        Rooftop Patio, or Full Venue Rental options, giving you the flexibility to create the
+        perfect setting for celebrations, gatherings, corporate events, and everything in between.
       </p>
           </>
         }

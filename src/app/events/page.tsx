@@ -16,7 +16,6 @@ import {
   ENHANCEMENTS,
   ENHANCEMENTS_NOTE,
   EVENTS_PDF,
-  FEES,
   FOOD_OPTIONS,
   RENTAL,
   RENTAL_DEPOSIT,
@@ -63,6 +62,8 @@ export default async function EventsPage({
         lead="Book the whole venue, just the upstairs, or the rooftop patio, in downtown Bonita Springs across from Riverside Park."
         photo="/images/events/events-hero.webp"
         photoMobileRatio="landscape"
+        photoMobile="/images/events/events-hero-mobile.webp"
+        photoMobileAlt="Four friends smiling together for a photo under the turquoise umbrellas at Rooftop at Riverside"
         photoAlt="Five friends in football jerseys and event wristbands smiling around a table on the rooftop patio at Rooftop at Riverside"
       >
         <ButtonLink href="#inquire" variant="primary" size="lg">
@@ -76,18 +77,17 @@ export default async function EventsPage({
       <EventTypes />
       <CompareSlab
         from="mint"
-        id="how-events-work"
-        eyebrow="How it works"
+        id="why-rooftop"
         accent="Why"
         title="Rooftop?"
-        lead="We're a venue with a bar, not a caterer. Here is what that gets you."
+        lead="Give your next event a setting that guests will remember. With a unique atmosphere, flexible spaces, and a rooftop experience that sets the scene, Rooftop is the perfect place to bring people together. Whether you're celebrating, connecting, or simply creating a great night, we make it easy to host an event that feels special from start to finish."
         ours={{
           label: 'Why Rooftop',
           rows: [
-            'Four independent kitchens in the yard, so nobody is handed a plate they did not choose',
-            'The bar is ours and our team runs it: open bar, drink tickets or consumption',
-            'A stage with sound already on it, and gates that close for a ticketed door',
-            'One point of contact from the first email to load-out',
+            'Four independent kitchens in the Yard and a selection of preferred caterers, we have plenty of options to make your event deliciously your own.',
+            'Full-service bar featuring refreshing drinks, cocktails, and our team to help with whatever you need.',
+            "Two stages. The main stage downstairs in the Yard and the upstairs stage at the Rooftop Bar. There's plenty of room for live music, performances, and more.",
+            'One point of contact from start to finish. Coordinating details and connecting you with the right people, planning is seamless from start to finish.',
           ],
         }}
       />
@@ -107,35 +107,47 @@ export default async function EventsPage({
             <span className="text-sunset">up front</span>
           </h2>
           <p className="mx-auto mt-gap-bajada max-w-[56ch] font-body text-lead font-light text-paper/85">
-            Renting the second floor, the three ways to feed everyone, the three ways to run the
-            bar, and the fees that ride along. No quote needed to read this.
+            Renting the space, the three ways to feed everyone and the three ways to run the bar.
+            No quote needed to read this.
           </p>
         </div>
         <StaggerGroup as="ul" className="mt-bloque grid list-none gap-5 p-0 lg:grid-cols-2">
           <RevealItem as="li" className="h-full">
             <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
               <Heading level={3} role="label" className="text-cream">
-                Renting the second floor
+                Renting the space
               </Heading>
               <dl className="m-0 mt-6 grid gap-5 sm:grid-cols-2">
                 {RENTAL.map((r) => (
-                  <div key={r.days} className="border-t border-dashed border-bone/25 pt-4">
+                  <div key={r.label} className="border-t border-dashed border-bone/25 pt-4">
                     <dt className="font-body text-caption font-medium uppercase tracking-eyebrow text-muted-dark">
-                      {r.days}
+                      {r.label}
                     </dt>
-                    <dd className="m-0 mt-2 font-display text-d2 font-extrabold leading-none tabular-nums text-sunset">
-                      ${r.perHour.toLocaleString('en-US')}
-                      <span className="ml-1.5 font-body text-caption font-medium tracking-normal text-paper/80">
-                        / hour
-                      </span>
-                    </dd>
+                    {r.price ? (
+                      <dd className="m-0 mt-2 font-display text-d2 font-extrabold leading-none tabular-nums text-sunset">
+                        {r.price}
+                        {r.unit ? (
+                          <span className="ml-1.5 font-body text-caption font-medium tracking-normal text-paper/80">
+                            {r.unit}
+                          </span>
+                        ) : null}
+                      </dd>
+                    ) : (
+                      <dd className="m-0 mt-2 font-display text-d6 font-bold leading-none text-sunset">
+                        Inquire for pricing
+                      </dd>
+                    )}
+                    {r.extra ? (
+                      <dd className="m-0 mt-2 font-body text-base font-light text-bone/85">
+                        {r.extra}
+                      </dd>
+                    ) : null}
                   </div>
                 ))}
               </dl>
               <p className="m-0 mt-auto pt-6 font-body text-base font-light leading-[1.6] text-bone/85">
-                {RENTAL_MINIMUM_HOURS} hour minimum
-                {RENTAL_DEPOSIT ? ', and a deposit holds the date' : ''}. That is the second floor:
-                the rooftop bar, the patio, or both.
+                {RENTAL_MINIMUM_HOURS} hour minimum upstairs
+                {RENTAL_DEPOSIT ? ', and a deposit holds the date' : ''}.
               </p>
             </article>
           </RevealItem>
@@ -193,26 +205,6 @@ export default async function EventsPage({
                   {ENHANCEMENTS_NOTE}
                 </p>
               </div>
-            </article>
-          </RevealItem>
-          <RevealItem as="li" className="h-full lg:col-span-2">
-            <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
-              <Heading level={3} role="label" className="text-cream">
-                On top of that
-              </Heading>
-              <dl className="m-0 mt-5 grid gap-x-12 sm:grid-cols-3">
-                {FEES.map((f) => (
-                  <div
-                    key={f.label}
-                    className="flex items-baseline justify-between gap-4 border-b border-dashed border-bone/25 py-3.5 sm:border-b-0 sm:border-t sm:pt-4"
-                  >
-                    <dt className="font-body text-base font-light text-bone/85">{f.label}</dt>
-                    <dd className="m-0 font-display text-d6 font-bold leading-none tabular-nums text-sunset">
-                      {f.amount}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
             </article>
           </RevealItem>
         </StaggerGroup>

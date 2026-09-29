@@ -17,6 +17,8 @@ export default function PlateHero({
   lead,
   photo = null,
   photoMobileRatio = 'portrait',
+  photoMobile = null,
+  photoMobileAlt,
   photoAlt,
   photoBrief,
   crumbs,
@@ -29,6 +31,8 @@ export default function PlateHero({
   readonly lead?: ReactNode;
   readonly photo?: string | null;
   readonly photoMobileRatio?: keyof typeof RATIO_MOVIL;
+  readonly photoMobile?: string | null;
+  readonly photoMobileAlt?: string | null;
   readonly photoAlt?: string | null;
   readonly photoBrief?: string | null;
   readonly crumbs?: readonly Crumb[];
@@ -97,7 +101,26 @@ export default function PlateHero({
             .filter(Boolean)
             .join(' ')}
         >
-          {photo ? (
+          {photo && photoMobile ? (
+            <>
+              <Image
+                src={photoMobile}
+                alt={photoMobileAlt ?? photoAlt ?? ''}
+                fill
+                preload
+                sizes="(min-width: 640px) 1px, 100vw"
+                className="object-cover sm:hidden"
+              />
+              <Image
+                src={photo}
+                alt={photoAlt ?? ''}
+                fill
+                preload
+                sizes="(min-width: 1400px) 1288px, (min-width: 640px) 100vw, 1px"
+                className="object-cover max-sm:hidden"
+              />
+            </>
+          ) : photo ? (
             <Image
               src={photo}
               alt={photoAlt ?? ''}

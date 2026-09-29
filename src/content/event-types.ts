@@ -14,7 +14,7 @@ export const TIPOS_EVENTO: readonly TipoEvento[] = [
     id: 'corporate',
   eyebrow: "Corporate",
   title: "Take the team somewhere they'll actually want to go",
-  lead: "Get the team out of the office and onto the roof. Cold drinks, four kitchens and room to actually talk, so the outing does the team building for you.",
+  lead: "Bring your team together in a space that's perfect for gathering, connecting, and celebrating. From company gatherings and networking events to holiday parties and team celebrations, we offer flexible venue options to create a memorable experience for your guests.",
   image: "/images/events/event-b.webp",
   imageAlt: "A corporate group gathered on the rooftop at Rooftop at Riverside",
   highlights: [

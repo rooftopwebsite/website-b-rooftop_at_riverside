@@ -21,7 +21,7 @@ export default function CompareSlab({
   theirs,
   from = 'bone',
 }: {
-  readonly eyebrow: string;
+  readonly eyebrow?: string;
   readonly title: string;
   readonly accent?: string;
   readonly lead?: string;
@@ -35,10 +35,12 @@ export default function CompareSlab({
       <SoftWave from={from} to="deep" className="relative" />
       <Section tone="deep" band="lg" bandTop="sm" bandBottom="none" labelledBy={id} innerClassName="!z-[3]">
         <div className="mx-auto max-w-[46rem] text-center">
-          <Eyebrow tone="cream" className="justify-center">
-            {eyebrow}
-          </Eyebrow>
-          <Heading level={2} id={id} className="mt-gap-kicker">
+          {eyebrow ? (
+            <Eyebrow tone="cream" className="justify-center">
+              {eyebrow}
+            </Eyebrow>
+          ) : null}
+          <Heading level={2} id={id} className={eyebrow ? 'mt-gap-kicker' : undefined}>
             {accent ? (
               <>
                 <span className="text-sunset">{accent}</span>{' '}

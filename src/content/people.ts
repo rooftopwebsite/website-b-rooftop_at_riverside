@@ -12,15 +12,6 @@ export const PEOPLE: readonly Person[] = [
     quote:
       'We hope this park will be a staple for families in the community, a symbol for up and coming entrepreneurs and business owners, and a landmark our kids would be proud of.',
   },
-  {
-    name: 'Anthony Hayes',
-    role: 'General manager',
-    email: 'ahayes@eatdrinkparadise.com',
-    bio: null,
-    photo: '/images/venue/person-anthony-hayes.jpg',
-    photoAlt: 'Anthony Hayes behind the bar at Rooftop at Riverside, serving a cocktail',
-    quote: null,
-  },
 ];
 
 export const STORY_LEAD =

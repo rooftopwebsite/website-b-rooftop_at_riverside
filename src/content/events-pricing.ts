@@ -1,11 +1,8 @@
 export interface RentalRate {
-  readonly days: string;
-  readonly perHour: number;
-}
-
-export interface EventFee {
   readonly label: string;
-  readonly amount: string;
+  readonly price: string | null;
+  readonly unit: string | null;
+  readonly extra: string | null;
 }
 
 export interface FoodOption {
@@ -16,18 +13,24 @@ export interface FoodOption {
 }
 
 export const RENTAL: readonly RentalRate[] = [
-  { days: 'Sunday – Thursday', perHour: 750 },
-  { days: 'Friday – Saturday', perHour: 1250 },
+  {
+    label: 'Upstairs, Sunday – Thursday',
+    price: '$1,250',
+    unit: '/ 2 hours',
+    extra: '$250 each additional hour',
+  },
+  {
+    label: 'Upstairs, Friday – Saturday',
+    price: '$2,000',
+    unit: '/ 2 hours',
+    extra: '$500 each additional hour',
+  },
+  { label: 'The rooftop patio', price: '$1,000', unit: 'flat', extra: null },
+  { label: 'The full venue', price: null, unit: null, extra: null },
 ];
 
 export const RENTAL_MINIMUM_HOURS = 2;
 export const RENTAL_DEPOSIT = true;
-
-export const FEES: readonly EventFee[] = [
-  { label: 'Automatic gratuity', amount: '22%' },
-  { label: 'Tax', amount: '6.5%' },
-  { label: 'Reservation fee', amount: '$150' },
-];
 
 export const FOOD_OPTIONS: readonly FoodOption[] = [
   {
@@ -43,10 +46,10 @@ export const FOOD_OPTIONS: readonly FoodOption[] = [
     body: 'Every truck offers small bite options for medium to large parties.',
   },
   {
-    slug: 'upscale-catering',
-    name: 'Upscale catering',
-    price: null,
-    body: 'A buffet with specialty menus, priced on what your group needs.',
+    slug: 'outside-catering',
+    name: 'Outside catering',
+    price: 'Inquire for pricing',
+    body: 'Choose an alternative menu from the trucks with one of our preferred catering partners.',
   },
 ];
 
@@ -72,8 +75,8 @@ export const DRINK_OPTIONS: readonly FoodOption[] = [
   {
     slug: 'drink-tickets',
     name: 'Drink tickets',
-    price: 'From $14',
-    body: 'One ticket is one drink, top shelf aside, bought in packs for the whole group.',
+    price: 'From $12.99',
+    body: '$12.99 a ticket for beer, wine and seltzers, or $14.99 for beer, wine, seltzers and well liquor. One ticket is one drink.',
   },
   {
     slug: 'wristband',
@@ -84,8 +87,8 @@ export const DRINK_OPTIONS: readonly FoodOption[] = [
   {
     slug: 'open-bar',
     name: 'Open bar',
-    price: 'From $25',
-    body: '$25 per person per hour for wine, beer and seltzers, or $35 for the full liquor bar. Two hour minimum, and $15 per person for each hour after that.',
+    price: 'Inquire about pricing',
+    body: 'Give your guests access to a full bar throughout your event.',
   },
 ];
 

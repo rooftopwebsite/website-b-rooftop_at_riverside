@@ -257,6 +257,8 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
 - `photoMobileRatio` elige el marco de mobile (`portrait` 4:5 por defecto, `landscape` 3:2). `landscape` es para una foto
   horizontal donde el 4:5 cortaría gente a los costados (`/events`, 2026-09-28): el marco baja y la bajada con los dos CTA entra en
   la primera pantalla. Si hiciera falta otra foto para mobile, se recorta del original y no de la de desktop.
+- `photoMobile` monta una foto propia debajo de `sm` (`/events` desde el 2026-09-29, 3:2 desde el original). Las dos `Image` llevan
+  `preload`, y el `sizes` de `1px` en el ancho donde cada una está oculta es lo que evita bajar las dos en tamaño completo.
 
 **Alto del header**
 - Header real de 78px ↔ `top-[78px]` (`PilaConCabeza`), `top-[calc(78px+var(--cabeza))]` (`EventTypes`), `pt-24` (`GameShelf`,
@@ -341,8 +343,8 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
   lo **lee** `BackToTop` sumado a su piso de 72px. `BackToTop` va en `z-[60]`, debajo del `z-[70]` del banner de la casa.
 - `SITE_LEGAL_DOCS` arma el pie del sitio y el pie de cada documento legal. La URL de gift cards de Toast vive sólo en `brand.ts`.
 - `lib/motion.ts` es la única fuente de curvas y duraciones; las dos puntas del `inset` de `RevealMedia` salen del token `clip`.
-- Labels del desplegable de bebida en `content/spaces.ts` = labels de `DRINK_OPTIONS` en `content/events-pricing.ts`; el 22 % del
-  wristband es el de `FEES`, no un número propio. Precios de `/game-truck` y `/events` salen siempre de `content/`.
+- Labels del desplegable de bebida en `content/spaces.ts` = labels de `DRINK_OPTIONS` en `content/events-pricing.ts`; los fees
+  (gratuity, tax, reservation fee) se sacaron de `/events` el 2026-09-29 por pedido de Maddie; no se vuelven a publicar sin que lo pida. Precios de `/game-truck` y `/events` salen siempre de `content/`.
 - Regla «renglón que empieza con precio = promo»: duplicada a propósito en `content/happy-hour.ts` (carga) y `UpcomingCards` (lectura).
 - Promos de `/sunset-bar`: `space === 'Sunset Bar'` + que el evento publique precios. Happy hour identificado por título. Nunca por tag.
 - Cartas de truck ↔ dashboard: emparejadas por nombre normalizado (`truckPorNombre` / `menuDeTruck`); sin match cae a `menuImage`.

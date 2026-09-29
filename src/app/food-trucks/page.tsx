@@ -31,7 +31,7 @@ export default function FoodTrucksPage() {
         eyebrow="The yard"
         accent="Four kitchens."
         title="One yard."
-        lead="The trucks rotate. Each one is independently owned, sets its own menu and takes its own payment. We just give them the yard and the crowd."
+        lead="Each truck is independently owned, sets its own menu and takes its own payment. We just give them the yard and the crowd."
         from="paper"
         to="mint"
       />
@@ -42,7 +42,7 @@ export default function FoodTrucksPage() {
         eyebrow="How this works"
         accent="One yard,"
         title="five registers"
-        lead="It reads like a restaurant with several kitchens. It is not, and the difference shows up when you go to pay."
+        lead="Four Food Concepts: Give your guests the freedom to explore four independent kitchens, each with something different to offer."
         ours={{
           label: 'Here',
           rows: [
@@ -79,11 +79,11 @@ export default function FoodTrucksPage() {
 
           <div className="relative">
             <Heading level={2} id="rota-title" className="mx-auto max-w-[18ch] text-d4 lg:text-d3">
-              You never eat the same week twice
+              Something different for every craving
             </Heading>
             <p className="mx-auto mt-5 max-w-[52ch] font-body text-lead font-light leading-[1.5] text-ink">
-              The lineup changes. We announce which kitchens are coming, and from when, on
-              Instagram.
+              Each truck keeps its own menu, and now and then one of them runs a special. We post
+              those on Instagram.
             </p>
             <div className="mt-8 flex justify-center">
               <ButtonLink href={BRAND.social.instagram} variant="dark" external>

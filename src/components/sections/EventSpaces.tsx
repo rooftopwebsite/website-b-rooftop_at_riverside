@@ -1,5 +1,5 @@
 import { PADDING_CRUCE } from '@/components/shared/CompareSlab';
-import { Car, Martini, MusicNote, Truck, UserCircle } from '@/components/shared/Icon';
+import { Martini, MusicNote, Truck, UserCircle } from '@/components/shared/Icon';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading } from '@/components/shared/Type';
@@ -56,18 +56,10 @@ export default function EventSpaces() {
         </h2>
         <StaggerGroup
           as="ul"
-          className="mt-bloque grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 md:grid-cols-6 desk:grid-cols-5"
+          className="mt-bloque grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 desk:grid-cols-4"
         >
-          {INCLUIDO.map((item, i) => (
-            <RevealItem
-              as="li"
-              key={item.label}
-              className={[
-                'h-full desk:col-span-1',
-                i < 3 ? 'md:col-span-2' : 'md:col-span-3',
-                i === INCLUIDO.length - 1 && INCLUIDO.length % 2 === 1 ? 'sm:col-span-2' : '',
-              ].join(' ')}
-            >
+          {INCLUIDO.map((item) => (
+            <RevealItem as="li" key={item.label} className="h-full">
               <article className="flex h-full flex-col gap-2.5 rounded-ticket bg-paper p-6 sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1.5">
                 <item.Icon aria-hidden="true" className="size-8 text-sunset-deep" />
                 <Eyebrow tone="terra" className="mt-1.5">
@@ -91,27 +83,21 @@ export default function EventSpaces() {
 const INCLUIDO = [
   {
     label: 'The bar',
-    title: 'The Sunset Bar is ours',
+    title: 'The Sunset Bar',
     body: 'Our own team pours it. Open bar, drink tickets or consumption.',
     Icon: Martini,
   },
   {
-    label: 'The trucks',
+    label: 'The food',
     title: 'We coordinate the kitchens',
-    body: 'You pick a tier, we handle the vendors and the timing.',
+    body: "From food trucks to preferred caterers, we'll help you find the right fit for your event.",
     Icon: Truck,
   },
   {
     label: 'The stage',
     title: 'Sound is already here',
-    body: 'For live music or a DJ, on the stage that lives in the yard.',
+    body: '2 stages that live upstairs and in the Yard for ultimate entertainment.',
     Icon: MusicNote,
-  },
-  {
-    label: 'Getting here',
-    title: 'Come in your own car',
-    body: 'Street parking on Old 41, plus the public lots around Riverside Park.',
-    Icon: Car,
   },
   {
     label: 'The planning',

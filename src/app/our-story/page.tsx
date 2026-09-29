@@ -74,12 +74,12 @@ export default async function OurStoryPage() {
             Meet <span className="text-sunset">the team</span>
           </Heading>
           <p className="bajada mx-auto mt-gap-bajada max-w-[46ch] text-paper/85">
-            The family that dreamed the place up, and the person who runs it every night.
+            The family that dreamed the place up.
           </p>
         </div>
         <StaggerGroup
           as="ul"
-          className="mx-auto mt-bloque grid max-w-[46rem] list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2"
+          className="mx-auto mt-bloque grid max-w-[22rem] list-none grid-cols-1 gap-6 p-0"
         >
           {PEOPLE.map((persona) => (
             <RevealItem as="li" key={persona.name}>

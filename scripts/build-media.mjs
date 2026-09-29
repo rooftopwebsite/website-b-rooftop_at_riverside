@@ -314,6 +314,23 @@ const FOTOS = [
     q: 80,
   },
 
+  /* ── El recorte MOBILE del hero de `/events`, 3:2 ──────────────────────
+     Maddie, 2026-09-29: «para mobile, usar una más centrada y con gente
+     sonriendo». Sale del ORIGINAL vertical (ver la regla de Camila del
+     2026-09-28: el mobile nunca se saca de la franja de desktop): las cuatro
+     amigas bajo las sombrillas turquesa, de día, con las caras al centro.
+     Va en 3:2 y no en 4:5 porque el marco mobile de `/events` sigue siendo
+     el bajo («que en pantalla se vea la bajada y los dos CTA»); `foco` sube
+     la franja hasta las caras. */
+  {
+    src: 'guests-group-day.jpg',
+    out: 'public/images/events/events-hero-mobile.webp',
+    w: 1080,
+    h: 720,
+    q: 80,
+    foco: 0.4,
+  },
+
   /* ── La foto del hero de `/contact`: la cuarta 17:9 ─────────────────────
      ⚠️ ES LA CUARTA DERIVADA PARA `PlateHero` y va en la misma medida que las
      tres anteriores: el marco topea en 1288 CSS y el archivo va al 2× para
@@ -936,7 +953,8 @@ for (const f of FOTOS) {
    * Es la fracción del alto donde va el CENTRO de la franja. 0.5 es `centre`.
    */
   if (f.foco !== undefined) {
-    const { width, height } = await pipe.metadata();
+    const meta = await pipe.metadata();
+    const { width, height } = meta.autoOrient ?? meta;
     const alto = Math.min(height, Math.round((width * f.h) / f.w));
     const top = Math.max(0, Math.min(height - alto, Math.round(height * f.foco - alto / 2)));
     pipe = pipe.extract({ left: 0, top, width, height: alto });

@@ -213,8 +213,6 @@ export const AREAS_OF_INTEREST = [
   { value: 'rooftop', label: 'The rooftop bar' },
   { value: 'patio', label: 'The rooftop patio' },
   { value: 'yard', label: 'The Yard, gated' },
-  { value: 'stage', label: 'The stage and sound' },
-  { value: 'trucks', label: 'The food trucks' },
   { value: 'game-truck', label: 'The gaming truck' },
   { value: 'buyout', label: 'The whole place' },
 ] as const;
