@@ -259,6 +259,10 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
   la primera pantalla. Si hiciera falta otra foto para mobile, se recorta del original y no de la de desktop.
 - `photoMobile` monta una foto propia debajo de `sm` (`/events` desde el 2026-09-29, 3:2 desde el original). Las dos `Image` llevan
   `preload`, y el `sizes` de `1px` en el ancho donde cada una está oculta es lo que evita bajar las dos en tamaño completo.
+- `photoKeepFaces` (`/events`, 2026-09-29) pone `@container` en la caja y `lg:min-h-[42cqw]` en el marco: la franja nunca pasa de
+  ~2,4:1 aunque `max-h` la achate. Con la foto vertical de las cuatro amigas (4:3 del original, caras al centro) más apaisado que eso
+  no entran a la vez las cabezas debajo de la placa (que muerde ~18 %) y el mentón más bajo. Costo: en pantallas bajas los CTA del
+  hero bajan de la primera pantalla. Regla de Camila: la foto es la misma en todos los dispositivos y ninguna cabeza se corta.
 
 **Alto del header**
 - Header real de 78px ↔ `top-[78px]` (`PilaConCabeza`), `top-[calc(78px+var(--cabeza))]` (`EventTypes`), `pt-24` (`GameShelf`,

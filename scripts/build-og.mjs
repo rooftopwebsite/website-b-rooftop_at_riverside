@@ -61,7 +61,7 @@ const ENTRADAS = [
     position: SUBIDA ? 'centre' : 'attention',
   },
   { out: 'contact.jpg', src: 'public/images/venue/contact-bar-day-wide.webp', position: 'attention' },
-  { out: 'events.jpg', src: 'public/images/events/events-hero.webp', position: 'attention' },
+  { out: 'events.jpg', src: 'public/images/events/events-hero.webp', position: 'centre' },
   { out: 'join-us.jpg', src: 'public/images/venue/join-stage-day-wide.webp', position: 'attention' },
   { out: 'market.jpg', src: 'public/images/market/hero-yard-wide.webp', position: 'attention' },
   { out: 'our-story.jpg', src: 'public/images/venue/story-yard-day-wide.webp', position: 'attention' },

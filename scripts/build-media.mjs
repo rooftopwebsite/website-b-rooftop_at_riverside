@@ -305,13 +305,23 @@ const FOTOS = [
      ancho, siempre al centro. En mobile `/events` pasa `photoMobileRatio=
      "landscape"` y el marco es 3:2: con el 4:5 de siempre quedaba gente
      cortada a los costados. Camila, 2026-09-28: «hagamos la imagen en mobile
-     más baja, que en pantalla se vea la bajada y los dos CTA». */
+     más baja, que en pantalla se vea la bajada y los dos CTA».
+
+     ⚠️ REEMPLAZADA OTRA VEZ EL 2026-09-29. Camila: «la imagen debe ser la
+     misma en todos los dispositivos», así que desktop pasa a la de las
+     cuatro amigas bajo las sombrillas, igual que mobile. El original es
+     VERTICAL (4672×7008): se saca un 4:3 del ancho completo con las caras en
+     el centro vertical (`foco: 0.368`), y cada marco (4:3, 16:9, 17:9 y la
+     franja con `max-h`) lo recorta al centro. Las cuentas de por qué el
+     centro deja las cabezas enteras y debajo de la placa en todos los anchos
+     están en `docs/INVARIANTES.md`, junto a `photoKeepFaces`. */
   {
-    src: 'DSC09787.JPG',
+    src: 'guests-group-day.jpg',
     out: 'public/images/events/events-hero.webp',
-    w: 1616,
-    h: 1080,
-    q: 80,
+    w: 2400,
+    h: 1800,
+    q: 78,
+    foco: 0.368,
   },
 
   /* ── El recorte MOBILE del hero de `/events`, 3:2 ──────────────────────

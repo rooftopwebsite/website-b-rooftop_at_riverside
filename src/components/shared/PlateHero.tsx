@@ -19,6 +19,7 @@ export default function PlateHero({
   photoMobileRatio = 'portrait',
   photoMobile = null,
   photoMobileAlt,
+  photoKeepFaces = false,
   photoAlt,
   photoBrief,
   crumbs,
@@ -33,6 +34,7 @@ export default function PlateHero({
   readonly photoMobileRatio?: keyof typeof RATIO_MOVIL;
   readonly photoMobile?: string | null;
   readonly photoMobileAlt?: string | null;
+  readonly photoKeepFaces?: boolean;
   readonly photoAlt?: string | null;
   readonly photoBrief?: string | null;
   readonly crumbs?: readonly Crumb[];
@@ -43,7 +45,7 @@ export default function PlateHero({
       aria-labelledby={titleId}
       className="bg-bone grano pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]"
     >
-      <div className="caja-ancha">
+      <div className={photoKeepFaces ? 'caja-ancha @container' : 'caja-ancha'}>
         {crumbs && crumbs.length > 0 ? (
           <nav aria-label="Breadcrumb" className="mb-[20px]">
             <ol className="flex flex-wrap items-center gap-x-[8px] gap-y-[2px] text-[13px] text-body/75">
@@ -97,6 +99,7 @@ export default function PlateHero({
             RATIO_MOVIL[photoMobileRatio],
             photo ? 'bg-fog' : '',
             'sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[17/9] lg:max-h-[calc(100svh-378px)]',
+            photoKeepFaces ? 'lg:min-h-[42cqw]' : '',
           ]
             .filter(Boolean)
             .join(' ')}

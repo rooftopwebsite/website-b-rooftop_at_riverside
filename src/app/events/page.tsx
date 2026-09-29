@@ -32,7 +32,7 @@ export const metadata: Metadata = pageMeta({
     url: '/og/events.jpg',
     width: 1200,
     height: 630,
-    alt: 'Five friends in football jerseys and event wristbands smiling around a table on the rooftop patio at Rooftop at Riverside',
+    alt: 'Four friends smiling together for a photo under the turquoise umbrellas at Rooftop at Riverside',
   },
 });
 
@@ -63,8 +63,8 @@ export default async function EventsPage({
         photo="/images/events/events-hero.webp"
         photoMobileRatio="landscape"
         photoMobile="/images/events/events-hero-mobile.webp"
-        photoMobileAlt="Four friends smiling together for a photo under the turquoise umbrellas at Rooftop at Riverside"
-        photoAlt="Five friends in football jerseys and event wristbands smiling around a table on the rooftop patio at Rooftop at Riverside"
+        photoKeepFaces
+        photoAlt="Four friends smiling together for a photo under the turquoise umbrellas at Rooftop at Riverside"
       >
         <ButtonLink href="#inquire" variant="primary" size="lg">
           Take me to the form
