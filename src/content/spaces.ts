@@ -115,12 +115,11 @@ export const EVENT_TYPES = [
 ] as const;
 
 export const GUEST_RANGES = [
-  'Under 25',
-  '25 – 50',
-  '50 – 100',
-  '100 – 200',
-  '200 – 350',
-  '350+',
+  '24 or fewer',
+  '25 – 49',
+  '50 – 74',
+  '75 – 99',
+  '100 or more',
 ] as const;
 
 export const FOOD_TIERS = [
