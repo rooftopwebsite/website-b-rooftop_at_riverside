@@ -4,12 +4,12 @@ import AboutStory from '@/components/sections/AboutStory';
 import FindUs from '@/components/sections/FindUs';
 import HowToOrder from '@/components/sections/HowToOrder';
 import VenueTabs from '@/components/sections/VenueTabs';
-import { Reveal, RevealItem, StaggerGroup } from '@/components/shared/Motion';
+import { Reveal } from '@/components/shared/Motion';
 import { PhotoPending } from '@/components/shared/PendingData';
 import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
 import SoftWave from '@/components/shared/SoftWave';
-import { Heading } from '@/components/shared/Type';
+import { Eyebrow, Heading } from '@/components/shared/Type';
 import { PEOPLE } from '@/content/people';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 import { getVenue } from '@/lib/venue';
@@ -69,68 +69,53 @@ export default async function OurStoryPage() {
       <SoftWave from="teal600" to="deep" className="relative -mb-px" />
 
       <Section tone="deep" band="lg" labelledBy="people-title">
-        <div className="text-center">
-          <Heading level={2} id="people-title" className="text-banda">
-            Meet <span className="text-sunset">the team</span>
-          </Heading>
-          <p className="bajada mx-auto mt-gap-bajada max-w-[46ch] text-paper/85">
-            The family that dreamed the place up.
-          </p>
-        </div>
-        <StaggerGroup
-          as="ul"
-          className="mx-auto mt-bloque grid max-w-[22rem] list-none grid-cols-1 gap-6 p-0"
-        >
-          {PEOPLE.map((persona) => (
-            <RevealItem as="li" key={persona.name}>
-              <article className="group relative aspect-[3/4] overflow-hidden rounded-shell bg-deeper sombra-card">
-                {persona.photo ? (
-                  <Image
-                    src={persona.photo}
-                    alt={persona.photoAlt ?? persona.name}
-                    fill
-                    sizes="(min-width: 640px) 340px, 90vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <PhotoPending
-                    brief={`Retrato de ${persona.name}, vertical 3:4, en el local.`}
-                    ratio="aspect-[3/4]"
-                    tone="dark"
-                  />
-                )}
+        <Reveal>
+          <div className="mx-auto grid max-w-[60rem] items-center gap-9 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-12 lg:gap-16">
+            <div className="relative mx-auto aspect-[3/4] w-full max-w-[24rem] overflow-hidden rounded-shell bg-deeper sombra-card md:max-w-none">
+              {CHRIS.photo ? (
+                <Image
+                  src={CHRIS.photo}
+                  alt={CHRIS.photoAlt ?? CHRIS.name}
+                  fill
+                  sizes="(min-width: 960px) 420px, (min-width: 768px) 42vw, 384px"
+                  className="object-cover"
+                />
+              ) : (
+                <PhotoPending
+                  brief={`Retrato de ${CHRIS.name}, vertical 3:4, en el local.`}
+                  ratio="aspect-[3/4]"
+                  tone="dark"
+                />
+              )}
+            </div>
 
-                <div className="absolute inset-x-0 bottom-0 translate-y-19 bg-paper p-5 transition-transform duration-200 ease-brand max-lg:translate-y-0 group-hover:translate-y-0 group-focus-within:translate-y-0">
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-0 bg-mint opacity-0 transition-opacity duration-200 ease-brand max-lg:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100"
-                  />
-
-                  <div className="relative">
-                    <Heading level={3} className="text-d6 leading-none text-ink">
-                      {persona.name}
-                    </Heading>
-                    <div className="mt-3 h-14 overflow-hidden">
-                      <p className="m-0 font-body text-caption font-bold uppercase tracking-eyebrow text-ink/70">
-                        {persona.role}
-                      </p>
-                      {persona.email ? (
-                        <p className="m-0 mt-1.5 font-body text-base leading-[1.4]">
-                          <a
-                            href={`mailto:${persona.email}`}
-                            className="link-texto break-all text-ink"
-                          >
-                            {persona.email}
-                          </a>
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </RevealItem>
-          ))}
-        </StaggerGroup>
+            <div className="flex flex-col max-md:text-center">
+              <Eyebrow tone="cream" className="max-md:justify-center">
+                {CHRIS.role}
+              </Eyebrow>
+              <Heading level={2} id="people-title" className="mt-gap-kicker text-banda">
+                Meet <span className="text-sunset">the founder</span>
+              </Heading>
+              <p className="bajada mt-gap-bajada max-w-[46ch] text-paper/85 max-md:mx-auto">
+                The Magnus family spent four years planning Rooftop at Riverside, and Chris is still
+                the one running it. The photo is the family on the Old 41 corner, before the
+                building went up.
+              </p>
+              <div className="mt-bloque border-t border-dashed border-bone/25 pt-5">
+                <p className="m-0 font-display text-d5 font-extrabold uppercase leading-none text-paper">
+                  {CHRIS.name}
+                </p>
+                {CHRIS.email ? (
+                  <p className="m-0 mt-3 font-body text-base leading-[1.4]">
+                    <a href={`mailto:${CHRIS.email}`} className="link-texto break-all text-paper">
+                      {CHRIS.email}
+                    </a>
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </Reveal>
       </Section>
       <VenueTabs />
       <HowToOrder />
