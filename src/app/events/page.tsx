@@ -32,7 +32,7 @@ export const metadata: Metadata = pageMeta({
     url: '/og/events.jpg',
     width: 1200,
     height: 630,
-    alt: 'Four friends smiling together for a photo under the turquoise umbrellas at Rooftop at Riverside',
+    alt: 'Five friends in matching orange curly wigs and bright tropical outfits, laughing together at a night party at Rooftop at Riverside',
   },
 });
 
@@ -64,7 +64,7 @@ export default async function EventsPage({
         photoMobileRatio="landscape"
         photoMobile="/images/events/events-hero-mobile.webp"
         photoKeepFaces
-        photoAlt="Four friends smiling together for a photo under the turquoise umbrellas at Rooftop at Riverside"
+        photoAlt="Five friends in matching orange curly wigs and bright tropical outfits, laughing together at a night party at Rooftop at Riverside"
       >
         <ButtonLink href="#inquire" variant="primary" size="lg">
           Take me to the form

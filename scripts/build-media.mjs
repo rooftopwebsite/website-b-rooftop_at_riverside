@@ -315,13 +315,21 @@ const FOTOS = [
      franja con `max-h`) lo recorta al centro. Las cuentas de por qué el
      centro deja las cabezas enteras y debajo de la placa en todos los anchos
      están en `docs/INVARIANTES.md`, junto a `photoKeepFaces`. */
+  /* ⚠️ REEMPLAZADA EL 2026-10-02 por pedido de Chris (la de las sombrillas
+     era la misma de Gayborhood). Original `_interno/fotos/de-camila/
+     DSC02165.JPG`, vertical 4672×7008: cinco amigas con pelucas naranjas, de
+     noche. Las caras van de borde a borde, así que el recorte usa TODO el
+     ancho y nunca se recorta de costado. Las cabezas ocupan del 20 % al 46 %
+     del alto. Con un 4:3 y `foco: 0.295`, en el marco más apaisado (16:9, que
+     `photoKeepFaces` fija como tope en lg) quedan del 22 % al 91 % del marco,
+     por debajo de la placa. */
   {
-    src: 'guests-group-day.jpg',
+    src: 'events-party-night.jpg',
     out: 'public/images/events/events-hero.webp',
     w: 2400,
     h: 1800,
     q: 78,
-    foco: 0.368,
+    foco: 0.295,
   },
 
   /* ── El recorte MOBILE del hero de `/events`, 3:2 ──────────────────────
@@ -339,13 +347,16 @@ const FOTOS = [
      21,5 % del alto del marco a 360 px (medido), así que la cabeza más alta
      tiene que arrancar por debajo del 26 %. Con `foco: 0.35` arranca al 27 %
      y el mentón más bajo queda al 76 %. Si se cambia `foco`, volver a medir. */
+  /* Mobile 3:2 de la misma foto, desde el original. La placa muerde 21,5 %
+     del marco a 360 px: con `foco: 0.282` la cabeza más alta arranca al 31 %
+     y el mentón más bajo queda al 90 %. */
   {
-    src: 'guests-group-day.jpg',
+    src: 'events-party-night.jpg',
     out: 'public/images/events/events-hero-mobile.webp',
     w: 1080,
     h: 720,
     q: 80,
-    foco: 0.35,
+    foco: 0.282,
   },
 
   /* ── La foto del hero de `/contact`: la cuarta 17:9 ─────────────────────

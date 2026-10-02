@@ -99,7 +99,7 @@ export default function PlateHero({
             RATIO_MOVIL[photoMobileRatio],
             photo ? 'bg-fog' : '',
             'sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[17/9] lg:max-h-[calc(100svh-378px)]',
-            photoKeepFaces ? 'lg:min-h-[42cqw]' : '',
+            photoKeepFaces ? 'lg:min-h-[56.25cqw]' : '',
           ]
             .filter(Boolean)
             .join(' ')}
