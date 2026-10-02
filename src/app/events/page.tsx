@@ -108,7 +108,7 @@ export default async function EventsPage({
             <span className="text-sunset">up front</span>
           </h2>
           <p className="mx-auto mt-gap-bajada max-w-[56ch] font-body text-lead font-light text-paper/85">
-            Renting the space, the three ways to feed everyone and the three ways to run the bar.
+            Renting the space, feeding everyone and running the bar, all in one place.
             No quote needed to read this.
           </p>
         </div>

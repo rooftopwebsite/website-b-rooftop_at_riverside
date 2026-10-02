@@ -24,4 +24,4 @@ export const GAME_DAY_DEALS: readonly GameDayDeal[] = [
 
 export const GAME_DAY_LABEL = 'Game day at the bar';
 
-export const GAME_DAY_NOTE = 'Every football Sunday the bar adds three game day specials, on top of happy hour.';
+export const GAME_DAY_NOTE = 'Every football Sunday the bar adds game day specials, on top of happy hour.';
