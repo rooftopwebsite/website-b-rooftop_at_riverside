@@ -1,5 +1,5 @@
 import { EventDialogProvider, VerMas } from '@/components/sections/EventDialogProvider';
-import VerMasSiRecorta from '@/components/sections/VerMasSiRecorta';
+import CuerpoExpandible from '@/components/sections/CuerpoExpandible';
 import { EventPhoto, EventWhen, SpacePill } from '@/components/shared/EventCardParts';
 import {
   cuerpoSinPrecios,
@@ -130,9 +130,36 @@ function UpcomingCard({
         <h3 className="mt-2 font-display text-d6 font-semibold uppercase leading-[1.05] text-ink sm:mt-3.5 sm:text-d5 lg:text-d4">
           {event.title}
         </h3>
-        <div
+        <CuerpoExpandible
           id={cuerpoId}
-          className="mt-[8px] text-[16px] leading-[1.55] text-body/80 sm:line-clamp-9 [&>*+*]:mt-[8px]"
+          titulo={event.title}
+          despues={
+            promos.length > 0 ? (
+            <div className="max-sm:hidden">
+              {dealsLabel && curadas.length > 0 ? (
+                <p className="mt-[14px] text-caption font-bold uppercase tracking-[0.1em] text-deep">
+                  {dealsLabel}
+                </p>
+              ) : null}
+              <ul className="m-0 mt-[8px] flex list-none flex-col gap-[6px] p-0">
+                {promos.map((d) => (
+                  <li key={d.name} className="flex gap-[8px] text-[15px] leading-[1.5] text-body/80">
+                    <span
+                      aria-hidden="true"
+                      className="mt-[8px] size-[5px] shrink-0 rounded-pill bg-sunset-deep"
+                    />
+                    <span>
+                      <strong className="font-bold text-ink">
+                        {d.price} {d.name}
+                      </strong>
+                      {d.how ? <> · {d.how}</> : null}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            ) : null
+          }
         >
           {bloques.map((b, i) =>
             b.tipo === 'parrafo' ? (
@@ -155,34 +182,8 @@ function UpcomingCard({
               </ol>
             ),
           )}
-        </div>
-        {promos.length > 0 ? (
-          <div className="max-sm:hidden">
-            {dealsLabel && curadas.length > 0 ? (
-              <p className="mt-[14px] text-caption font-bold uppercase tracking-[0.1em] text-deep">
-                {dealsLabel}
-              </p>
-            ) : null}
-            <ul className="m-0 mt-[8px] flex list-none flex-col gap-[6px] p-0">
-              {promos.map((d) => (
-                <li key={d.name} className="flex gap-[8px] text-[15px] leading-[1.5] text-body/80">
-                  <span
-                    aria-hidden="true"
-                    className="mt-[8px] size-[5px] shrink-0 rounded-pill bg-sunset-deep"
-                  />
-                  <span>
-                    <strong className="font-bold text-ink">
-                      {d.price} {d.name}
-                    </strong>
-                    {d.how ? <> · {d.how}</> : null}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
+        </CuerpoExpandible>
 
-        <VerMasSiRecorta event={event} date={date} cuerpoId={cuerpoId} />
         <VerMas event={event} date={date} visible={hayMas} className={hayMas ? 'mt-[10px] sm:hidden' : 'sm:hidden'} />
         {isTicketed(event) && event.ticketUrl ? (
           <p className="relative z-10 m-0 mt-auto pt-[14px]">
