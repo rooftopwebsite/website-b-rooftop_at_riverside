@@ -5,21 +5,10 @@ export interface GameDayDeal {
 }
 
 export const GAME_DAY_DEALS: readonly GameDayDeal[] = [
-  {
-    name: '2 Minute Drill',
-    how: 'Domestic drafts, from the two minute warning until halftime',
-    price: '$3',
-  },
-  {
-    name: 'Touchdown Shots',
-    how: 'Fireball, Rumple Minze, Jägermeister or Four Roses, every time our team scores',
-    price: '$4',
-  },
-  {
-    name: 'The Tailgate',
-    how: 'Five domestic beers and two shots, same list as Touchdown Shots',
-    price: '$25',
-  },
+  { name: 'Packer-ita', how: 'For Green Bay', price: '$15' },
+  { name: 'Midway Smash', how: 'For Chicago', price: '$12' },
+  { name: 'Lion’s Den', how: 'For Detroit', price: '$10' },
+  { name: 'Gjallarhorn', how: 'For Minnesota', price: '$12' },
 ];
 
 export const GAME_DAY_LABEL = 'Game day at the bar';

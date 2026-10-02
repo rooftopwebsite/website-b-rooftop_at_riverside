@@ -11,32 +11,32 @@ export interface FeaturedDeal {
   readonly price: string;
 }
 
-function nombraPrecio(texto: string, precio: string) {
-  let i = texto.indexOf(precio);
-  while (i >= 0) {
-    const resto = texto.slice(i + precio.length);
-    const uno = resto.charAt(0);
-    const dos = resto.charAt(1);
-    const sigueNumero = (uno >= '0' && uno <= '9') || (uno === '.' && dos >= '0' && dos <= '9');
-    if (!sigueNumero) return true;
-    i = texto.indexOf(precio, i + 1);
-  }
-  return false;
-}
+const plano = (texto: string) => texto.replace(/[‘’]/g, "'").toLowerCase();
+
+const nombraDeal = (texto: string, deal: FeaturedDeal) => plano(texto).includes(plano(deal.name));
 
 const parrafosDe = (event: VenueEvent) =>
   event.body.length > 0 ? event.body : event.summary === event.title ? [] : [event.summary];
 
+const esParrafoDeDeals = (parrafo: string, deals: readonly FeaturedDeal[]) =>
+  deals.filter((d) => nombraDeal(parrafo, d)).length >= Math.min(2, deals.length);
+
 export const dealsNombrados = (
   event: VenueEvent | null,
   deals: readonly FeaturedDeal[] = [],
-): readonly FeaturedDeal[] =>
-  event === null ? [] : deals.filter((d) => parrafosDe(event).some((p) => nombraPrecio(p, d.price)));
+): readonly FeaturedDeal[] => {
+  if (event === null || deals.length === 0) return [];
+  const parrafos = parrafosDe(event).filter((p) => esParrafoDeDeals(p, deals));
+  return deals.filter((d) => parrafos.some((p) => nombraDeal(p, d)));
+};
 
 export const cuerpoSinPrecios = (
   event: VenueEvent,
   promos: readonly FeaturedDeal[],
-): readonly string[] => parrafosDe(event).filter((p) => !promos.some((d) => nombraPrecio(p, d.price)));
+): readonly string[] =>
+  promos.length === 0
+    ? parrafosDe(event)
+    : parrafosDe(event).filter((p) => !esParrafoDeDeals(p, promos));
 
 function Envoltorio({
   link,
@@ -93,7 +93,7 @@ export default function FeaturedEventCard({
           <ul className="m-0 mt-5 flex list-none flex-col p-0">
             {promos.map((d) => (
               <li
-                key={d.price}
+                key={d.name}
                 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-dashed border-bone/25 py-4.5 last:border-b"
               >
                 <span className="min-w-[3ch] font-display text-d3 leading-none tabular-nums text-sunset">

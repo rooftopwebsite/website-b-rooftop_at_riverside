@@ -160,7 +160,7 @@ function UpcomingCard({
             ) : null}
             <ul className="m-0 mt-[8px] flex list-none flex-col gap-[6px] p-0">
               {promos.map((d) => (
-                <li key={d.price} className="flex gap-[8px] text-[15px] leading-[1.5] text-body/80">
+                <li key={d.name} className="flex gap-[8px] text-[15px] leading-[1.5] text-body/80">
                   <span
                     aria-hidden="true"
                     className="mt-[8px] size-[5px] shrink-0 rounded-pill bg-sunset-deep"
