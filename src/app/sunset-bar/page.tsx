@@ -128,7 +128,7 @@ export default async function SunsetBarPage() {
             </ButtonLink>
           </div>
           {promosDelBar.length > 0 ? (
-            <div className="mt-11 flex flex-col gap-7 lg:mt-14 lg:gap-9">
+            <div id="nfc-north-hq" className="mt-11 flex scroll-mt-28 flex-col gap-7 lg:mt-14 lg:gap-9">
               {promosDelBar.map((ev) => {
                 const promos = dealsNombrados(ev, GAME_DAY_DEALS);
                 return (

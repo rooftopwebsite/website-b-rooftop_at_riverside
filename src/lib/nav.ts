@@ -60,9 +60,15 @@ export const NAV_MORE_GROUPS: readonly NavGroup[] = [
 export const NAV_MORE_FEATURED = {
   eyebrow: 'Featured',
   label: 'NFC North HQ',
-  href: '/whats-on',
-  hint: 'Every Sunday in season: weekly giveaways for each division team, and a signed jersey from each one in the week 18 draw.',
-  cta: 'See Sundays',
+  href: '/sunset-bar#nfc-north-hq',
+  hint: 'Your hometown bar for the Packers, Bears, Lions and Vikings, every Sunday of the season.',
+  points: [
+    'The 1 PM and 4 PM games on every screen upstairs',
+    'A drink for every team, from $10',
+    'Weekly giveaways for each NFC North team',
+    'Week 18 draw for Beckett Witnessed autographed jerseys',
+  ],
+  cta: 'See NFC North HQ',
 } as const;
 
 export const NAV_MORE: readonly NavLink[] = NAV_MORE_GROUPS.flatMap((g) => g.links);

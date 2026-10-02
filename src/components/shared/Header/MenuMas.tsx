@@ -86,8 +86,16 @@ export default function MenuMas({ moreOpen, moreGroups, isCurrent, onLinkClick }
             <span className="mt-2.5 font-display text-d6 font-bold uppercase leading-[1.1] text-paper transition-colors duration-200 group-hover:text-cream">
               {NAV_MORE_FEATURED.label}
             </span>
-            <span className="mt-2 font-body text-dato font-light leading-[1.5] text-muted-dark">
+            <span className="mt-2 font-body text-dato font-light leading-[1.5] text-paper/85">
               {NAV_MORE_FEATURED.hint}
+            </span>
+            <span className="mt-3 flex flex-col gap-1.5">
+              {NAV_MORE_FEATURED.points.map((punto) => (
+                <span key={punto} className="flex items-start gap-2 font-body text-dato leading-[1.4] text-paper">
+                  <span aria-hidden="true" className="mt-[7px] size-[5px] shrink-0 rounded-pill bg-sunset" />
+                  {punto}
+                </span>
+              ))}
             </span>
             <span className="mt-auto flex items-center gap-1.5 pt-4 font-body text-dato font-medium text-cream">
               {NAV_MORE_FEATURED.cta}
