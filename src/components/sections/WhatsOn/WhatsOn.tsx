@@ -120,7 +120,7 @@ export default function WhatsOn({
   }, [today, onScroll]);
 
   const headline = isClosedToday
-    ? { a: 'See you', b: 'on Wednesday' }
+    ? { a: 'See what’s', b: 'coming up' }
     : { a: 'Coming up', b: 'in the yard' };
 
   return (
