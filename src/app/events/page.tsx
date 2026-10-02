@@ -245,7 +245,7 @@ export default async function EventsPage({
                 nobody from your party has to run it.
               </p>
               <div className="mt-8">
-                <ButtonLink href="/game-truck" variant="dark">
+                <ButtonLink href="/game-truck" variant="primary">
                   See the truck
                 </ButtonLink>
               </div>

@@ -90,7 +90,7 @@ export default function FoodTrucksPage() {
               until you see their specials. Follow us for what they cook up next.
             </p>
             <div className="mt-8 flex justify-center">
-              <ButtonLink href={BRAND.social.instagram} variant="dark" external>
+              <ButtonLink href={BRAND.social.instagram} variant="primary" external>
                 Follow on Instagram
               </ButtonLink>
             </div>
