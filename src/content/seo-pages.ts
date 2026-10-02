@@ -10,7 +10,7 @@ export const PAGE_SEO = {
     h1: 'Bonita comes together',
     title: 'Rooftop Bar & Food Truck Park in Bonita Springs, FL',
     description:
-      'A rooftop bar over four food trucks in downtown Bonita Springs. Live music, weekend happy hour and dogs welcome in the yard. No reservations, just come up.',
+      'A rooftop bar over a yard of gourmet food trucks in downtown Bonita Springs. Live music, weekend happy hour and dogs welcome in the yard. Just come up.',
     keywords: ['rooftop bar bonita springs', 'food truck park'],
   },
 
@@ -23,10 +23,10 @@ export const PAGE_SEO = {
   },
 
   '/food-trucks': {
-    h1: 'Four kitchens. One yard.',
+    h1: 'Big flavors, out in the yard',
     title: 'Food Trucks | Bonita Springs Food Truck Park',
     description:
-      'Four independent food trucks park in the yard at Rooftop at Riverside. Seafood, smashburgers, street tacos and Caribbean. Order at whichever window you want.',
+      'Gourmet food trucks in the yard at Rooftop at Riverside. Street tacos, seafood, American comfort classics and tropical fusion, with craft cocktails from the rooftop bar.',
     keywords: ['food trucks bonita springs', 'where to eat downtown'],
   },
 
@@ -66,7 +66,7 @@ export const PAGE_SEO = {
     h1: 'A Magnus family project',
     title: 'Our Story | Rooftop at Riverside, Downtown Bonita Springs',
     description:
-      'Four years of planning by a Bonita family. How a corner of Old 41 became a rooftop bar over four independent kitchens, with the town’s own history on the walls.',
+      'Four years of planning by a Bonita family. How a corner of Old 41 became a rooftop bar over a yard of gourmet food trucks, with the town’s own history on the walls.',
     keywords: [],
   },
 

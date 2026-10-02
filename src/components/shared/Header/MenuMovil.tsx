@@ -132,12 +132,12 @@ export default function MenuMovil({
               {NAV_CTA.primary.label}
             </ButtonLink>
             <ButtonLink
-              href="/contact"
+              href={NAV_CTA.stayInTouch.href}
               variant="secondary"
               size="lg"
               onClick={() => setDrawerOpen(false)}
             >
-              Contact
+              {NAV_CTA.stayInTouch.label}
             </ButtonLink>
           </div>
         </div>

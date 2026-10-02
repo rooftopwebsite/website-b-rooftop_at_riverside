@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { ButtonLink } from '@/components/shared/Button';
 import PilaConCabeza from '@/components/sections/PilaConCabeza';
 import Section from '@/components/shared/Section';
 import { Eyebrow, Heading } from '@/components/shared/Type';
@@ -24,12 +25,13 @@ export default function EventTypes() {
         id="tipos-title"
         className="mx-auto max-w-[18ch] text-center font-display text-banda font-extrabold uppercase"
       >
-        <span className="text-ink">Four kinds of events,</span>{' '}
-        <span className="text-sunset-deep">one rooftop</span>
+        <span className="text-ink">Whatever you celebrate,</span>{' '}
+        <span className="text-sunset-deep">celebrate it here</span>
       </h2>
       <p className="mx-auto mt-6 max-w-[60ch] text-center font-body text-lead font-light text-ink">
-        Most parties here happen upstairs, at the bar and on the patio, with the four kitchens
-        cooking in the yard below. What changes is how the day is built around them.
+        Company nights, birthdays, fundraisers, holiday parties and everything in between. Tell
+        us what you have in mind and we build the day around it, from the first toast to the
+        last song.
       </p>
           </>
         }
@@ -68,6 +70,11 @@ export default function EventTypes() {
                 <p className="m-0 max-w-[46ch] font-body text-lead font-light text-body">
                   {tipo.lead}
                 </p>
+                <div className="relative z-20 mt-2">
+                  <ButtonLink href="#inquire" variant="primary">
+                    Book now
+                  </ButtonLink>
+                </div>
               </div>
             </article>
           </li>

@@ -52,17 +52,7 @@ export default function HoursCard({ hours }: { readonly hours?: readonly Hours[]
             </span>
           );
 
-          if (cerrado) {
-            return (
-              <div key={row.day} className={`${FILA} ${BORDE}`}>
-                {dia}
-                <span className="flex items-center gap-3">
-                  {hora}
-                  <span aria-hidden="true" className="size-3.25" />
-                </span>
-              </div>
-            );
-          }
+          if (cerrado) return null;
 
           return (
             <details key={row.day} open={isToday} className={`group ${BORDE}`}>
@@ -80,7 +70,9 @@ export default function HoursCard({ hours }: { readonly hours?: readonly Hours[]
               </summary>
               <div className="grid grid-cols-[auto_1fr] gap-x-5 pb-3">
                 <span className="font-body text-caption text-muted-dark">Trucks</span>
-                <span className="font-body text-dato tabular-nums text-paper">{row.trucks}</span>
+                <span className="font-body text-dato tabular-nums text-paper">
+                  {/closed/i.test(row.trucks) ? 'Bar only' : row.trucks}
+                </span>
               </div>
             </details>
           );

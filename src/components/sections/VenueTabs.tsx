@@ -57,7 +57,7 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
           id={id}
           title={
             <>
-              Two floors, <span className="text-sunset-deep">five places</span> to be
+              A place for <span className="text-sunset-deep">every mood</span>
             </>
           }
           lead="One property, built in layers. The bar went on the roof because that is where the sunset is, and everything else grew underneath it."

@@ -5,7 +5,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     slug: 'sunset-bar',
     name: 'Sunset Bar',
     floor: 'Second floor',
-    body: 'The bar on the roof, facing west over Riverside Park. The only thing here we make ourselves, and the one tab in the building that is ours.',
+    body: 'The bar on the roof, facing west over Riverside Park. Cocktails made fresh every day and the best sunset seat in Bonita Springs.',
     photo: '/images/venue/wall-bartender.webp',
     photoAlt: 'A bartender making a drink behind the bar at Rooftop at Riverside',
     photoBrief:
@@ -47,7 +47,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     slug: 'food-truck-park',
     name: 'The food truck park',
     floor: 'Ground floor',
-    body: 'Four kitchens, four independent businesses. Each sets its own menu and keeps its own register. We give them the yard and the crowd.',
+    body: 'Gourmet food trucks, each with its own chef and its own specialties. Something new to try every visit.',
     photo: '/images/venue/wall-truck-window-day.webp',
     photoAlt: 'People ordering at a food truck window in the yard during the day',
     photoBrief:

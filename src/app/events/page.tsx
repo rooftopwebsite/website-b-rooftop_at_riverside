@@ -57,9 +57,9 @@ export default async function EventsPage({
 
       <PlateHero
         question="Looking for a private event venue in Bonita Springs?"
-        title={'Your event, '}
-        titleAccent="two stories up"
-        lead="Book the whole venue, just the upstairs, or the rooftop patio, in downtown Bonita Springs across from Riverside Park."
+        title={'The party they '}
+        titleAccent="talk about"
+        lead="Picture your people on the rooftop at golden hour, drinks in hand, music drifting up from the yard and downtown Bonita Springs glowing all around you. Book a section of the patio, the whole second floor or the entire venue, and we take care of the rest."
         photo="/images/events/events-hero.webp"
         photoMobileRatio="landscape"
         photoMobile="/images/events/events-hero-mobile.webp"
@@ -80,11 +80,12 @@ export default async function EventsPage({
         id="why-rooftop"
         accent="Why"
         title="Rooftop?"
+        cta={{ label: 'Start planning', href: '#inquire' }}
         lead="Give your next event a setting that guests will remember. With a unique atmosphere, flexible spaces, and a rooftop experience that sets the scene, Rooftop is the perfect place to bring people together. Whether you're celebrating, connecting, or simply creating a great night, we make it easy to host an event that feels special from start to finish."
         ours={{
           label: 'Why Rooftop',
           rows: [
-            'Four independent kitchens in the Yard and a selection of preferred caterers, we have plenty of options to make your event deliciously your own.',
+            'Gourmet food trucks in the Yard and a selection of preferred caterers, so there are plenty of ways to make your event deliciously your own.',
             'Full-service bar featuring refreshing drinks, cocktails, and our team to help with whatever you need.',
             "Two stages. The main stage downstairs in the Yard and the upstairs stage at the Rooftop Bar. There's plenty of room for live music, performances, and more.",
             'One point of contact from start to finish. Coordinating details and connecting you with the right people, planning is seamless from start to finish.',
@@ -153,8 +154,8 @@ export default async function EventsPage({
           </RevealItem>
 
           {[
-            { key: 'food', title: 'Three ways to feed everyone', rows: FOOD_OPTIONS },
-            { key: 'drink', title: 'Three ways to run the bar', rows: DRINK_OPTIONS },
+            { key: 'food', title: 'Ways to feed everyone', rows: FOOD_OPTIONS },
+            { key: 'drink', title: 'Ways to run the bar', rows: DRINK_OPTIONS },
           ].map(({ key, title, rows }) => (
             <RevealItem as="li" key={key} className="h-full">
               <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
@@ -260,7 +261,7 @@ export default async function EventsPage({
         className="banda-arco z-[2]"
         eyebrow="Next step"
         eyebrowTone="terra"
-        title="One screen, two minutes"
+        title="Tell us about your party"
         titleId="inquire-title"
         lead="Send it over and you get real numbers back, within one business day."
         aside={

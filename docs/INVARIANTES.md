@@ -222,8 +222,6 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
   `const carta = (await getBarMenu()) ?? respaldoComoGrupos();`.
 - `src/components/sections/TruckMenu.tsx` → carta de platos de un truck leída de la base. Espera a que vuelvan las fichas por truck.
 - `ReviewsMarquee` en `src/components/sections/HomeSections.tsx` → escrito y sin montar hasta que el cliente confirme ratings reales.
-- `src/content/faq.ts` → los datos y la auditoría de fuentes (campo `source`, `verifiedFaqs()` / `unverifiedFaqs()`). Si vuelve el
-  FAQ, sólo se renderizan las que tienen fuente. `/faq` hace 301 a `/our-story`.
 - `src/content/story.ts` → Charity Partner Program, dato real de `/giveback`. `/giveback` hace 301 a `/our-story`, que ya no lo
   menciona: decisión abierta (re-montarlo, ruta propia o repuntar el 301). El partner del mes está vencido.
 - `public/images/venue/hero-truck-window.webp` → portada de respaldo si el video del hero se cae. La sigue generando

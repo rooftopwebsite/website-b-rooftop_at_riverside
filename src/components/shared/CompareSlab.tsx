@@ -2,11 +2,18 @@ import SoftWave from './SoftWave';
 import type { Surface } from './WaveBorder';
 import Image from 'next/image';
 import Section from './Section';
+import { ButtonLink } from './Button';
 import { Eyebrow, Heading } from './Type';
+
+export interface CompareStep {
+  readonly title: string;
+  readonly body: string;
+}
 
 export interface CompareColumn {
   readonly label: string;
-  readonly rows: readonly string[];
+  readonly rows?: readonly string[];
+  readonly steps?: readonly CompareStep[];
 }
 
 export const PADDING_CRUCE = 'pt-52';
@@ -20,6 +27,7 @@ export default function CompareSlab({
   ours,
   theirs,
   from = 'bone',
+  cta,
 }: {
   readonly eyebrow?: string;
   readonly title: string;
@@ -29,6 +37,7 @@ export default function CompareSlab({
   readonly ours: CompareColumn;
   readonly theirs?: CompareColumn;
   readonly from?: Surface;
+  readonly cta?: { readonly label: string; readonly href: string };
 }) {
   return (
     <>
@@ -49,6 +58,13 @@ export default function CompareSlab({
             {title}
           </Heading>
           {lead ? <p className="bajada mx-auto mt-gap-bajada text-paper/85">{lead}</p> : null}
+          {cta ? (
+            <div className="mt-gap-cta flex justify-center">
+              <ButtonLink href={cta.href} variant="onDark" size="lg">
+                {cta.label}
+              </ButtonLink>
+            </div>
+          ) : null}
         </div>
         <div
           className={[
@@ -102,25 +118,48 @@ export default function CompareSlab({
               </span>
 
               <div className="relative flex flex-1 flex-col">
-                <ul className="mt-6 flex list-none flex-col gap-6 p-0">
-                  {col.rows.map((r) => (
-                    <li key={r} className="flex flex-col items-center gap-2.5">
-                      <span
-                        aria-hidden="true"
-                        className={[
-                          'grid size-5.5 shrink-0 place-items-center rounded-pill text-[12px] font-bold',
-                          nuestro ? 'bg-teal600 text-paper' : 'bg-terra text-paper',
-                        ].join(' ')}
-                      >
-                        {nuestro ? '✓' : '✕'}
-                      </span>
-                      <span className="max-w-[46ch] font-body text-base leading-[1.5] text-ink">
-                        <span className="sr-only">{nuestro ? 'Yes: ' : 'No: '}</span>
-                        {r}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                {col.steps ? (
+                  <ol className="mt-6 flex list-none flex-col gap-7 p-0">
+                    {col.steps.map((s, i) => (
+                      <li key={s.title} className="flex flex-col items-center gap-2.5">
+                        <span
+                          aria-hidden="true"
+                          className="grid size-8 shrink-0 place-items-center rounded-pill bg-teal600 font-display text-d6 leading-none font-bold text-paper"
+                        >
+                          {i + 1}
+                        </span>
+                        <span className="font-display text-d5 font-bold uppercase leading-[1.05] text-ink">
+                          <span className="sr-only">Step {i + 1}: </span>
+                          {s.title}
+                        </span>
+                        <span className="max-w-[46ch] font-body text-base leading-[1.5] text-ink">
+                          {s.body}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                ) : null}
+                {col.rows ? (
+                  <ul className="mt-6 flex list-none flex-col gap-6 p-0">
+                    {col.rows.map((r) => (
+                      <li key={r} className="flex flex-col items-center gap-2.5">
+                        <span
+                          aria-hidden="true"
+                          className={[
+                            'grid size-5.5 shrink-0 place-items-center rounded-pill text-[12px] font-bold',
+                            nuestro ? 'bg-teal600 text-paper' : 'bg-terra text-paper',
+                          ].join(' ')}
+                        >
+                          {nuestro ? '✓' : '✕'}
+                        </span>
+                        <span className="max-w-[46ch] font-body text-base leading-[1.5] text-ink">
+                          <span className="sr-only">{nuestro ? 'Yes: ' : 'No: '}</span>
+                          {r}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </div>
             </div>
           ))}

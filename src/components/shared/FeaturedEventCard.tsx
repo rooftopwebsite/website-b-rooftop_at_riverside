@@ -126,11 +126,11 @@ export default function FeaturedEventCard({
       <div className="flex flex-col justify-center gap-4 p-7 lg:order-1 lg:p-12">
         <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
           <Eyebrow tone="cream" as="span">
-            Every week
+            {cuando ? `Every ${cuando}` : 'Every week'}
           </Eyebrow>
           {cuando ? (
             <span className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-caption font-bold whitespace-nowrap text-deep">
-              {cuando} · {timeRange(event)}
+              {timeRange(event)}
             </span>
           ) : null}
         </span>

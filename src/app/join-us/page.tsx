@@ -72,7 +72,7 @@ export default async function JoinUsPage({
           eyebrowTone="deep"
           title="Work here"
           titleId="work-title"
-          lead="It is a rooftop bar over four food trucks, open five days a week, with a stage in the yard. Busy, outdoors, and never the same shift twice."
+          lead="It is a rooftop bar over a yard of gourmet food trucks, with a stage and live music most nights. Busy, outdoors, and never the same shift twice."
           aside={
             <div className="flex flex-col gap-6">
               {vacantes.length > 0 ? (

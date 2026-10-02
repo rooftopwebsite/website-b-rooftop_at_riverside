@@ -20,8 +20,8 @@ export default function EventSpaces() {
           id="buyout-title"
           className="mx-auto max-w-[14ch] text-center font-display text-banda font-extrabold uppercase"
         >
-          <span className="text-ink">3 space options,</span>{' '}
-          <span className="text-sunset-deep">1 venue</span>
+          <span className="text-ink">Pick the space</span>{' '}
+          <span className="text-sunset-deep">that fits</span>
         </h2>
         <p className="bajada mx-auto mt-gap-bajada max-w-[56ch] text-center text-body/80">
           Whatever the occasion, we have a space to make it yours. Choose from our Full Upstairs,

@@ -139,6 +139,11 @@ export default async function GameTruckPage() {
             lead="Sports, shooters, racing and everything Nintendo. The coach can put any of these up, and the rating is on you."
             className="mt-8"
           />
+          <div className="mt-gap-cta flex justify-center">
+            <ButtonLink href="/events?area=game-truck#inquire" variant="primary" size="lg">
+              Book a party
+            </ButtonLink>
+          </div>
         </GameShelf>
       </Section>
       <Section tone="bone" band="lg" labelledBy="rates-title" id="packages" className="scroll-mt-24">
@@ -149,7 +154,7 @@ export default async function GameTruckPage() {
           id="rates-title"
           title={
             <>
-              Ten dollars, <span className="text-sunset-deep">or the whole truck</span>
+              Jump in, <span className="text-sunset-deep">or book the whole truck</span>
             </>
           }
           lead="Two ways to get on. One takes no planning at all, and the other hands you the whole trailer for two hours."

@@ -67,7 +67,7 @@ export const SPACES: readonly Space[] = [
     name: 'Full Buyout',
     kicker: 'The whole place',
     description:
-      'The rooftop, the yard, the patio and the trucks. Everything closed to the public and yours for the night.',
+      'The rooftop, the yard, the patio and the trucks. Everything private and yours for the night.',
     standing: null,
     seated: null,
     minimum: null,
@@ -87,13 +87,13 @@ export const BUYOUT_OPTIONS = [
     slug: 'full-venue',
     label: 'Full venue',
     title: 'The whole place',
-    body: 'The rooftop bar, the patio, the yard and the trucks, closed to the public and yours for the night.',
+    body: 'The rooftop bar, the patio, the yard and the trucks, private and yours for the night.',
   },
   {
     slug: 'upstairs',
     label: 'Upstairs',
     title: 'The second floor',
-    body: 'The Sunset Bar and the rooftop patio, private, with the four kitchens cooking in the yard below.',
+    body: 'The Sunset Bar and the rooftop patio, private, with the food trucks cooking in the yard below.',
   },
   {
     slug: 'patio',
@@ -177,7 +177,7 @@ export const EVENT_FAMILIES: readonly EventFamily[] = [
     id: 'corporate',
     label: 'Corporate',
     title: 'Meetings, mixers and the fundraiser you have to fill',
-    lead: 'Four kitchens means nobody argues about the catering, and one point of contact means you are not chasing five vendors. The yard can be gated, so a ticketed door works.',
+    lead: 'A yard full of food trucks means nobody argues about the catering, and one point of contact means you are not chasing vendors. The yard can be gated, so a ticketed door works.',
     subtypes: [
       'Corporate event',
       'Networking',

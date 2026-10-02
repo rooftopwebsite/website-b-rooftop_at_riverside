@@ -91,8 +91,9 @@ export default function MenuSheets({
           The bar menu
         </Heading>
         <p className="mx-auto mt-gap-bajada max-w-[58ch] text-pretty text-lead text-body/80">
-          Cocktails made daily with fresh juice and house syrups, upstairs, by us. Drafts from
-          breweries down the road, and the cans everybody actually orders.
+          House cocktails with your preferred spirits, handcrafted daily with fresh juice and house
+          syrups. Elegant wines, local drafts from our neighborhood breweries, and the crowd
+          favorite bottles, cans and seltzers.
         </p>
         <div className="mx-auto mt-9 w-full max-w-[760px] lg:mt-12">
           <CardCarta pdfUrl={pdfUrl} onAbrir={() => setAbierto(true)}>

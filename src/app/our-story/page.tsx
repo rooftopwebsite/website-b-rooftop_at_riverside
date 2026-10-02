@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import AboutStory from '@/components/sections/AboutStory';
 import FindUs from '@/components/sections/FindUs';
+import { ButtonLink } from '@/components/shared/Button';
 import HowToOrder from '@/components/sections/HowToOrder';
 import VenueTabs from '@/components/sections/VenueTabs';
 import { Reveal } from '@/components/shared/Motion';
@@ -43,7 +44,14 @@ export default async function OurStoryPage() {
         titleAccent="family project"
         photo="/images/venue/story-yard-day-wide.webp"
         photoAlt="The yard at Rooftop at Riverside seen from the rooftop: picnic tables and umbrellas on the turf, with the building's roof edge on the right"
-      />
+      >
+        <ButtonLink href="#find-us" variant="primary" size="lg">
+          Plan your visit
+        </ButtonLink>
+        <ButtonLink href="/whats-on" variant="secondary" size="lg">
+          See what&rsquo;s on
+        </ButtonLink>
+      </PlateHero>
       <AboutStory />
       <SoftWave from="bone" to="teal600" className="relative -mb-px" />
       <Section tone="teal" band="xl" aria-label="What this place is for">
@@ -112,6 +120,11 @@ export default async function OurStoryPage() {
                     </a>
                   </p>
                 ) : null}
+                <div className="mt-6 max-md:flex max-md:justify-center">
+                  <ButtonLink href="#find-us" variant="onDark" size="lg">
+                    Come say hello
+                  </ButtonLink>
+                </div>
               </div>
             </div>
           </div>

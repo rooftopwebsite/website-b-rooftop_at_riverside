@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
@@ -16,38 +17,31 @@ const GAP = 24;
 
 interface TicketStep extends Step {
   readonly kicker: string;
+  readonly cta?: { readonly label: string; readonly href: string };
 }
 
 const steps = (fraseMusica: string): readonly TicketStep[] => [
   {
     n: '01',
-    kicker: 'The yard',
-    title: 'Order at whichever window you want',
-    body: 'Four trucks park in the yard and each one is somebody’s own business. You order at the window, you pay that truck. Separate line, separate card, separate receipt.',
-    tags: [
-      'Four independent kitchens',
-      'Order at the window',
-      'A tab per truck',
-      'No table service',
-    ],
+    kicker: 'Sunset Bar',
+    title: 'Quench your thirst. Ignite your night.',
+    body: 'Start at the bar. Our bartenders mix cocktails fresh every day and pour drafts from the breweries down the road. Ask them about tonight’s specials and what’s on stage.',
+    tags: ['Cocktails made daily', 'Local drafts', 'Ask about the specials'],
   },
   {
     n: '02',
-    kicker: 'Sunset Bar',
-    title: 'Get your drinks upstairs',
-    body: 'The Sunset Bar on the roof is ours. Cocktails made that morning, drafts from breweries twenty minutes away. It’s the one tab we run, and the only menu on this site with prices.',
-    tags: [
-      'Cocktails made daily',
-      'Local drafts',
-      'The one tab we run',
-    ],
+    kicker: 'The yard',
+    title: 'Travel across 4 distinct menus in a single order',
+    body: 'Wander through the storylines of our four gourmet food trucks and order the culinary adventure that suits your taste, at the truck or from your seat. Come back anytime: a new foodie quest awaits with every visit.',
+    tags: ['Gourmet food trucks', 'Self service at the window', 'Or order from your seat'],
   },
   {
     n: '03',
     kicker: 'What’s on',
-    title: 'Stay for whoever’s playing',
-    body: `${fraseMusica}, Bingo on Wednesdays, DJ sets late on Saturdays. The calendar says what each night is.`,
-    tags: [fraseMusica, 'Bingo Wednesdays', 'DJ sets Saturdays', 'Walk in, no reservation'],
+    title: 'Your favorite local artists',
+    body: `${fraseMusica}, Bingo on Wednesdays and DJ sets late on Saturdays. Stay for the music, the friends and the fun.`,
+    tags: [fraseMusica, 'Bingo Wednesdays', 'DJ sets Saturdays'],
+    cta: { label: 'See what’s happening tonight', href: '/whats-on' },
   },
 ];
 
@@ -153,6 +147,15 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
                 {step.title}
               </h3>
               <p className="m-0 max-w-[34ch] font-body text-base font-light text-ink">{step.body}</p>
+              {step.cta ? (
+                <Link
+                  href={step.cta.href}
+                  className="group inline-flex items-center gap-2 border-b-2 border-sunset pb-0.5 font-body text-base font-semibold text-ink transition-colors duration-200 hover:border-ink"
+                >
+                  {step.cta.label}
+                  <ArrowRight className="size-3.75 transition-transform duration-200 group-hover:translate-x-1" />
+                </Link>
+              ) : null}
 
               <ul className="mt-auto flex list-none flex-wrap justify-center gap-1.5 p-0 pt-5">
                 {step.tags.map((tag) => (

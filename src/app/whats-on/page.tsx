@@ -13,7 +13,6 @@ import {
   matchesFilter,
 } from '@/content/events';
 import { GAME_DAY_DEALS, GAME_DAY_LABEL } from '@/content/game-day';
-import { fraseEntretenimiento } from '@/content/entertainment';
 import { getVenue, venueAddressLine } from '@/lib/venue';
 import {
   type CalendarView,
@@ -49,7 +48,6 @@ export default async function WhatsOnPage({
 
   const venue = await getVenue();
   const eventos = await getVenueEvents();
-  const musicaLarga = await fraseEntretenimiento();
   const filtros = activeFilters(eventos);
 
   const occurrences = occurrencesInMonth(eventos, year, month).filter((o) =>
@@ -128,10 +126,14 @@ export default async function WhatsOnPage({
         question="Looking for live music tonight in Bonita Springs?"
         title={"What's on "}
         titleAccent="this week"
-        lead={`${musicaLarga}, Bingo on Wednesdays, and one Wednesday a month that belongs to the dogs.`}
+        lead="Life is too short for boring weeknights. Sing along to live music every week, win prizes at Bingo Wednesdays and NFC North HQ on Sundays, and bring your furry best friend for Wooftop Wednesday specials. Come unwind, let loose and share the night with the people (and pets!) you love most."
         photo="/images/venue/whats-on-yard-wide.webp"
         photoAlt="A full yard on an event afternoon: long table, tent and people under the umbrellas"
-      />
+      >
+        <ButtonLink href="#cal-title" variant="primary" size="lg">
+          See the calendar
+        </ButtonLink>
+      </PlateHero>
       <div>
         <MonthBar
           label={label}

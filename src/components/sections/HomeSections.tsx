@@ -15,16 +15,16 @@ export function HowThisPlaceWorks() {
             id="how-title"
             className="m-0 font-display text-[clamp(2.5rem,6vw,4.95rem)] font-extrabold uppercase leading-[0.9] text-ink"
           >
-            Five businesses,{' '}
+            Come for a drink,{' '}
             <br />
-            one set of stairs.
+            stay for the night.
           </h2>
         </RevealItem>
 
         <RevealItem className="flex flex-col justify-between gap-4">
           <p className="m-0 font-body text-lead font-light text-ink">
-            Four independent kitchens park in the yard, each one its own business. You order at the
-            window and pay that truck. No table service, and the bar upstairs is ours.
+            Gourmet food trucks in the yard, a rooftop bar upstairs and music most nights. It is self
+            service, so grab any seat you like and make yourself at home.
           </p>
           <a
             href="#find-us"

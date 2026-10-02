@@ -128,7 +128,7 @@ export function venueJsonLd(v: Venue) {
         '@type': 'BarOrPub',
         '@id': `${SITE_URL}/#bar`,
         ...base,
-        description: `${BRAND.concept}. Craft cocktails, local drafts and live music, with four independent food trucks in the yard below.`,
+        description: `${BRAND.concept}. Craft cocktails, local drafts and live music, with gourmet food trucks in the yard below.`,
         openingHours: schemaHours(v),
         servesCuisine: 'Cocktails',
         priceRange: '$$',

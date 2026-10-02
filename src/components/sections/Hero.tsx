@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useVenue } from '@/components/shared/VenueProvider';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
-import { ArrowUpRight, Martini, Moon, MusicNote, Pause, Play, SunHorizon } from '@/components/shared/Icon';
+import { ArrowUpRight, Martini, MusicNote, Pause, Play, Sun, SunHorizon } from '@/components/shared/Icon';
 import { useCssVar } from '@/lib/css-var';
 import { venueStatus } from '@/lib/hours';
 
@@ -138,11 +138,13 @@ export default function Hero({
       : [
           {
             text:
-              status.reopensOn && status.reopensOn !== 'today'
-                ? `Closed till ${status.reopensOn}`
-                : 'Closed right now',
-            Icon: Moon,
-            medalla: 'bg-deep text-cream',
+              status.reopensOn === 'today'
+                ? 'Opening soon!'
+                : status.reopensOn
+                  ? `Opens ${status.reopensOn}!`
+                  : 'See you soon!',
+            Icon: Sun,
+            medalla: 'bg-sunset text-ink',
           },
           HAPPY,
           MUSIC,
@@ -235,9 +237,11 @@ export default function Hero({
           )}
         </div>
       </div>
-      <div className="flex flex-wrap items-end justify-between gap-8 pt-6.5 pb-cierre lg:pt-11">
-        <p className="m-0 max-w-none font-body text-hero-lead font-light text-ink">
-          Rooftop bar. Four kitchens. Walk in.
+      <div className="flex flex-wrap items-start justify-between gap-x-10 gap-y-6 pt-6.5 pb-cierre lg:pt-9">
+        <p className="m-0 min-w-0 max-w-[62ch] flex-1 basis-[30rem] font-body text-lead font-light text-ink">
+          Picture a cold cocktail on the roof as the sun goes down, the smell of the grill drifting
+          up from the yard, a band warming up and the game on every screen. Grab a seat, bring
+          your people and stay as long as you like.
         </p>
         <div className="flex flex-wrap items-center gap-3.5">
           <ButtonLink href="/whats-on" variant="primary" size="lg">

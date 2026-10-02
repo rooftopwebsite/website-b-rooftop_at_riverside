@@ -57,7 +57,7 @@ export default function Footer({ hasBlog }: { readonly hasBlog: boolean }) {
         <div className="absolute -right-16 bottom-0 aspect-[1100/1024] w-[34rem] bg-deeper opacity-55 [mask-image:url('/brand/palms.svg')] [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] sm:w-[44rem] lg:-right-20 lg:w-[56rem]" />
       </div>
       <div className="relative z-[1]">
-        <div className="caja-ancha pt-14 desk:pt-20">
+        <div id="stay-in-touch" className="caja-ancha scroll-mt-24 pt-14 desk:pt-20">
           <NewsletterSignup />
         </div>
 

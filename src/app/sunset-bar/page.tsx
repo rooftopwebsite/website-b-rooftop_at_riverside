@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { ButtonLink } from '@/components/shared/Button';
 import SoftWave from '@/components/shared/SoftWave';
 import MenuSheets from '@/components/sections/MenuSheets';
 import FeaturedEventCard, { dealsNombrados } from '@/components/shared/FeaturedEventCard';
@@ -40,12 +41,20 @@ export default async function SunsetBarPage() {
         }}
       />
       <PlateHero
-        question="Looking for a rooftop bar in Bonita Springs?"
+        question="Looking for somewhere special to get together?"
         title={"Bonita's only "}
         titleAccent="rooftop"
+        lead="Bring your family or your friends for great food and cold drinks. Feel the breeze up on the roof, watch downtown Bonita Springs go by, and stay for the view. All of it at the only rooftop bar in Bonita Springs."
         photo="/images/venue/bar-cocktails-wide.webp"
         photoAlt="Four cocktails on a table on the rooftop at golden hour, with the bar and the umbrellas behind"
-      />
+      >
+        <ButtonLink href="#carta-title" variant="primary" size="lg">
+          See the menu
+        </ButtonLink>
+        <ButtonLink href="/whats-on" variant="secondary" size="lg">
+          What&rsquo;s on tonight
+        </ButtonLink>
+      </PlateHero>
       <SoftWave from="bone" to="deep" className="relative -mb-px" />
       <Section tone="deep" band="md" labelledBy="hh-title">
         <div className="relative text-center">
@@ -113,6 +122,11 @@ export default async function SunsetBarPage() {
               </p>
             ) : null}
           </div>
+          <div className="mt-8 flex justify-center">
+            <ButtonLink href="/whats-on" variant="onDark" size="lg">
+              See what&rsquo;s on this week
+            </ButtonLink>
+          </div>
           {promosDelBar.length > 0 ? (
             <div className="mt-11 flex flex-col gap-7 lg:mt-14 lg:gap-9">
               {promosDelBar.map((ev) => {
@@ -130,7 +144,6 @@ export default async function SunsetBarPage() {
                       deals={GAME_DAY_DEALS}
                       dealsLabel={GAME_DAY_LABEL}
                       headingLevel={3}
-                      linkToCalendar={false}
                     />
                   </div>
                 );

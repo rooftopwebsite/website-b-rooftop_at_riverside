@@ -80,12 +80,12 @@ export default async function TruckCards({
           eyebrow="In the yard"
           eyebrowTone="plum"
           id={id}
-          title="The four kitchens"
-          lead="Each one is its own business. You order at the window and you pay that truck: separate line, separate card, separate receipt."
+          title="Meet the chefs"
+          lead="Every truck brings its own chef and its own specialties. Walk up, see what is cooking and pick your favorite."
         />
       ) : (
         <h2 id={id} className="sr-only">
-          The four kitchens
+          Meet the chefs
         </h2>
       )}
 

@@ -62,10 +62,17 @@ export default async function MarketPage() {
             </>
           }
         />
-          <p className="bajada m-0 mt-gap-bajada max-w-[52ch] text-paper/85 lg:mt-0 lg:pb-2">
-            Jewelry, prints, plants, clothes, homeware and food, set out by the people who made
-            them. These are past markets in the yard.
-          </p>
+          <div className="lg:pb-2">
+            <p className="bajada m-0 mt-gap-bajada max-w-[52ch] text-paper/85 lg:mt-0">
+              Jewelry, prints, plants, clothes, homeware and food, set out by the people who made
+              them. These are past markets in the yard.
+            </p>
+            <div className="mt-gap-cta">
+              <ButtonLink href="#apply" variant="onDark" size="lg">
+                Book a booth
+              </ButtonLink>
+            </div>
+          </div>
         </div>
         <div aria-hidden="true" className="-mx-gutter mt-2 overflow-hidden pt-6 pb-13 md:-mx-gutter-lg">
           <div className="rt-marquee-rev flex w-max items-center gap-4 lg:gap-6">
@@ -138,6 +145,11 @@ export default async function MarketPage() {
             </RevealItem>
           ))}
         </StaggerGroup>
+        <div className="mt-bloque flex justify-center">
+          <ButtonLink href="#apply" variant="primary" size="lg">
+            Apply for a booth
+          </ButtonLink>
+        </div>
       </Section>
       <Section band="lg" labelledBy="bring-title">
         <SectionHead
@@ -214,6 +226,11 @@ export default async function MarketPage() {
               </ul>
             </div>
           </article>
+        </div>
+        <div className="mt-bloque flex justify-center">
+          <ButtonLink href="#apply" variant="primary" size="lg">
+            Save your spot
+          </ButtonLink>
         </div>
       </Section>
       <FormSlab

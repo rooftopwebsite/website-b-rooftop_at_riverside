@@ -89,6 +89,15 @@ export default function Header({ hasBlog }: { readonly hasBlog: boolean }) {
             ))}
 
             <ButtonLink
+              href={NAV_CTA.stayInTouch.href}
+              variant="outline"
+              size="sm"
+              className="hidden sm:h-10 sm:px-5.5 sm:text-base lg:inline-flex"
+            >
+              {NAV_CTA.stayInTouch.label}
+            </ButtonLink>
+
+            <ButtonLink
               href={NAV_CTA.primary.href}
               variant="primary"
               size="sm"

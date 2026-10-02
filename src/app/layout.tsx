@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     template: `%s · ${BRAND.name}`,
   },
   description:
-    'A rooftop bar over a curated food truck park in downtown Bonita Springs. Four independent kitchens, craft cocktails, live music, and a venue you can rent.',
+    'A rooftop bar over a curated food truck park in downtown Bonita Springs. Gourmet food trucks, craft cocktails, live music, and a venue for your next party.',
   applicationName: BRAND.name,
   authors: [{ name: BRAND.credit.label, url: BRAND.credit.url }],
   formatDetection: { telephone: true, address: true },

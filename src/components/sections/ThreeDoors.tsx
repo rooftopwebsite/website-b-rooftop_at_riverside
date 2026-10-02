@@ -16,8 +16,8 @@ interface Door {
 
 const DOORS: readonly Door[] = [
   {
-    title: 'Four kitchens in the yard',
-    body: 'Four independent kitchens under the rooftop, each one its own business. You order at the truck. The bar upstairs is ours.',
+    title: 'Big flavors in the yard',
+    body: 'Mexican street food, fresh seafood, American comfort classics and tropical fusion, each from its own chef. Come hungry and try a little of everything.',
     link: 'Meet the trucks',
     href: '/food-trucks',
     field: 'bg-deep',
@@ -26,7 +26,7 @@ const DOORS: readonly Door[] = [
     Icon: Truck,
   },
   {
-    title: 'The bar over the river',
+    title: 'The bar with the sunset view',
     body: 'Craft cocktails made daily, local drafts, and the best west-facing seat in Bonita Springs.',
     link: 'See the bar',
     href: '/sunset-bar',
@@ -36,8 +36,8 @@ const DOORS: readonly Door[] = [
     Icon: Martini,
   },
   {
-    title: 'The whole place, closed',
-    body: 'The rooftop, the yard, the patio, or the entire venue with the gates shut, and one person coordinating all of it.',
+    title: 'The home for your legendary party',
+    body: 'Why settle for a stuffy banquet hall? Reserve a section of the outdoor patio, the whole second floor or the entire venue, right in the buzz of downtown. We host, we clean up. You go enjoy the party!',
     link: 'Plan an event',
     href: '/events',
     field: 'bg-cream',
@@ -59,12 +59,12 @@ export default function ThreeDoors() {
             id="doors-title"
             className="mx-auto max-w-[18ch] text-center font-display text-banda font-extrabold uppercase"
           >
-            <span className="text-ink">Not a restaurant.</span>{' '}
-            <span className="text-sunset-deep">Three of them</span>
+            <span className="text-ink">Eat, drink and</span>{' '}
+            <span className="text-sunset-deep">celebrate here</span>
           </h2>
           <p className="mx-auto mt-6 max-w-[60ch] text-center font-body text-lead font-light text-ink">
-            A rooftop bar, a yard of independent kitchens, and a venue you can rent. Same address,
-            three different nights.
+            A rooftop bar with a view, gourmet food trucks in the yard and a venue made for
+            parties. Every visit turns into a different night.
           </p>
         </Reveal>
         <StaggerGroup as="ul" className="mt-bloque grid list-none grid-cols-1 gap-12 p-0 md:gap-5 lg:grid-cols-3 lg:gap-6">

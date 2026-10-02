@@ -15,6 +15,7 @@ export interface NavGroup {
 }
 
 export const NAV_PRIMARY: readonly NavLink[] = [
+  { label: 'Home', href: '/' },
   { label: 'Sunset Bar', href: '/sunset-bar' },
   { label: 'Food Trucks', href: '/food-trucks' },
   { label: "What's On", href: '/whats-on', side: true },
@@ -34,7 +35,7 @@ export const NAV_MORE_GROUPS: readonly NavGroup[] = [
       },
       { label: 'Blog', href: '/blog', hint: 'Stories from the rooftop, the trucks and the people.' },
       { label: 'Join Us', href: '/join-us', hint: 'Play here, park a truck here, work here.' },
-      { label: 'Contact', href: '/contact', hint: 'Three inboxes, hours, parking and the map.' },
+      { label: 'Contact', href: '/contact', hint: 'The right inbox, hours, parking and the map.' },
     ],
   },
   {
@@ -60,7 +61,7 @@ export const NAV_MORE_FEATURED = {
   eyebrow: 'Featured',
   label: 'NFC North HQ',
   href: '/whats-on',
-  hint: "Sundays in season. Sound on, screens up, and a rooftop that turns into somebody's hometown bar.",
+  hint: 'Every Sunday in season: weekly giveaways for each division team, and a signed jersey from each one in the week 18 draw.',
   cta: 'See Sundays',
 } as const;
 
@@ -73,6 +74,7 @@ export const sinBlog = <T extends { readonly href: string }>(links: readonly T[]
 
 export const NAV_CTA = {
   primary: { label: 'Plan an Event', href: '/events' },
+  stayInTouch: { label: 'Stay in touch', href: '#stay-in-touch' },
   secondary: { label: "What's On", href: '/whats-on' },
 } as const;
 
@@ -81,7 +83,6 @@ export const FOOTER_QUICK_LINKS: readonly NavLink[] = [
   { label: 'Event Spaces', href: '/events#spaces' },
   { label: 'Corporate Events', href: '/events#corporate' },
   { label: 'Join Us', href: '/join-us' },
-  { label: 'FAQ', href: '/faq' },
   { label: 'Gift Cards', href: 'GIFT_CARDS', external: true },
   { label: 'Careers', href: '/join-us#work' },
 ];

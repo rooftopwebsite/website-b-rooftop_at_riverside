@@ -42,7 +42,7 @@ export default async function ContactPage() {
         question="Trying to reach the rooftop in Bonita Springs?"
         title={'Say hello to '}
         titleAccent="the rooftop"
-        lead="Three inboxes, so your message lands with the person who can answer it instead of a shared one. If it is urgent, the phone is faster than all of it."
+        lead="Your message goes straight to the person who can answer it. If it is urgent, give us a call."
         photo="/images/venue/contact-bar-day-wide.webp"
         photoAlt="Guests at the bar at Rooftop at Riverside on a weekday afternoon"
       >
@@ -57,7 +57,7 @@ export default async function ContactPage() {
         id="write"
         eyebrow="Write to us"
         eyebrowTone="deep"
-        title="Three inboxes"
+        title="Write to the right person"
         titleId="write-title"
         lead="Write to us and a person here reads it. We come back within one business day."
         aside={

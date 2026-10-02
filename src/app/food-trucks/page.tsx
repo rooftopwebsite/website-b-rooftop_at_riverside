@@ -29,36 +29,44 @@ export default function FoodTrucksPage() {
 
       <PageHeroWave
         eyebrow="The yard"
-        accent="Four kitchens."
-        title="One yard."
-        lead="Each truck is independently owned, sets its own menu and takes its own payment. We just give them the yard and the crowd."
+        accent="Big flavors,"
+        title="out in the yard"
+        lead="Every truck is run by its own chef, with its own specialties and its own menu. Walk the yard, talk to the chefs, and try a little of everything."
         from="paper"
         to="mint"
-      />
+      >
+        <ButtonLink href="#roster-title" variant="primary" size="lg">
+          See the menus
+        </ButtonLink>
+      </PageHeroWave>
       <TruckCards tone="mint" head={false} />
       <CompareSlab
         from="mint"
         id="how-pay"
         eyebrow="How this works"
-        accent="One yard,"
-        title="five registers"
-        lead="Four Food Concepts: Give your guests the freedom to explore four independent kitchens, each with something different to offer."
+        accent="Start at the bar,"
+        title="then follow your appetite"
+        lead="Eat at the trucks or right from your seat. Either way, everyone at the table gets to pick their favorite."
+        cta={{ label: 'See the bar menu', href: '/sunset-bar#carta-title' }}
         ours={{
-          label: 'Here',
-          rows: [
-            'You order at whichever window you want, and you pay that truck: its own register, its own receipt',
-            'Four parties at one table can each eat something different',
-            'Drinks come from the Sunset Bar upstairs, and that tab is ours',
-            'No waiting for a table: find a seat and go up to the window',
-          ],
-        }}
-        theirs={{
-          label: 'A regular restaurant',
-          rows: [
-            'One kitchen and one menu: everyone eats from the same list, on one check',
-            'A server takes the order and brings it over',
-            'Food and drinks land on the same bill',
-            'A host seats you when a table opens',
+          label: 'How ordering works',
+          steps: [
+            {
+              title: 'Grab a drink',
+              body: 'Start at the Sunset Bar, or take a seat and a server will come to you.',
+            },
+            {
+              title: 'Meet the chefs',
+              body: 'Walk the yard, talk to the chefs and see what each truck is cooking today.',
+            },
+            {
+              title: 'Order your way',
+              body: 'Order in line at any truck and take a pager. Or scan the QR code at your seat, follow the steps on your phone, and we bring the food to your table.',
+            },
+            {
+              title: 'One check for everything',
+              body: 'With the QR code you can order for yourself or the whole table, from every truck, on one check with one payment. We bring it anywhere on site.',
+            },
           ],
         }}
       />
@@ -82,8 +90,8 @@ export default function FoodTrucksPage() {
               Something different for every craving
             </Heading>
             <p className="mx-auto mt-5 max-w-[52ch] font-body text-lead font-light leading-[1.5] text-ink">
-              Each truck keeps its own menu, and now and then one of them runs a special. We post
-              those on Instagram.
+              Our chefs are independent operators, and if you think these menus are creative, wait
+              until you see their specials. Follow us for what they cook up next.
             </p>
             <div className="mt-8 flex justify-center">
               <ButtonLink href={BRAND.social.instagram} variant="dark" external>

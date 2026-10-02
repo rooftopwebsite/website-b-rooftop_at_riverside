@@ -18,12 +18,11 @@ interface Ventanilla {
 const VENTANILLAS: readonly Ventanilla[] = [
   {
     rotulo: 'At the trucks',
-    titulo: 'You order at the window',
+    titulo: 'Follow your appetite',
     lineas: [
-      'Four independent kitchens, each one its own business.',
-      'You order at the window and you pay that truck.',
-      'Separate line, separate card, separate receipt.',
-      'No table service, and no single check for the yard.',
+      'Gourmet food trucks, each with its own chef and its own specialties.',
+      'Walk up to the window, talk to the chef and order what looks good.',
+      'Self service: grab any seat you like, upstairs or in the yard.',
     ],
     Icon: Truck,
     caja: 'bg-paper',
@@ -33,11 +32,11 @@ const VENTANILLAS: readonly Ventanilla[] = [
   },
   {
     rotulo: 'At the Sunset Bar',
-    titulo: 'The one tab we run',
+    titulo: 'Start your night here',
     lineas: [
-      'The bar on the roof is ours, and it is the only tab we keep.',
-      'Cocktails made that morning and drafts from breweries twenty minutes away.',
-      'It is the only menu on this site with prices, because it is the only one that is ours.',
+      'Cocktails made fresh every day, with fresh juice and house syrups.',
+      'Local drafts from the breweries down the road.',
+      'Ask the bartenders about tonight’s specials and who is on stage.',
       'A 22% gratuity is applied to unsigned bar tabs.',
     ],
     Icon: Martini,
@@ -57,11 +56,11 @@ export default function HowToOrder({ id = 'order-title' }: { readonly id?: strin
           eyebrowTone="plum"
           title={
             <>
-              Two windows, <span className="text-sunset-deep">two ways to pay</span>
+              Grab a drink, <span className="text-sunset-deep">find your flavor</span>
             </>
           }
           id={id}
-          lead="It looks like one restaurant and it is not."
+          lead="Here is how a night at the rooftop usually goes."
         />
       </Reveal>
       <StaggerGroup
@@ -104,7 +103,7 @@ export default function HowToOrder({ id = 'order-title' }: { readonly id?: strin
               ) : (
                 <span className="mt-auto pt-8">
                   <ButtonLink href="/food-trucks" variant="secondary">
-                    All four trucks
+                    Meet the trucks
                   </ButtonLink>
                 </span>
               )}

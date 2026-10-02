@@ -7,7 +7,7 @@ const CARDS = [
   {
     tag: 'The trucks',
     title: 'The trucks are yours',
-    body: 'We coordinate all four, so you deal with one person and not four vendors.',
+    body: 'We coordinate every truck, so you deal with one person from start to finish.',
     src: '/images/venue/truck-window-night.webp',
     alt: 'A food truck window in the yard at night',
   },
@@ -21,7 +21,7 @@ const CARDS = [
   {
     tag: 'The venue',
     title: 'The whole place is yours',
-    body: 'The rooftop, the yard, the patio, or the entire venue with the gates shut.',
+    body: 'The rooftop, the yard, the patio, or the entire venue just for your guests.',
     src: '/images/venue/wall-dancing-night.webp',
     alt: 'Guests dancing at a private party at Rooftop at Riverside',
   },
@@ -41,7 +41,7 @@ export default function EventsBanner() {
             className="m-0 font-display text-[clamp(2.8rem,7vw,6.6rem)] font-extrabold uppercase leading-[0.86]"
           >
             <span className="block text-paper">
-              We close the whole place
+              The whole place
               <Image
                 src="/brand/badge-sun-teal.svg"
                 alt=""
@@ -51,12 +51,12 @@ export default function EventsBanner() {
               />
             </span>
             {' '}
-            <span className="block text-sunset desk:text-right">For you</span>
+            <span className="block text-sunset desk:text-right">is yours</span>
 
           </h2>
           <p className="mt-7 max-w-[62ch] font-body text-lead font-light text-paper desk:absolute desk:bottom-0 desk:left-0 desk:mt-0">
             Holiday parties, client nights, fundraisers and reunions. You get the rooftop, the yard
-            and four kitchens, and one person coordinating all of it.
+            and the food trucks, and one person coordinating all of it.
           </p>
 
         </Reveal>
