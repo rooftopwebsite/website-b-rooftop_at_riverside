@@ -126,7 +126,7 @@ export default async function WhatsOnPage({
         question="Looking for live music tonight in Bonita Springs?"
         title={"What's on "}
         titleAccent="this week"
-        lead="Life is too short for boring weeknights. Live music, Bingo, NFC North prizes and Wooftop Wednesdays, with the people (and pets!) you love most."
+        lead="Life is too short for boring weeknights. Step away from the screens and into a yard buzzing with laughter, clinking glasses and the best local music."
         photo="/images/venue/whats-on-yard-wide.webp"
         photoAlt="A full yard on an event afternoon: long table, tent and people under the umbrellas"
       >
