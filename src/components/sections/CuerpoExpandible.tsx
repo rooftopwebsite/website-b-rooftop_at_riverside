@@ -3,14 +3,29 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowRight } from '@/components/shared/Icon';
 
+const RECORTE: Record<number, string> = {
+  3: 'sm:line-clamp-3',
+  4: 'sm:line-clamp-4',
+  5: 'sm:line-clamp-5',
+  6: 'sm:line-clamp-6',
+  7: 'sm:line-clamp-7',
+  8: 'sm:line-clamp-8',
+  9: 'sm:line-clamp-9',
+  10: 'sm:line-clamp-10',
+  11: 'sm:line-clamp-11',
+  12: 'sm:line-clamp-12',
+};
+
 export default function CuerpoExpandible({
   id,
   titulo,
+  lineas,
   children,
   despues,
 }: {
   readonly id: string;
   readonly titulo: string;
+  readonly lineas: number;
   readonly children: ReactNode;
   readonly despues?: ReactNode;
 }) {
@@ -33,7 +48,7 @@ export default function CuerpoExpandible({
       <div
         ref={cuerpo}
         id={id}
-        className={`mt-[8px] text-[16px] leading-[1.55] text-body/80 [&>*+*]:mt-[8px] ${abierto ? '' : 'sm:line-clamp-9'}`}
+        className={`mt-[8px] text-[16px] leading-[1.55] text-body/80 [&>*+*]:mt-[8px] ${abierto ? '' : RECORTE[Math.min(12, Math.max(3, lineas))]}`}
       >
         {children}
       </div>

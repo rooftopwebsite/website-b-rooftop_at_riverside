@@ -110,6 +110,11 @@ export default async function MarketPage() {
           }
           lead="Your table goes in the yard, next to the crowd that is already here for the trucks and the bar. They came for lunch, and they leave knowing what you make."
         />
+        <div className="mt-gap-cta flex justify-center">
+          <ButtonLink href="#apply" variant="primary" size="lg">
+            Apply for a booth
+          </ButtonLink>
+        </div>
         <StaggerGroup
           as="ol"
           aria-label="How to get a market booth, step by step"
@@ -145,11 +150,6 @@ export default async function MarketPage() {
             </RevealItem>
           ))}
         </StaggerGroup>
-        <div className="mt-bloque flex justify-center">
-          <ButtonLink href="#apply" variant="primary" size="lg">
-            Apply for a booth
-          </ButtonLink>
-        </div>
       </Section>
       <Section band="lg" labelledBy="bring-title">
         <SectionHead
@@ -163,6 +163,11 @@ export default async function MarketPage() {
           }
           lead="The yard, the power and the crowd are ours. The table and everything on it is yours."
         />
+        <div className="mt-gap-cta">
+          <ButtonLink href="#apply" variant="primary" size="lg">
+            Save your spot
+          </ButtonLink>
+        </div>
         <div className="mt-bloque grid gap-6 lg:grid-cols-2 lg:gap-8">
           <article className="relative flex h-full flex-col rounded-shell bg-bone p-8 lg:p-10">
             <span
@@ -226,11 +231,6 @@ export default async function MarketPage() {
               </ul>
             </div>
           </article>
-        </div>
-        <div className="mt-bloque flex justify-center">
-          <ButtonLink href="#apply" variant="primary" size="lg">
-            Save your spot
-          </ButtonLink>
         </div>
       </Section>
       <FormSlab

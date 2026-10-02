@@ -120,11 +120,6 @@ export default async function OurStoryPage() {
                     </a>
                   </p>
                 ) : null}
-                <div className="mt-6 max-md:flex max-md:justify-center">
-                  <ButtonLink href="#find-us" variant="onDark" size="lg">
-                    Come say hello
-                  </ButtonLink>
-                </div>
               </div>
             </div>
           </div>

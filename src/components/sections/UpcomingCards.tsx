@@ -133,6 +133,7 @@ function UpcomingCard({
         <CuerpoExpandible
           id={cuerpoId}
           titulo={event.title}
+          lineas={promos.length > 0 ? 12 - promos.length - 2 : 12}
           despues={
             promos.length > 0 ? (
             <div className="max-sm:hidden">
