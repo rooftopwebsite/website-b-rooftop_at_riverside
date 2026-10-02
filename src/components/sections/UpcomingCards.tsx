@@ -1,4 +1,5 @@
 import { EventDialogProvider, VerMas } from '@/components/sections/EventDialogProvider';
+import VerMasSiRecorta from '@/components/sections/VerMasSiRecorta';
 import { EventPhoto, EventWhen, SpacePill } from '@/components/shared/EventCardParts';
 import {
   cuerpoSinPrecios,
@@ -91,6 +92,7 @@ function UpcomingCard({
 }) {
   const { event, date } = item;
   const tipo = eventTypeLabel(event);
+  const cuerpoId = `cuerpo-${event.slug}-${date}`;
 
   const curadas = dealsNombrados(event, deals);
   const { bloques, promos: escritas } = preciosDelCuerpo(cuerpoSinPrecios(event, curadas));
@@ -128,7 +130,10 @@ function UpcomingCard({
         <h3 className="mt-2 font-display text-d6 font-semibold uppercase leading-[1.05] text-ink sm:mt-3.5 sm:text-d5 lg:text-d4">
           {event.title}
         </h3>
-        <div className="mt-[8px] flex flex-col gap-[8px] text-[16px] leading-[1.55] text-body/80">
+        <div
+          id={cuerpoId}
+          className="mt-[8px] text-[16px] leading-[1.55] text-body/80 sm:line-clamp-9 [&>*+*]:mt-[8px]"
+        >
           {bloques.map((b, i) =>
             b.tipo === 'parrafo' ? (
               <p
@@ -177,6 +182,7 @@ function UpcomingCard({
           </div>
         ) : null}
 
+        <VerMasSiRecorta event={event} date={date} cuerpoId={cuerpoId} />
         <VerMas event={event} date={date} visible={hayMas} className={hayMas ? 'mt-[10px] sm:hidden' : 'sm:hidden'} />
         {isTicketed(event) && event.ticketUrl ? (
           <p className="relative z-10 m-0 mt-auto pt-[14px]">
