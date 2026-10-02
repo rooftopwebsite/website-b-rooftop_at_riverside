@@ -46,7 +46,7 @@ export default function FoodTrucksPage() {
         eyebrow="How this works"
         accent="Start at the bar,"
         title="then follow your appetite"
-        lead="Eat at the trucks or right from your seat. Either way, everyone at the table gets to pick their favorite."
+        lead="Start with a drink, then walk the yard. Everyone at the table gets to pick their favorite."
         cta={{ label: 'See the bar menu', href: '/sunset-bar#carta-title' }}
         ours={{
           label: 'How ordering works',
@@ -60,12 +60,8 @@ export default function FoodTrucksPage() {
               body: 'Walk the yard, talk to the chefs and see what each truck is cooking today.',
             },
             {
-              title: 'Order your way',
-              body: 'Order in line at any truck and take a pager. Or scan the QR code at your seat, follow the steps on your phone, and we bring the food to your table.',
-            },
-            {
-              title: 'One check for everything',
-              body: 'With the QR code you can order for yourself or the whole table, from every truck, on one check with one payment. We bring it anywhere on site.',
+              title: 'Order at the window',
+              body: 'Order at any truck, take a pager and grab a seat anywhere in the yard.',
             },
           ],
         }}

@@ -32,8 +32,8 @@ const steps = (fraseMusica: string): readonly TicketStep[] => [
     n: '02',
     kicker: 'The yard',
     title: 'Travel across 4 distinct menus in a single order',
-    body: 'Wander through the storylines of our four gourmet food trucks and order the culinary adventure that suits your taste, at the truck or from your seat. Come back anytime: a new foodie quest awaits with every visit.',
-    tags: ['Gourmet food trucks', 'Self service at the window', 'Or order from your seat'],
+    body: 'Wander through the storylines of our four gourmet food trucks and order the culinary adventure that suits your taste, right at the window. Come back anytime: a new foodie quest awaits with every visit.',
+    tags: ['Gourmet food trucks', 'Self service at the window'],
   },
   {
     n: '03',
