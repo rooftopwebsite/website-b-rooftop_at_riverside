@@ -38,23 +38,21 @@ export default function EventsBanner() {
         <Reveal className="relative">
           <h2
             id="events-banner-title"
-            className="m-0 font-display text-[clamp(2.8rem,7vw,6.6rem)] font-extrabold uppercase leading-[0.86]"
+            className="m-0 text-balance font-display text-banda font-extrabold uppercase text-paper"
           >
-            <span className="block text-paper">
-              The whole place
+            The whole place <span className="text-sunset">is{' '}
+            <span className="whitespace-nowrap">
+              yours
               <Image
                 src="/brand/badge-sun-teal.svg"
                 alt=""
                 width={113}
                 height={113}
-                className="ml-[0.15em] hidden size-[0.814em] align-baseline desk:inline-block"
+                className="ml-[0.15em] inline-block size-[0.8em] align-[-0.06em]"
               />
-            </span>
-            {' '}
-            <span className="block text-sunset desk:text-right">is yours</span>
-
+            </span></span>
           </h2>
-          <p className="mt-7 max-w-[62ch] font-body text-lead font-light text-paper desk:absolute desk:bottom-0 desk:left-0 desk:mt-0">
+          <p className="mt-gap-bajada max-w-[62ch] font-body text-lead font-light text-paper">
             Holiday parties, client nights, fundraisers and reunions. You get the rooftop, the yard
             and the food trucks, and one person coordinating all of it.
           </p>
