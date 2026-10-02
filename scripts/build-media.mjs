@@ -320,16 +320,19 @@ const FOTOS = [
      DSC02165.JPG`, vertical 4672×7008: cinco amigas con pelucas naranjas, de
      noche. Las caras van de borde a borde, así que el recorte usa TODO el
      ancho y nunca se recorta de costado. Las cabezas ocupan del 20 % al 46 %
-     del alto. Con un 4:3 y `foco: 0.295`, en el marco más apaisado (16:9, que
-     `photoKeepFaces` fija como tope en lg) quedan del 22 % al 91 % del marco,
-     por debajo de la placa. */
+     del alto. Con un 4:3 y `foco: 0.333`, en el marco más apaisado (16:9, que
+     `photoKeepFaces` fija como tope en lg) la cabeza más alta queda al 14 %
+     (fuera del ancho de la placa) y el mentón más bajo al 83 %. Camila,
+     2026-10-02: «tienen aire sobre las cabezas y una queda casi al corte».
+     La placa muerde hasta 16,3 % entre el 27,5 % y el 72,5 % del ancho
+     (medido a 768 px); las cabezas que caen debajo arrancan al 21 % o más. */
   {
     src: 'events-party-night.jpg',
     out: 'public/images/events/events-hero.webp',
     w: 2400,
     h: 1800,
     q: 78,
-    foco: 0.295,
+    foco: 0.333,
   },
 
   /* ── El recorte MOBILE del hero de `/events`, 3:2 ──────────────────────
@@ -348,15 +351,15 @@ const FOTOS = [
      tiene que arrancar por debajo del 26 %. Con `foco: 0.35` arranca al 27 %
      y el mentón más bajo queda al 76 %. Si se cambia `foco`, volver a medir. */
   /* Mobile 3:2 de la misma foto, desde el original. La placa muerde 21,5 %
-     del marco a 360 px: con `foco: 0.282` la cabeza más alta arranca al 31 %
-     y el mentón más bajo queda al 90 %. */
+     del marco a 360 px, entre el 17 % y el 83 % del ancho: con `foco: 0.317`
+     la cabeza más alta arranca al 23 % y el mentón más bajo queda al 81 %. */
   {
     src: 'events-party-night.jpg',
     out: 'public/images/events/events-hero-mobile.webp',
     w: 1080,
     h: 720,
     q: 80,
-    foco: 0.282,
+    foco: 0.317,
   },
 
   /* ── La foto del hero de `/contact`: la cuarta 17:9 ─────────────────────
