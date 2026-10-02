@@ -118,6 +118,7 @@ export async function submitJob(_prev: ActionState, formData: FormData): Promise
     form: 'job',
     inbox: 'careers',
     replyTo: d.email,
+    firstName: d.firstName,
     subject: `Job application: ${d.position} (${d.firstName} ${d.lastName})`,
     data: {
       Position: d.position,
@@ -199,6 +200,7 @@ export async function submitArtist(_prev: ActionState, formData: FormData): Prom
     form: 'musician',
     inbox: 'booking',
     replyTo: d.email,
+    firstName: d.firstName,
     subject: `Booking request: ${acto}`,
     data: {
       Name: `${d.firstName} ${d.lastName}`,

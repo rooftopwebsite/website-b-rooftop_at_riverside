@@ -48,6 +48,7 @@ export async function submitContact(_prev: ActionState, formData: FormData): Pro
     form: 'contact',
     inbox,
     replyTo: parsed.data.email,
+    firstName: parsed.data.name,
     subject: `Website contact: ${reasonLabel} (${parsed.data.name})`,
     data: {
       Name: parsed.data.name,

@@ -36,6 +36,7 @@ export async function submitMarketVendor(
     form: 'market-vendor',
     inbox: 'market',
     replyTo: d.email,
+    firstName: d.name,
     subject: `Market vendor: ${d.business}`,
     data: {
       Business: d.business,

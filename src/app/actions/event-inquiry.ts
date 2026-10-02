@@ -34,6 +34,7 @@ export async function submitEventInquiry(
     form: 'event-inquiry',
     inbox: 'events',
     replyTo: d.email,
+    firstName: d.name,
     subject: `Event inquiry: ${d.name}, ${d.date} (${d.guests})`,
     data: {
       Name: d.name,

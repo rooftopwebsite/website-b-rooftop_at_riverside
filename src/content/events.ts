@@ -160,6 +160,7 @@ export function formatTime(hm: string): string {
 }
 
 export function timeRange(e: VenueEvent): string {
+  if (e.endTime === e.startTime) return formatTime(e.startTime);
   return `${formatTime(e.startTime)} – ${formatTime(e.endTime)}`;
 }
 

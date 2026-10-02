@@ -1,7 +1,8 @@
 import 'server-only';
 import { headers } from 'next/headers';
+import { confirmationText, FORM_CONFIRMATIONS } from '@/content/form-confirmations';
 import { BRAND } from './brand';
-import { inboxFor, type Inbox } from './inboxes';
+import { inboxFor, publicInbox, type Inbox } from './inboxes';
 import { sendMail, type MailAttachment } from './mail';
 import { asuntoSeguro, nombreSeguro, podar } from './saneo';
 
@@ -10,6 +11,7 @@ export interface Submission {
   readonly inbox: Inbox;
   readonly data: Readonly<Record<string, string>>;
   readonly replyTo?: string;
+  readonly firstName?: string;
   readonly subject: string;
   readonly attachments?: readonly MailAttachment[];
 }
@@ -77,6 +79,28 @@ function cuerpo(s: Submission): string {
   return lineas.join('\n');
 }
 
+async function sendConfirmation(s: Submission): Promise<void> {
+  const firstName = s.firstName?.trim().split(/\s+/)[0];
+  const res = await sendMail({
+    to: s.replyTo!,
+    subject: FORM_CONFIRMATIONS[s.form].subject,
+    text: confirmationText(s.form, {
+      firstName: firstName ? asuntoSeguro(firstName) : undefined,
+      brandName: BRAND.name,
+    }),
+    replyTo: publicInbox(s.inbox),
+  });
+
+  console.info(
+    JSON.stringify({
+      at: new Date().toISOString(),
+      event: 'form.confirmation',
+      form: s.form,
+      ok: res.ok,
+    }),
+  );
+}
+
 export async function sendSubmission(s: Submission): Promise<SubmissionResult> {
   const to = inboxFor(s.inbox);
   const res = await sendMail({
@@ -97,6 +121,8 @@ export async function sendSubmission(s: Submission): Promise<SubmissionResult> {
       attachments: s.attachments?.length ?? 0,
     }),
   );
+
+  if (res.ok && s.replyTo) await sendConfirmation(s);
 
   return res.ok
     ? { ok: true, message: 'Thanks. Your message is in.' }
