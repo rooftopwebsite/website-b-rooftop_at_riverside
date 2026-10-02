@@ -90,7 +90,7 @@ export default async function SunsetBarPage() {
           <Heading level={2} id="hh-title" className="text-banda text-paper">
             Happy hour
           </Heading>
-          <p className="mt-5 inline-block whitespace-nowrap rounded-pill bg-cream px-4 py-2 text-center font-display text-d7 uppercase tracking-[0.06em] text-deep sm:px-6 sm:py-2.5 sm:tracking-eyebrow lg:px-7 lg:py-3 lg:text-d6 desk:text-d5">
+          <p className="mt-5 inline-block whitespace-nowrap rounded-btn border border-dashed border-cream/60 px-4 py-2 text-center font-display text-d7 uppercase tracking-[0.06em] text-cream sm:px-6 sm:py-2.5 sm:tracking-eyebrow lg:px-7 lg:py-3 lg:text-d6 desk:text-d5">
             <span>{happyHour.days}</span>
             <span aria-hidden="true">
               {' '}
