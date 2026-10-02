@@ -102,7 +102,7 @@ export default function HowToOrder({ id = 'order-title' }: { readonly id?: strin
                 </span>
               ) : (
                 <span className="mt-auto pt-8">
-                  <ButtonLink href="/food-trucks" variant="secondary">
+                  <ButtonLink href="/food-trucks" variant="primary">
                     Meet the trucks
                   </ButtonLink>
                 </span>

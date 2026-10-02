@@ -28,6 +28,9 @@ export default function HoursCard({ hours }: { readonly hours?: readonly Hours[]
         {filas.map((row, i) => {
           const isToday = i === todayIdx;
           const cerrado = /closed/i.test(row.bar);
+          const vuelve = cerrado
+            ? filas.slice(i + 1).concat(filas.slice(0, i)).find((f) => !/closed/i.test(f.bar))?.day
+            : undefined;
 
           const dia = (
             <span
@@ -48,11 +51,21 @@ export default function HoursCard({ hours }: { readonly hours?: readonly Hours[]
                 isToday ? 'text-cream' : 'text-paper',
               ].join(' ')}
             >
-              {row.bar}
+              {cerrado ? (vuelve ? `Back ${vuelve}` : '') : row.bar}
             </span>
           );
 
-          if (cerrado) return null;
+          if (cerrado) {
+            return (
+              <div key={row.day} className={`${FILA} ${BORDE}`}>
+                {dia}
+                <span className="flex items-center gap-3">
+                  {hora}
+                  <span aria-hidden="true" className="size-3.25" />
+                </span>
+              </div>
+            );
+          }
 
           return (
             <details key={row.day} open={isToday} className={`group ${BORDE}`}>
