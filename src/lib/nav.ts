@@ -61,7 +61,7 @@ export const NAV_MORE_FEATURED = {
   eyebrow: 'Featured',
   label: 'NFC North HQ',
   href: '/sunset-bar#nfc-north-hq',
-  hint: 'Your hometown bar for the Packers, Bears, Lions and Vikings, every Sunday of the season.',
+  hint: 'Your hometown bar for Green Bay, Chicago, Detroit and Minnesota fans, every Sunday of the season.',
   points: [
     'The 1 PM and 4 PM games on every screen upstairs',
     'Drink specials for Green Bay, Chicago, Detroit and Minnesota',
