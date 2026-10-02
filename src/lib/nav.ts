@@ -64,7 +64,7 @@ export const NAV_MORE_FEATURED = {
   hint: 'Your hometown bar for the Packers, Bears, Lions and Vikings, every Sunday of the season.',
   points: [
     'The 1 PM and 4 PM games on every screen upstairs',
-    'A drink for every team, from $10',
+    'Drink specials for Green Bay, Chicago, Detroit and Minnesota',
     'Weekly giveaways for each NFC North team',
     'Week 18 draw for Beckett Witnessed autographed jerseys',
   ],
