@@ -74,7 +74,7 @@ export const sinBlog = <T extends { readonly href: string }>(links: readonly T[]
 
 export const NAV_CTA = {
   primary: { label: 'Plan an Event', href: '/events' },
-  stayInTouch: { label: 'Stay in touch', href: '#stay-in-touch' },
+  stayInTouch: { label: 'Follow us', href: '#stay-in-touch' },
   secondary: { label: "What's On", href: '/whats-on' },
 } as const;
 
