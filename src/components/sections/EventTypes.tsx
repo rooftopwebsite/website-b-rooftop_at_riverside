@@ -25,8 +25,8 @@ export default function EventTypes() {
         id="tipos-title"
         className="mx-auto max-w-[18ch] text-center font-display text-banda font-extrabold uppercase"
       >
-        <span className="text-ink">Whatever you celebrate,</span>{' '}
-        <span className="text-sunset-deep">celebrate it here</span>
+        <span className="text-ink">Every reason</span>{' '}
+        <span className="text-sunset-deep">to celebrate</span>
       </h2>
       <p className="mx-auto mt-6 max-w-[60ch] text-center font-body text-lead font-light text-ink">
         Company nights, birthdays, fundraisers, holiday parties and everything in between. Tell
