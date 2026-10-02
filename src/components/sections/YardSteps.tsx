@@ -41,7 +41,7 @@ const steps = (fraseMusica: string): readonly TicketStep[] => [
     title: 'Your favorite local artists',
     body: `${fraseMusica}, Bingo on Wednesdays and DJ sets late on Saturdays. Stay for the music, the friends and the fun.`,
     tags: [fraseMusica, 'Bingo Wednesdays', 'DJ sets Saturdays'],
-    cta: { label: 'See what’s happening tonight', href: '/whats-on' },
+    cta: { label: 'What’s on tonight', href: '/whats-on' },
   },
 ];
 
