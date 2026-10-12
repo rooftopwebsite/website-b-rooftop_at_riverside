@@ -251,7 +251,7 @@ function Chip({
   );
 
   const clases = [
-    'flex w-full gap-[6px] rounded-[5px] px-[5px] py-[4px] text-left text-[12px] leading-[1.35]',
+    'flex w-full gap-[6px] rounded-[5px] px-[5px] py-[4px] text-left text-[14px] leading-[1.35]',
     standsOut(event) ? 'bg-cream' : '',
     isTicketed(event) ? 'text-deep underline underline-offset-2 hover:text-terra' : 'text-ink',
   ]

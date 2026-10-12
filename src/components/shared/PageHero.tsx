@@ -53,7 +53,7 @@ export default function PageHero({
           >
             {crumbs && crumbs.length > 0 ? (
               <nav aria-label="Breadcrumb" className="mb-[20px]">
-                <ol className="flex flex-wrap items-center gap-x-[8px] gap-y-[2px] text-[13px] text-body/75">
+                <ol className="flex flex-wrap items-center gap-x-[8px] gap-y-[2px] text-[14px] text-body/75">
                   <li>
                     <Link href="/" className="link-texto">
                       Home

@@ -49,7 +49,7 @@ export default function AgencyBar() {
           className="h-px w-[283px] max-w-full bg-gradient-to-r from-transparent via-[#7c7c7c]/50 to-transparent opacity-70"
         />
         <div className="flex flex-wrap items-center justify-center gap-x-[12px] gap-y-[4px] text-center">
-          <p className="font-body text-[12px] leading-[1.3] text-[#5c5c5c]">{AGENCY.tagline}</p>
+          <p className="font-body text-[14px] leading-[1.3] text-[#5c5c5c]">{AGENCY.tagline}</p>
           <p className="font-body text-[14px] leading-[1.3] text-[#5c5c5c]">{año}</p>
         </div>
       </div>

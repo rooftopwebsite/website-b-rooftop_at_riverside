@@ -125,12 +125,12 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
           <RevealItem
             key={step.n}
             as="li"
-            className={`relative flex shrink-0 snap-start pt-9.5 [filter:drop-shadow(0_1px_2px_rgba(10,31,30,0.10))_drop-shadow(0_8px_16px_rgba(10,31,30,0.16))] ${ANCHO}`}
+            className={`relative flex shrink-0 snap-start pt-12.5 [filter:drop-shadow(0_1px_2px_rgba(10,31,30,0.10))_drop-shadow(0_8px_16px_rgba(10,31,30,0.16))] ${ANCHO}`}
           >
-            <span className="sticker absolute top-0 left-1/2 z-30 grid size-17 -translate-x-1/2 place-items-center rounded-pill bg-paper p-1">
+            <span className="sticker absolute top-0 left-1/2 z-30 grid size-20 -translate-x-1/2 place-items-center rounded-pill bg-paper p-1">
               <span className="grid size-full place-items-center rounded-pill bg-sunset p-1.25">
                 <span className="grid size-full place-items-center content-center rounded-pill bg-cream">
-                  <span className="font-body text-[8px] font-bold uppercase tracking-[0.14em] text-deep">
+                  <span className="font-body text-[14px] font-bold uppercase tracking-[0.14em] text-deep">
                     Step
                   </span>
                   <span className="font-display text-d5 font-extrabold leading-none text-deep">

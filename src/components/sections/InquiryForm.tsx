@@ -192,7 +192,7 @@ function FoodTier() {
               />
               <span className="font-body text-[16px] font-bold">{tier.label}</span>
             </span>
-            <span className="text-[13px] leading-[1.5] text-body/75">{tier.hint}</span>
+            <span className="text-[14px] leading-[1.5] text-body/75">{tier.hint}</span>
           </label>
         ))}
       </div>

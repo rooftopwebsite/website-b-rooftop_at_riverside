@@ -146,7 +146,7 @@ export default function CompareSlab({
                         <span
                           aria-hidden="true"
                           className={[
-                            'grid size-5.5 shrink-0 place-items-center rounded-pill text-[12px] font-bold',
+                            'grid size-5.5 shrink-0 place-items-center rounded-pill text-[14px] font-bold',
                             nuestro ? 'bg-teal600 text-paper' : 'bg-terra text-paper',
                           ].join(' ')}
                         >
