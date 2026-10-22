@@ -1,4 +1,4 @@
-import { sinEmDash } from './em-dash';
+import { sinEmDash } from './em-dash.ts';
 
 export interface FeedPost {
   readonly id: string;

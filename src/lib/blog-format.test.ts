@@ -14,7 +14,7 @@ import {
   toPostFull,
   toPosts,
   type FeedPost,
-} from './blog-format';
+} from './blog-format.ts';
 
 const SITE = 'https://rooftopatriverside.com';
 const COVER = `${IMAGE_ORIGIN}cover.webp`;
@@ -131,11 +131,11 @@ describe('toPostFull', () => {
     assert.equal(p.html, '<h2>Title</h2><p>More Than Rice: A Spanish Ritual</p>');
   });
   it('sin portada válida queda sin imagen', () => {
-    const p = toPostFull(feed({ coverImageUrl: '/images/blog/beer.webp' }), SITE)!;
+    const p = toPostFull(feed({ coverImageUrl: 'https://example.com/beer.webp' }), SITE)!;
     assert.equal(p.image, null);
     assert.equal(p.ogImage, null);
   });
-  it('arma el extracto desde el HTML si el dashboard no lo trajo', () => {
+  it('arma el extracto desde el HTML si el JSON no lo trajo', () => {
     const p = toPostFull(feed({ excerpt: null, contentHtml: '<p>Short body.</p>' }), SITE)!;
     assert.equal(p.excerpt, 'Short body.');
     assert.equal(p.metaDescription, 'Short body.');
@@ -157,7 +157,7 @@ describe('toPostFull', () => {
   it('descarta la nota sin slug', () => {
     assert.equal(toPostFull(feed({ slug: '  ' }), SITE), null);
   });
-  it('canonical: propio salvo que el del dashboard sea del dominio', () => {
+  it('canonical: propio salvo que el del JSON sea del dominio', () => {
     assert.equal(toPostFull(feed(), SITE)!.canonicalPath, '/blog/the-art-of-paella');
     assert.equal(toPostFull(feed({ canonicalUrl: 'https://otro.com/x' }), SITE)!.canonicalPath, '/blog/the-art-of-paella');
     assert.equal(toPostFull(feed({ canonicalUrl: `${SITE}/blog/paella` }), SITE)!.canonicalPath, '/blog/paella');

@@ -10,7 +10,7 @@ import { BRAND } from '@/lib/brand';
 import { SITE_URL, breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 import '../prose-post.css';
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   return (await getPostSlugs()).map((slug) => ({ slug }));
