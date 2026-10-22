@@ -1,0 +1,26 @@
+{
+  "phone": "(239) 268-0080",
+  "email": "info@eatdrinkparadise.com",
+  "emailEvents": "events@eatdrinkparadise.com",
+  "emailHiring": "hiring@eatdrinkparadise.com",
+  "address": {
+    "street": "27333 Old 41 Rd",
+    "city": "Bonita Springs",
+    "state": "FL",
+    "zip": "34135",
+    "country": "US",
+    "neighborhood": "Downtown Bonita Springs, across from Riverside Park",
+    "timezone": "America/New_York",
+    "latitude": 26.3407274,
+    "longitude": -81.7786032,
+    "googleMapsUrl": "https://maps.google.com/?cid=17116543045499348377"
+  },
+  "social": {
+    "instagram": "https://www.instagram.com/rooftopatriverside/",
+    "facebook": "https://www.facebook.com/people/Rooftop-at-Riverside/100075964505890/",
+    "google": "https://maps.google.com/?cid=17116543045499348377",
+    "tiktok": null
+  },
+  "giftCards": "https://order.toasttab.com/egiftcards/rooftop-and-riverside-new-27333-old-41-road",
+  "eventbrite": "https://www.eventbrite.com/o/rooftop-at-riverside-104153700851"
+}

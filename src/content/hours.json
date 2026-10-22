@@ -1,0 +1,50 @@
+{
+  "bar": {
+    "monday": "closed",
+    "tuesday": "closed",
+    "wednesday": {
+      "open": "15:00",
+      "close": "21:00"
+    },
+    "thursday": {
+      "open": "15:00",
+      "close": "00:00"
+    },
+    "friday": {
+      "open": "15:00",
+      "close": "00:00"
+    },
+    "saturday": {
+      "open": "11:00",
+      "close": "02:00"
+    },
+    "sunday": {
+      "open": "11:00",
+      "close": "00:00"
+    }
+  },
+  "trucks": {
+    "monday": "closed",
+    "tuesday": "closed",
+    "wednesday": {
+      "open": "16:00",
+      "close": "20:00"
+    },
+    "thursday": {
+      "open": "16:00",
+      "close": "20:00"
+    },
+    "friday": {
+      "open": "16:00",
+      "close": "23:00"
+    },
+    "saturday": {
+      "open": "12:00",
+      "close": "23:00"
+    },
+    "sunday": {
+      "open": "12:00",
+      "close": "20:00"
+    }
+  }
+}

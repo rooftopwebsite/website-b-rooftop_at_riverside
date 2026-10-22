@@ -1,6 +1,6 @@
 import raw from './events.json';
 import { BRAND } from '@/lib/brand';
-import { getEvents } from '@/lib/restoexp';
+import { sinEmDash } from '@/lib/em-dash';
 
 export type EventKind = 'recurring' | 'one-off' | 'festival';
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -102,13 +102,17 @@ function adapt(r: RawEvent): VenueEvent {
   const weekdays = r.isRecurring ? parseWeekdays(r.recurrenceDays) : [];
   const start = hhmm(r.startTime);
   const end = hhmm(r.endTime) || start;
-  const paragraphs = r.description.split(/\n+/).map((p) => p.trim()).filter(Boolean);
+  const title = sinEmDash(r.title);
+  const paragraphs = sinEmDash(r.description ?? '')
+    .split(/\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
   const price = r.price === null ? null : Number(r.price);
-  const slug = slugify(r.title);
+  const slug = slugify(title);
 
   return {
     slug,
-    title: r.title,
+    title,
     kind: r.isRecurring ? 'recurring' : 'one-off',
     summary: bajadaDe(paragraphs) ?? r.title,
     body: paragraphs,
@@ -123,15 +127,13 @@ function adapt(r: RawEvent): VenueEvent {
     ticketUrl: TICKETS[slug] ?? null,
     price: price !== null && Number.isFinite(price) && price > 0 ? price : null,
     image: r.bannerUrl,
-    imageAlt: r.bannerUrl ? (ALT[slugify(r.title)] ?? `Poster for ${r.title}`) : null,
+    imageAlt: r.bannerUrl ? (ALT[slug] ?? `Poster for ${title}`) : null,
     tags: r.tags,
   };
 }
 
 export async function getVenueEvents(): Promise<readonly VenueEvent[]> {
-  const deLaBase = await getEvents();
-  const filas = deLaBase ?? (raw as readonly RawEvent[]);
-  return filas.map(adapt);
+  return (raw as readonly RawEvent[]).map(adapt);
 }
 
 export const featuredEvent = async () =>

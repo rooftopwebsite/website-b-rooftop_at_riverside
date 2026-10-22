@@ -45,29 +45,6 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
 
     /*
-     * ⚠️ EL STORAGE DEL DASHBOARD, y sin esto las piezas de los eventos no se
-     * ven: `next/image` rechaza cualquier host remoto que no esté declarado,
-     * y falla en build con «hostname is not configured».
-     *
-     * Las imágenes de evento ya no viven en el repo. El cliente las sube en
-     * app.restoexp.com y quedan en el storage público de Supabase; el sitio
-     * las recibe por el campo `bannerUrl` de `npm run sync:events`. Ver
-     * `content/events.ts`.
-     *
-     * ⚠️ El `pathname` está acotado al bucket de assets a propósito. Es una
-     * instancia COMPARTIDA por todos los sitios de la casa: sin el prefijo,
-     * este sitio quedaría habilitado para servir cualquier objeto público de
-     * cualquier otro cliente.
-     */
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'kqibgbvdgxrjhdyfoxvm.supabase.co',
-        pathname: '/storage/v1/object/public/restaurant-assets/**',
-      },
-    ],
-
-    /*
      * Los assets de marca del Figma vienen en SVG (lockup reversado, isotipo
      * del camión, las olas), y `next/image` los rechaza si no se habilita esto.
      *

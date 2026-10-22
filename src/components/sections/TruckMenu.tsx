@@ -3,18 +3,18 @@ import Section from '@/components/shared/Section';
 import { PendingBlock } from '@/components/shared/PendingData';
 import { Eyebrow, Heading, SectionHead } from '@/components/shared/Type';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
-import { getTruckMenu } from '@/lib/restoexp';
 import { TAG } from '@/lib/tag';
+import type { DishGroup } from '@/types/content';
 
-export default async function TruckMenu({
+export default function TruckMenu({
   truck,
+  cartas = null,
   id = 'menu-title',
 }: {
   readonly truck: string;
+  readonly cartas?: readonly DishGroup[] | null;
   readonly id?: string;
 }) {
-  const cartas = await getTruckMenu(truck);
-
   return (
     <Section tone="bone" band="lg" labelledBy={id}>
       <SectionHead
@@ -66,14 +66,12 @@ export default async function TruckMenu({
         <div className="mt-bloque max-w-[68ch]">
           <PendingBlock title={`Digital menu for ${truck}`}>
             <p className="m-0">
-              El truck todavía no tiene su carta cargada. Se crea en el dashboard de RestoExp como
-              un menú nuevo, con el nombre del truck escrito igual que acá: <strong>{truck}</strong>.
-              Adentro van las categorías y los platos, con precio, descripción, foto y las etiquetas
-              que correspondan.
+              El truck todavía no tiene su carta digital. Hoy la carta de <strong>{truck}</strong>{' '}
+              es su PDF en <code>src/content/menus.json</code>.
             </p>
             <p className="m-0 mt-3">
-              Apenas exista, esta sección se llena sola. No hace falta tocar el sitio ni volver a
-              publicar.
+              Para mostrar los platos acá, se pasan por la prop <code>cartas</code>, con precio,
+              descripción, foto y las etiquetas que correspondan.
             </p>
           </PendingBlock>
           <div className="mt-8">

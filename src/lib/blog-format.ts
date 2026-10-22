@@ -1,4 +1,4 @@
-import { sinEmDash } from './restoexp';
+import { sinEmDash } from './em-dash';
 
 export interface FeedPost {
   readonly id: string;
@@ -41,8 +41,7 @@ export interface PostFull extends Post {
   readonly faqJsonLd: readonly Record<string, unknown>[];
 }
 
-export const IMAGE_ORIGIN =
-  'https://kqibgbvdgxrjhdyfoxvm.supabase.co/storage/v1/object/public/restaurant-assets/';
+export const IMAGE_ORIGIN = '/images/blog/';
 
 export function safeImage(url: string | null | undefined): string | null {
   return url && url.startsWith(IMAGE_ORIGIN) ? url : null;

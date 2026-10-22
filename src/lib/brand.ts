@@ -1,3 +1,5 @@
+import CONTACT from '@/content/contact.json';
+
 export const COLORS = {
   sunset: '#F58521',
   'sunset-hover': '#E0741A',
@@ -40,35 +42,36 @@ export const BRAND = {
   opened: 'January 2024',
 
   contact: {
-    phone: '(239) 268-0080',
-    phoneHref: 'tel:+12392680080',
-    email: 'info@eatdrinkparadise.com',
-    events: 'events@eatdrinkparadise.com',
-    hiring: 'hiring@eatdrinkparadise.com',
+    phone: CONTACT.phone,
+    phoneHref: `tel:+1${CONTACT.phone.replace(/\D/g, '')}`,
+    email: CONTACT.email,
+    events: CONTACT.emailEvents,
+    hiring: CONTACT.emailHiring,
   },
 
   address: {
-    street: '27333 Old 41 Rd',
-    locality: 'Bonita Springs',
-    region: 'FL',
-    postalCode: '34135',
-    country: 'US',
-    neighborhood: 'Downtown Bonita Springs, across from Riverside Park',
-    timezone: 'America/New_York',
-    geo: { lat: 26.3407274, lng: -81.778603 } as { lat: number; lng: number } | null,
-    mapsQuery: '27333+Old+41+Rd,+Bonita+Springs,+FL+34135',
+    street: CONTACT.address.street,
+    locality: CONTACT.address.city,
+    region: CONTACT.address.state,
+    postalCode: CONTACT.address.zip,
+    country: CONTACT.address.country,
+    neighborhood: CONTACT.address.neighborhood,
+    timezone: CONTACT.address.timezone,
+    geo: { lat: CONTACT.address.latitude, lng: CONTACT.address.longitude } as {
+      lat: number;
+      lng: number;
+    } | null,
+    mapsUrl: CONTACT.address.googleMapsUrl,
+    mapsQuery: encodeURIComponent(
+      `${CONTACT.address.street}, ${CONTACT.address.city}, ${CONTACT.address.state} ${CONTACT.address.zip}`,
+    ),
   },
 
-  social: {
-    instagram: 'https://www.instagram.com/rooftopatriverside/',
-    facebook: 'https://www.facebook.com/people/Rooftop-at-Riverside/100075964505890/',
-    google: 'https://maps.google.com/?cid=17116543045499348377',
-    tiktok: null,
-  },
+  social: CONTACT.social,
 
-  giftCards: 'https://order.toasttab.com/egiftcards/rooftop-and-riverside-new-27333-old-41-road',
+  giftCards: CONTACT.giftCards,
 
-  eventbrite: 'https://www.eventbrite.com/o/rooftop-at-riverside-104153700851' as string | null,
+  eventbrite: CONTACT.eventbrite as string | null,
 
   credit: { label: 'Resto Experience', url: 'https://restoexp.com' },
 } as const;

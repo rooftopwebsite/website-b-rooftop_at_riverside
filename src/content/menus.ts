@@ -1,7 +1,14 @@
-import { getMenuPdfs, type MenuPdf } from '@/lib/restoexp';
 import { activeTrucks, truckPorNombre, type Truck } from '@/content/trucks';
+import { sinEmDash } from '@/lib/em-dash';
+import cartas from './menus.json';
 
 export const CARTA_DEL_BAR = 'Sunset Bar';
+
+export interface MenuPdf {
+  readonly name: string;
+  readonly description: string | null;
+  readonly pdfUrl: string;
+}
 
 const normalizar = (s: string) =>
   s
@@ -12,6 +19,16 @@ const normalizar = (s: string) =>
 
 const esDelBar = (m: MenuPdf) => normalizar(m.name) === normalizar(CARTA_DEL_BAR);
 
+function getMenuPdfs(): readonly MenuPdf[] {
+  return (cartas as readonly { name: string; description: string | null; pdf: string | null; active: boolean }[])
+    .filter((c) => c.active && c.pdf)
+    .map((c) => ({
+      name: c.name,
+      description: sinEmDash(c.description),
+      pdfUrl: c.pdf as string,
+    }));
+}
+
 export interface CartaDeTruck {
   readonly name: string;
   readonly description: string | null;
@@ -20,7 +37,7 @@ export interface CartaDeTruck {
 }
 
 export async function cartasDeTrucks(): Promise<readonly CartaDeTruck[]> {
-  const cartas = await getMenuPdfs();
+  const cartas = getMenuPdfs();
 
   if (cartas.length === 0) {
     return activeTrucks().map((t) => ({
@@ -43,6 +60,5 @@ export async function cartasDeTrucks(): Promise<readonly CartaDeTruck[]> {
 }
 
 export async function cartaDelBar(): Promise<MenuPdf | null> {
-  const cartas = await getMenuPdfs();
-  return cartas.find(esDelBar) ?? null;
+  return getMenuPdfs().find(esDelBar) ?? null;
 }

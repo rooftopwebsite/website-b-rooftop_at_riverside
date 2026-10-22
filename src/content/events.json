@@ -1,12 +1,81 @@
 [
   {
-    "id": "35114abe-65d5-4d2e-8ad4-0a2a3fcb8103",
+    "id": "848f2a36-5071-4483-a537-6f18ff0b24a2",
+    "title": "Gabriel Key",
+    "description": "",
+    "bannerUrl": "/images/events/posters/gabriel-key.webp",
+    "startDate": "2026-11-27",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "2a459de8-cdd1-467a-b4f1-bdce7a3dca71",
+    "title": "Gabriel Key",
+    "description": "",
+    "bannerUrl": "/images/events/posters/gabriel-key.webp",
+    "startDate": "2026-12-18",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "f31d22f9-2663-49da-b4fa-8b6fa591c8f3",
+    "title": "Weekend Happy Hour",
+    "description": "Every Saturday and Sunday, from noon to 6 PM, all over the venue.\n$1 off drafts, bottles and cans\n$8 Tito's, Captain, Crown's\n$10 Margaritas\nSuperior Light Beer is the featured pour.",
+    "bannerUrl": "/images/events/posters/weekend-happy-hour.webp",
+    "startDate": "2026-09-21",
+    "endDate": null,
+    "startTime": "12:00:00",
+    "endTime": "18:00:00",
+    "isRecurring": true,
+    "recurrenceType": "weekly",
+    "recurrenceDays": "[0,6]",
+    "price": null,
+    "tags": [
+      "happy-hour",
+      "weekly"
+    ]
+  },
+  {
+    "id": "ff1ef8bd-e67c-48ae-98f5-1a653dee4866",
+    "title": "DJ AKA Throwback Friday",
+    "description": "",
+    "bannerUrl": "/images/events/posters/dj-aka-throwback-friday.webp",
+    "startDate": "2026-12-04",
+    "endDate": null,
+    "startTime": "21:00:00",
+    "endTime": "00:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "dj"
+    ]
+  },
+  {
+    "id": "d7ee3445-b8af-424c-ac7c-12015dff4b83",
     "title": "Wooftop Fest",
     "description": "The third Wednesday of every month, bring the dog: this place goes pet-friendly for the day.\nThere is an off-leash area we run with Barkyard and Tap, and pet vendors set up for the day.",
-    "bannerUrl": null,
-    "startDate": "2026-10-21",
+    "bannerUrl": "/images/events/posters/wooftop-fest.webp",
+    "startDate": "2026-11-18",
     "endDate": null,
-    "startTime": "15:00:00",
+    "startTime": "18:00:00",
     "endTime": "20:00:00",
     "isRecurring": false,
     "recurrenceType": null,
@@ -18,11 +87,503 @@
     ]
   },
   {
+    "id": "1bdcb6e3-adc5-4897-ba1e-f83f0c160f11",
+    "title": "Win Autographed Jerseys",
+    "description": "Every Sunday of the season: weekly giveaways for each NFC North team, and a shot at a Beckett Witnessed autographed jersey.\nEvery week there is a giveaway for each team in the division. Every entry also rolls into the week 18 draw, where we give away a Beckett Witnessed autographed jersey from a star player, one for each NFC North team.\nClose your check, get a ticket and drop it in your team’s bucket. Green Bay, Chicago, Detroit or Minnesota fan, or just here for the stars on your fantasy roster: everyone can play.",
+    "bannerUrl": "/images/events/posters/win-autographed-jerseys.webp",
+    "startDate": "2026-09-21",
+    "endDate": null,
+    "startTime": "13:00:00",
+    "endTime": "19:30:00",
+    "isRecurring": true,
+    "recurrenceType": "weekly",
+    "recurrenceDays": "[0]",
+    "price": null,
+    "tags": [
+      "weekly",
+      "sports"
+    ]
+  },
+  {
+    "id": "e4bc8c28-fd16-4e39-8a6a-123b1cdb5d77",
+    "title": "Nostaljah Band",
+    "description": "",
+    "bannerUrl": "/images/events/posters/nostaljah-band.webp",
+    "startDate": "2026-10-09",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": null,
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "046ec0a7-5ac0-4318-8440-d462582e0643",
+    "title": "Nick Nostaljah",
+    "description": "",
+    "bannerUrl": "/images/events/posters/nick-nostaljah.webp",
+    "startDate": "2026-10-15",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": null,
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "74671055-2a5a-49a0-ab3a-aa9d6596d501",
+    "title": "Moonstone Riders",
+    "description": "",
+    "bannerUrl": "/images/events/posters/moonstone-riders.webp",
+    "startDate": "2026-10-17",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": null,
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "3f5f8d57-29fd-4645-b20a-79cf54c5f086",
+    "title": "Gabriel Key",
+    "description": "",
+    "bannerUrl": "/images/events/posters/gabriel-key.webp",
+    "startDate": "2026-09-25",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "71631a5d-3226-4d5c-99df-05b9feac4e93",
+    "title": "Gabriel Key",
+    "description": "",
+    "bannerUrl": "/images/events/posters/gabriel-key.webp",
+    "startDate": "2026-11-28",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "55d1e540-5149-4d20-a34a-619d145a6a05",
+    "title": "Gabriel Key",
+    "description": "",
+    "bannerUrl": "/images/events/posters/gabriel-key.webp",
+    "startDate": "2026-12-11",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "c812afdc-b7e5-4174-a4cc-d5956f945f1b",
+    "title": "Limited Edition",
+    "description": "",
+    "bannerUrl": "/images/events/posters/limited-edition.webp",
+    "startDate": "2026-09-27",
+    "endDate": null,
+    "startTime": "17:00:00",
+    "endTime": "20:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "775e6a39-22eb-4aae-b00b-20b1acca2b31",
+    "title": "Limited Edition",
+    "description": "",
+    "bannerUrl": "/images/events/posters/limited-edition.webp",
+    "startDate": "2026-11-29",
+    "endDate": null,
+    "startTime": "17:00:00",
+    "endTime": "20:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "6710355e-d0d2-4201-a297-a5b31c3ef8ca",
+    "title": "Bailanow",
+    "description": "",
+    "bannerUrl": "/images/events/posters/bailanow.webp",
+    "startDate": "2026-10-03",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": "22:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "a904dd5d-2736-4e37-9a12-0092a54643c9",
+    "title": "Limited Edition",
+    "description": "",
+    "bannerUrl": "/images/events/posters/limited-edition.webp",
+    "startDate": "2026-10-25",
+    "endDate": null,
+    "startTime": "17:00:00",
+    "endTime": "20:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "f9dd19a9-a712-41dd-a555-e5eadd974cde",
+    "title": "Limited Edition",
+    "description": "",
+    "bannerUrl": "/images/events/posters/limited-edition.webp",
+    "startDate": "2026-12-27",
+    "endDate": null,
+    "startTime": "17:00:00",
+    "endTime": "20:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "20390e34-4812-4b1d-bb2e-6418d9426eb6",
+    "title": "DJ AKA Throwback Friday",
+    "description": "",
+    "bannerUrl": "/images/events/posters/dj-aka-throwback-friday.webp",
+    "startDate": "2026-11-06",
+    "endDate": null,
+    "startTime": "21:00:00",
+    "endTime": "00:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "dj"
+    ]
+  },
+  {
+    "id": "e5a8a10a-19e6-46aa-b5dc-68cbda852c67",
+    "title": "DJ AKA Throwback Friday",
+    "description": "",
+    "bannerUrl": "/images/events/posters/dj-aka-throwback-friday.webp",
+    "startDate": "2027-01-01",
+    "endDate": null,
+    "startTime": "21:00:00",
+    "endTime": "00:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "dj"
+    ]
+  },
+  {
+    "id": "73ab1b16-708f-41cd-a050-b03d1d72bbc8",
+    "title": "Bailanow",
+    "description": "",
+    "bannerUrl": "/images/events/posters/bailanow.webp",
+    "startDate": "2026-11-07",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": "22:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "ed62964c-8c63-4b49-b7dc-79518b286b52",
+    "title": "Flora Top Hits",
+    "description": "",
+    "bannerUrl": "/images/events/posters/flora-top-hits.webp",
+    "startDate": "2026-10-10",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": "22:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "5da6eee6-2ac5-41f3-9c20-117fba9be275",
+    "title": "Flora Top Hits",
+    "description": "",
+    "bannerUrl": "/images/events/posters/flora-top-hits.webp",
+    "startDate": "2026-12-12",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "c0d627e3-c94e-4ae4-bac0-e5e570051d71",
+    "title": "Relentless Fire",
+    "description": "",
+    "bannerUrl": "/images/events/posters/relentless-fire.webp",
+    "startDate": "2026-11-20",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "31f3be2c-fc55-4a26-bb7a-674e3a732ff4",
+    "title": "Neighborhood Market · Halloween Edition",
+    "description": "The usual market, Halloween edition: vendors go with the theme and the Halloween decor is up.",
+    "bannerUrl": "/images/events/posters/neighborhood-market-halloween-edition.webp",
+    "startDate": "2026-10-18",
+    "endDate": null,
+    "startTime": "16:00:00",
+    "endTime": "20:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": []
+  },
+  {
+    "id": "f272a0bd-2bbb-4876-a339-59397ca2ad7c",
+    "title": "Phenomenal Animal",
+    "description": "",
+    "bannerUrl": "/images/events/posters/phenomenal-animal.webp",
+    "startDate": "2026-10-31",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "2232ca4c-91a5-4b9d-85cf-2d7fa3cc613f",
+    "title": "Bailanow",
+    "description": "",
+    "bannerUrl": "/images/events/posters/bailanow.webp",
+    "startDate": "2026-12-05",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": "22:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "b6433933-a1da-4ad2-bd81-bbdfa54141d3",
+    "title": "Flora Top Hits",
+    "description": "",
+    "bannerUrl": "/images/events/posters/flora-top-hits.webp",
+    "startDate": "2026-11-14",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "105e1e5c-2de3-4615-9c7c-2b9e35650b69",
+    "title": "Relentless Fire",
+    "description": "",
+    "bannerUrl": "/images/events/posters/relentless-fire.webp",
+    "startDate": "2026-10-16",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "63ea06ff-85dd-4c2a-8baf-7761b7e5edf5",
+    "title": "Relentless Fire",
+    "description": "",
+    "bannerUrl": "/images/events/posters/relentless-fire.webp",
+    "startDate": "2026-12-11",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "b9674d11-1f37-489d-ac44-ccbd29741cb8",
+    "title": "Neighborhood Market",
+    "description": "",
+    "bannerUrl": "/images/events/posters/neighborhood-market.webp",
+    "startDate": "2026-11-15",
+    "endDate": null,
+    "startTime": "12:00:00",
+    "endTime": "16:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": []
+  },
+  {
+    "id": "abdce376-a7d2-4fee-a33b-c54509e810df",
+    "title": "Phenomenal Animal",
+    "description": "",
+    "bannerUrl": "/images/events/posters/phenomenal-animal.webp",
+    "startDate": "2026-12-19",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "08bcd780-7a2a-47f8-9e2f-e42eddb8bcbb",
+    "title": "DJ AKA Throwback Friday",
+    "description": "",
+    "bannerUrl": "/images/events/posters/dj-aka-throwback-friday.webp",
+    "startDate": "2026-10-02",
+    "endDate": null,
+    "startTime": "21:00:00",
+    "endTime": "00:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "dj"
+    ]
+  },
+  {
+    "id": "aa840ff0-cf21-41c9-ac36-9dd9020c9bdd",
+    "title": "Halloween Afterparty",
+    "description": "The Halloween party keeps going upstairs with a DJ.",
+    "bannerUrl": "/images/events/posters/halloween-afterparty.webp",
+    "startDate": "2026-10-31",
+    "endDate": null,
+    "startTime": "21:00:00",
+    "endTime": null,
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "dj",
+      "halloween",
+      "sunset-bar"
+    ]
+  },
+  {
+    "id": "6536eec1-ac0c-4a4c-89ce-1495dfb841a3",
+    "title": "Casey Bishop",
+    "description": "",
+    "bannerUrl": "/images/events/posters/casey-bishop.webp",
+    "startDate": "2026-10-24",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": null,
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
     "id": "86d1f916-7182-4d80-9748-d885a150063f",
     "title": "Bingo Night",
     "description": "Gift card prizes and a progressive jackpot that grows every week. Come with a team or join a table when you get here.",
-    "bannerUrl": null,
-    "startDate": "2026-09-09",
+    "bannerUrl": "/images/events/posters/bingo-night.webp",
+    "startDate": "2026-09-02",
     "endDate": null,
     "startTime": "19:00:00",
     "endTime": "21:00:00",
@@ -37,30 +598,64 @@
     ]
   },
   {
-    "id": "6282eaf2-e87f-42cb-bfb3-370ec01d25e6",
-    "title": "Ross Brown",
-    "description": "Live music every week. Free, and no ticket needed.",
-    "bannerUrl": "https://kqibgbvdgxrjhdyfoxvm.supabase.co/storage/v1/object/public/restaurant-assets/restaurants/b726bcd3-1167-4b09-ba64-39e79bbef141/events/restaurant/1789135765227_7cf4jq.webp?v=1789135765438",
-    "startDate": "2026-12-10",
-    "endDate": "2026-12-31",
-    "startTime": "18:00:00",
-    "endTime": "20:00:00",
-    "isRecurring": true,
-    "recurrenceType": "weekly",
-    "recurrenceDays": "[4]",
+    "id": "1d152d67-ff4e-4844-bb6b-c5d7e3703ccf",
+    "title": "DJs All Day",
+    "description": "",
+    "bannerUrl": "/images/events/posters/djs-all-day.webp",
+    "startDate": "2026-09-26",
+    "endDate": null,
+    "startTime": "12:00:00",
+    "endTime": "01:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
     "price": null,
     "tags": [
-      "live-music",
-      "weekly",
-      "sunset-bar"
+      "dj"
+    ]
+  },
+  {
+    "id": "8b29f192-c745-4e8a-a7ca-423699f6c576",
+    "title": "Gabriel Key",
+    "description": "",
+    "bannerUrl": "/images/events/posters/gabriel-key.webp",
+    "startDate": "2026-10-30",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
     ]
   },
   {
     "id": "81bdaedb-51c6-4c17-8859-faa9bc368541",
     "title": "La Noche · DJ David Cast",
-    "description": "The night runs late. No cover, no ticket.",
-    "bannerUrl": "https://kqibgbvdgxrjhdyfoxvm.supabase.co/storage/v1/object/public/restaurant-assets/restaurants/b726bcd3-1167-4b09-ba64-39e79bbef141/events/restaurant/1789135723694_rlq8og.webp?v=1789135723967",
-    "startDate": "2026-09-12",
+    "description": "The night runs late.\nGet your ticket before you come up.\nLadies drink free from 10 to 11 PM.",
+    "bannerUrl": "/images/events/posters/la-noche-dj-david-cast.webp",
+    "startDate": "2026-09-05",
+    "endDate": "2026-10-24",
+    "startTime": "22:00:00",
+    "endTime": "02:00:00",
+    "isRecurring": true,
+    "recurrenceType": "weekly",
+    "recurrenceDays": "[6]",
+    "price": null,
+    "tags": [
+      "dj",
+      "weekly",
+      "sunset-bar"
+    ]
+  },
+  {
+    "id": "f29d565c-c88a-4bd4-a07b-38067ae7eaf1",
+    "title": "La Noche · DJ David Cast",
+    "description": "The night runs late.\nGet your ticket before you come up.\nLadies drink free from 10 to 11 PM.",
+    "bannerUrl": "/images/events/posters/la-noche-dj-david-cast.webp",
+    "startDate": "2026-11-07",
     "endDate": null,
     "startTime": "22:00:00",
     "endTime": "02:00:00",
@@ -75,14 +670,121 @@
     ]
   },
   {
-    "id": "5003d6d6-4f42-49bf-8f13-7f2ac9ff114c",
-    "title": "NFC North HQ",
-    "description": "Sound on, screens up, and a rooftop that turns into somebody’s hometown bar. Every game that matters, plus the Sunday drink list.",
-    "bannerUrl": null,
-    "startDate": "2026-09-13",
+    "id": "037c84ec-e875-4cee-bda3-1307d0c3ac1f",
+    "title": "Halloween Trick or Treat & Rooftop Halloween Party",
+    "description": "Trick or treat around Downtown Bonita, then the Halloween party up here.\nPhenomenal Animal plays from 6 to 9 PM.",
+    "bannerUrl": "/images/events/posters/halloween-trick-or-treat-rooftop-halloween-party.webp",
+    "startDate": "2026-10-31",
+    "endDate": null,
+    "startTime": "17:00:00",
+    "endTime": "20:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "halloween",
+      "festival"
+    ]
+  },
+  {
+    "id": "cb3e0938-910a-49c3-aba3-d1e70d55613c",
+    "title": "Nightmare on Old 41 Trolley Crawl",
+    "description": "Put on by the hospitality alliance of Downtown Bonita.\nThe trolley drops everyone off at the stops along Old 41 to bar hop, and we are one of them.",
+    "bannerUrl": "/images/events/posters/nightmare-on-old-41-trolley-crawl.webp",
+    "startDate": "2026-10-24",
+    "endDate": null,
+    "startTime": "20:00:00",
+    "endTime": null,
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "halloween",
+      "festival"
+    ]
+  },
+  {
+    "id": "1bcfe69b-89ee-4226-98f3-d71894e41683",
+    "title": "Game Day at the Trucks",
+    "description": "Are you ready to taste what winning feels like? Every Sunday of the season the trucks serve game day menus from noon to 8 PM.\nEach truck cooks its own game day specials, so every window has something different. Grab a plate before kickoff, another at halftime, and celebrate every touchdown with a bite.\nCheck the truck menus on the food trucks page and come hungry.",
+    "bannerUrl": "/images/events/posters/game-day-at-the-trucks.webp",
+    "startDate": "2026-09-21",
     "endDate": null,
     "startTime": "12:00:00",
     "endTime": "20:00:00",
+    "isRecurring": true,
+    "recurrenceType": "weekly",
+    "recurrenceDays": "[0]",
+    "price": null,
+    "tags": [
+      "weekly",
+      "sports",
+      "the-yard"
+    ]
+  },
+  {
+    "id": "d01a13b1-b961-4082-8880-c738c4729513",
+    "title": "Thursday Night Football",
+    "description": "Thursday Night Football. Open until midnight.\nEvery Thursday of the season, the night game on the big screens from kickoff to the final whistle. Grab a drink, grab a seat and make a night of it.",
+    "bannerUrl": "/images/events/posters/thursday-night-football.webp",
+    "startDate": "2026-10-01",
+    "endDate": null,
+    "startTime": "20:15:00",
+    "endTime": "00:00:00",
+    "isRecurring": true,
+    "recurrenceType": "weekly",
+    "recurrenceDays": "[4]",
+    "price": null,
+    "tags": [
+      "weekly",
+      "sports"
+    ]
+  },
+  {
+    "id": "0fdcbf7e-a4e6-4b52-ad1b-7c3be54bcb0f",
+    "title": "Nostaljah Band",
+    "description": "",
+    "bannerUrl": "/images/events/posters/nostaljah-band.webp",
+    "startDate": "2026-10-02",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": null,
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "7a81f15b-54fd-461a-b9c5-bf980313bb5b",
+    "title": "Nick Nostaljah",
+    "description": "",
+    "bannerUrl": "/images/events/posters/nick-nostaljah.webp",
+    "startDate": "2026-10-08",
+    "endDate": null,
+    "startTime": "19:00:00",
+    "endTime": null,
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "live-music"
+    ]
+  },
+  {
+    "id": "ac33553c-eb22-4943-bfe7-870fed6e8d9e",
+    "title": "NFC North HQ",
+    "description": "Every Sunday of the season, the 1 PM and 4 PM games on every screen upstairs, with the sound on.\nWhether you bleed green and gold in Green Bay, stand with Chicago, roar for Detroit or chant for Minnesota, this is your hometown bar. Show why your NFC North favorite is #1 in SWFL and win prizes!\nEvery week there is a giveaway for each team in the division, and every entry rolls into the week 18 draw for a Beckett Witnessed autographed jersey from a star player on each NFC North team.\nNot an NFC North fan? Every game from Thursday to Sunday is on at the Downstairs Bar, and that is where the party moves after the late game.\nGame day drinks at the bar: the Packer-ita for Green Bay, the Midway Smash for Chicago, the Lion’s Den for Detroit and the Gjallarhorn for Minnesota.",
+    "bannerUrl": "/images/events/posters/nfc-north-hq.webp",
+    "startDate": "2026-09-21",
+    "endDate": null,
+    "startTime": "13:00:00",
+    "endTime": "19:30:00",
     "isRecurring": true,
     "recurrenceType": "weekly",
     "recurrenceDays": "[0]",
@@ -92,6 +794,43 @@
       "weekly",
       "sunset-bar",
       "sports"
+    ]
+  },
+  {
+    "id": "da385232-0ce4-48a0-923f-7c4c96b61991",
+    "title": "Pumpkin Paint and Sip",
+    "description": "Paint a pumpkin with a drink in hand, upstairs at the Sunset Bar.\nYour ticket covers one pumpkin and two drinks, house wine or house beer. We bring the paint.",
+    "bannerUrl": "/images/events/posters/pumpkin-paint-and-sip.webp",
+    "startDate": "2026-10-17",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "21:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "themed",
+      "halloween",
+      "sunset-bar"
+    ]
+  },
+  {
+    "id": "35114abe-65d5-4d2e-8ad4-0a2a3fcb8103",
+    "title": "Wooftop Fest · Halloween Costume Party",
+    "description": "This month it is a Halloween costume party, so come dressed up.\nThe third Wednesday of every month, bring the dog: this place goes pet-friendly for the day.\nThere is an off-leash area we run with Barkyard and Tap, and pet vendors set up for the day.",
+    "bannerUrl": "/images/events/posters/wooftop-fest-halloween-costume-party.webp",
+    "startDate": "2026-10-21",
+    "endDate": null,
+    "startTime": "18:00:00",
+    "endTime": "20:00:00",
+    "isRecurring": false,
+    "recurrenceType": null,
+    "recurrenceDays": null,
+    "price": null,
+    "tags": [
+      "dog-friendly",
+      "festival"
     ]
   }
 ]

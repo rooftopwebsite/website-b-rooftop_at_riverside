@@ -1,7 +1,6 @@
 import { HOURS } from '@/content/hours';
 import type { Hours } from '@/types/content';
 import { BRAND } from './brand';
-import { getHours, getLocation, getTrucksLocation } from './restoexp';
 
 export interface Venue {
   readonly name: string;
@@ -19,48 +18,27 @@ export interface Venue {
   readonly geo: { readonly lat: number; readonly lng: number } | null;
   readonly timezone: string;
   readonly hours: readonly Hours[];
-  readonly fromDb: boolean;
 }
 
-const telHref = (phone: string) => `tel:+1${phone.replace(/\D/g, '')}`;
-
 export async function getVenue(): Promise<Venue> {
-  const [loc, sedeTrucks] = await Promise.all([getLocation(), getTrucksLocation()]);
-
-  const [delBar, deLosTrucks] = await Promise.all([
-    loc ? getHours(loc.id) : null,
-    sedeTrucks ? getHours(sedeTrucks.id) : null,
-  ]);
-  const hours: readonly Hours[] = HOURS.map((fila, i) => ({
-    day: fila.day,
-    bar: delBar?.[i]?.range ?? fila.bar,
-    trucks: deLosTrucks?.[i]?.range ?? fila.trucks,
-  }));
-
-  const phone = loc?.phone ?? BRAND.contact.phone;
-
   return {
-    name: loc?.name ?? BRAND.name,
-    phone,
-    phoneHref: telHref(phone),
-    email: loc?.email ?? BRAND.contact.email,
+    name: BRAND.name,
+    phone: BRAND.contact.phone,
+    phoneHref: BRAND.contact.phoneHref,
+    email: BRAND.contact.email,
     emailEvents: BRAND.contact.events,
     emailHiring: BRAND.contact.hiring,
-    street: loc?.address ?? BRAND.address.street,
-    locality: loc?.city ?? BRAND.address.locality,
+    street: BRAND.address.street,
+    locality: BRAND.address.locality,
     region: BRAND.address.region,
     postalCode: BRAND.address.postalCode,
     neighborhood: BRAND.address.neighborhood,
     mapsUrl:
-      loc?.google_maps_url ??
+      BRAND.address.mapsUrl ||
       `https://www.google.com/maps/search/?api=1&query=${BRAND.address.mapsQuery}`,
-    geo:
-      loc?.latitude != null && loc?.longitude != null
-        ? { lat: loc.latitude, lng: loc.longitude }
-        : BRAND.address.geo,
-    timezone: loc?.timezone ?? BRAND.address.timezone,
-    hours,
-    fromDb: loc !== null,
+    geo: BRAND.address.geo,
+    timezone: BRAND.address.timezone,
+    hours: HOURS,
   };
 }
 

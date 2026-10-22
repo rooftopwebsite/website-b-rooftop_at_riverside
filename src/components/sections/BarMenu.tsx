@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import DishCard from '@/components/shared/DishCard';
 import { Eyebrow, Heading } from '@/components/shared/Type';
-import type { DishGroup } from '@/lib/restoexp';
+import type { DishGroup } from '@/types/content';
 
 function anclaDe(titulo: string): string {
   return titulo

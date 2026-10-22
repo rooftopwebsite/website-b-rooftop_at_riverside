@@ -1,4 +1,4 @@
-import type { Dish, DishGroup } from '@/lib/restoexp';
+import type { Dish, DishGroup } from '@/types/content';
 
 export interface MenuItem {
   readonly name: string;

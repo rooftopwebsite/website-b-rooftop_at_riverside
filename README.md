@@ -18,9 +18,7 @@ npm run dev
 | Comando | Qué hace |
 |---|---|
 | `npm run dev` / `build` / `start` | Lo de siempre de Next |
-| `npm run sync:events` | Trae los eventos del dashboard de RestoExp a `src/content/events.json`. Necesita `RESTOEXP_COOKIE` |
-| `npm run events:verify` | Revisa que cada evento tenga su afiche y que dos eventos no compartan foto |
-| `npm run events:banners` | Intenta igualar el afiche de todas las fechas de un mismo evento |
+| `npm run events:verify` | Revisa `src/content/events.json`: que cada evento tenga su afiche, que el archivo exista, que todas las fechas de un evento usen la misma foto y que dos eventos no la compartan |
 | `npm run media` | Genera las fotos y videos de `public/` desde `public/multimedia/` (originales, fuera de git) |
 | `npm run og` | Genera las imágenes para compartir en redes (`public/og/`). El diseño original va en `_interno/og/` |
 | `npm run media:import` | Baja las fotos del sitio viejo a `public/images/` |
@@ -45,12 +43,30 @@ La plantilla comentada es `.env.example`. En resumen:
   `src/lib/inboxes.ts`.
 - **`NEWSLETTER_SHEETS_WEBHOOK_URL`**: pendiente, la planilla todavía no existe.
 
+No hay base de datos ni ninguna variable para leer contenido.
+
+## Datos editables
+
+Todo el contenido que cambia vive en JSON dentro de `src/content/`. Se edita el
+archivo, se hace commit y Vercel publica. No hay base de datos ni dashboard.
+
+| Archivo | Qué tiene |
+|---|---|
+| `contact.json` | Teléfono, mails (general, eventos, empleo), dirección, coordenadas, link de Google Maps, redes, gift cards y Eventbrite |
+| `hours.json` | Horario del bar (`bar`) y de los trucks (`trucks`) por día. Cada día es `{ "open": "15:00", "close": "21:00" }` en 24 h, o `"closed"`. Un cierre después de medianoche se escribe tal cual (`"02:00"`) |
+| `menus.json` | Las cartas en PDF: `name`, `description`, `pdf` (ruta dentro de `public/`, p. ej. `/menus/sunset-bar.pdf`) y `active`. La que se llama `Sunset Bar` es la del bar; el resto se empareja por nombre con los trucks de `trucks.ts` |
+| `events.json` | El calendario. Una entrada por fecha (un evento que se repite en fechas sueltas lleva varias). Afiche en `public/images/events/posters/`, referido en `bannerUrl`. Los recurrentes llevan `isRecurring: true` y `recurrenceDays` con los días (`"[0,6]"`, 0 = domingo). El lugar sale de `tags` (`sunset-bar`, `the-yard`, `game-lounge`) y `featured` lo destaca |
+| `jobs.json` | Vacantes de `/join-us`. Vacío = no se listan. Campos: `id`, `title`, `description`, `requirements`, `employment_type`, `department`, `salary_type`, `salary_min`, `salary_max`, `status` (`open`) |
+| `blog.json` | Notas del blog. Vacío = el blog se esconde del menú, el pie y el sitemap. Campos mínimos: `id`, `slug`, `title`, `excerpt`, `contentHtml` (o `content` en markdown), `coverImageUrl` (en `public/images/blog/`), `coverImageAlt`, `publishedAt`, `featured` |
+
+Después de tocar eventos conviene correr `npm run events:verify`.
+
 ## Dónde está cada cosa
 
 ```
 src/app/            rutas; cada formulario tiene su server action en app/actions/
 src/components/     form/ (campos compartidos), sections/ (bloques de página), shared/
-src/content/        todo el texto y los datos del sitio, en TypeScript
+src/content/        todo el texto y los datos del sitio: TypeScript y los JSON editables
 src/lib/            venue, SEO, mail, schemas de formularios (lib/schemas/)
 public/             sólo lo que se publica: fotos derivadas, videos, OG, PDFs
 scripts/            generadores de medios y auditorías (ver tabla de arriba)

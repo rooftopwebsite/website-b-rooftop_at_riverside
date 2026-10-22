@@ -217,10 +217,11 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
 - `src/components/shared/StepStair.tsx` → los pasos en escalera. Hoy sólo se importa su tipo `Step` (desde `YardSteps`).
 - `src/components/sections/FeaturedEvent.tsx` → la banda del destacado grande, sacada de `/whats-on`, guardada para otra página que
   quiera abrir con un destacado. `shared/FeaturedEventCard` **sí** está en uso (`/sunset-bar`, `UpcomingCards`, `EventTypes`).
-- `src/components/sections/BarMenu.tsx` + `getBarMenu()` (`lib/restoexp.ts`) + `respaldoComoGrupos()` (`content/bar-menu.ts`) → la
-  carta digital del bar. Volver es cambiar `<MenuSheets />` por `<BarMenu grupos={carta} />` en `/sunset-bar`, con
-  `const carta = (await getBarMenu()) ?? respaldoComoGrupos();`.
-- `src/components/sections/TruckMenu.tsx` → carta de platos de un truck leída de la base. Espera a que vuelvan las fichas por truck.
+- `src/components/sections/BarMenu.tsx` + `respaldoComoGrupos()` (`content/bar-menu.ts`) → la carta digital del bar. Volver es
+  cambiar `<MenuSheets />` por `<BarMenu grupos={respaldoComoGrupos()} />` en `/sunset-bar`. `bar-menu.ts` tiene la misma carta que
+  tenía la base el 2026-10-22.
+- `src/components/sections/TruckMenu.tsx` → carta de platos de un truck, recibida por la prop `cartas`. Espera a que vuelvan las
+  fichas por truck.
 - `ReviewsMarquee` en `src/components/sections/HomeSections.tsx` → escrito y sin montar hasta que el cliente confirme ratings reales.
 - `src/content/story.ts` → Charity Partner Program, dato real de `/giveback`. `/giveback` hace 301 a `/our-story`, que ya no lo
   menciona: decisión abierta (re-montarlo, ruta propia o repuntar el 301). El partner del mes está vencido.
@@ -352,16 +353,18 @@ Ninguno de estos tiene importadores (o sólo se importan sus tipos). **No se bor
   la tarjeta de descarga no se muestra. Cuando llegue el nuevo, se vuelve a poner `{ label, href, format, size }` y reaparece sola.
 - Regla «renglón que empieza con precio = promo»: duplicada a propósito en `content/happy-hour.ts` (carga) y `UpcomingCards` (lectura).
 - Promos de `/sunset-bar`: `space === 'Sunset Bar'` + que el evento publique precios. Happy hour identificado por título. Nunca por tag.
-- Cartas de truck ↔ dashboard: emparejadas por nombre normalizado (`truckPorNombre` / `menuDeTruck`); sin match cae a `menuImage`.
+- Cartas de truck ↔ `content/menus.json`: emparejadas por nombre normalizado (`truckPorNombre`); sin match cae a `menuImage`.
 - Nombre de truck en pantalla: siempre `nombreVisible(t)`, nunca `truck.name` directo (esconde los nombres no confirmados).
 - Fechas del calendario: `from` = `todayInVenue()`, nunca `toISOString()` (Vercel corre en UTC y borra el evento de la noche).
-- Caché de lo que viene del dashboard: 60 s (`REVALIDATE` en `lib/restoexp.ts`, `lib/blog.ts` y el `revalidate` de `/blog`). Con
-  3600 un cambio de horario tardó más de una hora: es stale-while-revalidate, así que el primer visitante tras vencer recibe la
-  versión vieja. No subirlo sin un webhook de revalidación del dashboard.
-- Horario de los trucks: sale de la sede «Food Trucks» del dashboard (`location_hours` guarda un horario por sede). Se reconoce por
-  nombre normalizado (`esSedeDeTrucks`: contiene «foodtruck»); cualquier otra sede es la del bar. Sin fila, cada columna cae a
-  `content/hours.ts` por separado. Los menús de los trucks no cuelgan de esa sede: `menus` no tiene `location_id`, se emparejan por
-  nombre con el truck (ver arriba).
+- Sin base de datos desde el 2026-10-22: el sitio se le entrega al cliente, como Tre Vele. Contacto, horarios, menús, eventos,
+  vacantes y blog son JSON en `src/content/` (tabla en el README), volcados de Supabase ese día. Los PDF y los afiches se bajaron a
+  `public/menus/` y `public/images/events/posters/`, sin `remotePatterns`. Un cambio de dato es commit y deploy; no hay caché que vencer.
+- `contact.json` lo lee `lib/brand.ts` (`BRAND.contact`, `address`, `social`, `giftCards`, `eventbrite`), y `getVenue()` arma todo
+  desde `BRAND` + `content/hours.ts`. No hay otra copia del teléfono ni de la dirección.
+- Afiches de `events.json`: un archivo por contenido (sha1), con el nombre del evento. Las fechas de un mismo evento apuntan al mismo
+  archivo. `npm run events:verify` controla las tres reglas de fotos.
+- `sinEmDash` (`lib/em-dash.ts`) se aplica al leer títulos y textos de eventos, menús y blog: aunque el JSON traiga un guion largo,
+  no llega a pantalla.
 
 ### 9.3 Trampas técnicas medidas
 

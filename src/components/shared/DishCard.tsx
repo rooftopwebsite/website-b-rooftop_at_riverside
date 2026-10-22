@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import type { Dish } from '@/lib/restoexp';
+import type { Dish } from '@/types/content';
 import { formatPrice } from '@/content/bar-menu';
 import { TAG } from '@/lib/tag';
 

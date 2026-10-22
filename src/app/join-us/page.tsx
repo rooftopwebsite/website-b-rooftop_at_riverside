@@ -8,7 +8,7 @@ import { GUTTER } from '@/components/shared/Section';
 import SoftWave from '@/components/shared/SoftWave';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import { fraseEntretenimiento } from '@/content/entertainment';
-import { getJobPostings } from '@/lib/restoexp';
+import { getJobPostings } from '@/content/jobs';
 import { getVenue } from '@/lib/venue';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 

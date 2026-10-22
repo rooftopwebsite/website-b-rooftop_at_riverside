@@ -17,7 +17,7 @@ import {
 } from './blog-format';
 
 const SITE = 'https://rooftopatriverside.com';
-const COVER = `${IMAGE_ORIGIN}restaurants/abc/blog/x/cover.webp`;
+const COVER = `${IMAGE_ORIGIN}cover.webp`;
 
 const feed = (over: Partial<FeedPost> = {}): FeedPost => ({
   id: '1',
@@ -65,11 +65,11 @@ describe('cleanHtml', () => {
 });
 
 describe('safeImage', () => {
-  it('acepta el bucket de restaurant-assets', () => {
+  it('acepta las fotos de public/images/blog', () => {
     assert.equal(safeImage(COVER), COVER);
   });
-  it('rechaza rutas relativas y otros hosts', () => {
-    assert.equal(safeImage('/images/blog/beer.webp'), null);
+  it('rechaza otras carpetas y otros hosts', () => {
+    assert.equal(safeImage('/images/venue/bar.webp'), null);
     assert.equal(safeImage('https://example.com/a.webp'), null);
     assert.equal(safeImage(null), null);
   });

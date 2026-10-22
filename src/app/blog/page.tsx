@@ -12,8 +12,6 @@ import { getPosts } from '@/lib/blog';
 import { splitFeatured } from '@/lib/blog-format';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
-export const revalidate = 60;
-
 export async function generateMetadata(): Promise<Metadata> {
   const hayNotas = (await getPosts()).length > 0;
   return pageMeta({
