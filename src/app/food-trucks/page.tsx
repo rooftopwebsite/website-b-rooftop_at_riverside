@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ButtonLink } from '@/components/shared/Button';
-import CompareSlab, { PADDING_CRUCE } from '@/components/shared/CompareSlab';
+import CompareSlab, { CROSS_PADDING } from '@/components/shared/CompareSlab';
 import TruckCards from '@/components/sections/TruckCards';
 import PageHeroWave from '@/components/shared/PageHeroWave';
 import Section from '@/components/shared/Section';
@@ -47,7 +47,7 @@ export default function FoodTrucksPage() {
         accent="Start at the bar,"
         title="then follow your appetite"
         lead="Start with a drink, then walk the yard. Everyone at the table gets to pick their favorite."
-        cta={{ label: 'See the bar menu', href: '/sunset-bar#carta-title' }}
+        cta={{ label: 'See the bar menu', href: '/sunset-bar#bar-menu-title' }}
         ours={{
           label: 'How ordering works',
           steps: [
@@ -66,8 +66,8 @@ export default function FoodTrucksPage() {
           ],
         }}
       />
-      <Section band="md" bandTop="none" labelledBy="rota-title" innerClassName={PADDING_CRUCE}>
-        <div className="relative rounded-frame bg-cream grano px-5 pt-14 pb-20 text-center sm:px-16 sm:pt-16 sm:pb-16 lg:px-24">
+      <Section band="md" bandTop="none" labelledBy="rotation-title" innerClassName={CROSS_PADDING}>
+        <div className="relative rounded-frame bg-cream grain px-5 pt-14 pb-20 text-center sm:px-16 sm:pt-16 sm:pb-16 lg:px-24">
           <span
             aria-hidden="true"
             className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
@@ -82,7 +82,7 @@ export default function FoodTrucksPage() {
           />
 
           <div className="relative">
-            <Heading level={2} id="rota-title" className="mx-auto max-w-[18ch] text-d4 lg:text-d3">
+            <Heading level={2} id="rotation-title" className="mx-auto max-w-[18ch] text-d4 lg:text-d3">
               Something different for every craving
             </Heading>
             <p className="mx-auto mt-5 max-w-[52ch] font-body text-lead font-light leading-[1.5] text-ink">

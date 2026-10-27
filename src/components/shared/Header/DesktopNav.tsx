@@ -4,21 +4,21 @@ import Link from 'next/link';
 import type { Dispatch, SetStateAction } from 'react';
 import { NAV_MAIN } from '@/lib/nav';
 import { CaretDown } from '../Icon';
-import { NAV_ITEM } from './constantes';
+import { NAV_ITEM } from './constants';
 
-interface NavEscritorioProps {
+interface DesktopNavProps {
   readonly moreOpen: boolean;
   readonly setMoreOpen: Dispatch<SetStateAction<boolean>>;
   readonly moreActive: boolean;
   readonly isCurrent: (href: string) => boolean;
 }
 
-export default function NavEscritorio({
+export default function DesktopNav({
   moreOpen,
   setMoreOpen,
   moreActive,
   isCurrent,
-}: NavEscritorioProps) {
+}: DesktopNavProps) {
   return (
     <nav
       aria-label="Main"

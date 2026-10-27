@@ -1,9 +1,9 @@
 'use client';
 
-import { useField } from './contexto';
-import { Label, ErrorText, Wrap } from './Primitivos';
-import { BOX_BASE, OK, BAD } from './constantes';
-import type { BaseFieldProps } from './tipos';
+import { useField } from './context';
+import { Label, ErrorText, Wrap } from './Primitives';
+import { BOX_BASE, OK, BAD } from './constants';
+import type { BaseFieldProps } from './types';
 
 export function FileField(
   p: BaseFieldProps & {

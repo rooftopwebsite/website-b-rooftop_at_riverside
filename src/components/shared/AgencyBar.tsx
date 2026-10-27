@@ -25,13 +25,13 @@ export default function AgencyBar() {
     </a>
   );
 
-  const año = new Date().getFullYear();
+  const year = new Date().getFullYear();
 
   return (
     <div
-      className="relative z-[1] bg-chalk grano"
+      className="relative z-[1] bg-chalk grain"
     >
-      <div className="caja-ancha hidden h-[72px] items-center justify-between desk:flex">
+      <div className="page-box-wide hidden h-[72px] items-center justify-between desk:flex">
         {poweredBy}
         <div className="flex items-center gap-[24px]">
           <span className="font-body text-[14px] text-[#5c5c5c]">{AGENCY.tagline}</span>
@@ -39,10 +39,10 @@ export default function AgencyBar() {
             aria-hidden="true"
             className="h-[40px] w-px bg-gradient-to-b from-transparent via-[#7c7c7c]/50 to-transparent"
           />
-          <span className="font-body text-[14px] text-[#5c5c5c]">{año}</span>
+          <span className="font-body text-[14px] text-[#5c5c5c]">{year}</span>
         </div>
       </div>
-      <div className="caja-ancha flex flex-col items-center gap-[10px] py-[16px] desk:hidden">
+      <div className="page-box-wide flex flex-col items-center gap-[10px] py-[16px] desk:hidden">
         {poweredBy}
         <span
           aria-hidden="true"
@@ -50,7 +50,7 @@ export default function AgencyBar() {
         />
         <div className="flex flex-wrap items-center justify-center gap-x-[12px] gap-y-[4px] text-center">
           <p className="font-body text-[14px] leading-[1.3] text-[#5c5c5c]">{AGENCY.tagline}</p>
-          <p className="font-body text-[14px] leading-[1.3] text-[#5c5c5c]">{año}</p>
+          <p className="font-body text-[14px] leading-[1.3] text-[#5c5c5c]">{year}</p>
         </div>
       </div>
     </div>

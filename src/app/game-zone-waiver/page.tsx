@@ -5,7 +5,7 @@ import { pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({ route: '/game-zone-waiver' });
 
-const ULTIMA_ACTUALIZACION = '2026-09-15';
+const LAST_UPDATED = '2026-09-15';
 
 export default function GameZoneWaiverPage() {
   return (
@@ -13,7 +13,7 @@ export default function GameZoneWaiverPage() {
       eyebrow="The paperwork"
       title="Game zone"
       accent="waiver"
-      lastUpdated={ULTIMA_ACTUALIZACION}
+      lastUpdated={LAST_UPDATED}
       currentHref="/game-zone-waiver"
       intro="The document a parent or guardian signs before anyone gets in the gaming truck. Signing happens on site, with the Game Coach."
       blocks={GAME_ZONE_WAIVER}

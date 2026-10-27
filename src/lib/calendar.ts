@@ -50,7 +50,7 @@ const iso = (y: number, m: number, d: number) =>
 export const weekdayOf = (date: string) =>
   new Date(`${date}T12:00:00Z`).getUTCDay() as Weekday;
 
-export function diaSiguiente(date: string): string {
+export function nextDay(date: string): string {
   const d = new Date(`${date}T12:00:00Z`);
   d.setUTCDate(d.getUTCDate() + 1);
   return iso(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
@@ -100,17 +100,17 @@ export function upcomingOccurrences(
   from: string,
   limit: number,
 ): readonly Occurrence[] {
-  const HORIZONTE = 120;
+  const HORIZON = 120;
   const out: Occurrence[] = [];
   const day = new Date(`${from}T12:00:00Z`);
 
-  for (let i = 0; i < HORIZONTE && out.length < limit; i++) {
+  for (let i = 0; i < HORIZON && out.length < limit; i++) {
     const date = day.toISOString().slice(0, 10);
-    const delDia: Occurrence[] = [];
+    const ofDay: Occurrence[] = [];
     for (const event of events) {
-      if (happensOn(event, date)) delDia.push({ event, date });
+      if (happensOn(event, date)) ofDay.push({ event, date });
     }
-    out.push(...delDia.sort(byDateThenTime).slice(0, limit - out.length));
+    out.push(...ofDay.sort(byDateThenTime).slice(0, limit - out.length));
     day.setUTCDate(day.getUTCDate() + 1);
   }
 
@@ -156,13 +156,13 @@ export function monthGrid(year: number, month: number) {
 
 export const dayNumber = (date: string) => Number(date.slice(8, 10));
 
-const parte = (date: string, opts: Intl.DateTimeFormatOptions) =>
+const part = (date: string, opts: Intl.DateTimeFormatOptions) =>
   new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US', { ...opts, timeZone: 'UTC' });
 
-export const weekdayShort = (date: string) => parte(date, { weekday: 'short' }).toUpperCase();
+export const weekdayShort = (date: string) => part(date, { weekday: 'short' }).toUpperCase();
 
-export const weekdayLong = (date: string) => parte(date, { weekday: 'long' });
+export const weekdayLong = (date: string) => part(date, { weekday: 'long' });
 
-export const monthShort = (date: string) => parte(date, { month: 'short' }).toUpperCase();
+export const monthShort = (date: string) => part(date, { month: 'short' }).toUpperCase();
 
-export const monthDay = (date: string) => parte(date, { month: 'short', day: 'numeric' });
+export const monthDay = (date: string) => part(date, { month: 'short', day: 'numeric' });

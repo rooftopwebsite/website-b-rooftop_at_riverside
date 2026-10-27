@@ -4,14 +4,14 @@ import { PhotoPending } from '@/components/shared/PendingData';
 import { shortDate, timeRange, type VenueEvent } from '@/content/events';
 import { TAG } from '@/lib/tag';
 
-export function SpacePill({ children, lado = 'izq' }: { readonly children: ReactNode; readonly lado?: 'izq' | 'der' }) {
+export function SpacePill({ children, side = 'left' }: { readonly children: ReactNode; readonly side?: 'left' | 'right' }) {
   return (
     <span
       className={[
         'absolute top-4 z-20 flex items-center gap-[6px] rounded-pill bg-deep/85 ring-1 ring-cream/25 backdrop-blur-[3px]',
         TAG,
         'text-cream',
-        lado === 'izq' ? 'left-4' : 'right-4',
+        side === 'left' ? 'left-4' : 'right-4',
       ].join(' ')}
     >
       {children}
@@ -25,8 +25,8 @@ export function EventPhoto({
   brief,
   tone = 'light',
   imgClassName = 'object-cover',
-  fondo = '',
-  ventana = '',
+  background = '',
+  windowClassName = '',
   children,
 }: {
   readonly event: VenueEvent;
@@ -34,12 +34,12 @@ export function EventPhoto({
   readonly brief: string;
   readonly tone?: 'light' | 'dark';
   readonly imgClassName?: string;
-  readonly fondo?: string;
-  readonly ventana?: string;
+  readonly background?: string;
+  readonly windowClassName?: string;
   readonly children?: ReactNode;
 }) {
   return (
-    <div className={`relative aspect-video w-full shrink-0 overflow-hidden ${fondo} ${ventana}`}>
+    <div className={`relative aspect-video w-full shrink-0 overflow-hidden ${background} ${windowClassName}`}>
       {event.image === null ? (
         <PhotoPending
           brief={brief}
@@ -65,16 +65,16 @@ export function EventWhen({
   event,
   date,
   isToday = false,
-  fecha = 'text-ink',
+  dateClassName = 'text-ink',
 }: {
   readonly event: VenueEvent;
   readonly date: string;
   readonly isToday?: boolean;
-  readonly fecha?: string;
+  readonly dateClassName?: string;
 }) {
   return (
     <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-      <span className={`font-body text-dato font-bold uppercase tracking-eyebrow ${fecha}`}>
+      <span className={`font-body text-data font-bold uppercase tracking-eyebrow ${dateClassName}`}>
         {isToday ? 'Today' : shortDate(date)}
       </span>
       <span className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-caption font-bold whitespace-nowrap text-deep">

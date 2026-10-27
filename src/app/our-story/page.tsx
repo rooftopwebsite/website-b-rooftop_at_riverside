@@ -79,7 +79,7 @@ export default async function OurStoryPage() {
       <Section tone="deep" band="lg" labelledBy="people-title">
         <Reveal>
           <div className="mx-auto grid max-w-[60rem] items-center gap-9 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-12 lg:gap-16">
-            <div className="relative mx-auto aspect-[3/4] w-full max-w-[24rem] overflow-hidden rounded-shell bg-deeper sombra-card md:max-w-none">
+            <div className="relative mx-auto aspect-[3/4] w-full max-w-[24rem] overflow-hidden rounded-shell bg-deeper card-shadow md:max-w-none">
               {CHRIS.photo ? (
                 <Image
                   src={CHRIS.photo}
@@ -90,7 +90,7 @@ export default async function OurStoryPage() {
                 />
               ) : (
                 <PhotoPending
-                  brief={`Retrato de ${CHRIS.name}, vertical 3:4, en el local.`}
+                  brief={`Portrait of ${CHRIS.name}, vertical 3:4, at the venue.`}
                   ratio="aspect-[3/4]"
                   tone="dark"
                 />
@@ -101,21 +101,21 @@ export default async function OurStoryPage() {
               <Eyebrow tone="cream" className="max-md:justify-center">
                 {CHRIS.role}
               </Eyebrow>
-              <Heading level={2} id="people-title" className="mt-gap-kicker text-banda">
+              <Heading level={2} id="people-title" className="mt-gap-kicker text-band">
                 Meet <span className="text-sunset">the founder</span>
               </Heading>
-              <p className="bajada mt-gap-bajada max-w-[46ch] text-paper/85 max-md:mx-auto">
+              <p className="subhead mt-gap-subhead max-w-[46ch] text-paper/85 max-md:mx-auto">
                 The Magnus family spent four years planning Rooftop at Riverside, and Chris is still
                 the one running it. The photo is the family on the Old 41 corner, before the
                 building went up.
               </p>
-              <div className="mt-bloque border-t border-dashed border-bone/25 pt-5">
+              <div className="mt-block border-t border-dashed border-bone/25 pt-5">
                 <p className="m-0 font-display text-d5 font-extrabold uppercase leading-none text-paper">
                   {CHRIS.name}
                 </p>
                 {CHRIS.email ? (
                   <p className="m-0 mt-3 font-body text-base leading-[1.4]">
-                    <a href={`mailto:${CHRIS.email}`} className="link-texto break-all text-paper">
+                    <a href={`mailto:${CHRIS.email}`} className="link-text break-all text-paper">
                       {CHRIS.email}
                     </a>
                   </p>

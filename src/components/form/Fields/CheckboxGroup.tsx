@@ -1,9 +1,9 @@
 'use client';
 
 import { useContext } from 'react';
-import { Ctx, useField } from './contexto';
-import { ErrorText } from './Primitivos';
-import type { Option } from './tipos';
+import { Ctx, useField } from './context';
+import { ErrorText } from './Primitives';
+import type { Option } from './types';
 
 export function CheckboxGroup({
   name,

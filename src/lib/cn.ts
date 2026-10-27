@@ -1,15 +1,15 @@
 import clsx, { type ClassValue } from 'clsx';
 import { extendTailwindMerge } from 'tailwind-merge';
 
-const TAMANOS_DE_TEXTO = [
+const TEXT_SIZES = [
   'hero',
   'h1',
   'h2',
   'h3',
   'titan',
-  'banda',
+  'band',
   'nav',
-  'pastilla',
+  'pill',
   'd1',
   'd2',
   'd3',
@@ -21,7 +21,7 @@ const TAMANOS_DE_TEXTO = [
   'lead',
   'base',
   'cta',
-  'dato',
+  'data',
   'micro',
   'caption',
 ];
@@ -29,7 +29,7 @@ const TAMANOS_DE_TEXTO = [
 const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
-      'font-size': [{ text: TAMANOS_DE_TEXTO }],
+      'font-size': [{ text: TEXT_SIZES }],
     },
   },
 });

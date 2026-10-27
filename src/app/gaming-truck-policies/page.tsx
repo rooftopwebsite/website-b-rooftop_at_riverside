@@ -5,7 +5,7 @@ import { pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({ route: '/gaming-truck-policies' });
 
-const ULTIMA_ACTUALIZACION = '2026-09-15';
+const LAST_UPDATED = '2026-09-15';
 
 export default function GamingTruckPoliciesPage() {
   return (
@@ -13,7 +13,7 @@ export default function GamingTruckPoliciesPage() {
       eyebrow="The paperwork"
       title="Gaming truck"
       accent="policies"
-      lastUpdated={ULTIMA_ACTUALIZACION}
+      lastUpdated={LAST_UPDATED}
       currentHref="/gaming-truck-policies"
       intro="Booking a party with us means agreeing to all of this. It is the same document the Game Coach works from."
       blocks={GAMING_TRUCK_POLICIES}

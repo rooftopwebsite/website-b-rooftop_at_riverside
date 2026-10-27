@@ -11,7 +11,7 @@ export default function PostCard({
   readonly headingLevel?: 2 | 3;
 }) {
   return (
-    <article className="group relative flex h-full flex-col rounded-door bg-paper sombra-card transition-[transform,box-shadow] duration-200 ease-brand hover:-translate-y-0.5 hover:shadow-float">
+    <article className="group relative flex h-full flex-col rounded-door bg-paper card-shadow transition-[transform,box-shadow] duration-200 ease-brand hover:-translate-y-0.5 hover:shadow-float">
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-2.5 z-10 rounded-door border border-dashed border-deep/35"
@@ -29,7 +29,7 @@ export default function PostCard({
           ) : (
             <div
               aria-hidden="true"
-              className="grano flex h-full items-center justify-center bg-bone font-display text-d5 font-semibold uppercase text-deep/35"
+              className="grain flex h-full items-center justify-center bg-bone font-display text-d5 font-semibold uppercase text-deep/35"
             >
               Rooftop
             </div>

@@ -1,4 +1,4 @@
-export interface TipoEvento {
+export interface EventKind {
   readonly id: string;
   readonly eyebrow: string;
   readonly title: string;
@@ -9,7 +9,7 @@ export interface TipoEvento {
   readonly formats: readonly string[];
 }
 
-export const TIPOS_EVENTO: readonly TipoEvento[] = [
+export const EVENT_KINDS: readonly EventKind[] = [
   {
     id: 'corporate',
   eyebrow: "Corporate",

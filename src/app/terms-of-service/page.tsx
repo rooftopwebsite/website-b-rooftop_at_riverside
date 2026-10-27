@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import LegalPage from '@/components/legal/LegalPage';
-import { TERMS_OF_SERVICE_DRAFT } from '@/content/legal/borradores';
+import { TERMS_OF_SERVICE_DRAFT } from '@/content/legal/drafts';
 import { SITE_LEGAL_DOCS } from '@/content/legal-docs';
 import { pageMeta } from '@/lib/seo';
 

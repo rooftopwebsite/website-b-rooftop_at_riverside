@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'Page not found',
 };
 
-const RESCATE = [
+const RESCUE_LINKS = [
   { label: 'Food trucks', href: '/food-trucks' },
   { label: 'Sunset Bar', href: '/sunset-bar' },
   { label: 'Hours and map', href: '/contact#find' },
@@ -35,7 +35,7 @@ export default function NotFound() {
         >
           <span>4</span>
           <span className="mx-[0.04em] inline-block w-[0.72em] rotate-6">
-            <span className="sticker rt-flotar block">
+            <span className="sticker rt-float block">
               <Image
                 src="/brand/sun-palm.svg"
                 alt=""
@@ -50,12 +50,12 @@ export default function NotFound() {
 
         <h1
           id="not-found-title"
-          className="m-0 mx-auto mt-gap-kicker max-w-[22ch] text-balance font-display text-banda font-extrabold uppercase leading-[0.9] text-ink"
+          className="m-0 mx-auto mt-gap-kicker max-w-[22ch] text-balance font-display text-band font-extrabold uppercase leading-[0.9] text-ink"
         >
           Nothing&rsquo;s parked <Accent on="light">here</Accent>
         </h1>
 
-        <p className="mx-auto mt-gap-bajada max-w-[52ch] font-body text-lead font-light leading-[1.55] text-body">
+        <p className="mx-auto mt-gap-subhead max-w-[52ch] font-body text-lead font-light leading-[1.55] text-body">
           The link may be from our old site, or the address has a typo. The bar,
           the trucks and the calendar are all still here.
         </p>
@@ -70,10 +70,10 @@ export default function NotFound() {
         </div>
 
         <nav aria-label="Other places to go" className="mt-gap-cta">
-          <ul className="m-0 flex list-none flex-wrap justify-center gap-x-7 gap-y-2 p-0 font-body text-dato text-muted">
-            {RESCATE.map((l) => (
+          <ul className="m-0 flex list-none flex-wrap justify-center gap-x-7 gap-y-2 p-0 font-body text-data text-muted">
+            {RESCUE_LINKS.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="toque link-texto">
+                <Link href={l.href} className="hit-area link-text">
                   {l.label}
                 </Link>
               </li>

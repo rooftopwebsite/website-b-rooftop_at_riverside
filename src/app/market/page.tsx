@@ -50,7 +50,7 @@ export default async function MarketPage() {
       </PlateHero>
       <SoftWave from="bone" to="deep" className="relative -mb-px" />
       <Section tone="deep" band="lg" labelledBy="wall-title" width="full">
-        <div className="caja lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
+        <div className="page-box lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
         <SectionHead
           eyebrow="A market day"
           eyebrowTone="cream"
@@ -63,7 +63,7 @@ export default async function MarketPage() {
           }
         />
           <div className="lg:pb-2">
-            <p className="bajada m-0 mt-gap-bajada max-w-[52ch] text-paper/85 lg:mt-0">
+            <p className="subhead m-0 mt-gap-subhead max-w-[52ch] text-paper/85 lg:mt-0">
               Jewelry, prints, plants, clothes, homeware and food, set out by the people who made
               them. These are past markets in the yard.
             </p>
@@ -79,7 +79,7 @@ export default async function MarketPage() {
             {[...SHOTS, ...SHOTS].map((s, i) => (
               <div
                 key={`${s.src}-${i}`}
-                className="relative h-[240px] w-[190px] shrink-0 overflow-hidden rounded-ticket bg-fog sombra-card lg:h-[340px] lg:w-[270px] lg:rounded-shell"
+                className="relative h-[240px] w-[190px] shrink-0 overflow-hidden rounded-ticket bg-fog card-shadow lg:h-[340px] lg:w-[270px] lg:rounded-shell"
               >
                 <Image
                   src={s.src}
@@ -97,7 +97,7 @@ export default async function MarketPage() {
           </div>
         </div>
       </Section>
-      <Section tone="bone" band="lg" labelledBy="steps-title" className="banda-arco z-[2]">
+      <Section tone="bone" band="lg" labelledBy="steps-title" className="band-arc z-[2]">
         <SectionHead
           align="center"
           eyebrow="Set up with us"
@@ -118,7 +118,7 @@ export default async function MarketPage() {
         <StaggerGroup
           as="ol"
           aria-label="How to get a market booth, step by step"
-          className="mx-auto mt-bloque grid max-w-[560px] list-none gap-6 p-0 pt-2 pb-7 lg:max-w-none lg:grid-cols-3"
+          className="mx-auto mt-block grid max-w-[560px] list-none gap-6 p-0 pt-2 pb-7 lg:max-w-none lg:grid-cols-3"
         >
           {STEPS.map((s, i) => (
             <RevealItem
@@ -138,7 +138,7 @@ export default async function MarketPage() {
                   </span>
                 </span>
               </span>
-              <div className="troquel relative flex flex-1 flex-col items-center gap-3.5 rounded-ticket bg-paper px-5.5 pt-12 pb-13 text-center lg:px-8 lg:pt-15 lg:pb-14">
+              <div className="die-cut relative flex flex-1 flex-col items-center gap-3.5 rounded-ticket bg-paper px-5.5 pt-12 pb-13 text-center lg:px-8 lg:pt-15 lg:pb-14">
                 <span className="font-body text-caption font-medium uppercase tracking-[0.18em] text-muted">
                   {s.kicker}
                 </span>
@@ -168,7 +168,7 @@ export default async function MarketPage() {
             Save your spot
           </ButtonLink>
         </div>
-        <div className="mt-bloque grid gap-6 lg:grid-cols-2 lg:gap-8">
+        <div className="mt-block grid gap-6 lg:grid-cols-2 lg:gap-8">
           <article className="relative flex h-full flex-col rounded-shell bg-bone p-8 lg:p-10">
             <span
               aria-hidden="true"
@@ -196,7 +196,7 @@ export default async function MarketPage() {
                 ))}
               </dl>
 
-              <p className="m-0 mt-6 font-body text-dato font-light leading-[1.65] text-body/75">
+              <p className="m-0 mt-6 font-body text-data font-light leading-[1.65] text-body/75">
                 Ten by ten feet is the standard space, there is electricity if you ask for it
                 ahead, and the last approval happens at check-in on the day. We have not published
                 the next market days here yet, so write the ones you want into the form and we come
@@ -246,10 +246,10 @@ export default async function MarketPage() {
         lead="Show us your work and tell us which market days you are after. A person reads it and answers within one business day."
         aside={
           <div className="flex flex-col gap-1.5">
-            <a href={`mailto:${venue.email}`} className="link-texto font-body text-base">
+            <a href={`mailto:${venue.email}`} className="link-text font-body text-base">
               {venue.email}
             </a>
-            <a href={venue.phoneHref} className="link-texto font-body text-base">
+            <a href={venue.phoneHref} className="link-text font-body text-base">
               {venue.phone}
             </a>
           </div>

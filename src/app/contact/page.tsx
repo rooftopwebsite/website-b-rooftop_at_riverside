@@ -24,7 +24,7 @@ export const metadata: Metadata = pageMeta({
 export default async function ContactPage() {
   const venue = await getVenue();
 
-  const buzones = [
+  const inboxes = [
     { label: 'General', address: venue.email },
     { label: 'Private events', address: venue.emailEvents },
     { label: 'Working here', address: venue.emailHiring },
@@ -81,14 +81,14 @@ export default async function ContactPage() {
               </a>
             </div>
             <ul className="flex list-none flex-col gap-4.5 p-0">
-              {buzones.map((b) => (
+              {inboxes.map((b) => (
                 <li key={b.address}>
                   <span className="block font-body text-caption font-medium uppercase tracking-eyebrow text-body/60">
                     {b.label}
                   </span>
                   <a
                     href={'mailto:' + b.address}
-                    className="link-texto mt-1 block break-words font-body text-[16px] leading-[1.5] text-ink"
+                    className="link-text mt-1 block break-words font-body text-[16px] leading-[1.5] text-ink"
                   >
                     {b.address}
                   </a>
@@ -115,7 +115,7 @@ export default async function ContactPage() {
                   href={BRAND.social.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link-texto font-bold"
+                  className="link-text font-bold"
                 >
                   @{instagramHandle()}
                   <span className="sr-only">(opens in a new tab)</span>

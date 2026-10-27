@@ -77,23 +77,23 @@ export default async function GameTruckPage() {
               The truck, <span className="text-sunset">on paper</span>
             </>
           }
-          cifra={{ value: String(SCREENS), label: 'high definition screens' }}
-          cifraIcon={GridFour}
-          segunda={{
+          figure={{ value: String(SCREENS), label: 'high definition screens' }}
+          figureIcon={GridFour}
+          second={{
             value: GAMES_TOTAL,
             label: 'games on board',
             note: `${GAMES.length} of them are published. E rated through M rated.`,
           }}
-          segundaIcon={Ticket}
-          invertidaTexto={
+          secondIcon={Ticket}
+          invertedText={
             <>
               There is a <strong className="font-semibold text-deep">Game Coach</strong> on board
               for the <strong className="font-semibold text-deep">whole session</strong>, and these
               are the consoles they run.
             </>
           }
-          invertidaDetalle={CONSOLES}
-          datos={[
+          invertedDetail={CONSOLES}
+          data={[
             ['Where', 'The yard, under the rooftop'],
             ['Climate', 'Air conditioned'],
           ]}
@@ -105,15 +105,15 @@ export default async function GameTruckPage() {
         labelledBy="games-title"
         id="games"
         width="full"
-        className="banda-arco z-[2] scroll-mt-24"
+        className="band-arc z-[2] scroll-mt-24"
       >
         <GameShelf
-          pie={
+          footer={
             <p className="mx-auto max-w-[62ch] font-body text-base leading-[1.65] text-body/80">
               The truck carries {GAMES_TOTAL} titles.
             </p>
           }
-          ola={<SoftWave from="paper" to="bone" className="absolute inset-x-0 bottom-0" />}
+          wave={<SoftWave from="paper" to="bone" className="absolute inset-x-0 bottom-0" />}
         >
           <div className="flex justify-center">
             <Image
@@ -161,10 +161,10 @@ export default async function GameTruckPage() {
         />
         <StaggerGroup
           as="ul"
-          className="mt-bloque grid list-none grid-cols-1 items-stretch gap-6 p-0 md:grid-cols-2"
+          className="mt-block grid list-none grid-cols-1 items-stretch gap-6 p-0 md:grid-cols-2"
         >
           <RevealItem as="li" className="h-full">
-            <div className="flex h-full flex-col rounded-shell bg-paper p-7 text-ink sombra-card lg:p-9">
+            <div className="flex h-full flex-col rounded-shell bg-paper p-7 text-ink card-shadow lg:p-9">
               <div className="flex items-center gap-3.5">
                 <Ticket className="size-8 shrink-0" />
                 <span className="font-body text-caption font-bold uppercase tracking-eyebrow">
@@ -201,7 +201,7 @@ export default async function GameTruckPage() {
             </div>
           </RevealItem>
           <RevealItem as="li" className="h-full">
-            <div className="flex h-full flex-col rounded-shell bg-deep p-7 text-paper sombra-card lg:p-9">
+            <div className="flex h-full flex-col rounded-shell bg-deep p-7 text-paper card-shadow lg:p-9">
               <div className="flex items-center gap-3.5">
                 <Balloons className="size-8 shrink-0" />
                 <span className="font-body text-caption font-bold uppercase tracking-eyebrow">
@@ -241,11 +241,11 @@ export default async function GameTruckPage() {
             </div>
           </RevealItem>
         </StaggerGroup>
-        <div className="mt-bloque grid items-stretch gap-8 lg:grid-cols-2 lg:gap-10">
+        <div className="mt-block grid items-stretch gap-8 lg:grid-cols-2 lg:gap-10">
           {PACKAGES.map((pkg) => (
             <article
               key={pkg.slug}
-              className="relative flex flex-col rounded-frame bg-paper px-6 pt-14 pb-10 text-center sombra-card sm:px-10 sm:pt-16"
+              className="relative flex flex-col rounded-frame bg-paper px-6 pt-14 pb-10 text-center card-shadow sm:px-10 sm:pt-16"
             >
               <span
                 aria-hidden="true"
@@ -282,7 +282,7 @@ export default async function GameTruckPage() {
             </article>
           ))}
         </div>
-      <div id="policies" className="mt-bloque scroll-mt-24">
+      <div id="policies" className="mt-block scroll-mt-24">
         <div className="grid gap-x-12 gap-y-7 border-t border-ink/15 pt-8 lg:grid-cols-[minmax(0,24ch)_1fr]">
           <div>
             <Eyebrow tone="terra">The paperwork</Eyebrow>
@@ -302,11 +302,11 @@ export default async function GameTruckPage() {
               >
                 <Link
                   href={d.href}
-                  className="link-texto font-body text-base font-semibold text-ink"
+                  className="link-text font-body text-base font-semibold text-ink"
                 >
                   {d.label}
                 </Link>
-                <p className="mt-1.5 max-w-[34ch] font-body text-dato leading-[1.6] text-muted">
+                <p className="mt-1.5 max-w-[34ch] font-body text-data leading-[1.6] text-muted">
                   {d.blurb}
                 </p>
               </li>

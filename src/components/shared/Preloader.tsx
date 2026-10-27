@@ -4,7 +4,7 @@ export default function Preloader() {
   return (
     <div
       aria-hidden="true"
-      className="rt-preloader pointer-events-none fixed inset-0 z-[120] overflow-hidden bg-deep grano"
+      className="rt-preloader pointer-events-none fixed inset-0 z-[120] overflow-hidden bg-deep grain"
     >
       <div className="grid h-full place-items-center">
         <Image

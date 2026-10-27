@@ -1,4 +1,4 @@
-import vacantes from './jobs.json';
+import openings from './jobs.json';
 
 export interface JobPosting {
   readonly id: string;
@@ -14,7 +14,7 @@ export interface JobPosting {
 }
 
 export async function getJobPostings(): Promise<readonly JobPosting[]> {
-  return (vacantes as readonly JobPosting[]).filter(
+  return (openings as readonly JobPosting[]).filter(
     (r) => r.status === null || r.status === 'open' || r.status === 'active',
   );
 }

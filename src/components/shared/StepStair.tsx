@@ -9,7 +9,7 @@ export interface Step {
   readonly tags: readonly string[];
 }
 
-const COLUMNAS: Record<number, string> = {
+const COLUMNS: Record<number, string> = {
   1: 'desk:grid-cols-1',
   2: 'desk:grid-cols-2',
   3: 'desk:grid-cols-3',
@@ -18,7 +18,7 @@ const COLUMNAS: Record<number, string> = {
   6: 'desk:grid-cols-6',
 };
 
-const ALTO_MEDIA: Record<number, string> = {
+const MEDIA_HEIGHT: Record<number, string> = {
   1: 'desk:row-span-1',
   2: 'desk:row-span-2',
   3: 'desk:row-span-3',
@@ -26,7 +26,7 @@ const ALTO_MEDIA: Record<number, string> = {
   5: 'desk:row-span-5',
 };
 
-const PELDAÑO = [
+const STAIR_STEP = [
   'desk:col-start-1 desk:row-start-1',
   'desk:col-start-2 desk:row-start-2',
   'desk:col-start-3 desk:row-start-3',
@@ -50,7 +50,7 @@ export default function StepStair({
       className={[
         'flex flex-col',
         'desk:grid',
-        COLUMNAS[items.length],
+        COLUMNS[items.length],
         className,
       ]
         .filter(Boolean)
@@ -58,29 +58,29 @@ export default function StepStair({
     >
       {media ? (
         <li
-          className={`hidden desk:col-start-1 desk:row-start-2 desk:block desk:pr-8 desk:pt-9 ${ALTO_MEDIA[Math.max(items.length - 1, 1)]}`}
+          className={`hidden desk:col-start-1 desk:row-start-2 desk:block desk:pr-8 desk:pt-9 ${MEDIA_HEIGHT[Math.max(items.length - 1, 1)]}`}
         >
           {media}
         </li>
       ) : null}
 
       {items.map((item, i) => {
-        const ultimo = i === items.length - 1;
+        const last = i === items.length - 1;
         return (
           <RevealItem
             key={item.n}
             as="li"
             className={[
               'border-l border-fog pl-4.5',
-              ultimo ? 'pb-0' : 'pb-7.5 desk:border-b desk:border-fog desk:pb-14',
+              last ? 'pb-0' : 'pb-7.5 desk:border-b desk:border-fog desk:pb-14',
               'desk:pl-5.5',
-              PELDAÑO[i],
+              STAIR_STEP[i],
             ].join(' ')}
           >
             <div className="grid grid-cols-[30px_minmax(0,1fr)] gap-x-2.5">
               <span
                 aria-hidden="true"
-                className="pt-1.75 font-body text-dato font-medium tabular-nums tracking-label text-muted"
+                className="pt-1.75 font-body text-data font-medium tabular-nums tracking-label text-muted"
               >
                 {item.n}
               </span>

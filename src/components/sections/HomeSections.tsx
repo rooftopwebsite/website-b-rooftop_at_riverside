@@ -7,9 +7,9 @@ export function HowThisPlaceWorks() {
   return (
     <section
       aria-labelledby="how-title"
-      className="relative bg-bone grano pt-16 md:pt-20 lg:pt-24 desk:pt-30"
+      className="relative bg-bone grain pt-16 md:pt-20 lg:pt-24 desk:pt-30"
     >
-      <StaggerGroup className="caja-ancha grid grid-cols-1 gap-7 lg:grid-cols-2 lg:gap-18">
+      <StaggerGroup className="page-box-wide grid grid-cols-1 gap-7 lg:grid-cols-2 lg:gap-18">
         <RevealItem>
           <h2
             id="how-title"
@@ -28,7 +28,7 @@ export function HowThisPlaceWorks() {
           </p>
           <a
             href="#find-us"
-            className="group inline-flex w-fit items-center gap-2.5 border-b-2 border-sunset pb-1 font-body text-dato font-medium text-ink transition-colors duration-200 hover:border-ink"
+            className="group inline-flex w-fit items-center gap-2.5 border-b-2 border-sunset pb-1 font-body text-data font-medium text-ink transition-colors duration-200 hover:border-ink"
           >
             Come see it for yourself
             <ArrowRight className="size-3.75 transition-transform duration-200 group-hover:translate-x-1" />
@@ -49,7 +49,7 @@ export function ReviewsMarquee({
   return (
     <Section band="lg" labelledBy="reviews-title" width="full" className="px-0">
       <div className={GUTTER}>
-        <div className="caja">
+        <div className="page-box">
           <SectionHead
             eyebrow="What people say"
             id="reviews-title"

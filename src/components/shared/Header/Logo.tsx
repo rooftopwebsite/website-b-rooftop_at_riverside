@@ -12,8 +12,8 @@ export default function Logo() {
       className="group z-30 grid size-16 shrink-0 place-items-center desk:absolute desk:top-1 desk:left-1/2 desk:size-25 desk:-translate-x-1/2"
     >
       <span className="sticker relative inline-flex transition-transform duration-300 ease-brand group-hover:scale-105">
-        <span aria-hidden="true" className="plancha-filo" />
-        <span aria-hidden="true" className="plancha" />
+        <span aria-hidden="true" className="backplate-edge" />
+        <span aria-hidden="true" className="backplate" />
         <Image
           src="/brand/logo-primary.svg"
           alt=""

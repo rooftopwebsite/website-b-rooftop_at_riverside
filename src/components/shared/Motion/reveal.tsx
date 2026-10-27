@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import type { ElementType, ReactNode } from 'react';
 import { useMemo } from 'react';
 import { REVEAL_AMOUNT, revealVariants, staggerContainer, viewport } from './tokens';
-import { quieto } from './quieto';
+import { still } from './still';
 
 interface RevealProps {
   readonly children: ReactNode;
@@ -23,7 +23,7 @@ export function Reveal({ children, as = 'div', className, id, amount = REVEAL_AM
   if (reduced) {
     const Tag = as;
     return (
-      <Tag id={id} data-reveal="" className={quieto(className)}>
+      <Tag id={id} data-reveal="" className={still(className)}>
         {children}
       </Tag>
     );
@@ -61,7 +61,7 @@ export function StaggerGroup({
     return (
       <Tag
         id={id}
-        className={quieto(className)}
+        className={still(className)}
         tabIndex={tabIndex}
         aria-label={ariaLabel}
       >
@@ -102,7 +102,7 @@ export function RevealItem({
   if (reduced) {
     const Tag = as;
     return (
-      <Tag data-reveal="" className={quieto(className)}>
+      <Tag data-reveal="" className={still(className)}>
         {children}
       </Tag>
     );

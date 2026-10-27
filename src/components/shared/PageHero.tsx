@@ -31,14 +31,14 @@ export default function PageHero({
   readonly children?: ReactNode;
 }) {
   const hasImage = Boolean(image);
-  const hasHueco = !hasImage && Boolean(imageBrief);
-  const dosColumnas = hasImage || hasHueco;
+  const hasGap = !hasImage && Boolean(imageBrief);
+  const twoColumns = hasImage || hasGap;
 
   return (
     <section aria-labelledby="page-title" className="relative">
       <div
         className={
-          dosColumnas
+          twoColumns
             ? 'desk:grid desk:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] desk:items-stretch'
             : ''
         }
@@ -48,14 +48,14 @@ export default function PageHero({
         >
           <div
             className={
-              dosColumnas ? 'mx-auto w-full max-w-[640px] desk:mr-[56px] desk:ml-auto' : 'caja'
+              twoColumns ? 'mx-auto w-full max-w-[640px] desk:mr-[56px] desk:ml-auto' : 'page-box'
             }
           >
             {crumbs && crumbs.length > 0 ? (
               <nav aria-label="Breadcrumb" className="mb-[20px]">
                 <ol className="flex flex-wrap items-center gap-x-[8px] gap-y-[2px] text-[14px] text-body/75">
                   <li>
-                    <Link href="/" className="link-texto">
+                    <Link href="/" className="link-text">
                       Home
                     </Link>
                   </li>
@@ -67,7 +67,7 @@ export default function PageHero({
                           {c.name}
                         </span>
                       ) : (
-                        <Link href={c.path} className="link-texto">
+                        <Link href={c.path} className="link-text">
                           {c.name}
                         </Link>
                       )}
@@ -87,7 +87,7 @@ export default function PageHero({
             </Heading>
 
             {lead ? (
-              <p className="mt-gap-bajada max-w-[54ch] text-lead text-body/80">{lead}</p>
+              <p className="mt-gap-subhead max-w-[54ch] text-lead text-body/80">{lead}</p>
             ) : null}
 
             {children ? <div className="mt-gap-cta">{children}</div> : null}
@@ -107,7 +107,7 @@ export default function PageHero({
           </div>
         ) : null}
 
-        {hasHueco ? (
+        {hasGap ? (
           <div className="flex items-stretch px-gutter pb-[32px] md:px-gutter-lg desk:min-h-[440px] desk:px-0 desk:pb-0">
             <PhotoPending
               brief={imageBrief as string}

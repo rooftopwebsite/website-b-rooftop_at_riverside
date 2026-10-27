@@ -42,8 +42,8 @@ export default async function EventsPage({
   searchParams: Promise<{ area?: string | string[] }>;
 }) {
   const sp = await searchParams;
-  const pedidas = sp.area === undefined ? [] : Array.isArray(sp.area) ? sp.area : [sp.area];
-  const areas = pedidas.filter((a) => AREAS_OF_INTEREST.some((x) => x.value === a));
+  const requested = sp.area === undefined ? [] : Array.isArray(sp.area) ? sp.area : [sp.area];
+  const areas = requested.filter((a) => AREAS_OF_INTEREST.some((x) => x.value === a));
 
   const venue = await getVenue();
   return (
@@ -102,17 +102,17 @@ export default async function EventsPage({
           </Eyebrow>
           <h2
             id="cost-title"
-            className="m-0 mx-auto mt-gap-kicker max-w-[16ch] font-display text-banda font-extrabold uppercase"
+            className="m-0 mx-auto mt-gap-kicker max-w-[16ch] font-display text-band font-extrabold uppercase"
           >
             <span className="text-paper">The numbers,</span>{' '}
             <span className="text-sunset">up front</span>
           </h2>
-          <p className="mx-auto mt-gap-bajada max-w-[56ch] font-body text-lead font-light text-paper/85">
+          <p className="mx-auto mt-gap-subhead max-w-[56ch] font-body text-lead font-light text-paper/85">
             Renting the space, feeding everyone and running the bar, all in one place.
             No quote needed to read this.
           </p>
         </div>
-        <StaggerGroup as="ul" className="mt-bloque grid list-none gap-5 p-0 lg:grid-cols-2">
+        <StaggerGroup as="ul" className="mt-block grid list-none gap-5 p-0 lg:grid-cols-2">
           <RevealItem as="li" className="h-full">
             <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
               <Heading level={3} role="label" className="text-cream">
@@ -213,14 +213,14 @@ export default async function EventsPage({
       <Section band="lg" labelledBy="game-truck-title">
         <div
           id="game-truck"
-          className="relative scroll-mt-24 rounded-frame bg-bone grano p-6 pb-10 sm:p-9 sm:pb-12 lg:p-12"
+          className="relative scroll-mt-24 rounded-frame bg-bone grain p-6 pb-10 sm:p-9 sm:pb-12 lg:p-12"
         >
           <span
             aria-hidden="true"
             className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
           />
           <div className="relative grid items-center gap-7 sm:grid-cols-2 sm:items-stretch sm:gap-9 lg:gap-14">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-shell sombra-card sm:aspect-auto sm:h-full sm:min-h-64">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-shell card-shadow sm:aspect-auto sm:h-full sm:min-h-64">
               <Image
                 src="/images/game-truck/truck-night.webp"
                 alt="Two guests in Rooftop shirts playing on the gaming truck screens at night"
@@ -258,7 +258,7 @@ export default async function EventsPage({
         tone="bone"
         panelTone="paper"
         band="lg"
-        className="banda-arco z-[2]"
+        className="band-arc z-[2]"
         eyebrow="Next step"
         eyebrowTone="terra"
         title="Tell us about your party"
@@ -282,11 +282,11 @@ export default async function EventsPage({
               </p>
               <a
                 href={`mailto:${venue.emailEvents}`}
-                className="link-texto mt-1.5 font-body text-base"
+                className="link-text mt-1.5 font-body text-base"
               >
                 {venue.emailEvents}
               </a>
-              <a href={venue.phoneHref} className="link-texto font-body text-base">
+              <a href={venue.phoneHref} className="link-text font-body text-base">
                 {venue.phone}
               </a>
             </div>

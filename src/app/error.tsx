@@ -6,7 +6,7 @@ import { Button, ButtonLink } from '@/components/shared/Button';
 import Section from '@/components/shared/Section';
 import { Accent, Eyebrow } from '@/components/shared/Type';
 
-const RESCATE = [
+const RESCUE_LINKS = [
   { label: 'Food trucks', href: '/food-trucks' },
   { label: 'Sunset Bar', href: '/sunset-bar' },
   { label: 'Hours and map', href: '/contact#find' },
@@ -37,12 +37,12 @@ export default function ErrorPage({
 
       <h1
         id="error-title"
-        className="m-0 mx-auto mt-gap-kicker max-w-[22ch] text-balance font-display text-banda font-extrabold uppercase leading-[0.9] text-ink"
+        className="m-0 mx-auto mt-gap-kicker max-w-[22ch] text-balance font-display text-band font-extrabold uppercase leading-[0.9] text-ink"
       >
         This page took a <Accent on="light">detour</Accent>
       </h1>
 
-      <p className="mx-auto mt-gap-bajada max-w-[52ch] font-body text-lead font-light leading-[1.55] text-body">
+      <p className="mx-auto mt-gap-subhead max-w-[52ch] font-body text-lead font-light leading-[1.55] text-body">
         Something on our side did not load. Try again in a moment. The bar, the
         trucks and the calendar are all still here.
       </p>
@@ -57,10 +57,10 @@ export default function ErrorPage({
       </div>
 
       <nav aria-label="Other places to go" className="mt-gap-cta">
-        <ul className="m-0 flex list-none flex-wrap justify-center gap-x-7 gap-y-2 p-0 font-body text-dato text-muted">
-          {RESCATE.map((l) => (
+        <ul className="m-0 flex list-none flex-wrap justify-center gap-x-7 gap-y-2 p-0 font-body text-data text-muted">
+          {RESCUE_LINKS.map((l) => (
             <li key={l.href}>
-              <Link href={l.href} className="toque link-texto">
+              <Link href={l.href} className="hit-area link-text">
                 {l.label}
               </Link>
             </li>

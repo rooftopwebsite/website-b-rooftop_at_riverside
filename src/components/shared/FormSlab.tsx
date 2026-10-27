@@ -51,7 +51,7 @@ export default function FormSlab({
             {title}
           </Heading>
           {lead ? (
-            <p className="mt-gap-bajada max-w-[42ch] font-body text-lead font-light text-body/80">
+            <p className="mt-gap-subhead max-w-[42ch] font-body text-lead font-light text-body/80">
               {lead}
             </p>
           ) : null}

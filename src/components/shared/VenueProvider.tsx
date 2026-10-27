@@ -17,6 +17,6 @@ export default function VenueProvider({
 
 export function useVenue(): Venue {
   const v = useContext(Ctx);
-  if (!v) throw new Error('useVenue() necesita <VenueProvider>, que va en app/layout.tsx');
+  if (!v) throw new Error('useVenue() needs <VenueProvider>, which lives in app/layout.tsx');
   return v;
 }

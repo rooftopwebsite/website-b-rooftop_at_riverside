@@ -1,8 +1,8 @@
-import { activeTrucks, truckPorNombre, type Truck } from '@/content/trucks';
-import { sinEmDash } from '@/lib/em-dash';
-import cartas from './menus.json';
+import { activeTrucks, truckByName, type Truck } from '@/content/trucks';
+import { withoutEmDash } from '@/lib/em-dash';
+import menus from './menus.json';
 
-export const CARTA_DEL_BAR = 'Sunset Bar';
+export const BAR_MENU = 'Sunset Bar';
 
 export interface MenuPdf {
   readonly name: string;
@@ -10,36 +10,36 @@ export interface MenuPdf {
   readonly pdfUrl: string;
 }
 
-const normalizar = (s: string) =>
+const normalize = (s: string) =>
   s
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '');
 
-const esDelBar = (m: MenuPdf) => normalizar(m.name) === normalizar(CARTA_DEL_BAR);
+const isFromBar = (m: MenuPdf) => normalize(m.name) === normalize(BAR_MENU);
 
 function getMenuPdfs(): readonly MenuPdf[] {
-  return (cartas as readonly { name: string; description: string | null; pdf: string | null; active: boolean }[])
+  return (menus as readonly { name: string; description: string | null; pdf: string | null; active: boolean }[])
     .filter((c) => c.active && c.pdf)
     .map((c) => ({
       name: c.name,
-      description: sinEmDash(c.description),
+      description: withoutEmDash(c.description),
       pdfUrl: c.pdf as string,
     }));
 }
 
-export interface CartaDeTruck {
+export interface TruckMenuData {
   readonly name: string;
   readonly description: string | null;
   readonly pdfUrl: string | null;
   readonly truck: Truck | null;
 }
 
-export async function cartasDeTrucks(): Promise<readonly CartaDeTruck[]> {
-  const cartas = getMenuPdfs();
+export async function truckMenus(): Promise<readonly TruckMenuData[]> {
+  const menus = getMenuPdfs();
 
-  if (cartas.length === 0) {
+  if (menus.length === 0) {
     return activeTrucks().map((t) => ({
       name: t.name,
       description: t.blurb ?? t.story,
@@ -48,8 +48,8 @@ export async function cartasDeTrucks(): Promise<readonly CartaDeTruck[]> {
     }));
   }
 
-  return cartas.filter((m) => !esDelBar(m)).map((m) => {
-    const truck = truckPorNombre(m.name) ?? null;
+  return menus.filter((m) => !isFromBar(m)).map((m) => {
+    const truck = truckByName(m.name) ?? null;
     return {
       name: truck?.name ?? m.name,
       description: m.description ?? truck?.blurb ?? truck?.story ?? null,
@@ -59,6 +59,6 @@ export async function cartasDeTrucks(): Promise<readonly CartaDeTruck[]> {
   });
 }
 
-export async function cartaDelBar(): Promise<MenuPdf | null> {
-  return getMenuPdfs().find(esDelBar) ?? null;
+export async function barMenuData(): Promise<MenuPdf | null> {
+  return getMenuPdfs().find(isFromBar) ?? null;
 }

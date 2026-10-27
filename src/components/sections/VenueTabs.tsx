@@ -11,41 +11,41 @@ import { VENUE_AREAS } from '@/content/venue-areas';
 
 const TOTAL = VENUE_AREAS.length;
 
-const cifra = (n: number) => String(n).padStart(2, '0');
+const figure = (n: number) => String(n).padStart(2, '0');
 
-const PESO = { abierto: 'grow-[5.6]', encima: 'grow-[1.35]', cerrado: 'grow' } as const;
+const WEIGHT = { isOpen: 'grow-[5.6]', hovered: 'grow-[1.35]', closed: 'grow' } as const;
 
-const FLECHA =
+const ARROW =
   'grid size-11 cursor-pointer place-items-center rounded-pill bg-deep text-cream ring-1 ring-deep transition-all duration-300 ease-brand hover:bg-sunset hover:text-ink active:scale-95';
 
 export default function VenueTabs({ id = 'place-title' }: { readonly id?: string }) {
-  const [activo, setActivo] = useState(0);
-  const [encima, setEncima] = useState<number | null>(null);
-  const [vista, setVista] = useState(0);
-  const tira = useRef<HTMLUListElement | null>(null);
-  const alScroll = () => {
-    const t = tira.current;
+  const [active, setActive] = useState(0);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [view, setView] = useState(0);
+  const strip = useRef<HTMLUListElement | null>(null);
+  const handleScroll = () => {
+    const t = strip.current;
     const card = t?.firstElementChild as HTMLElement | null;
     if (!t || !card) return;
-    const paso = card.getBoundingClientRect().width + 16;
-    setVista(Math.min(TOTAL - 1, Math.round(t.scrollLeft / paso)));
+    const step = card.getBoundingClientRect().width + 16;
+    setView(Math.min(TOTAL - 1, Math.round(t.scrollLeft / step)));
   };
-  const irA = (i: number) => {
-    const t = tira.current;
+  const goTo = (i: number) => {
+    const t = strip.current;
     const card = t?.firstElementChild as HTMLElement | null;
     if (!t || !card) return;
     t.scrollTo({ left: i * (card.getBoundingClientRect().width + 16), behavior: 'smooth' });
   };
   const base = useId();
-  const area = VENUE_AREAS[activo]!;
+  const area = VENUE_AREAS[active]!;
 
   const tabId = (i: number) => `${base}-tab-${i}`;
   const panelId = `${base}-panel`;
 
-  const mover = (paso: number) => {
-    const siguiente = (activo + paso + TOTAL) % TOTAL;
-    setActivo(siguiente);
-    document.getElementById(tabId(siguiente))?.focus();
+  const move = (step: number) => {
+    const next = (active + step + TOTAL) % TOTAL;
+    setActive(next);
+    document.getElementById(tabId(next))?.focus();
   };
 
   return (
@@ -63,11 +63,11 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
           lead="One property, built in layers. The bar went on the roof because that is where the sunset is, and everything else grew underneath it."
         />
         <div className="flex shrink-0 gap-2 max-md:hidden">
-          <button type="button" onClick={() => mover(-1)} className={FLECHA}>
+          <button type="button" onClick={() => move(-1)} className={ARROW}>
             <span className="sr-only">Previous place</span>
             <ArrowLeft className="size-4" />
           </button>
-          <button type="button" onClick={() => mover(1)} className={FLECHA}>
+          <button type="button" onClick={() => move(1)} className={ARROW}>
             <span className="sr-only">Next place</span>
             <ArrowRight className="size-4" />
           </button>
@@ -75,8 +75,8 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
       </div>
       <div className="mt-6 md:hidden">
         <ul
-          ref={tira}
-          onScroll={alScroll}
+          ref={strip}
+          onScroll={handleScroll}
           tabIndex={0}
           aria-label="Places in the building"
           className="-mx-gutter flex snap-x snap-mandatory list-none gap-4 overflow-x-auto px-gutter pb-1 scroll-px-gutter [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -94,7 +94,7 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
                   <span className="font-display text-d6 font-bold uppercase leading-none text-deep">{a.name}</span>
                 </span>
               </div>
-              <p className="bajada m-0 mt-4 font-body text-base font-light">{a.body}</p>
+              <p className="subhead m-0 mt-4 font-body text-base font-light">{a.body}</p>
             </li>
           ))}
         </ul>
@@ -103,14 +103,14 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
             <button
               key={a.slug}
               type="button"
-              onClick={() => irA(i)}
-              aria-current={i === vista ? 'true' : undefined}
+              onClick={() => goTo(i)}
+              aria-current={i === view ? 'true' : undefined}
               className="grid size-11 place-items-center"
             >
               <span className="sr-only">{a.name}</span>
               <span
                 aria-hidden="true"
-                className={`size-2.5 rounded-pill transition-colors ${i === vista ? 'bg-sunset-deep' : 'bg-deep/30'}`}
+                className={`size-2.5 rounded-pill transition-colors ${i === view ? 'bg-sunset-deep' : 'bg-deep/30'}`}
               />
             </button>
           ))}
@@ -119,12 +119,12 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
       <div
         role="tablist"
         aria-label="Places in the building"
-        onMouseLeave={() => setEncima(null)}
+        onMouseLeave={() => setHovered(null)}
         className="mt-6 hidden md:flex md:h-[300px] md:flex-row md:gap-2 lg:h-[380px] lg:gap-3 desk:h-[440px]"
       >
         {VENUE_AREAS.map((a, i) => {
-          const abierta = i === activo;
-          const peso = abierta ? PESO.abierto : encima === i ? PESO.encima : PESO.cerrado;
+          const isOpen = i === active;
+          const weight = isOpen ? WEIGHT.isOpen : hovered === i ? WEIGHT.hovered : WEIGHT.closed;
 
           return (
             <button
@@ -132,24 +132,24 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
               type="button"
               role="tab"
               id={tabId(i)}
-              aria-selected={abierta}
+              aria-selected={isOpen}
               aria-controls={panelId}
-              tabIndex={abierta ? 0 : -1}
+              tabIndex={isOpen ? 0 : -1}
               aria-label={`${a.name}, ${a.floor}`}
-              onMouseEnter={() => setEncima(i)}
-              onClick={() => setActivo(i)}
+              onMouseEnter={() => setHovered(i)}
+              onClick={() => setActive(i)}
               onKeyDown={(e) => {
-                const paso =
+                const step =
                   e.key === 'ArrowRight' || e.key === 'ArrowDown'
                     ? 1
                     : e.key === 'ArrowLeft' || e.key === 'ArrowUp'
                       ? -1
                       : 0;
-                if (paso === 0) return;
+                if (step === 0) return;
                 e.preventDefault();
-                mover(paso);
+                move(step);
               }}
-              className={`group relative min-h-[52px] shrink basis-0 cursor-pointer overflow-hidden rounded-ticket border-0 bg-fog p-0 transition-[flex-grow] duration-300 ease-brand md:min-h-0 md:min-w-[44px] ${peso}`}
+              className={`group relative min-h-[52px] shrink basis-0 cursor-pointer overflow-hidden rounded-ticket border-0 bg-fog p-0 transition-[flex-grow] duration-300 ease-brand md:min-h-0 md:min-w-[44px] ${weight}`}
             >
               {a.photo ? (
                 <Image
@@ -161,7 +161,7 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
                 />
               ) : null}
 
-              {!a.photo && abierta ? (
+              {!a.photo && isOpen ? (
                 <PhotoPending
                   brief={a.photoBrief}
                   ratio=""
@@ -174,12 +174,12 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
                   aria-hidden="true"
                   className={[
                     'pointer-events-none absolute inset-0 transition-colors duration-300 ease-brand',
-                    abierta ? 'bg-transparent' : 'bg-ink/50 group-hover:bg-ink/25',
+                    isOpen ? 'bg-transparent' : 'bg-ink/50 group-hover:bg-ink/25',
                   ].join(' ')}
                 />
               ) : null}
 
-              {abierta ? (
+              {isOpen ? (
                 <span className="pointer-events-none absolute bottom-3 left-3 flex max-w-[calc(100%-1.5rem)] flex-col gap-1 rounded-btn bg-bone px-3.5 py-2.5 lg:bottom-5 lg:left-5">
                   <span className="font-body text-caption font-bold uppercase tracking-eyebrow text-deep">
                     {a.floor}
@@ -191,7 +191,7 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
               ) : (
                 <span className="absolute bottom-3 left-3 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-btn bg-bone px-2.5 py-1">
                   <span className="font-body text-caption font-bold tabular-nums tracking-eyebrow text-deep">
-                    {cifra(i + 1)}
+                    {figure(i + 1)}
                   </span>
                   <span className="truncate font-display text-d7 font-bold uppercase leading-none text-deep md:hidden">
                     {a.name}
@@ -202,8 +202,8 @@ export default function VenueTabs({ id = 'place-title' }: { readonly id?: string
           );
         })}
       </div>
-      <div role="tabpanel" id={panelId} aria-labelledby={tabId(activo)} className="mt-5 max-md:hidden">
-        <p className="bajada m-0 max-w-[62ch] font-body text-base font-light">{area.body}</p>
+      <div role="tabpanel" id={panelId} aria-labelledby={tabId(active)} className="mt-5 max-md:hidden">
+        <p className="subhead m-0 max-w-[62ch] font-body text-base font-light">{area.body}</p>
       </div>
     </Section>
   );

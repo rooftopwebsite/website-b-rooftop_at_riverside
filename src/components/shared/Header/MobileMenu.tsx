@@ -3,25 +3,25 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
-import { NAV_CTA, NAV_MORE_FEATURED, NAV_PRIMARY, type NavLink as NavLinkDato } from '@/lib/nav';
+import { NAV_CTA, NAV_MORE_FEATURED, NAV_PRIMARY, type NavLink as NavLinkData } from '@/lib/nav';
 import { ButtonLink } from '../Button';
 import { GUTTER } from '../Section';
 
-interface MenuMovilProps {
+interface MobileMenuProps {
   readonly drawerOpen: boolean;
   readonly setDrawerOpen: Dispatch<SetStateAction<boolean>>;
   readonly drawerCloseRef: RefObject<HTMLButtonElement | null>;
   readonly isCurrent: (href: string) => boolean;
-  readonly moreLinks: readonly NavLinkDato[];
+  readonly moreLinks: readonly NavLinkData[];
 }
 
-export default function MenuMovil({
+export default function MobileMenu({
   drawerOpen,
   setDrawerOpen,
   drawerCloseRef,
   isCurrent,
   moreLinks,
-}: MenuMovilProps) {
+}: MobileMenuProps) {
   return (
     <div
       id="mobile-nav"
@@ -44,7 +44,7 @@ export default function MenuMovil({
         aria-modal="true"
         aria-label="Site menu"
         className={[
-          'absolute inset-0 flex flex-col bg-bone grano md:left-auto md:w-[min(480px,100%)] md:shadow-float',
+          'absolute inset-0 flex flex-col bg-bone grain md:left-auto md:w-[min(480px,100%)] md:shadow-float',
           'transition-[opacity,transform] duration-300 ease-brand',
           drawerOpen
             ? 'translate-y-0 opacity-100 md:translate-x-0'
@@ -79,7 +79,7 @@ export default function MenuMovil({
               ...([...NAV_PRIMARY, ...moreLinks].some((l) => l.href === NAV_MORE_FEATURED.href)
                 ? []
                 : [NAV_MORE_FEATURED]),
-            ] as readonly NavLinkDato[]).map(({ label, href, external }) => (
+            ] as readonly NavLinkData[]).map(({ label, href, external }) => (
               <li key={href}>
                 <Link
                   href={href}
@@ -120,7 +120,7 @@ export default function MenuMovil({
         </nav>
 
         <div
-          className={`shrink-0 border-t border-ink/12 bg-bone grano pt-4 pb-[calc(16px+env(safe-area-inset-bottom))] ${GUTTER}`}
+          className={`shrink-0 border-t border-ink/12 bg-bone grain pt-4 pb-[calc(16px+env(safe-area-inset-bottom))] ${GUTTER}`}
         >
           <div className="flex flex-col gap-2.5">
             <ButtonLink

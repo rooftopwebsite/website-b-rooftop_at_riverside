@@ -1,6 +1,6 @@
 import { EVENT_FILTERS, matchesFilter, type VenueEvent } from '@/content/events';
 
-const PUNTOS: Record<string, string> = {
+const DOTS: Record<string, string> = {
   music: 'bg-sunset',
   sports: 'bg-teal600',
   themed: 'bg-magenta',
@@ -8,7 +8,7 @@ const PUNTOS: Record<string, string> = {
   family: 'bg-river',
 };
 
-const SIN_FAMILIA = 'bg-muted';
+const NO_FAMILY = 'bg-muted';
 
 export function eventFilterId(e: VenueEvent): string | null {
   return EVENT_FILTERS.find((f) => matchesFilter(e, f.id))?.id ?? null;
@@ -16,7 +16,7 @@ export function eventFilterId(e: VenueEvent): string | null {
 
 export function eventDot(e: VenueEvent): string {
   const id = eventFilterId(e);
-  return (id && PUNTOS[id]) || SIN_FAMILIA;
+  return (id && DOTS[id]) || NO_FAMILY;
 }
 
 export interface ColorKey {
@@ -26,15 +26,15 @@ export interface ColorKey {
 }
 
 export function colorKey(events: readonly VenueEvent[]): readonly ColorKey[] {
-  const claves: ColorKey[] = EVENT_FILTERS.filter((f) =>
+  const keys: ColorKey[] = EVENT_FILTERS.filter((f) =>
     events.some((e) => eventFilterId(e) === f.id),
-  ).map((f) => ({ id: f.id, label: f.label, dot: PUNTOS[f.id] ?? SIN_FAMILIA }));
+  ).map((f) => ({ id: f.id, label: f.label, dot: DOTS[f.id] ?? NO_FAMILY }));
 
-  if (claves.length > 0 && events.some((e) => eventFilterId(e) === null)) {
-    claves.push({ id: 'resto', label: 'Everything else', dot: SIN_FAMILIA });
+  if (keys.length > 0 && events.some((e) => eventFilterId(e) === null)) {
+    keys.push({ id: 'other', label: 'Everything else', dot: NO_FAMILY });
   }
 
-  return claves;
+  return keys;
 }
 
 export function eventTypeLabel(e: VenueEvent): string | null {

@@ -33,7 +33,7 @@
     text-transform: uppercase;
     color: var(--color-ink);
     margin-top: 2.5rem;
-    margin-bottom: var(--spacing-gap-bajada);
+    margin-bottom: var(--spacing-gap-subhead);
   }
 
   .prose-post h3 {
@@ -43,7 +43,7 @@
     font-weight: 600;
     color: var(--color-ink);
     margin-top: 1.9rem;
-    margin-bottom: var(--spacing-gap-bajada);
+    margin-bottom: var(--spacing-gap-subhead);
   }
 
   .prose-post strong {

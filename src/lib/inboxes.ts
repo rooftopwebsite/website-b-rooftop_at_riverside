@@ -27,8 +27,8 @@ function parse(raw: string | undefined): string[] {
 }
 
 export function inboxFor(box: Inbox): string[] {
-  const deEnv = parse(process.env[ENV[box]]);
-  return deEnv.length > 0 ? deEnv : [FALLBACK[box]];
+  const fromEnv = parse(process.env[ENV[box]]);
+  return fromEnv.length > 0 ? fromEnv : [FALLBACK[box]];
 }
 
 export function publicInbox(box: Inbox): string {

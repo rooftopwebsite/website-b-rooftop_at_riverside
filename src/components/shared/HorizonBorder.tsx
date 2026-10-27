@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'motion/react';
 import { dur, ease, viewport } from '@/lib/motion';
-import { HORIZONTE } from './horizonte-ola';
+import { HORIZON } from './horizon-wave';
 
 export default function HorizonBorder({
   to = 'deep',
@@ -16,20 +16,20 @@ export default function HorizonBorder({
 }) {
   const reduced = useReducedMotion();
 
-  const FONDO = { paper: 'bg-paper', bone: 'bg-bone', deep: 'bg-deep' } as const;
-  const TINTA = { paper: 'text-paper', bone: 'text-bone', deep: 'text-deep' } as const;
+  const BACKGROUND = { paper: 'bg-paper', bone: 'bg-bone', deep: 'bg-deep' } as const;
+  const INK = { paper: 'text-paper', bone: 'text-bone', deep: 'text-deep' } as const;
 
   return (
     <div
       aria-hidden="true"
-      className={`grano-capa relative isolate w-full overflow-hidden ${FONDO[from]} ${className}`}
+      className={`grain-layer relative isolate w-full overflow-hidden ${BACKGROUND[from]} ${className}`}
     >
       <svg
-        viewBox={HORIZONTE.viewBox}
+        viewBox={HORIZON.viewBox}
         preserveAspectRatio="none"
-        className={`block h-23 w-full lg:h-33 ${TINTA[to]}`}
+        className={`block h-23 w-full lg:h-33 ${INK[to]}`}
       >
-        {HORIZONTE.olas.map((d, i) => (
+        {HORIZON.waves.map((d, i) => (
           <path key={i} d={d} fill="currentColor" />
         ))}
       </svg>
@@ -46,7 +46,7 @@ export default function HorizonBorder({
           alt=""
           width={230}
           height={230}
-          className="rt-sol block h-full w-full"
+          className="rt-sun block h-full w-full"
         />
       </motion.div>
     </div>

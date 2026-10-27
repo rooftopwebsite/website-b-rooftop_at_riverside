@@ -11,34 +11,34 @@ export interface FeaturedDeal {
   readonly price: string;
 }
 
-const plano = (texto: string) => texto.replace(/[‘’]/g, "'").toLowerCase();
+const flat = (text: string) => text.replace(/[‘’]/g, "'").toLowerCase();
 
-const nombraDeal = (texto: string, deal: FeaturedDeal) => plano(texto).includes(plano(deal.name));
+const namesDeal = (text: string, deal: FeaturedDeal) => flat(text).includes(flat(deal.name));
 
-const parrafosDe = (event: VenueEvent) =>
+const paragraphsOf = (event: VenueEvent) =>
   event.body.length > 0 ? event.body : event.summary === event.title ? [] : [event.summary];
 
-const esParrafoDeDeals = (parrafo: string, deals: readonly FeaturedDeal[]) =>
-  deals.filter((d) => nombraDeal(parrafo, d)).length >= Math.min(2, deals.length);
+const isDealsParagraph = (paragraph: string, deals: readonly FeaturedDeal[]) =>
+  deals.filter((d) => namesDeal(paragraph, d)).length >= Math.min(2, deals.length);
 
-export const dealsNombrados = (
+export const namedDeals = (
   event: VenueEvent | null,
   deals: readonly FeaturedDeal[] = [],
 ): readonly FeaturedDeal[] => {
   if (event === null || deals.length === 0) return [];
-  const parrafos = parrafosDe(event).filter((p) => esParrafoDeDeals(p, deals));
-  return deals.filter((d) => parrafos.some((p) => nombraDeal(p, d)));
+  const paragraphs = paragraphsOf(event).filter((p) => isDealsParagraph(p, deals));
+  return deals.filter((d) => paragraphs.some((p) => namesDeal(p, d)));
 };
 
-export const cuerpoSinPrecios = (
+export const bodyWithoutPrices = (
   event: VenueEvent,
   promos: readonly FeaturedDeal[],
 ): readonly string[] =>
   promos.length === 0
-    ? parrafosDe(event)
-    : parrafosDe(event).filter((p) => !esParrafoDeDeals(p, promos));
+    ? paragraphsOf(event)
+    : paragraphsOf(event).filter((p) => !isDealsParagraph(p, promos));
 
-function Envoltorio({
+function Wrapper({
   link,
   className,
   children,
@@ -71,19 +71,19 @@ export default function FeaturedEventCard({
   readonly headingId?: string;
   readonly linkToCalendar?: boolean;
 }) {
-  const cuando =
+  const when =
     event.kind === 'recurring' && event.weekdays.length > 0 ? weekdaysLabel(event.weekdays) : null;
 
-  const promos = dealsNombrados(event, deals);
-  const cuerpo = cuerpoSinPrecios(event, promos);
+  const promos = namedDeals(event, deals);
+  const body = bodyWithoutPrices(event, promos);
 
   return (
-    <Envoltorio
+    <Wrapper
       link={linkToCalendar}
-      className="group relative grid overflow-hidden rounded-shell bg-deeper text-left sombra-card lg:grid-cols-2"
+      className="group relative grid overflow-hidden rounded-shell bg-deeper text-left card-shadow lg:grid-cols-2"
     >
       {promos.length > 0 ? (
-        <div className="relative order-2 flex flex-col justify-center bg-ink grano p-7 lg:min-h-[22rem] lg:p-12">
+        <div className="relative order-2 flex flex-col justify-center bg-ink grain p-7 lg:min-h-[22rem] lg:p-12">
           {dealsLabel ? (
             <Eyebrow tone="cream" as="p">
               {dealsLabel}
@@ -126,9 +126,9 @@ export default function FeaturedEventCard({
       <div className="flex flex-col justify-center gap-4 p-7 lg:order-1 lg:p-12">
         <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
           <Eyebrow tone="cream" as="span">
-            {cuando ? `Every ${cuando}` : 'Every week'}
+            {when ? `Every ${when}` : 'Every week'}
           </Eyebrow>
-          {cuando ? (
+          {when ? (
             <span className="rounded-pill bg-cream px-2.5 py-0.75 font-body text-caption font-bold whitespace-nowrap text-deep">
               {timeRange(event)}
             </span>
@@ -142,16 +142,16 @@ export default function FeaturedEventCard({
         >
           {event.title}
         </Heading>
-        {cuerpo.map((parrafo, i) => (
+        {body.map((paragraph, i) => (
           <p
-            key={parrafo}
+            key={paragraph}
             className={
               i === 0
                 ? 'm-0 max-w-[46ch] font-body text-lead font-light text-bone'
                 : 'm-0 max-w-[52ch] font-body text-base font-light text-bone/85'
             }
           >
-            {parrafo}
+            {paragraph}
           </p>
         ))}
 
@@ -162,6 +162,6 @@ export default function FeaturedEventCard({
           </span>
         ) : null}
       </div>
-    </Envoltorio>
+    </Wrapper>
   );
 }

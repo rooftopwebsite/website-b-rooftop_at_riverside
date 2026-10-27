@@ -2,7 +2,7 @@
 
 import { ArrowLeft, ArrowRight } from '@/components/shared/Icon';
 
-export function Controles({
+export function Controls({
   maxIndex,
   slides,
   index,

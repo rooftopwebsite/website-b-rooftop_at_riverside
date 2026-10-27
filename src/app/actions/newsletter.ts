@@ -38,7 +38,7 @@ export async function subscribeToNewsletter(
   const webhook = process.env.NEWSLETTER_SHEETS_WEBHOOK_URL;
 
   if (!webhook) {
-    console.error('[newsletter] falta NEWSLETTER_SHEETS_WEBHOOK_URL — el alta NO se guardó');
+    console.error('[newsletter] NEWSLETTER_SHEETS_WEBHOOK_URL is missing; the signup was NOT saved');
     return {
       status: 'error',
       message: `Sign-up isn’t live yet. Write to us at ${(await getVenue()).email} and we’ll add you.`,
@@ -56,12 +56,12 @@ export async function subscribeToNewsletter(
       signal: controller.signal,
     });
 
-    if (!res.ok) throw new Error(`Apps Script respondió ${res.status}`);
+    if (!res.ok) throw new Error(`Apps Script responded ${res.status}`);
 
-    const cuerpo = (await res.json().catch(() => null)) as { result?: string; error?: string } | null;
-    if (cuerpo?.result === 'error') throw new Error(`Apps Script: ${cuerpo.error}`);
+    const body = (await res.json().catch(() => null)) as { result?: string; error?: string } | null;
+    if (body?.result === 'error') throw new Error(`Apps Script: ${body.error}`);
   } catch (err) {
-    console.error('[newsletter] no se pudo guardar el alta:', err);
+    console.error('[newsletter] could not save the signup:', err);
     return { status: 'error', message: 'Something went wrong. Please try again in a moment.' };
   } finally {
     clearTimeout(timeout);

@@ -1,16 +1,16 @@
 export type LegalBlock =
-  | { readonly kind: 'aviso'; readonly text: string }
-  | { readonly kind: 'titulo'; readonly text: string }
-  | { readonly kind: 'parrafo'; readonly text: string }
+  | { readonly kind: 'notice'; readonly text: string }
+  | { readonly kind: 'heading'; readonly text: string }
+  | { readonly kind: 'paragraph'; readonly text: string }
   | {
-      readonly kind: 'clausula';
-      readonly rotulo: string;
-      readonly cuerpo: readonly string[];
+      readonly kind: 'clause';
+      readonly label: string;
+      readonly body: readonly string[];
     }
   | {
-      readonly kind: 'lista';
-      readonly orden?: 'letras';
-      readonly items: readonly { readonly rotulo?: string; readonly texto: string }[];
+      readonly kind: 'list';
+      readonly order?: 'letters';
+      readonly items: readonly { readonly label?: string; readonly text: string }[];
     };
 
 export interface LegalDoc {

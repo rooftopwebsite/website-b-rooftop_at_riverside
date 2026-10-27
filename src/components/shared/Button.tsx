@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/cn';
-import { CAJA_ALTA_CLS } from '@/lib/flags';
+import { TALL_BOX_CLS } from '@/lib/flags';
 
 const VARIANTS = {
   primary: 'bg-sunset text-ink hover:bg-sunset-hover',
@@ -13,7 +13,7 @@ const VARIANTS = {
 } as const;
 
 const SIZES = {
-  sm: 'h-9 px-4 text-dato',
+  sm: 'h-9 px-4 text-data',
   md: 'h-10 px-5.5 text-base',
   lg: 'h-10.5 px-7 text-d7',
 } as const;
@@ -22,21 +22,21 @@ export type ButtonVariant = keyof typeof VARIANTS;
 
 const BASE = [
   'inline-flex items-center justify-center gap-2.25',
-  'toque',
+  'hit-area',
   'whitespace-nowrap',
   'font-body font-semibold',
-  CAJA_ALTA_CLS,
+  TALL_BOX_CLS,
   'rounded-pill',
-  'rueda',
+  'wheel',
   'transition-colors duration-200',
   'disabled:opacity-50 disabled:pointer-events-none',
 ].join(' ');
 
-export function Rodillo({ children }: { readonly children: ReactNode }) {
+export function Roller({ children }: { readonly children: ReactNode }) {
   return (
-    <span className="rodillo">
-      <span className="rodillo-cara rodillo-base">{children}</span>
-      <span aria-hidden="true" className="rodillo-cara rodillo-copia">
+    <span className="roller">
+      <span className="roller-face roller-base">{children}</span>
+      <span aria-hidden="true" className="roller-face roller-copy">
         {children}
       </span>
     </span>
@@ -74,7 +74,7 @@ export function ButtonLink({
         className={cls}
         {...(rest as ComponentProps<'a'>)}
       >
-        <Rodillo>{children}</Rodillo>
+        <Roller>{children}</Roller>
         <ExternalIcon />
         <span className="sr-only">(opens in a new tab)</span>
       </a>
@@ -83,7 +83,7 @@ export function ButtonLink({
 
   return (
     <Link href={href} className={cls} {...rest}>
-      <Rodillo>{children}</Rodillo>
+      <Roller>{children}</Roller>
     </Link>
   );
 }
@@ -102,7 +102,7 @@ export function Button({
 } & ComponentProps<'button'>) {
   return (
     <button className={classes(variant, size, className)} {...rest}>
-      <Rodillo>{children}</Rodillo>
+      <Roller>{children}</Roller>
     </button>
   );
 }
@@ -124,7 +124,7 @@ export function AnnouncementChip({
       <span className="rounded-pill bg-cream px-2.25 py-0.75 font-body text-caption font-bold uppercase tracking-eyebrow text-terra">
         {tag}
       </span>
-      <span className="font-body text-dato font-medium text-body">{children}</span>
+      <span className="font-body text-data font-medium text-body">{children}</span>
       <svg
         width="13"
         height="9"
@@ -179,7 +179,7 @@ export function ArrowLink({
 }) {
   const inner = (
     <>
-      <span className="link-texto">{children}</span>
+      <span className="link-text">{children}</span>
       <svg
         width="16"
         height="10"
@@ -200,7 +200,7 @@ export function ArrowLink({
     </>
   );
 
-  const cls = ['group inline-flex items-center gap-2.25 font-body text-base font-medium', CAJA_ALTA_CLS, className]
+  const cls = ['group inline-flex items-center gap-2.25 font-body text-base font-medium', TALL_BOX_CLS, className]
     .filter(Boolean)
     .join(' ');
 

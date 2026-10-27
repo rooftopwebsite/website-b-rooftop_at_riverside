@@ -14,8 +14,8 @@ export function SentPanel({
     const el = ref.current;
     if (!el) return;
     el.focus({ preventScroll: true });
-    const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    el.scrollIntoView({ block: 'center', behavior: quieto ? 'auto' : 'smooth' });
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' });
   }, []);
   return (
     <div

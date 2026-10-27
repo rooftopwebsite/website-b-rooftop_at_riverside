@@ -1,9 +1,9 @@
 'use client';
 
-import { useField } from './contexto';
-import { Label, ErrorText, Wrap } from './Primitivos';
-import { INPUT_BASE, PICKER, OK, BAD } from './constantes';
-import type { BaseFieldProps } from './tipos';
+import { useField } from './context';
+import { Label, ErrorText, Wrap } from './Primitives';
+import { INPUT_BASE, PICKER, OK, BAD } from './constants';
+import type { BaseFieldProps } from './types';
 
 export function TextField({
   type = 'text',

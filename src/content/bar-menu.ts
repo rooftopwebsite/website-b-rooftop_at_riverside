@@ -208,23 +208,23 @@ export function formatPrice(price: number): { whole: string; cents: string | nul
   return { whole: String(whole), cents: cents ? String(cents).padStart(2, '0') : null };
 }
 
-export interface MenuCarta {
+export interface MenuData {
   readonly id: string;
   readonly title: string;
   readonly eyebrow: string;
   readonly lead: string | null;
-  readonly columnas: readonly MenuSection[];
+  readonly columns: readonly MenuSection[];
 }
 
-const CARTA_DE = (title: string): string =>
+const MENU_OF = (title: string): string =>
   /wine|bubbles|blush/i.test(title) ? 'wine'
   : /beer|seltzer/i.test(title) ? 'beer'
   : /special/i.test(title) ? 'specials'
   : 'cocktails';
 
-export function cartasFromGroups(
-  grupos: readonly { title: string; note: string | null; items: readonly { name: string; description: string | null; base_price: number | null }[] }[],
-): readonly MenuCarta[] {
+export function menusFromGroups(
+  groups: readonly { title: string; note: string | null; items: readonly { name: string; description: string | null; base_price: number | null }[] }[],
+): readonly MenuData[] {
   const META: Record<string, { title: string; eyebrow: string; lead: string | null }> = {
     cocktails: {
       title: 'Signature cocktails',
@@ -240,11 +240,11 @@ export function cartasFromGroups(
     wine: { title: 'Wine', eyebrow: 'By the glass', lead: 'House pours are the ones in the happy hour.' },
   };
 
-  const orden = ['cocktails', 'specials', 'beer', 'wine'];
-  return orden
+  const order = ['cocktails', 'specials', 'beer', 'wine'];
+  return order
     .map((id) => {
-      const columnas = grupos
-        .filter((g) => CARTA_DE(g.title) === id)
+      const columns = groups
+        .filter((g) => MENU_OF(g.title) === id)
         .map((g) => ({
           id: g.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           title: g.title,
@@ -258,26 +258,26 @@ export function cartasFromGroups(
             })),
         }))
         .filter((c) => c.items.length > 0);
-      return { id, ...META[id], columnas };
+      return { id, ...META[id], columns };
     })
-    .filter((c) => c.columnas.length > 0);
+    .filter((c) => c.columns.length > 0);
 }
 
-export const CARTAS_FALLBACK: readonly MenuCarta[] = [
-  { id: 'cocktails', title: 'Signature cocktails', eyebrow: 'The list', lead: 'Made daily with fresh juice and house syrups, upstairs, by us.', columnas: [SIGNATURE_COCKTAILS] },
-  { id: 'specials', title: 'Specials', eyebrow: 'Right now', lead: null, columnas: [SPECIALS] },
-  { id: 'beer', title: 'Beer and seltzers', eyebrow: 'On tap and in the can', lead: 'Drafts from breweries down the road, and the cans everybody actually orders.', columnas: [...BEER_SECTIONS] },
-  { id: 'wine', title: 'Wine', eyebrow: 'By the glass', lead: 'House pours are the ones in the happy hour.', columnas: [...WINE_SECTIONS] },
+export const MENUS_FALLBACK: readonly MenuData[] = [
+  { id: 'cocktails', title: 'Signature cocktails', eyebrow: 'The list', lead: 'Made daily with fresh juice and house syrups, upstairs, by us.', columns: [SIGNATURE_COCKTAILS] },
+  { id: 'specials', title: 'Specials', eyebrow: 'Right now', lead: null, columns: [SPECIALS] },
+  { id: 'beer', title: 'Beer and seltzers', eyebrow: 'On tap and in the can', lead: 'Drafts from breweries down the road, and the cans everybody actually orders.', columns: [...BEER_SECTIONS] },
+  { id: 'wine', title: 'Wine', eyebrow: 'By the glass', lead: 'House pours are the ones in the happy hour.', columns: [...WINE_SECTIONS] },
 ];
 
-export function respaldoComoGrupos(
-  cartas: readonly MenuCarta[] = CARTAS_FALLBACK,
+export function fallbackAsGroups(
+  menus: readonly MenuData[] = MENUS_FALLBACK,
 ): readonly DishGroup[] {
-  return cartas.flatMap((carta) =>
-    carta.columnas.map((seccion) => ({
-      title: seccion.title,
-      note: seccion.subtitle ?? null,
-      items: seccion.items.map(
+  return menus.flatMap((menu) =>
+    menu.columns.map((section) => ({
+      title: section.title,
+      note: section.subtitle ?? null,
+      items: section.items.map(
         (item): Dish => ({
           name: item.name,
           description: item.description ?? null,

@@ -3,7 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { HORIZONTE } from './horizonte-ola';
+import { HORIZON } from './horizon-wave';
 import { DURATION, EASE_BRAND } from './Motion';
 
 let lastPath: string | null = null;
@@ -39,11 +39,11 @@ export default function PageTransition() {
         >
           <div className="flex-1 bg-deep" />
           <svg
-            viewBox={HORIZONTE.viewBox}
+            viewBox={HORIZON.viewBox}
             preserveAspectRatio="none"
             className="block h-[10vh] w-full -scale-y-100 text-deep"
           >
-            {HORIZONTE.olas.map((d, i) => (
+            {HORIZON.waves.map((d, i) => (
               <path key={i} d={d} fill="currentColor" />
             ))}
           </svg>

@@ -1,6 +1,6 @@
 import 'server-only';
 import { Resend } from 'resend';
-import { conTimeout } from './http';
+import { withTimeout } from './http';
 
 const TIMEOUT_MAIL_MS = 10_000;
 
@@ -38,7 +38,7 @@ export async function sendMail({
   const from = process.env.RESEND_FROM;
 
   if (!resend || !from) {
-    console.error('[mail] RESEND_API_KEY o RESEND_FROM sin configurar; no se envió nada.');
+    console.error('[mail] RESEND_API_KEY or RESEND_FROM not configured; nothing was sent.');
     return {
       ok: false,
       message: 'We could not send your message right now. Please email us directly.',
@@ -46,7 +46,7 @@ export async function sendMail({
   }
 
   try {
-    const { error } = await conTimeout(resend.emails.send({
+    const { error } = await withTimeout(resend.emails.send({
       from,
       to: typeof to === 'string' ? [to] : [...to],
       subject,
@@ -64,7 +64,7 @@ export async function sendMail({
     }), TIMEOUT_MAIL_MS);
 
     if (error) {
-      console.error('[mail] Resend devolvió error:', error);
+      console.error('[mail] Resend returned an error:', error);
       return {
         ok: false,
         message: 'We could not send your message right now. Please email us directly.',
@@ -74,7 +74,7 @@ export async function sendMail({
     console.info(JSON.stringify({ event: 'mail.sent', to, subject: subject.slice(0, 80) }));
     return { ok: true, message: 'Sent.' };
   } catch (err) {
-    console.error('[mail] Excepción al enviar:', err);
+    console.error('[mail] Exception while sending:', err);
     return {
       ok: false,
       message: 'We could not send your message right now. Please email us directly.',

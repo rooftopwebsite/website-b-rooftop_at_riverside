@@ -1,4 +1,4 @@
-import { sinEmDash } from './em-dash.ts';
+import { withoutEmDash } from './em-dash.ts';
 
 export interface FeedPost {
   readonly id: string;
@@ -47,7 +47,7 @@ export function safeImage(url: string | null | undefined): string | null {
   return url && url.startsWith(IMAGE_ORIGIN) ? url : null;
 }
 
-const ENTIDADES: Record<string, string> = {
+const ENTITIES: Record<string, string> = {
   '&amp;': '&',
   '&lt;': '<',
   '&gt;': '>',
@@ -65,26 +65,26 @@ const ENTIDADES: Record<string, string> = {
   '&hellip;': '…',
 };
 
-const decode = (t: string) => t.replace(/&[#a-z0-9]+;/gi, (e) => ENTIDADES[e.toLowerCase()] ?? e);
+const decode = (t: string) => t.replace(/&[#a-z0-9]+;/gi, (e) => ENTITIES[e.toLowerCase()] ?? e);
 
-function limpiarTexto(t: string): string {
-  const texto = t.replace(/&mdash;|&#8212;/gi, '—');
-  if (!texto.includes('—')) return texto;
-  const [, antes, medio, despues] = texto.match(/^(\s*)([\s\S]*?)(\s*)$/)!;
-  return `${medio.startsWith('—') ? '' : antes}${sinEmDash(medio)}${despues}`;
+function cleanText(t: string): string {
+  const text = t.replace(/&mdash;|&#8212;/gi, '—');
+  if (!text.includes('—')) return text;
+  const [, before, middle, after] = text.match(/^(\s*)([\s\S]*?)(\s*)$/)!;
+  return `${middle.startsWith('—') ? '' : before}${withoutEmDash(middle)}${after}`;
 }
 
 export function cleanHtml(html: string): string {
-  let crudo = 0;
+  let raw = 0;
   return html
     .split(/(<[^>]*>)/g)
-    .map((parte) => {
-      if (parte.startsWith('<')) {
-        if (/^<(code|pre)\b/i.test(parte)) crudo++;
-        else if (/^<\/(code|pre)\s*>/i.test(parte)) crudo = Math.max(0, crudo - 1);
-        return parte.replace(/^<(\/?)h1\b/i, '<$1h2');
+    .map((part) => {
+      if (part.startsWith('<')) {
+        if (/^<(code|pre)\b/i.test(part)) raw++;
+        else if (/^<\/(code|pre)\s*>/i.test(part)) raw = Math.max(0, raw - 1);
+        return part.replace(/^<(\/?)h1\b/i, '<$1h2');
       }
-      return crudo > 0 ? parte : limpiarTexto(parte);
+      return raw > 0 ? part : cleanText(part);
     })
     .join('');
 }
@@ -93,25 +93,25 @@ export function htmlToText(html: string): string {
   return decode(html.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 }
 
-const escapar = (t: string) =>
+const escape = (t: string) =>
   t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 export function markdownToHtml(md: string): string {
   return md
     .split(/\n\s*\n/)
-    .map((bloque) => bloque.trim())
+    .map((block) => block.trim())
     .filter(Boolean)
-    .map((bloque) => {
-      const titulo = bloque.match(/^#{1,6}\s+(.*)$/);
-      if (titulo) return `<h2>${escapar(titulo[1].trim())}</h2>`;
-      return `<p>${escapar(bloque.replace(/\s*\n\s*/g, ' '))}</p>`;
+    .map((block) => {
+      const title = block.match(/^#{1,6}\s+(.*)$/);
+      if (title) return `<h2>${escape(title[1].trim())}</h2>`;
+      return `<p>${escape(block.replace(/\s*\n\s*/g, ' '))}</p>`;
     })
     .join('');
 }
 
 export function readMinutes(text: string): number {
-  const palabras = text.split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(palabras / 230));
+  const words = text.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 230));
 }
 
 function ymd(value: string | null | undefined): string {
@@ -135,17 +135,17 @@ export function postMeta(post: Post): string {
 }
 
 export function faqNodes(jsonLd: unknown): Record<string, unknown>[] {
-  const nodos = Array.isArray(jsonLd) ? jsonLd : jsonLd && typeof jsonLd === 'object' ? [jsonLd] : [];
+  const nodes = Array.isArray(jsonLd) ? jsonLd : jsonLd && typeof jsonLd === 'object' ? [jsonLd] : [];
   const out: Record<string, unknown>[] = [];
-  for (const nodo of nodos) {
-    if (!nodo || typeof nodo !== 'object') continue;
-    const o = nodo as Record<string, unknown>;
-    const contexto = o['@context'] ?? 'https://schema.org';
-    const lista = Array.isArray(o['@graph']) ? (o['@graph'] as unknown[]) : [o];
-    for (const g of lista) {
+  for (const node of nodes) {
+    if (!node || typeof node !== 'object') continue;
+    const o = node as Record<string, unknown>;
+    const context = o['@context'] ?? 'https://schema.org';
+    const list = Array.isArray(o['@graph']) ? (o['@graph'] as unknown[]) : [o];
+    for (const g of list) {
       if (!g || typeof g !== 'object') continue;
-      const { '@context': _ctx, ...resto } = g as Record<string, unknown>;
-      if (resto['@type'] === 'FAQPage') out.push({ '@context': contexto, ...resto });
+      const { '@context': _ctx, ...rest } = g as Record<string, unknown>;
+      if (rest['@type'] === 'FAQPage') out.push({ '@context': context, ...rest });
     }
   }
   return out;
@@ -158,14 +158,14 @@ const humanize = (slug: string) =>
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ');
 
-function recortar(texto: string, max = 160): string {
-  if (texto.length <= max) return texto;
-  const corte = texto.slice(0, max);
-  const espacio = corte.lastIndexOf(' ');
-  return `${(espacio > 0 ? corte.slice(0, espacio) : corte).replace(/[\s.,;:]+$/, '')}…`;
+function truncate(text: string, max = 160): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const space = cut.lastIndexOf(' ');
+  return `${(space > 0 ? cut.slice(0, space) : cut).replace(/[\s.,;:]+$/, '')}…`;
 }
 
-const limpio = (t: string | null | undefined) => (t ? sinEmDash(t.trim()) : '');
+const clean = (t: string | null | undefined) => (t ? withoutEmDash(t.trim()) : '');
 
 export function toPostFull(feed: FeedPost, siteUrl: string): PostFull | null {
   const slug = feed.slug?.trim();
@@ -174,9 +174,9 @@ export function toPostFull(feed: FeedPost, siteUrl: string): PostFull | null {
   const html = cleanHtml(
     feed.contentHtml?.trim() ? feed.contentHtml : markdownToHtml(feed.content ?? ''),
   );
-  const texto = htmlToText(html);
-  const title = limpio(feed.title) || humanize(slug);
-  const excerpt = limpio(feed.excerpt) || recortar(texto);
+  const text = htmlToText(html);
+  const title = clean(feed.title) || humanize(slug);
+  const excerpt = clean(feed.excerpt) || truncate(text);
   const image = safeImage(feed.coverImageUrl);
 
   const canonical = feed.canonicalUrl?.trim() ?? '';
@@ -188,14 +188,14 @@ export function toPostFull(feed: FeedPost, siteUrl: string): PostFull | null {
     title,
     excerpt,
     image,
-    imageAlt: limpio(feed.coverImageAlt) || title,
+    imageAlt: clean(feed.coverImageAlt) || title,
     publishedAt: ymd(feed.publishedAt),
     modifiedAt: feed.updatedAt?.trim() ?? '',
-    readMinutes: readMinutes(texto),
+    readMinutes: readMinutes(text),
     featured: feed.featured === true,
     html,
-    metaTitle: limpio(feed.ogTitle) || title,
-    metaDescription: limpio(feed.ogDescription) || excerpt,
+    metaTitle: clean(feed.ogTitle) || title,
+    metaDescription: clean(feed.ogDescription) || excerpt,
     ogImage: safeImage(feed.ogImage) ?? image,
     canonicalPath,
     faqJsonLd: faqNodes(feed.jsonLd),
@@ -203,12 +203,12 @@ export function toPostFull(feed: FeedPost, siteUrl: string): PostFull | null {
 }
 
 export function toPosts(feed: readonly FeedPost[], siteUrl: string): PostFull[] {
-  const vistos = new Set<string>();
+  const seen = new Set<string>();
   const out: PostFull[] = [];
   for (const f of feed) {
     const p = toPostFull(f, siteUrl);
-    if (!p || vistos.has(p.slug)) continue;
-    vistos.add(p.slug);
+    if (!p || seen.has(p.slug)) continue;
+    seen.add(p.slug);
     out.push(p);
   }
   return out;

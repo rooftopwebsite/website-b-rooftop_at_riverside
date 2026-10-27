@@ -1,4 +1,4 @@
-import { PADDING_CRUCE } from '@/components/shared/CompareSlab';
+import { CROSS_PADDING } from '@/components/shared/CompareSlab';
 import { Martini, MusicNote, Truck, UserCircle } from '@/components/shared/Icon';
 import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import Section from '@/components/shared/Section';
@@ -12,26 +12,26 @@ export default function EventSpaces() {
         tone="cream"
         band="lg"
         bandTop="none"
-        innerClassName={PADDING_CRUCE}
+        innerClassName={CROSS_PADDING}
         labelledBy="buyout-title"
-        className="banda-arco z-[2] pb-cierre"
+        className="band-arc z-[2] pb-closing"
       >
         <h2
           id="buyout-title"
-          className="mx-auto max-w-[14ch] text-center font-display text-banda font-extrabold uppercase"
+          className="mx-auto max-w-[14ch] text-center font-display text-band font-extrabold uppercase"
         >
           <span className="text-ink">Pick the space</span>{' '}
           <span className="text-sunset-deep">that fits</span>
         </h2>
-        <p className="bajada mx-auto mt-gap-bajada max-w-[56ch] text-center text-body/80">
+        <p className="subhead mx-auto mt-gap-subhead max-w-[56ch] text-center text-body/80">
           Whatever the occasion, we have a space to make it yours. Choose from our Full Upstairs,
           Rooftop Patio, or Full Venue Rental options, giving you the flexibility to create the
           perfect setting for celebrations, gatherings, corporate events, and everything in between.
         </p>
-        <StaggerGroup as="ul" className="mt-bloque grid list-none gap-5 p-0 md:grid-cols-3">
+        <StaggerGroup as="ul" className="mt-block grid list-none gap-5 p-0 md:grid-cols-3">
           {BUYOUT_OPTIONS.map((o) => (
             <RevealItem as="li" key={o.slug} className="h-full">
-              <article className="relative flex h-full flex-col gap-2.5 rounded-shell bg-paper p-7 sombra-card lg:p-9">
+              <article className="relative flex h-full flex-col gap-2.5 rounded-shell bg-paper p-7 card-shadow lg:p-9">
                 <span
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
@@ -49,19 +49,19 @@ export default function EventSpaces() {
         </StaggerGroup>
 
         <h2
-          id="incluye-title"
-          className="mx-auto mt-band-sm max-w-[14ch] lg:mt-band text-center font-display text-banda font-extrabold uppercase"
+          id="includes-title"
+          className="mx-auto mt-band-sm max-w-[14ch] lg:mt-band text-center font-display text-band font-extrabold uppercase"
         >
           <span className="text-ink">What comes with</span>{' '}
           <span className="text-sunset-deep">every booking</span>
         </h2>
         <StaggerGroup
           as="ul"
-          className="mt-bloque grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 desk:grid-cols-4"
+          className="mt-block grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 desk:grid-cols-4"
         >
-          {INCLUIDO.map((item) => (
+          {INCLUDED.map((item) => (
             <RevealItem as="li" key={item.label} className="h-full">
-              <article className="flex h-full flex-col gap-2.5 rounded-ticket bg-paper p-6 sombra-card transition-transform duration-300 ease-brand hover:-translate-y-1.5">
+              <article className="flex h-full flex-col gap-2.5 rounded-ticket bg-paper p-6 card-shadow transition-transform duration-300 ease-brand hover:-translate-y-1.5">
                 <item.Icon aria-hidden="true" className="size-8 text-sunset-deep" />
                 <Eyebrow tone="terra" className="mt-1.5">
                   {item.label}
@@ -81,7 +81,7 @@ export default function EventSpaces() {
   );
 }
 
-const INCLUIDO = [
+const INCLUDED = [
   {
     label: 'The bar',
     title: 'The Sunset Bar',

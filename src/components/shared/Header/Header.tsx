@@ -3,20 +3,20 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { NAV_CTA, NAV_MORE, NAV_MORE_FEATURED, NAV_MORE_GROUPS, NAV_SIDE, sinBlog } from '@/lib/nav';
+import { NAV_CTA, NAV_MORE, NAV_MORE_FEATURED, NAV_MORE_GROUPS, NAV_SIDE, withoutBlog } from '@/lib/nav';
 import { ButtonLink } from '../Button';
-import { NAV_ITEM } from './constantes';
+import { NAV_ITEM } from './constants';
 import Logo from './Logo';
-import MenuMas from './MenuMas';
-import MenuMovil from './MenuMovil';
-import NavEscritorio from './NavEscritorio';
+import MoreMenu from './MoreMenu';
+import MobileMenu from './MobileMenu';
+import DesktopNav from './DesktopNav';
 import { getRoute, isCurrentPath } from './utils';
 
 export default function Header({ hasBlog }: { readonly hasBlog: boolean }) {
   const moreGroups = hasBlog
     ? NAV_MORE_GROUPS
-    : NAV_MORE_GROUPS.map((g) => ({ ...g, links: sinBlog(g.links) }));
-  const moreLinks = hasBlog ? NAV_MORE : sinBlog(NAV_MORE);
+    : NAV_MORE_GROUPS.map((g) => ({ ...g, links: withoutBlog(g.links) }));
+  const moreLinks = hasBlog ? NAV_MORE : withoutBlog(NAV_MORE);
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -59,12 +59,12 @@ export default function Header({ hasBlog }: { readonly hasBlog: boolean }) {
     <>
       <div
         ref={moreRef}
-        className="sticky top-0 z-50 border-b border-fog bg-bone grano"
+        className="sticky top-0 z-50 border-b border-fog bg-bone grain"
         onMouseLeave={() => setMoreOpen(false)}
       >
-        <header className="caja-ancha relative flex min-h-19.5 items-center gap-6">
+        <header className="page-box-wide relative flex min-h-19.5 items-center gap-6">
           <Logo />
-          <NavEscritorio
+          <DesktopNav
             moreOpen={moreOpen}
             setMoreOpen={setMoreOpen}
             moreActive={moreActive}
@@ -120,14 +120,14 @@ export default function Header({ hasBlog }: { readonly hasBlog: boolean }) {
             </button>
           </div>
         </header>
-        <MenuMas
+        <MoreMenu
           moreOpen={moreOpen}
           moreGroups={moreGroups}
           isCurrent={isCurrent}
           onLinkClick={() => setMoreOpen(false)}
         />
       </div>
-      <MenuMovil
+      <MobileMenu
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
         drawerCloseRef={drawerCloseRef}

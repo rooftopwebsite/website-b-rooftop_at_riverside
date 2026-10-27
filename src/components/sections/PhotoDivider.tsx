@@ -36,7 +36,7 @@ export default function PhotoDivider() {
               {[...PHOTOS, ...PHOTOS].map((photo, i) => (
                 <div
                   key={`${photo.src}-${i}`}
-                  className={`${photo.w} ${photo.h} relative shrink-0 overflow-hidden rounded-shell bg-fog sombra-card`}
+                  className={`${photo.w} ${photo.h} relative shrink-0 overflow-hidden rounded-shell bg-fog card-shadow`}
                 >
                   <Image
                     src={photo.src}
@@ -55,8 +55,8 @@ export default function PhotoDivider() {
           </div>
         </div>
       </div>
-      <div className="pointer-events-none absolute inset-x-0 top-[-1px] z-10 h-[calc(var(--radius-band)+8px)] rounded-b-band bg-bone grano lg:h-22.5" />
-      <div className="grano-capa pointer-events-none absolute inset-x-0 bottom-[-1px] z-30 overflow-hidden">
+      <div className="pointer-events-none absolute inset-x-0 top-[-1px] z-10 h-[calc(var(--radius-band)+8px)] rounded-b-band bg-bone grain lg:h-22.5" />
+      <div className="grain-layer pointer-events-none absolute inset-x-0 bottom-[-1px] z-30 overflow-hidden">
         <Image
           src="/brand/wave-only.svg"
           alt=""

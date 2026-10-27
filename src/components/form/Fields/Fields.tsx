@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { fieldErrorsFrom } from '@/app/actions/types';
 import { compressImage } from '@/lib/compress-image';
-import { Ctx } from './contexto';
+import { Ctx } from './context';
 import type { Submission } from './Submission';
 
 interface Schema {
@@ -15,14 +15,14 @@ interface Schema {
       };
 }
 
-const REVISAR = 'Some fields need another look before this can go out.';
+const REVIEW_NOTICE = 'Some fields need another look before this can go out.';
 
-const porDefecto = (fd: FormData): unknown => Object.fromEntries(fd);
+const byDefault = (fd: FormData): unknown => Object.fromEntries(fd);
 
 export function FormShell({
   submission,
   schema,
-  fromForm = porDefecto,
+  fromForm = byDefault,
   maxUploadMb,
   children,
 }: {
@@ -37,71 +37,71 @@ export function FormShell({
   const summaryRef = useRef<HTMLDivElement | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [aviso, setAviso] = useState('');
-  const intentado = useRef(false);
-  const [foco, setFoco] = useState(0);
+  const [notice, setNotice] = useState('');
+  const attempted = useRef(false);
+  const [focus, setFocus] = useState(0);
 
   useEffect(() => {
     if (state.status !== 'error') return;
     setErrors(state.fieldErrors ?? {});
-    setAviso(state.message);
-    setFoco((n) => n + 1);
+    setNotice(state.message);
+    setFocus((n) => n + 1);
   }, [state]);
 
   useEffect(() => {
-    if (foco === 0) return;
-    const primero = formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
-    if (primero) {
-      primero.focus({ preventScroll: true });
-      primero.scrollIntoView({ block: 'center' });
+    if (focus === 0) return;
+    const first = formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
+    if (first) {
+      first.focus({ preventScroll: true });
+      first.scrollIntoView({ block: 'center' });
     } else summaryRef.current?.focus();
-  }, [foco]);
+  }, [focus]);
 
-  function validar(fd: FormData): Record<string, string> {
+  function validate(fd: FormData): Record<string, string> {
     if (!schema) return {};
-    const crudo = fromForm(fd) as Record<string, unknown>;
-    const r = schema.safeParse({ ...crudo, website: '' });
+    const raw = fromForm(fd) as Record<string, unknown>;
+    const r = schema.safeParse({ ...raw, website: '' });
     return r.success ? {} : fieldErrorsFrom(r.error.issues);
   }
 
-  function actualizar(nombre: string, mostrar: boolean) {
-    if (!nombre || nombre === 'website' || nombre.includes('.') || !formRef.current) return;
-    const todos = validar(new FormData(formRef.current));
+  function update(name: string, show: boolean) {
+    if (!name || name === 'website' || name.includes('.') || !formRef.current) return;
+    const all = validate(new FormData(formRef.current));
     setErrors((prev) => {
-      const siguiente = { ...prev };
-      const err = todos[nombre];
-      if (!err) delete siguiente[nombre];
-      else if (prev[nombre] || mostrar) siguiente[nombre] = err;
-      return siguiente;
+      const next = { ...prev };
+      const err = all[name];
+      if (!err) delete next[name];
+      else if (prev[name] || show) next[name] = err;
+      return next;
     });
   }
 
   function onBlur(e: FormEvent<HTMLFormElement>) {
     const t = e.target as HTMLInputElement;
     if (t.type === 'checkbox' || t.type === 'radio' || t.type === 'file') return;
-    actualizar(t.name, intentado.current || t.value.trim() !== '');
+    update(t.name, attempted.current || t.value.trim() !== '');
   }
 
   function onChange(e: FormEvent<HTMLFormElement>) {
     const t = e.target as HTMLInputElement;
-    const inmediato =
+    const immediate =
       t.type === 'checkbox' || t.type === 'radio' || t.type === 'file' || t.tagName === 'SELECT';
-    if (inmediato) actualizar(t.name, true);
-    else if (errors[t.name]) actualizar(t.name, true);
+    if (immediate) update(t.name, true);
+    else if (errors[t.name]) update(t.name, true);
   }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (pending) return;
-    intentado.current = true;
+    attempted.current = true;
     const form = e.currentTarget;
     const fd = new FormData(form);
 
-    const encontrados = validar(fd);
-    if (Object.keys(encontrados).length > 0) {
-      setErrors(encontrados);
-      setAviso(REVISAR);
-      setFoco((n) => n + 1);
+    const found = validate(fd);
+    if (Object.keys(found).length > 0) {
+      setErrors(found);
+      setNotice(REVIEW_NOTICE);
+      setFocus((n) => n + 1);
       return;
     }
 
@@ -111,23 +111,23 @@ export function FormShell({
     }
 
     if (maxUploadMb) {
-      const archivos = [...fd.entries()].filter(
+      const files = [...fd.entries()].filter(
         (x): x is [string, File] => x[1] instanceof File && x[1].size > 0,
       );
-      const total = archivos.reduce((s, [, f]) => s + f.size, 0);
+      const total = files.reduce((s, [, f]) => s + f.size, 0);
       if (total > maxUploadMb * 1024 * 1024) {
-        const mayor = [...archivos].sort((a, b) => b[1].size - a[1].size)[0]![0];
+        const largest = [...files].sort((a, b) => b[1].size - a[1].size)[0]![0];
         setErrors({
-          [mayor]: `Your files add up to ${(total / 1024 / 1024).toFixed(1)} MB and the limit is ${maxUploadMb} MB. Try a smaller file here.`,
+          [largest]: `Your files add up to ${(total / 1024 / 1024).toFixed(1)} MB and the limit is ${maxUploadMb} MB. Try a smaller file here.`,
         });
-        setAviso(REVISAR);
-        setFoco((n) => n + 1);
+        setNotice(REVIEW_NOTICE);
+        setFocus((n) => n + 1);
         return;
       }
     }
 
     setErrors({});
-    setAviso('');
+    setNotice('');
     submit(fd);
   }
 
@@ -137,7 +137,7 @@ export function FormShell({
   return (
     <Ctx.Provider value={{ uid, errors, pending }}>
       <p aria-live="polite" className="sr-only">
-        {pending ? 'Sending.' : aviso}
+        {pending ? 'Sending.' : notice}
       </p>
 
       <form

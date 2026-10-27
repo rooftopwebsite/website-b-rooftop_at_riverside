@@ -3,12 +3,12 @@
 import { useContext } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/shared/Button';
-import { Ctx } from './contexto';
+import { Ctx } from './context';
 
 export function SubmitButton({ idle, busy }: { readonly idle: string; readonly busy: string }) {
   const ctx = useContext(Ctx);
-  const { pending: nativo } = useFormStatus();
-  const pending = ctx.pending || nativo;
+  const { pending: native } = useFormStatus();
+  const pending = ctx.pending || native;
   return (
     <Button
       type="submit"

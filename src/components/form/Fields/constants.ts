@@ -9,4 +9,4 @@ export const PICKER =
   '[&::-webkit-calendar-picker-indicator]:ml-auto [&::-webkit-calendar-picker-indicator]:mr-[2px] ' +
   '[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60';
 
-export const FRASE = 'font-body text-lead font-light leading-[2] text-body';
+export const SENTENCE = 'font-body text-lead font-light leading-[2] text-body';

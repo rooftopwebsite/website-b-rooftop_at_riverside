@@ -3,30 +3,30 @@ import { ArrowUpRight } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { SectionHead } from '@/components/shared/Type';
-import { cartasDeTrucks } from '@/content/menus';
-import { nombreVisible } from '@/content/trucks';
+import { truckMenus } from '@/content/menus';
+import { displayName } from '@/content/trucks';
 import { getVenue } from '@/lib/venue';
 import type { Hours } from '@/types/content';
 
-const TOLDO = {
-  rayas: 10,
-  lona: 48,
-  punta: 12,
-  entrada: 18,
-  vuelo: 8,
-  asomo: 26,
+const AWNING = {
+  stripes: 10,
+  canvasHeight: 48,
+  tip: 12,
+  entry: 18,
+  overhang: 8,
+  peek: 26,
 } as const;
 
-const TOLDO_RAYAS = ['var(--color-terra)', 'var(--color-magenta)'] as const;
+const AWNING_STRIPES = ['var(--color-terra)', 'var(--color-magenta)'] as const;
 
-const rayaD = (i: number) => {
-  const { lona, punta } = TOLDO;
+const stripePath = (i: number) => {
+  const { canvasHeight, tip } = AWNING;
   const x = i;
-  return `M${x} 0H${x + 1}V${lona}A0.5 ${punta} 0 0 1 ${x} ${lona}Z`;
+  return `M${x} 0H${x + 1}V${canvasHeight}A0.5 ${tip} 0 0 1 ${x} ${canvasHeight}Z`;
 };
 
-function ToldoEdge() {
-  const { rayas, lona, punta } = TOLDO;
+function AwningEdge() {
+  const { stripes, canvasHeight, tip } = AWNING;
   return (
     <span
       aria-hidden="true"
@@ -35,28 +35,28 @@ function ToldoEdge() {
       <svg
         role="presentation"
         width="100%"
-        height={lona + punta}
-        viewBox={`0 0 ${rayas} ${lona + punta}`}
+        height={canvasHeight + tip}
+        viewBox={`0 0 ${stripes} ${canvasHeight + tip}`}
         preserveAspectRatio="none"
         className="block"
       >
-        {Array.from({ length: rayas }, (_, i) => (
-          <path key={i} d={rayaD(i)} fill={TOLDO_RAYAS[i % TOLDO_RAYAS.length]} />
+        {Array.from({ length: stripes }, (_, i) => (
+          <path key={i} d={stripePath(i)} fill={AWNING_STRIPES[i % AWNING_STRIPES.length]} />
         ))}
       </svg>
     </span>
   );
 }
 
-function tramosDeTrucks(hours: readonly Hours[]) {
-  const out: { label: string; horario: string; primero: string }[] = [];
+function truckSegments(hours: readonly Hours[]) {
+  const out: { label: string; schedule: string; first: string }[] = [];
   hours.filter((h) => !/closed/i.test(h.trucks)).forEach((row) => {
-    const ultimo = out[out.length - 1];
-    if (ultimo && ultimo.horario === row.trucks) {
-      ultimo.label = `${ultimo.primero} to ${row.day}`;
+    const last = out[out.length - 1];
+    if (last && last.schedule === row.trucks) {
+      last.label = `${last.first} to ${row.day}`;
       return;
     }
-    out.push({ label: row.day, horario: row.trucks, primero: row.day });
+    out.push({ label: row.day, schedule: row.trucks, first: row.day });
   });
   return out;
 }
@@ -70,8 +70,8 @@ export default async function TruckCards({
   readonly tone?: 'paper' | 'bone' | 'mint';
   readonly head?: boolean;
 }) {
-  const cartas = await cartasDeTrucks();
-  const tramos = tramosDeTrucks((await getVenue()).hours);
+  const menus = await truckMenus();
+  const segments = truckSegments((await getVenue()).hours);
 
   return (
     <Section tone={tone} band="lg" bandTop={head ? undefined : 'none'} labelledBy={id}>
@@ -90,20 +90,20 @@ export default async function TruckCards({
       )}
 
       <ul
-        className={`grid list-none grid-cols-1 gap-x-6 gap-y-12 p-0 sm:grid-cols-2 lg:grid-cols-4 ${head ? 'mt-bloque' : ''}`}
+        className={`grid list-none grid-cols-1 gap-x-6 gap-y-12 p-0 sm:grid-cols-2 lg:grid-cols-4 ${head ? 'mt-block' : ''}`}
       >
-        {cartas.map((carta) => {
-          const t = carta.truck;
+        {menus.map((menu) => {
+          const t = menu.truck;
           return (
-          <li key={carta.name} className="relative h-full">
-            <ToldoEdge />
-            <article className="flex h-full flex-col overflow-hidden rounded-shell bg-paper sombra-card">
+          <li key={menu.name} className="relative h-full">
+            <AwningEdge />
+            <article className="flex h-full flex-col overflow-hidden rounded-shell bg-paper card-shadow">
               <div className={`relative aspect-[3/2] ${t?.photo ? 'bg-fog' : ''}`}>
                 {t?.photo ? (
                   <>
                     <Image
                       src={t.photo}
-                      alt={t.photoAlt ?? carta.name}
+                      alt={t.photoAlt ?? menu.name}
                       fill
                       sizes="(min-width: 1024px) 280px, (min-width: 640px) 46vw, 92vw"
                       className="object-cover"
@@ -111,7 +111,7 @@ export default async function TruckCards({
                   </>
                 ) : (
                   <PhotoPending
-                    brief={t?.photoBrief ?? `El truck de ${carta.name} y un plato servido.`}
+                    brief={t?.photoBrief ?? `The ${menu.name} truck and a plated dish.`}
                     ratio="aspect-[3/2]"
                     className="h-full"
                   />
@@ -128,33 +128,33 @@ export default async function TruckCards({
                 <h3
                   className={`m-0 font-display text-d5 font-bold uppercase leading-none text-ink ${t ? 'mt-1.5' : ''}`}
                 >
-                  {t ? nombreVisible(t) : carta.name}
+                  {t ? displayName(t) : menu.name}
                 </h3>
-                {carta.description ? (
-                  <p className="m-0 mt-3 font-body text-dato font-light leading-[1.5] text-body">
-                    {carta.description}
+                {menu.description ? (
+                  <p className="m-0 mt-3 font-body text-data font-light leading-[1.5] text-body">
+                    {menu.description}
                   </p>
                 ) : null}
 
                 <div className="mt-auto pt-5">
-                  {carta.pdfUrl ? (
+                  {menu.pdfUrl ? (
                     <a
-                      href={carta.pdfUrl}
+                      href={menu.pdfUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-dato font-semibold uppercase tracking-cta text-ink transition-colors duration-200 hover:bg-sunset-hover"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-data font-semibold uppercase tracking-cta text-ink transition-colors duration-200 hover:bg-sunset-hover"
                     >
                       See the menu
                       <ArrowUpRight className="size-3.5 shrink-0" />
                       <span className="sr-only">
-                        for {t ? nombreVisible(t) : carta.name} (opens in a new tab)
+                        for {t ? displayName(t) : menu.name} (opens in a new tab)
                       </span>
                     </a>
                   ) : (
                     <button
                       type="button"
                       disabled
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-dato font-semibold uppercase tracking-cta text-ink opacity-50"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-data font-semibold uppercase tracking-cta text-ink opacity-50"
                     >
                       See the menu
                       <ArrowUpRight className="size-3.5 shrink-0" />
@@ -167,26 +167,26 @@ export default async function TruckCards({
           );
         })}
       </ul>
-      <div className="mx-auto mt-bloque overflow-hidden rounded-shell bg-deep grano sombra-card lg:max-w-[58rem]">
+      <div className="mx-auto mt-block overflow-hidden rounded-shell bg-deep grain card-shadow lg:max-w-[58rem]">
         <div className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,auto)] lg:items-center lg:gap-14 lg:p-11">
           <div>
             <h3 className="m-0 font-display text-d4 font-bold uppercase leading-none text-paper lg:text-d3">
               When the trucks
               <br className="hidden lg:block" /> are open
             </h3>
-            <p className="m-0 mt-3.5 max-w-[34ch] font-body text-dato font-light text-muted-dark">
+            <p className="m-0 mt-3.5 max-w-[34ch] font-body text-data font-light text-muted-dark">
               The bar upstairs opens an hour earlier every day.
             </p>
           </div>
 
           <dl className="m-0 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2 sm:gap-y-6 lg:gap-x-14 lg:gap-y-7">
-            {tramos.map((t) => (
+            {segments.map((t) => (
               <div key={t.label} className="border-t border-paper/20 pt-4">
                 <dt className="font-body text-micro font-bold uppercase tracking-cta text-cream">
                   {t.label}
                 </dt>
                 <dd className="m-0 mt-2 font-display text-d6 font-bold tabular-nums leading-none text-paper">
-                  {t.horario}
+                  {t.schedule}
                 </dd>
               </div>
             ))}

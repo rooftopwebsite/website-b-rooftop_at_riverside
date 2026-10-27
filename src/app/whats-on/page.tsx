@@ -16,7 +16,7 @@ import { GAME_DAY_DEALS, GAME_DAY_LABEL } from '@/content/game-day';
 import { getVenue, venueAddressLine } from '@/lib/venue';
 import {
   type CalendarView,
-  diaSiguiente,
+  nextDay,
   monthGrid,
   monthKey,
   monthLabel,
@@ -44,19 +44,19 @@ export default async function WhatsOnPage({
   const { year, month } = parseMonth(sp.month);
   const type = sp.type ?? null;
   const view = parseView(sp.view);
-  const hoy = todayInVenue();
+  const today = todayInVenue();
 
   const venue = await getVenue();
-  const eventos = await getVenueEvents();
-  const filtros = activeFilters(eventos);
+  const events = await getVenueEvents();
+  const filters = activeFilters(events);
 
-  const occurrences = occurrencesInMonth(eventos, year, month).filter((o) =>
+  const occurrences = occurrencesInMonth(events, year, month).filter((o) =>
     matchesFilter(o.event, type),
   );
   const grid = monthGrid(year, month);
   const eventsByDate = occurrencesByDate(occurrences);
 
-  const delGrid = upcomingInMonth(eventos, year, month, hoy).filter((o) =>
+  const ofGrid = upcomingInMonth(events, year, month, today).filter((o) =>
     matchesFilter(o.event, type),
   );
 
@@ -73,8 +73,8 @@ export default async function WhatsOnPage({
       v === 'calendar' ? '&view=calendar' : ''
     }`;
 
-  const vacio = view === 'grid' ? delGrid.length === 0 : occurrences.length === 0;
-  const mesPasado = view === 'grid' && occurrences.length > 0 && delGrid.length === 0;
+  const empty = view === 'grid' ? ofGrid.length === 0 : occurrences.length === 0;
+  const lastMonth = view === 'grid' && occurrences.length > 0 && ofGrid.length === 0;
 
   return (
     <>
@@ -96,7 +96,7 @@ export default async function WhatsOnPage({
                 description: event.summary,
                 startDate: `${date}T${event.startTime}:00`,
                 ...(event.endTime !== event.startTime
-                  ? { endDate: `${event.endsNextDay ? diaSiguiente(date) : date}T${event.endTime}:00` }
+                  ? { endDate: `${event.endsNextDay ? nextDay(date) : date}T${event.endTime}:00` }
                   : {}),
                 organizer: { '@type': 'Organization', name: venue.name, url: SITE_URL },
                 eventStatus: 'https://schema.org/EventScheduled',
@@ -143,7 +143,7 @@ export default async function WhatsOnPage({
           next={{ href: href(next), label: `Next month, ${monthLabel(next.year, next.month)}` }}
           view={view}
           viewHref={(v) => href({ year, month }, type, v)}
-          filters={[{ id: null as string | null, label: 'Everything' }, ...filtros].map((f) => ({
+          filters={[{ id: null as string | null, label: 'Everything' }, ...filters].map((f) => ({
             id: f.id ?? null,
             label: f.label,
             href: href({ year, month }, f.id ?? null),
@@ -151,17 +151,17 @@ export default async function WhatsOnPage({
           }))}
         />
         <Section band="md" bandTop="sm" labelledBy="cal-title">
-        {vacio ? (
-          <div className="mt-bloque max-w-[58ch]">
+        {empty ? (
+          <div className="mt-block max-w-[58ch]">
             <Heading level={3} role="card">
-              {mesPasado
+              {lastMonth
                 ? `${label} has already been and gone`
                 : type
                   ? 'Nothing of that kind this month'
                   : `Nothing on the books for ${label} yet`}
             </Heading>
             <p className="mt-[10px] text-[16px] leading-[1.7] text-body/80">
-              {mesPasado
+              {lastMonth
                 ? 'The grid only shows what is still to come. Switch to the calendar to look back at the month, or jump forward with the arrows.'
                 : type
                   ? `Clear the filter to see everything on in ${label}.`
@@ -180,18 +180,18 @@ export default async function WhatsOnPage({
           </div>
         ) : view === 'grid' ? (
           <UpcomingCards
-            items={delGrid}
-            today={hoy}
+            items={ofGrid}
+            today={today}
             deals={GAME_DAY_DEALS}
             dealsLabel={GAME_DAY_LABEL}
           />
         ) : (
-          <div className="mt-[20px] rounded-frame border border-ink/12 bg-paper p-[18px] pt-[8px] sombra-card lg:mt-[28px] lg:p-[32px] lg:pt-[16px]">
+          <div className="mt-[20px] rounded-frame border border-ink/12 bg-paper p-[18px] pt-[8px] card-shadow lg:mt-[28px] lg:p-[32px] lg:pt-[16px]">
             <MonthCalendar
               grid={grid}
               eventsByDate={eventsByDate}
               label={label}
-              today={hoy}
+              today={today}
               venueName={venue.name}
             />
           </div>

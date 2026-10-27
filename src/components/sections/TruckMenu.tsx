@@ -8,11 +8,11 @@ import type { DishGroup } from '@/types/content';
 
 export default function TruckMenu({
   truck,
-  cartas = null,
+  menus = null,
   id = 'menu-title',
 }: {
   readonly truck: string;
-  readonly cartas?: readonly DishGroup[] | null;
+  readonly menus?: readonly DishGroup[] | null;
   readonly id?: string;
 }) {
   return (
@@ -28,23 +28,23 @@ export default function TruckMenu({
         }
         id={id}
         lead={
-          cartas
+          menus
             ? 'Prices and dishes come from the truck. They change when the truck changes them.'
             : undefined
         }
       />
 
-      {cartas ? (
-        <div className="mt-bloque flex flex-col gap-14 lg:gap-20">
-          {cartas.map((carta) => (
-            <div key={carta.title}>
+      {menus ? (
+        <div className="mt-block flex flex-col gap-14 lg:gap-20">
+          {menus.map((menu) => (
+            <div key={menu.title}>
               <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-fog pb-4">
                 <Heading level={3} className="text-d5 lg:text-d4">
-                  {carta.title}
+                  {menu.title}
                 </Heading>
-                {carta.note ? (
-                  <p className="m-0 max-w-[52ch] font-body text-dato font-light text-muted">
-                    {carta.note}
+                {menu.note ? (
+                  <p className="m-0 max-w-[52ch] font-body text-data font-light text-muted">
+                    {menu.note}
                   </p>
                 ) : null}
               </div>
@@ -53,9 +53,9 @@ export default function TruckMenu({
                 as="ul"
                 className="mt-8 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2"
               >
-                {carta.items.map((plato) => (
-                  <RevealItem as="li" key={plato.name} className="h-full">
-                    <DishCard dish={plato} />
+                {menu.items.map((dish) => (
+                  <RevealItem as="li" key={dish.name} className="h-full">
+                    <DishCard dish={dish} />
                   </RevealItem>
                 ))}
               </StaggerGroup>
@@ -63,15 +63,15 @@ export default function TruckMenu({
           ))}
         </div>
       ) : (
-        <div className="mt-bloque max-w-[68ch]">
+        <div className="mt-block max-w-[68ch]">
           <PendingBlock title={`Digital menu for ${truck}`}>
             <p className="m-0">
-              El truck todavía no tiene su carta digital. Hoy la carta de <strong>{truck}</strong>{' '}
-              es su PDF en <code>src/content/menus.json</code>.
+              This truck does not have its digital menu yet. Today the menu for <strong>{truck}</strong>{' '}
+              is its PDF in <code>src/content/menus.json</code>.
             </p>
             <p className="m-0 mt-3">
-              Para mostrar los platos acá, se pasan por la prop <code>cartas</code>, con precio,
-              descripción, foto y las etiquetas que correspondan.
+              To show the dishes here, pass them through the <code>menus</code> prop, with price,
+              description, photo and whatever tags apply.
             </p>
           </PendingBlock>
           <div className="mt-8">
@@ -96,12 +96,12 @@ export default function TruckMenu({
                 'Calories',
                 'New',
                 "Chef's pick",
-              ].map((campo) => (
+              ].map((field) => (
                 <li
-                  key={campo}
+                  key={field}
                   className={`rounded-pill bg-cream ${TAG} text-deep`}
                 >
-                  {campo}
+                  {field}
                 </li>
               ))}
             </ul>

@@ -8,16 +8,16 @@ import {
   type Weekday,
   shortDate,
 } from '@/content/events';
-import { CalendarCard, EventCard } from './TarjetaEvento';
-import { Controles } from './Controles';
-import { CLOSED_DAYS, MAX_CARDS, VISIBLES, bordeTrack, gapTrack, venueToday } from './utils';
+import { CalendarCard, EventCard } from './EventCard';
+import { Controls } from './Controls';
+import { CLOSED_DAYS, MAX_CARDS, VISIBLE, trackEdge, gapTrack, venueToday } from './utils';
 
 export default function WhatsOn({
-  proximos,
-  musicaLarga,
+  upcoming,
+  longMusic,
 }: {
-  readonly proximos: readonly { readonly event: VenueEvent; readonly date: string }[];
-  readonly musicaLarga: string;
+  readonly upcoming: readonly { readonly event: VenueEvent; readonly date: string }[];
+  readonly longMusic: string;
 }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [today, setToday] = useState<{ weekday: Weekday; date: string } | null>(null);
@@ -27,30 +27,30 @@ export default function WhatsOn({
 
   useEffect(() => setToday(venueToday()), []);
 
-  const [visibles, setVisibles] = useState(1);
+  const [visibleItems, setVisibleItems] = useState(1);
 
   useEffect(() => {
-    const mqs = VISIBLES.map((v) => ({ ...v, m: window.matchMedia(v.mq) }));
-    const aplicar = () => setVisibles(mqs.find((v) => v.m.matches)?.n ?? 1);
-    aplicar();
-    mqs.forEach((v) => v.m.addEventListener('change', aplicar));
-    return () => mqs.forEach((v) => v.m.removeEventListener('change', aplicar));
+    const mqs = VISIBLE.map((v) => ({ ...v, m: window.matchMedia(v.mq) }));
+    const apply = () => setVisibleItems(mqs.find((v) => v.m.matches)?.n ?? 1);
+    apply();
+    mqs.forEach((v) => v.m.addEventListener('change', apply));
+    return () => mqs.forEach((v) => v.m.removeEventListener('change', apply));
   }, []);
 
-  const events = (today === null ? proximos : proximos.filter((o) => o.date >= today.date)).slice(
+  const events = (today === null ? upcoming : upcoming.filter((o) => o.date >= today.date)).slice(
     0,
     MAX_CARDS,
   );
 
   const isClosedToday = today !== null && CLOSED_DAYS.includes(today.weekday);
 
-  const tarjetas = [
+  const cards = [
     ...events.map((o) => `${o.event.title} (${shortDate(o.date)})`),
     'See the whole calendar',
   ];
-  const maxIndex = Math.max(0, tarjetas.length - visibles);
+  const maxIndex = Math.max(0, cards.length - visibleItems);
 
-  const slides = tarjetas.slice(0, maxIndex + 1);
+  const slides = cards.slice(0, maxIndex + 1);
 
   const step = () => {
     const track = trackRef.current;
@@ -76,23 +76,23 @@ export default function WhatsOn({
   const maxIndexRef = useRef(0);
   maxIndexRef.current = maxIndex;
 
-  const [dentro, setDentro] = useState<readonly boolean[]>([]);
+  const [inside, setInside] = useState<readonly boolean[]>([]);
 
-  const medirDentro = useCallback(() => {
+  const measureInside = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
     if (!window.matchMedia('(min-width: 768px)').matches) {
-      setDentro([...track.children].map(() => true));
+      setInside([...track.children].map(() => true));
       return;
     }
-    const caja = track.getBoundingClientRect();
-    const borde = bordeTrack(track);
-    const izq = caja.left + borde - 1;
-    const der = caja.right - borde + 1;
-    setDentro(
-      [...track.children].map((hijo) => {
-        const r = hijo.getBoundingClientRect();
-        return r.left >= izq && r.right <= der;
+    const box = track.getBoundingClientRect();
+    const edge = trackEdge(track);
+    const left = box.left + edge - 1;
+    const right = box.right - edge + 1;
+    setInside(
+      [...track.children].map((child) => {
+        const r = child.getBoundingClientRect();
+        return r.left >= left && r.right <= right;
       }),
     );
   }, []);
@@ -103,8 +103,8 @@ export default function WhatsOn({
     setIndex(Math.min(maxIndexRef.current, Math.round(el.scrollLeft / step())));
     setCanPrev(el.scrollLeft > 1);
     setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 1);
-    medirDentro();
-  }, [medirDentro]);
+    measureInside();
+  }, [measureInside]);
 
   useEffect(() => {
     onScroll();
@@ -127,12 +127,12 @@ export default function WhatsOn({
     <section
       id="whats-on"
       aria-labelledby="whats-on-title"
-      className="banda-arco relative z-[2] bg-deep grano pt-14 pb-cierre-arco text-bone on-dark md:pt-18 lg:pt-22 desk:pt-[110px]"
+      className="band-arc relative z-[2] bg-deep grain pt-14 pb-closing-arc text-bone on-dark md:pt-18 lg:pt-22 desk:pt-[110px]"
     >
-      <div className="caja-ancha">
+      <div className="page-box-wide">
         <h2
           id="whats-on-title"
-          className="mx-auto max-w-[16ch] text-center font-display text-banda font-extrabold uppercase"
+          className="mx-auto max-w-[16ch] text-center font-display text-band font-extrabold uppercase"
         >
           <span className="block text-paper">{headline.a}</span>{' '}
           <span className="block text-sunset">{headline.b}</span>
@@ -150,14 +150,14 @@ export default function WhatsOn({
           </ButtonLink>
         </div>
       </div>
-      <div className="caja-ancha mt-bloque">
+      <div className="page-box-wide mt-block">
         <div
           ref={trackRef}
           onScroll={onScroll}
           tabIndex={0}
           role="group"
           aria-label="Upcoming events"
-          className="-mx-borde -mt-2 -mb-5 flex snap-x snap-mandatory gap-4 overflow-x-auto md:gap-6 px-borde pt-3.5 pb-13 scroll-px-borde [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="-mx-edge -mt-2 -mb-5 flex snap-x snap-mandatory gap-4 overflow-x-auto md:gap-6 px-edge pt-3.5 pb-13 scroll-px-edge [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {events.map((o, i) => (
             <EventCard
@@ -165,13 +165,13 @@ export default function WhatsOn({
               event={o.event}
               date={o.date}
               isToday={today !== null && o.date === today.date}
-              fuera={dentro.length > 0 && !dentro[i]}
+              outside={inside.length > 0 && !inside[i]}
             />
           ))}
 
-          <CalendarCard musicaLarga={musicaLarga} fuera={dentro.length > 0 && !dentro[events.length]} />
+          <CalendarCard longMusic={longMusic} outside={inside.length > 0 && !inside[events.length]} />
         </div>
-        <Controles
+        <Controls
           maxIndex={maxIndex}
           slides={slides}
           index={index}

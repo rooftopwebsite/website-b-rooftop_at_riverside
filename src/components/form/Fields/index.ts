@@ -1,5 +1,5 @@
-export { useRadioGroup } from './contexto';
-export type { BaseFieldProps, Option } from './tipos';
+export { useRadioGroup } from './context';
+export type { BaseFieldProps, Option } from './types';
 export { TextField, DateField } from './TextField';
 export { TextAreaField } from './TextAreaField';
 export { SelectField } from './SelectField';

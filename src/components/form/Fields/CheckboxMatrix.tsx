@@ -1,9 +1,9 @@
 'use client';
 
 import { useContext } from 'react';
-import { Ctx, useField } from './contexto';
-import { ErrorText } from './Primitivos';
-import type { Option } from './tipos';
+import { Ctx, useField } from './context';
+import { ErrorText } from './Primitives';
+import type { Option } from './types';
 
 export function CheckboxMatrix({
   name,
@@ -39,18 +39,18 @@ export function CheckboxMatrix({
             </span>
             <span className="flex shrink-0 items-center gap-[14px]">
               {cols.map((c) => {
-                const valor = `${r.value}-${c.value}`;
+                const value = `${r.value}-${c.value}`;
                 return (
                   <label
                     key={c.value}
-                    htmlFor={uid + '-' + name + '-' + valor}
+                    htmlFor={uid + '-' + name + '-' + value}
                     className="flex cursor-pointer items-center gap-[6px] font-body text-[15px] text-body/80"
                   >
                     <input
-                      id={uid + '-' + name + '-' + valor}
+                      id={uid + '-' + name + '-' + value}
                       type="checkbox"
                       name={name}
-                      value={valor}
+                      value={value}
                       aria-label={`${r.label} ${c.label}`}
                       className="size-[20px] rounded-[6px] border border-ink/25 accent-sunset"
                     />

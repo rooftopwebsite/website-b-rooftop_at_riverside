@@ -2,22 +2,22 @@
 
 import { useState, type ReactNode } from 'react';
 import { CaretDown } from '@/components/shared/Icon';
-import { useField } from './contexto';
-import { InlineLabel, ErrorText, Contador, muestraContador } from './Primitivos';
-import { INPUT_BASE, BOX_BASE, OK, BAD, FRASE } from './constantes';
-import type { BaseFieldProps, Option } from './tipos';
+import { useField } from './context';
+import { InlineLabel, ErrorText, Counter, showsCounter } from './Primitives';
+import { INPUT_BASE, BOX_BASE, OK, BAD, SENTENCE } from './constants';
+import type { BaseFieldProps, Option } from './types';
 
 export function SentenceRow({ children }: { readonly children: ReactNode }) {
-  return <div className={['flex flex-wrap items-center gap-x-3 gap-y-1 sm:gap-y-3', FRASE].join(' ')}>{children}</div>;
+  return <div className={['flex flex-wrap items-center gap-x-3 gap-y-1 sm:gap-y-3', SENTENCE].join(' ')}>{children}</div>;
 }
 
 export function InlineField({
   type = 'text',
-  ancho = 'crece',
+  width = 'grow',
   ...p
 }: BaseFieldProps & {
   readonly type?: 'text' | 'email' | 'tel';
-  readonly ancho?: 'crece' | 'corto';
+  readonly width?: 'grow' | 'short';
 }) {
   const { fid, eid, err, aria } = useField(p.name);
   return (
@@ -34,7 +34,7 @@ export function InlineField({
         {...aria}
         className={[
           INPUT_BASE,
-          ancho === 'crece' ? 'min-w-[16ch] flex-1' : 'w-[16ch] shrink-0',
+          width === 'grow' ? 'min-w-[16ch] flex-1' : 'w-[16ch] shrink-0',
           err ? BAD : OK,
         ].join(' ')}
       />
@@ -103,10 +103,10 @@ export function SentenceArea(
   p: BaseFieldProps & { readonly rows?: number; readonly maxLength?: number },
 ) {
   const { fid, eid, err, aria } = useField(p.name);
-  const [largo, setLargo] = useState(0);
+  const [length, setLength] = useState(0);
   return (
     <div className="flex flex-col gap-[12px]">
-      <span className={FRASE}>
+      <span className={SENTENCE}>
         <InlineLabel htmlFor={fid} required={p.required}>
           {p.label}
         </InlineLabel>
@@ -117,12 +117,12 @@ export function SentenceArea(
         rows={p.rows ?? 6}
         required={p.required}
         maxLength={p.maxLength}
-        onInput={p.maxLength ? (e) => setLargo(e.currentTarget.value.length) : undefined}
+        onInput={p.maxLength ? (e) => setLength(e.currentTarget.value.length) : undefined}
         {...aria}
-        aria-describedby={[muestraContador(largo, p.maxLength) ? `${fid}-count` : null, err ? eid : null].filter(Boolean).join(' ') || undefined}
+        aria-describedby={[showsCounter(length, p.maxLength) ? `${fid}-count` : null, err ? eid : null].filter(Boolean).join(' ') || undefined}
         className={[BOX_BASE, err ? BAD : OK].join(' ')}
       />
-      {p.maxLength ? <Contador id={`${fid}-count`} largo={largo} max={p.maxLength} /> : null}
+      {p.maxLength ? <Counter id={`${fid}-count`} length={length} max={p.maxLength} /> : null}
       {err ? <ErrorText id={eid}>{err}</ErrorText> : null}
     </div>
   );

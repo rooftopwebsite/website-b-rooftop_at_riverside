@@ -4,7 +4,7 @@ import { confirmationText, FORM_CONFIRMATIONS } from '@/content/form-confirmatio
 import { BRAND } from './brand';
 import { inboxFor, publicInbox, type Inbox } from './inboxes';
 import { sendMail, type MailAttachment } from './mail';
-import { asuntoSeguro, nombreSeguro, podar } from './saneo';
+import { safeSubject, safeFilename, prune } from './sanitize';
 
 export interface Submission {
   readonly form: 'contact' | 'event-inquiry' | 'market-vendor' | 'musician' | 'job';
@@ -24,7 +24,7 @@ export interface SubmissionResult {
 const HITS = new Map<string, number[]>();
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_PER_WINDOW = 5;
-const MAX_CLAVES = 1000;
+const MAX_KEYS = 1000;
 
 async function clientKey(): Promise<string> {
   const h = await headers();
@@ -35,7 +35,7 @@ async function clientKey(): Promise<string> {
 export async function rateLimited(): Promise<boolean> {
   const key = await clientKey();
   const now = Date.now();
-  podar(HITS, now, WINDOW_MS, MAX_CLAVES);
+  prune(HITS, now, WINDOW_MS, MAX_KEYS);
   const recent = (HITS.get(key) ?? []).filter((t) => now - t < WINDOW_MS);
   if (recent.length >= MAX_PER_WINDOW) {
     HITS.set(key, recent);
@@ -52,13 +52,13 @@ export async function fileToAttachment(
 ): Promise<MailAttachment | null> {
   if (!(f instanceof File) || f.size === 0) return null;
   return {
-    filename: nombreSeguro(f.name),
+    filename: safeFilename(f.name),
     content: Buffer.from(await f.arrayBuffer()),
     contentType: contentType ?? (f.type || undefined),
   };
 }
 
-const TITULO: Record<Submission['form'], string> = {
+const TITLE: Record<Submission['form'], string> = {
   contact: 'Contact form',
   'event-inquiry': 'Private event inquiry',
   'market-vendor': 'Neighborhood Market vendor request',
@@ -66,17 +66,17 @@ const TITULO: Record<Submission['form'], string> = {
   job: 'Job application',
 };
 
-function cuerpo(s: Submission): string {
-  const lineas = [`${TITULO[s.form]} · ${BRAND.name} website`, ''];
-  for (const [rotulo, valor] of Object.entries(s.data)) {
-    if (valor.includes('\n')) lineas.push('', `${rotulo}:`, valor, '');
-    else lineas.push(`${rotulo}: ${valor}`);
+function body(s: Submission): string {
+  const lines = [`${TITLE[s.form]} · ${BRAND.name} website`, ''];
+  for (const [label, value] of Object.entries(s.data)) {
+    if (value.includes('\n')) lines.push('', `${label}:`, value, '');
+    else lines.push(`${label}: ${value}`);
   }
   if (s.attachments && s.attachments.length > 0) {
-    lineas.push('', `Attached: ${s.attachments.map((a) => a.filename).join(', ')}`);
+    lines.push('', `Attached: ${s.attachments.map((a) => a.filename).join(', ')}`);
   }
-  if (s.replyTo) lineas.push('', `Reply to this email to answer ${s.replyTo} directly.`);
-  return lineas.join('\n');
+  if (s.replyTo) lines.push('', `Reply to this email to answer ${s.replyTo} directly.`);
+  return lines.join('\n');
 }
 
 async function sendConfirmation(s: Submission): Promise<void> {
@@ -85,7 +85,7 @@ async function sendConfirmation(s: Submission): Promise<void> {
     to: s.replyTo!,
     subject: FORM_CONFIRMATIONS[s.form].subject,
     text: confirmationText(s.form, {
-      firstName: firstName ? asuntoSeguro(firstName) : undefined,
+      firstName: firstName ? safeSubject(firstName) : undefined,
       brandName: BRAND.name,
     }),
     replyTo: publicInbox(s.inbox),
@@ -105,8 +105,8 @@ export async function sendSubmission(s: Submission): Promise<SubmissionResult> {
   const to = inboxFor(s.inbox);
   const res = await sendMail({
     to,
-    subject: asuntoSeguro(s.subject),
-    text: cuerpo(s),
+    subject: safeSubject(s.subject),
+    text: body(s),
     replyTo: s.replyTo,
     attachments: s.attachments,
   });

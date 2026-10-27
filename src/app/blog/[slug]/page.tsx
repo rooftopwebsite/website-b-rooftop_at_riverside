@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 function postSchema(post: PostFull) {
   const url = `${SITE_URL}${post.canonicalPath}`;
-  const casa = { '@type': 'Organization', name: BRAND.name, url: SITE_URL };
+  const org = { '@type': 'Organization', name: BRAND.name, url: SITE_URL };
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -56,12 +56,12 @@ function postSchema(post: PostFull) {
     ...(post.image ? { image: [post.image] } : {}),
     ...(post.publishedAt ? { datePublished: post.publishedAt } : {}),
     ...(post.modifiedAt || post.publishedAt ? { dateModified: post.modifiedAt || post.publishedAt } : {}),
-    author: casa,
-    publisher: casa,
+    author: org,
+    publisher: org,
   };
 }
 
-const MEDIDA = 'mx-auto w-full max-w-[42rem]';
+const MEASURE = 'mx-auto w-full max-w-[42rem]';
 
 export default async function PostPage({ params }: Props) {
   const { slug } = await params;
@@ -92,12 +92,12 @@ export default async function PostPage({ params }: Props) {
             {post.title}
           </h1>
           {post.excerpt ? (
-            <p className="bajada mx-auto mt-gap-bajada max-w-[44rem] text-lead">{post.excerpt}</p>
+            <p className="subhead mx-auto mt-gap-subhead max-w-[44rem] text-lead">{post.excerpt}</p>
           ) : null}
         </header>
 
         {post.image ? (
-          <div className={`${MEDIDA} relative mt-bloque aspect-3/2 overflow-hidden rounded-image bg-bone`}>
+          <div className={`${MEASURE} relative mt-block aspect-3/2 overflow-hidden rounded-image bg-bone`}>
             <Image
               src={post.image}
               alt={post.imageAlt}
@@ -109,9 +109,9 @@ export default async function PostPage({ params }: Props) {
           </div>
         ) : null}
 
-        <div className="prose-post mt-bloque" dangerouslySetInnerHTML={{ __html: post.html }} />
+        <div className="prose-post mt-block" dangerouslySetInnerHTML={{ __html: post.html }} />
 
-        <div className={`${MEDIDA} mt-bloque border-t border-fog pt-6`}>
+        <div className={`${MEASURE} mt-block border-t border-fog pt-6`}>
           <ArrowLink href="/blog">Back to all stories</ArrowLink>
         </div>
       </Section>

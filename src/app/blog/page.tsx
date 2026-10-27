@@ -13,10 +13,10 @@ import { splitFeatured } from '@/lib/blog-format';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const hayNotas = (await getPosts()).length > 0;
+  const hasPosts = (await getPosts()).length > 0;
   return pageMeta({
     route: '/blog',
-    noIndex: !hayNotas,
+    noIndex: !hasPosts,
     image: {
       url: '/images/venue/front-night-wide.webp',
       width: 2048,
@@ -53,9 +53,9 @@ export default async function BlogPage() {
         </Reveal>
 
         {rest.length > 0 ? (
-          <div className="mt-cierre">
+          <div className="mt-closing">
             <SectionHead title="More stories" id="more-stories" level={2} />
-            <StaggerGroup className="mt-bloque grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <StaggerGroup className="mt-block grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {rest.map((post) => (
                 <RevealItem key={post.slug}>
                   <PostCard post={post} />

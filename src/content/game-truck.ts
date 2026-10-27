@@ -12,7 +12,7 @@ export interface PartyPackage {
   readonly hours: number;
   readonly price: number;
   readonly extraHour: number;
-  readonly diferencias: readonly string[];
+  readonly differences: readonly string[];
 }
 
 export const RATES: readonly GameTruckRate[] = [
@@ -28,7 +28,7 @@ export const PACKAGES: readonly PartyPackage[] = [
     hours: 2,
     price: 400,
     extraHour: 200,
-    diferencias: ['Monday through Thursday', 'Extra hour at $200'],
+    differences: ['Monday through Thursday', 'Extra hour at $200'],
   },
   {
     slug: 'weekend',
@@ -37,7 +37,7 @@ export const PACKAGES: readonly PartyPackage[] = [
     hours: 2,
     price: 500,
     extraHour: 250,
-    diferencias: ['Friday through Sunday', 'Extra hour at $250'],
+    differences: ['Friday through Sunday', 'Extra hour at $250'],
   },
 ];
 

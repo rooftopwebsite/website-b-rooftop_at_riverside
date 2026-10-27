@@ -2,25 +2,25 @@
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import dynamic from 'next/dynamic';
-import type { EventoAbierto } from '@/components/sections/EventDialog';
+import type { OpenedEvent } from '@/components/sections/EventDialog';
 import { ArrowRight } from '@/components/shared/Icon';
 import type { VenueEvent } from '@/content/events';
 
 const EventDialog = dynamic(() => import('@/components/sections/EventDialog'), { ssr: false });
 
-const AbrirEvento = createContext<((a: EventoAbierto) => void) | null>(null);
+const OpenEventContext = createContext<((a: OpenedEvent) => void) | null>(null);
 
 export function EventDialogProvider({ children }: { readonly children: ReactNode }) {
-  const [abierto, setAbierto] = useState<EventoAbierto | null>(null);
+  const [isOpen, setIsOpen] = useState<OpenedEvent | null>(null);
   return (
-    <AbrirEvento.Provider value={setAbierto}>
+    <OpenEventContext.Provider value={setIsOpen}>
       {children}
-      {abierto ? <EventDialog abierto={abierto} onClose={() => setAbierto(null)} /> : null}
-    </AbrirEvento.Provider>
+      {isOpen ? <EventDialog isOpen={isOpen} onClose={() => setIsOpen(null)} /> : null}
+    </OpenEventContext.Provider>
   );
 }
 
-export function VerMas({
+export function SeeMore({
   event,
   date,
   className = '',
@@ -31,11 +31,11 @@ export function VerMas({
   readonly className?: string;
   readonly visible?: boolean;
 }) {
-  const abrir = useContext(AbrirEvento);
-  if (!abrir) return null;
+  const open = useContext(OpenEventContext);
+  if (!open) return null;
   if (!visible) {
     return (
-      <button type="button" onClick={() => abrir({ event, date })} className={`absolute inset-0 ${className}`}>
+      <button type="button" onClick={() => open({ event, date })} className={`absolute inset-0 ${className}`}>
         <span className="sr-only">See more about {event.title}</span>
       </button>
     );
@@ -43,8 +43,8 @@ export function VerMas({
   return (
     <button
       type="button"
-      onClick={() => abrir({ event, date })}
-      className={`group inline-flex w-fit items-center gap-2 border-b-2 border-sunset pb-0.5 font-body text-dato font-medium text-ink transition-colors after:absolute after:inset-0 after:content-[''] hover:text-sunset-deep ${className}`}
+      onClick={() => open({ event, date })}
+      className={`group inline-flex w-fit items-center gap-2 border-b-2 border-sunset pb-0.5 font-body text-data font-medium text-ink transition-colors after:absolute after:inset-0 after:content-[''] hover:text-sunset-deep ${className}`}
     >
       See more
       <span className="sr-only"> about {event.title}</span>

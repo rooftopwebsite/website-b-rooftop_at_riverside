@@ -1,37 +1,37 @@
 'use client';
 
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Ctx, useField } from './contexto';
-import { ErrorText } from './Primitivos';
-import { INPUT_BASE, OK, BAD } from './constantes';
+import { Ctx, useField } from './context';
+import { ErrorText } from './Primitives';
+import { INPUT_BASE, OK, BAD } from './constants';
 
 export function RepeatableField({
   name,
   label,
   placeholders = [],
-  minimo = 1,
-  maximo = 5,
+  minimum = 1,
+  maxValue = 5,
   hint,
 }: {
   readonly name: string;
   readonly label: string;
   readonly placeholders?: readonly string[];
-  readonly minimo?: number;
-  readonly maximo?: number;
+  readonly minimum?: number;
+  readonly maxValue?: number;
   readonly hint?: string;
 }) {
   const { uid } = useContext(Ctx);
   const { eid, err } = useField(name);
-  const [filas, setFilas] = useState(minimo);
-  const ultimaRef = useRef<HTMLInputElement | null>(null);
-  const [foco, setFoco] = useState(false);
+  const [rows, setRows] = useState(minimum);
+  const lastRef = useRef<HTMLInputElement | null>(null);
+  const [focus, setFocus] = useState(false);
 
   useEffect(() => {
-    if (foco) {
-      ultimaRef.current?.focus();
-      setFoco(false);
+    if (focus) {
+      lastRef.current?.focus();
+      setFocus(false);
     }
-  }, [foco]);
+  }, [focus]);
 
   return (
     <fieldset className="flex flex-col gap-[8px]">
@@ -41,14 +41,14 @@ export function RepeatableField({
       </legend>
 
       <div className="mt-[6px] flex flex-col gap-[10px]">
-        {Array.from({ length: filas }, (_, i) => (
+        {Array.from({ length: rows }, (_, i) => (
           <div key={i}>
             <label htmlFor={`${uid}-${name}-${i}`} className="sr-only">
               {label}, number {i + 1}
             </label>
             <input
               id={`${uid}-${name}-${i}`}
-              ref={i === filas - 1 ? ultimaRef : undefined}
+              ref={i === rows - 1 ? lastRef : undefined}
               name={name}
               type="text"
               inputMode="url"
@@ -61,12 +61,12 @@ export function RepeatableField({
         ))}
       </div>
 
-      {filas < maximo ? (
+      {rows < maxValue ? (
         <button
           type="button"
           onClick={() => {
-            setFilas((n) => n + 1);
-            setFoco(true);
+            setRows((n) => n + 1);
+            setFocus(true);
           }}
           className="mt-[4px] self-start font-body text-[15px] font-bold text-deep underline decoration-from-font underline-offset-4 hover:text-ink"
         >

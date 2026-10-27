@@ -1,6 +1,6 @@
 import raw from './events.json';
 import { BRAND } from '@/lib/brand';
-import { sinEmDash } from '@/lib/em-dash';
+import { withoutEmDash } from '@/lib/em-dash';
 
 export type EventKind = 'recurring' | 'one-off' | 'festival';
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -90,20 +90,20 @@ const TICKETS: Readonly<Record<string, string>> = {
     : {}),
 };
 
-const ES_ITEM = /^(?:\d+[.)]|\$\d)/;
+const IS_ITEM = /^(?:\d+[.)]|\$\d)/;
 
-function bajadaDe(parrafos: readonly string[]): string | null {
-  const prosa = parrafos.find((p) => !ES_ITEM.test(p.trim()));
-  if (!prosa) return parrafos[0] ?? null;
-  return prosa.split(/(?<=\.)\s/)[0] ?? prosa;
+function subheadOf(paragraphs: readonly string[]): string | null {
+  const prose = paragraphs.find((p) => !IS_ITEM.test(p.trim()));
+  if (!prose) return paragraphs[0] ?? null;
+  return prose.split(/(?<=\.)\s/)[0] ?? prose;
 }
 
 function adapt(r: RawEvent): VenueEvent {
   const weekdays = r.isRecurring ? parseWeekdays(r.recurrenceDays) : [];
   const start = hhmm(r.startTime);
   const end = hhmm(r.endTime) || start;
-  const title = sinEmDash(r.title);
-  const paragraphs = sinEmDash(r.description ?? '')
+  const title = withoutEmDash(r.title);
+  const paragraphs = withoutEmDash(r.description ?? '')
     .split(/\n+/)
     .map((p) => p.trim())
     .filter(Boolean);
@@ -114,7 +114,7 @@ function adapt(r: RawEvent): VenueEvent {
     slug,
     title,
     kind: r.isRecurring ? 'recurring' : 'one-off',
-    summary: bajadaDe(paragraphs) ?? r.title,
+    summary: subheadOf(paragraphs) ?? r.title,
     body: paragraphs,
     weekdays,
     date: r.isRecurring ? null : r.startDate,
@@ -175,20 +175,20 @@ export function shortDate(date: string): string {
   });
 }
 
-export function weekdaysLabel(days: readonly Weekday[], corto = false): string {
-  const nombre = (d: Weekday) => (corto ? weekdayLabel(d).slice(0, 3) : weekdayLabel(d));
+export function weekdaysLabel(days: readonly Weekday[], short = false): string {
+  const name = (d: Weekday) => (short ? weekdayLabel(d).slice(0, 3) : weekdayLabel(d));
 
   if (days.length === 0) return '';
-  if (days.length === 1) return nombre(days[0]);
+  if (days.length === 1) return name(days[0]);
 
-  const finDeSemana = days.length === 2 && days[0] === 0 && days[1] === 6;
-  if (finDeSemana) return `${nombre(6)} – ${nombre(0)}`;
+  const weekend = days.length === 2 && days[0] === 0 && days[1] === 6;
+  if (weekend) return `${name(6)} – ${name(0)}`;
 
-  const seguidos = days.every((d, i) => i === 0 || d === days[i - 1] + 1);
-  if (seguidos) return `${nombre(days[0])} – ${nombre(days[days.length - 1])}`;
+  const consecutive = days.every((d, i) => i === 0 || d === days[i - 1] + 1);
+  if (consecutive) return `${name(days[0])} – ${name(days[days.length - 1])}`;
 
-  const nombres = days.map(nombre);
-  return `${nombres.slice(0, -1).join(', ')} and ${nombres[nombres.length - 1]}`;
+  const names = days.map(name);
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
 }
 
 export function whenLabel(e: VenueEvent): string {

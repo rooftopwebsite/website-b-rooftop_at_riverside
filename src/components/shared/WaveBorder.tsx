@@ -1,4 +1,4 @@
-import { OLA } from '@/lib/brand-art';
+import { WAVE } from '@/lib/brand-art';
 
 const SURFACES = {
   paper: 'var(--color-paper)',
@@ -44,19 +44,19 @@ export default function WaveBorder({
   readonly to: Surface;
   readonly className?: string;
 }) {
-  const id = `rt-ola-${from}-${to}`;
+  const id = `rt-wave-gradient-${from}-${to}`;
 
   return (
     <div
       aria-hidden="true"
-      className={['grano-capa relative w-full overflow-hidden leading-[0]', SURFACE_BG[from], className]
+      className={['grain-layer relative w-full overflow-hidden leading-[0]', SURFACE_BG[from], className]
         .filter(Boolean)
         .join(' ')}
     >
       <svg
         width="100%"
-        height={OLA.alto}
-        viewBox={`0 0 1600 ${OLA.alto}`}
+        height={WAVE.heightRef}
+        viewBox={`0 0 1600 ${WAVE.heightRef}`}
         preserveAspectRatio="xMinYMax slice"
         role="presentation"
         className="block"
@@ -64,14 +64,14 @@ export default function WaveBorder({
         <defs>
           <pattern
             id={id}
-            width={OLA.periodo}
-            height={OLA.alto}
+            width={WAVE.period}
+            height={WAVE.heightRef}
             patternUnits="userSpaceOnUse"
           >
-            <path d={OLA.d} fill={SURFACES[to]} />
+            <path d={WAVE.d} fill={SURFACES[to]} />
           </pattern>
         </defs>
-        <rect className="rt-wave" width="4000" height={OLA.alto} fill={`url(#${id})`} />
+        <rect className="rt-wave" width="4000" height={WAVE.heightRef} fill={`url(#${id})`} />
       </svg>
     </div>
   );

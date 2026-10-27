@@ -24,22 +24,22 @@ function SubmitButton() {
 export default function NewsletterSignup() {
   const [state, action] = useActionState(subscribeToNewsletter, INITIAL);
   const id = useId();
-  const fid = (campo: string) => `${id}-${campo}`;
+  const fid = (field: string) => `${id}-${field}`;
 
-  const errores = state.fieldErrors ?? {};
+  const errors = state.fieldErrors ?? {};
 
   return (
     <section
       aria-labelledby={`${id}-title`}
-      className="relative isolate overflow-hidden rounded-shell bg-teal600 sombra-card px-6 py-10 [--lead-ink:var(--color-paper)] sm:px-9 lg:px-12 lg:py-12"
+      className="relative isolate overflow-hidden rounded-shell bg-teal600 card-shadow px-6 py-10 [--lead-ink:var(--color-paper)] sm:px-9 lg:px-12 lg:py-12"
     >
-      <span aria-hidden="true" className="piedra pointer-events-none absolute inset-0 -z-10" />
+      <span aria-hidden="true" className="stone pointer-events-none absolute inset-0 -z-10" />
           <div className="grid items-center gap-9 md:grid-cols-[1fr_1.15fr] md:gap-10 lg:gap-16">
             <div>
               <Heading level={2} id={`${id}-title`} className="m-0 text-d3 text-paper">
                 Sign up
               </Heading>
-              <p className="bajada mt-gap-bajada max-w-[38ch] font-body text-lead font-light">
+              <p className="subhead mt-gap-subhead max-w-[38ch] font-body text-lead font-light">
                 Stay up to date with all the latest from Rooftop at Riverside.
               </p>
             </div>
@@ -63,9 +63,9 @@ export default function NewsletterSignup() {
                       type="text"
                       autoComplete="given-name"
                       placeholder="First name"
-                      aria-invalid={errores.firstName ? true : undefined}
-                      aria-describedby={errores.firstName ? fid('firstName-err') : undefined}
-                      className={`${INPUT_BASE} ${errores.firstName ? 'border-2 border-tomato' : 'border-ink/20'}`}
+                      aria-invalid={errors.firstName ? true : undefined}
+                      aria-describedby={errors.firstName ? fid('firstName-err') : undefined}
+                      className={`${INPUT_BASE} ${errors.firstName ? 'border-2 border-tomato' : 'border-ink/20'}`}
                     />
                   </div>
 
@@ -79,9 +79,9 @@ export default function NewsletterSignup() {
                       type="email"
                       autoComplete="email"
                       placeholder="Email"
-                      aria-invalid={errores.email ? true : undefined}
-                      aria-describedby={errores.email ? fid('email-err') : undefined}
-                      className={`${INPUT_BASE} ${errores.email ? 'border-2 border-tomato' : 'border-ink/20'}`}
+                      aria-invalid={errors.email ? true : undefined}
+                      aria-describedby={errors.email ? fid('email-err') : undefined}
+                      className={`${INPUT_BASE} ${errors.email ? 'border-2 border-tomato' : 'border-ink/20'}`}
                     />
                   </div>
 
@@ -97,23 +97,23 @@ export default function NewsletterSignup() {
 
                 {state.status === 'error' ? (
                   <div className="flex flex-col gap-1">
-                    {errores.firstName ? (
-                      <p id={fid('firstName-err')} className="font-body text-dato text-paper">
-                        {errores.firstName}
+                    {errors.firstName ? (
+                      <p id={fid('firstName-err')} className="font-body text-data text-paper">
+                        {errors.firstName}
                       </p>
                     ) : null}
-                    {errores.email ? (
-                      <p id={fid('email-err')} className="font-body text-dato text-paper">
-                        {errores.email}
+                    {errors.email ? (
+                      <p id={fid('email-err')} className="font-body text-data text-paper">
+                        {errors.email}
                       </p>
                     ) : null}
-                    {!errores.firstName && !errores.email ? (
-                      <p className="font-body text-dato text-paper">{state.message}</p>
+                    {!errors.firstName && !errors.email ? (
+                      <p className="font-body text-data text-paper">{state.message}</p>
                     ) : null}
                   </div>
                 ) : null}
 
-                <p className="bajada text-center font-body text-micro desk:text-left">
+                <p className="subhead text-center font-body text-micro desk:text-left">
                   No spam. Unsubscribe any time.
                 </p>
               </form>

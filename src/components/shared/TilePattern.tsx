@@ -1,4 +1,4 @@
-import { OLA } from '@/lib/brand-art';
+import { WAVE } from '@/lib/brand-art';
 
 export default function TilePattern({
   height = 'h-[44px]',
@@ -32,7 +32,7 @@ export function TileMark({ className = '' }: { readonly className?: string }) {
       aria-hidden="true"
       className={className}
     >
-      <path d={OLA.d} fill="var(--color-river)" />
+      <path d={WAVE.d} fill="var(--color-river)" />
     </svg>
   );
 }

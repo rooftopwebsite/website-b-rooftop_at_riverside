@@ -16,7 +16,7 @@ export interface CompareColumn {
   readonly steps?: readonly CompareStep[];
 }
 
-export const PADDING_CRUCE = 'pt-52';
+export const CROSS_PADDING = 'pt-52';
 
 export default function CompareSlab({
   eyebrow,
@@ -57,7 +57,7 @@ export default function CompareSlab({
             ) : null}
             {title}
           </Heading>
-          {lead ? <p className="bajada mx-auto mt-gap-bajada text-paper/85">{lead}</p> : null}
+          {lead ? <p className="subhead mx-auto mt-gap-subhead text-paper/85">{lead}</p> : null}
           {cta ? (
             <div className="mt-gap-cta flex justify-center">
               <ButtonLink href={cta.href} variant="onDark" size="lg">
@@ -74,20 +74,20 @@ export default function CompareSlab({
         >
           {(theirs
             ? [
-                { col: ours, nuestro: true },
-                { col: theirs, nuestro: false },
+                { col: ours, isOurs: true },
+                { col: theirs, isOurs: false },
               ]
-            : [{ col: ours, nuestro: true }]
-          ).map(({ col, nuestro }) => (
+            : [{ col: ours, isOurs: true }]
+          ).map(({ col, isOurs }) => (
             <div
               key={col.label}
-              className="relative flex flex-col rounded-frame bg-bone grano px-6 pt-11 pb-10 text-center sm:px-10 sm:pt-12"
+              className="relative flex flex-col rounded-frame bg-bone grain px-6 pt-11 pb-10 text-center sm:px-10 sm:pt-12"
             >
               <span
                 aria-hidden="true"
                 className={[
                   'pointer-events-none absolute inset-3.5 rounded-shell border border-dashed',
-                  nuestro ? 'border-teal600/55' : 'border-terra/45',
+                  isOurs ? 'border-teal600/55' : 'border-terra/45',
                 ].join(' ')}
               />
               <Heading level={3} className="sr-only">
@@ -98,7 +98,7 @@ export default function CompareSlab({
                 aria-hidden="true"
                 className="sticker absolute -top-px left-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
               >
-                {nuestro ? (
+                {isOurs ? (
                   <span className="block rounded-pill bg-bone px-5 py-3">
                     <Image
                       src="/brand/isotype-truck.svg"
@@ -147,13 +147,13 @@ export default function CompareSlab({
                           aria-hidden="true"
                           className={[
                             'grid size-5.5 shrink-0 place-items-center rounded-pill text-[14px] font-bold',
-                            nuestro ? 'bg-teal600 text-paper' : 'bg-terra text-paper',
+                            isOurs ? 'bg-teal600 text-paper' : 'bg-terra text-paper',
                           ].join(' ')}
                         >
-                          {nuestro ? '✓' : '✕'}
+                          {isOurs ? '✓' : '✕'}
                         </span>
                         <span className="max-w-[46ch] font-body text-base leading-[1.5] text-ink">
-                          <span className="sr-only">{nuestro ? 'Yes: ' : 'No: '}</span>
+                          <span className="sr-only">{isOurs ? 'Yes: ' : 'No: '}</span>
                           {r}
                         </span>
                       </li>

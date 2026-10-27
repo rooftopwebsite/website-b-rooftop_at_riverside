@@ -26,7 +26,7 @@ const LABELS: Record<string, string> = {
   message: 'Your message',
 };
 
-const FRASE = {
+const SENTENCE = {
   name: 'My name is',
   reason: 'and it is about',
   email: 'You can reach me at',
@@ -49,10 +49,10 @@ export default function ContactForm() {
         <Heading level={2} className="mt-gap-kicker text-d5 lg:text-d4">
           It landed
         </Heading>
-        <p className="mt-gap-bajada max-w-[52ch] text-lead text-body/80">{state.message}</p>
+        <p className="mt-gap-subhead max-w-[52ch] text-lead text-body/80">{state.message}</p>
         <p className="mt-3 max-w-[52ch] text-[16px] leading-[1.65] text-body/75">
           If it is urgent, calling is faster:{' '}
-          <a href={venue.phoneHref} className="link-texto font-bold">
+          <a href={venue.phoneHref} className="link-text font-bold">
             {venue.phone}
           </a>
           .
@@ -65,13 +65,13 @@ export default function ContactForm() {
     <FormShell submission={submission} schema={contactSchema} fromForm={contactFromForm}>
       <div className="flex flex-col gap-[10px]">
         <SentenceRow>
-          <InlineField name="name" label={FRASE.name} required autoComplete="name" />
+          <InlineField name="name" label={SENTENCE.name} required autoComplete="name" />
         </SentenceRow>
 
         <SentenceRow>
           <InlineSelect
             name="reason"
-            label={FRASE.reason}
+            label={SENTENCE.reason}
             required
             placeholder="choose one"
             options={CONTACT_REASONS.map((r) => ({ value: r.value, label: r.label }))}
@@ -80,13 +80,13 @@ export default function ContactForm() {
         </SentenceRow>
 
         <SentenceRow>
-          <InlineField name="email" label={FRASE.email} type="email" required autoComplete="email" />
+          <InlineField name="email" label={SENTENCE.email} type="email" required autoComplete="email" />
         </SentenceRow>
 
         <SentenceRow>
           <InlineField
             name="phone"
-            label={FRASE.phone}
+            label={SENTENCE.phone}
             type="tel"
             autoComplete="tel"
           />
@@ -112,7 +112,7 @@ export default function ContactForm() {
         </div>
       ) : (
         <>
-          <SentenceArea name="message" label={FRASE.message} required rows={6} maxLength={4000} />
+          <SentenceArea name="message" label={SENTENCE.message} required rows={6} maxLength={4000} />
           <div className="mt-[8px] flex flex-col items-center gap-[12px]">
             <SubmitButton idle="Send message" busy="Sending…" />
             <p className="text-[15px] text-body/70">We answer within one business day.</p>

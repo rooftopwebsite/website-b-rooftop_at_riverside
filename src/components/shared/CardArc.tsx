@@ -6,20 +6,20 @@ import { dur, ease } from '@/lib/motion';
 import WallVideo from './WallVideo';
 import { WALL, type Slot } from './wall-slots';
 
-const PASO = 4.2;
+const STEP = 4.2;
 const RADIO = 1150;
 
 function Card({ slot, index, total }: { readonly slot: Slot; readonly index: number; readonly total: number }) {
   const reduced = useReducedMotion();
 
-  const angulo = (index - (total - 1) / 2) * PASO;
-  const subida = RADIO * (1 - Math.cos((angulo * Math.PI) / 180));
+  const angle = (index - (total - 1) / 2) * STEP;
+  const rise = RADIO * (1 - Math.cos((angle * Math.PI) / 180));
 
   return (
     <motion.li
       className="w-[16.5vw] min-w-30.5 shrink-0 origin-bottom"
-      initial={reduced ? { rotate: angulo, y: -subida } : { opacity: 0, rotate: angulo, y: -subida + 40 }}
-      animate={{ opacity: 1, rotate: angulo, y: -subida }}
+      initial={reduced ? { rotate: angle, y: -rise } : { opacity: 0, rotate: angle, y: -rise + 40 }}
+      animate={{ opacity: 1, rotate: angle, y: -rise }}
       transition={{
         duration: dur.reveal,
         ease: ease.out,
@@ -27,7 +27,7 @@ function Card({ slot, index, total }: { readonly slot: Slot; readonly index: num
       }}
     >
       <div className="aspect-[3/4] w-full overflow-hidden rounded-[14px] bg-bone shadow-photo">
-        {slot.tipo === 'video' ? (
+        {slot.type === 'video' ? (
           <WallVideo src={slot.src} poster={slot.poster} />
         ) : (
           <Image

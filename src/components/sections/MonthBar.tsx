@@ -15,7 +15,7 @@ export interface MonthBarFilter {
   readonly current: boolean;
 }
 
-const VISTAS: readonly {
+const VIEWS: readonly {
   readonly id: CalendarView;
   readonly label: string;
   readonly Icon: typeof GridFour;
@@ -24,7 +24,7 @@ const VISTAS: readonly {
   { id: 'calendar', label: 'Calendar', Icon: CalendarGrid },
 ];
 
-const ACTIVA = 'bg-deep text-paper';
+const ACTIVE = 'bg-deep text-paper';
 
 export default function MonthBar({
   label,
@@ -47,12 +47,12 @@ export default function MonthBar({
 }) {
   return (
     <div
-      className={`grano sticky top-[79px] z-30 border-b border-ink/12 bg-paper py-[10px] lg:py-[14px] ${GUTTER}`}
+      className={`grain sticky top-[79px] z-30 border-b border-ink/12 bg-paper py-[10px] lg:py-[14px] ${GUTTER}`}
     >
-      <div className="caja">
+      <div className="page-box">
         <div className="flex items-center justify-between gap-[10px]">
           <div className="flex min-w-0 items-center gap-[6px] lg:gap-[10px]">
-            <Flecha href={prev.href} label={prev.label} rel="prev" sentido="atras" />
+            <Arrow href={prev.href} label={prev.label} rel="prev" direction="back" />
             <h2
               id={titleId}
               className="m-0 min-w-0 truncate font-display text-d6 uppercase leading-none text-ink lg:text-d4"
@@ -64,21 +64,21 @@ export default function MonthBar({
               <span className="sr-only sm:not-sr-only">{label}</span>
             </h2>
 
-            <Flecha href={next.href} label={next.label} rel="next" sentido="adelante" />
+            <Arrow href={next.href} label={next.label} rel="next" direction="forward" />
           </div>
           <nav aria-label="Switch calendar view" className="shrink-0">
             <ul className="m-0 flex list-none gap-[4px] rounded-pill border border-teal600/30 p-[3px]">
-              {VISTAS.map((v) => {
-                const activo = v.id === view;
+              {VIEWS.map((v) => {
+                const active = v.id === view;
                 return (
                   <li key={v.id}>
                     <Link
                       href={viewHref(v.id)}
                       scroll={false}
-                      aria-current={activo ? 'page' : undefined}
+                      aria-current={active ? 'page' : undefined}
                       className={[
-                        'toque flex min-w-11 items-center justify-center gap-[6px] whitespace-nowrap rounded-pill px-[10px] py-[7px] text-caption font-bold uppercase tracking-[0.1em] transition-colors lg:px-[14px]',
-                        activo ? ACTIVA : 'text-deep hover:bg-mint/60',
+                        'hit-area flex min-w-11 items-center justify-center gap-[6px] whitespace-nowrap rounded-pill px-[10px] py-[7px] text-caption font-bold uppercase tracking-[0.1em] transition-colors lg:px-[14px]',
+                        active ? ACTIVE : 'text-deep hover:bg-mint/60',
                       ].join(' ')}
                     >
                       <v.Icon className="size-[16px]" />
@@ -104,9 +104,9 @@ export default function MonthBar({
                     scroll={false}
                     aria-current={f.current ? 'true' : undefined}
                     className={[
-                      'toque inline-block whitespace-nowrap rounded-pill px-[13px] py-[5px] text-caption font-bold uppercase tracking-[0.08em] transition-colors',
+                      'hit-area inline-block whitespace-nowrap rounded-pill px-[13px] py-[5px] text-caption font-bold uppercase tracking-[0.08em] transition-colors',
                       f.current
-                        ? ACTIVA
+                        ? ACTIVE
                         : 'border border-teal600/35 text-deep hover:border-teal600 hover:bg-mint/50',
                     ].join(' ')}
                   >
@@ -122,28 +122,28 @@ export default function MonthBar({
   );
 }
 
-function Flecha({
+function Arrow({
   href,
   label,
   rel,
-  sentido,
+  direction,
 }: {
   readonly href: string;
   readonly label: string;
   readonly rel: 'prev' | 'next';
-  readonly sentido: 'atras' | 'adelante';
+  readonly direction: 'back' | 'forward';
 }) {
   return (
     <Link
       href={href}
       rel={rel}
       scroll={false}
-      className="toque grid size-[34px] shrink-0 place-items-center rounded-btn border border-ink/20 transition-colors hover:border-ink hover:bg-ink hover:text-paper lg:size-[38px]"
+      className="hit-area grid size-[34px] shrink-0 place-items-center rounded-btn border border-ink/20 transition-colors hover:border-ink hover:bg-ink hover:text-paper lg:size-[38px]"
     >
       <span className="sr-only">{label}</span>
       <svg width="9" height="14" viewBox="0 0 9 14" fill="none" aria-hidden="true">
         <path
-          d={sentido === 'atras' ? 'M8 1L2 7l6 6' : 'M1 1l6 6-6 6'}
+          d={direction === 'back' ? 'M8 1L2 7l6 6' : 'M1 1l6 6-6 6'}
           stroke="currentColor"
           strokeWidth="1.8"
           strokeLinecap="round"

@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from 'motion/react';
 import type { ElementType, ReactNode } from 'react';
 import { DURATION, EASE_BRAND, dur, ease } from './tokens';
-import { quieto } from './quieto';
+import { still } from './still';
 
 export function MaskedLines({
   lines,
@@ -21,14 +21,14 @@ export function MaskedLines({
   readonly accentOn?: 'light' | 'dark';
 }) {
   const reduced = useReducedMotion();
-  const acento = accentOn === 'light' ? 'text-sunset-deep' : 'text-sunset';
-  const tone = (i: number) => (accentLast && i === lines.length - 1 ? acento : undefined);
+  const accent = accentOn === 'light' ? 'text-sunset-deep' : 'text-sunset';
+  const tone = (i: number) => (accentLast && i === lines.length - 1 ? accent : undefined);
 
   const withSpace = (line: string, i: number) => (i < lines.length - 1 ? `${line} ` : line);
 
   if (reduced) {
     return (
-      <Tag data-reveal="" className={quieto(className)}>
+      <Tag data-reveal="" className={still(className)}>
         {lines.map((line, i) => (
           <span key={i} className={['block', tone(i)].filter(Boolean).join(' ')}>
             {withSpace(line, i)}
@@ -70,7 +70,7 @@ export function HeroFadeUp({
   readonly className?: string;
 }) {
   const reduced = useReducedMotion();
-  if (reduced) return <div data-reveal="" className={quieto(className)}>{children}</div>;
+  if (reduced) return <div data-reveal="" className={still(className)}>{children}</div>;
 
   return (
     <motion.div

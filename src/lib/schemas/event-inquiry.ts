@@ -25,14 +25,14 @@ export const inquirySchema = z
       .trim()
       .min(1, 'Event date is required.')
       .regex(/^\d{4}-\d{2}-\d{2}$/, 'Pick a date.')
-      .refine((v) => v >= hoyEnFlorida(), 'Pick a date from today on.'),
+      .refine((v) => v >= todayInFlorida(), 'Pick a date from today on.'),
     altDate: z
       .string()
       .trim()
       .optional()
       .default('')
       .refine((v) => v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v), 'Pick a date.')
-      .refine((v) => v === '' || v >= hoyEnFlorida(), 'Pick a date from today on.'),
+      .refine((v) => v === '' || v >= todayInFlorida(), 'Pick a date from today on.'),
     startTime: z.string().trim().max(200, 'Keep this under 200 characters.').optional().default(''),
     endTime: z.string().trim().max(200, 'Keep this under 200 characters.').optional().default(''),
     guests: z.enum(GUEST_RANGES, { message: 'Choose a guest count.' }),
@@ -66,7 +66,7 @@ export const inquirySchema = z
 
 export type InquiryInput = z.infer<typeof inquirySchema>;
 
-export function hoyEnFlorida(): string {
+export function todayInFlorida(): string {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/New_York',
     year: 'numeric',

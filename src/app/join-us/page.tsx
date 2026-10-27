@@ -7,7 +7,7 @@ import PlateHero from '@/components/shared/PlateHero';
 import { GUTTER } from '@/components/shared/Section';
 import SoftWave from '@/components/shared/SoftWave';
 import { Eyebrow, Heading } from '@/components/shared/Type';
-import { fraseEntretenimiento } from '@/content/entertainment';
+import { entertainmentPhrase } from '@/content/entertainment';
 import { getJobPostings } from '@/content/jobs';
 import { getVenue } from '@/lib/venue';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
@@ -31,8 +31,8 @@ export default async function JoinUsPage({
 }) {
   const lane = parseLane((await searchParams).apply);
   const venue = await getVenue();
-  const musicaLarga = await fraseEntretenimiento();
-  const vacantes = lane === 'team' ? await getJobPostings() : [];
+  const longMusic = await entertainmentPhrase();
+  const openings = lane === 'team' ? await getJobPostings() : [];
 
   return (
     <>
@@ -51,13 +51,13 @@ export default async function JoinUsPage({
       />
       <SoftWave from="bone" to="paper" className="relative -mb-px" />
 
-      <div className={`grano bg-paper pt-12 md:pt-16 lg:pt-20 ${GUTTER}`}>
-        <div className="caja text-center">
-          <Heading level={2} id="apply-title" className="mx-auto max-w-[18ch] text-balance text-banda">
+      <div className={`grain bg-paper pt-12 md:pt-16 lg:pt-20 ${GUTTER}`}>
+        <div className="page-box text-center">
+          <Heading level={2} id="apply-title" className="mx-auto max-w-[18ch] text-balance text-band">
             What are you <span className="text-sunset-deep">here for</span>
           </Heading>
-          <p className="bajada mx-auto mt-gap-bajada max-w-[56ch] font-body text-lead font-light">
-            We hire when we hire, and we book {musicaLarga.toLowerCase()}. Either way a person
+          <p className="subhead mx-auto mt-gap-subhead max-w-[56ch] font-body text-lead font-light">
+            We hire when we hire, and we book {longMusic.toLowerCase()}. Either way a person
             reads what comes in.
           </p>
         </div>
@@ -75,13 +75,13 @@ export default async function JoinUsPage({
           lead="It is a rooftop bar over a yard of gourmet food trucks, with a stage and live music most nights. Busy, outdoors, and never the same shift twice."
           aside={
             <div className="flex flex-col gap-6">
-              {vacantes.length > 0 ? (
+              {openings.length > 0 ? (
                 <div>
                   <Heading level={3} role="label">
                     Open right now
                   </Heading>
                   <ul className="mt-[16px] flex list-none flex-col gap-[20px] p-0">
-                    {vacantes.map((v) => (
+                    {openings.map((v) => (
                       <li key={v.id} className="border-t border-ink/12 pt-[16px]">
                         <p className="font-display text-d6 uppercase lg:text-d5">{v.title}</p>
                         <p className="mt-[6px] flex flex-wrap gap-x-[14px] gap-y-[4px] text-caption font-bold uppercase tracking-[0.1em] text-body/70">
@@ -141,7 +141,7 @@ export default async function JoinUsPage({
           footer={
             <>
               Prefer to send a resume by mail?{' '}
-              <a href={`mailto:${venue.emailHiring}`} className="link-texto break-words font-bold">
+              <a href={`mailto:${venue.emailHiring}`} className="link-text break-words font-bold">
                 {venue.emailHiring}
               </a>
             </>
@@ -156,7 +156,7 @@ export default async function JoinUsPage({
           eyebrowTone="terra"
           title="Play here"
           titleId="artists-title"
-          lead={`${musicaLarga}: solo acts, bands, DJs. There is a stage in the yard with sound already on it, so you are not carrying a PA up two flights.`}
+          lead={`${longMusic}: solo acts, bands, DJs. There is a stage in the yard with sound already on it, so you are not carrying a PA up two flights.`}
           aside={
             <div className="flex flex-col gap-6">
               <div>
@@ -184,7 +184,7 @@ export default async function JoinUsPage({
                 <Eyebrow tone="deep">Already on the calendar?</Eyebrow>
                 <p className="mt-[8px] max-w-[42ch] text-[16px] leading-[1.7] text-body/80">
                   If you already have a date with us and something is unclear, write to{' '}
-                  <a href={`mailto:${venue.email}`} className="link-texto font-bold break-words">
+                  <a href={`mailto:${venue.email}`} className="link-text font-bold break-words">
                     {venue.email}
                   </a>
                   .

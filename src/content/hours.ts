@@ -1,12 +1,12 @@
 import type { Hours } from '@/types/content';
-import horario from './hours.json';
+import schedule from './hours.json';
 
-type Tramo = { readonly open: string; readonly close: string } | 'closed';
-type Semana = Readonly<Record<(typeof DIAS)[number], Tramo>>;
+type Segment = { readonly open: string; readonly close: string } | 'closed';
+type Week = Readonly<Record<(typeof WEEK_DAYS)[number], Segment>>;
 
-const DIAS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
+const WEEK_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
 
-function reloj(t: string): string {
+function clock(t: string): string {
   const [hRaw, m] = t.split(':');
   const h = Number(hRaw);
   const ampm = h >= 12 ? 'PM' : 'AM';
@@ -14,16 +14,16 @@ function reloj(t: string): string {
   return `${h12}:${m} ${ampm}`;
 }
 
-const rango = (t: Tramo): string =>
-  t === 'closed' ? 'Closed' : `${reloj(t.open)} – ${reloj(t.close)}`;
+const range = (t: Segment): string =>
+  t === 'closed' ? 'Closed' : `${clock(t.open)} – ${clock(t.close)}`;
 
-const bar = horario.bar as Semana;
-const trucks = horario.trucks as Semana;
+const bar = schedule.bar as Week;
+const trucks = schedule.trucks as Week;
 
-export const HOURS: readonly Hours[] = DIAS.map((d) => ({
+export const HOURS: readonly Hours[] = WEEK_DAYS.map((d) => ({
   day: d.charAt(0).toUpperCase() + d.slice(1),
-  bar: rango(bar[d]),
-  trucks: rango(trucks[d]),
+  bar: range(bar[d]),
+  trucks: range(trucks[d]),
 }));
 
 export const todayIndex = (): number => {

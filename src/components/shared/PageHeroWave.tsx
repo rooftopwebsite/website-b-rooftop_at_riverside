@@ -22,8 +22,8 @@ export default function PageHeroWave({
   readonly children?: ReactNode;
 }) {
   return (
-    <section aria-labelledby="page-title" className={`grano relative ${SURFACE_BG[from]}`}>
-      <div className="caja-ancha pt-14 pb-28 text-center sm:pb-36 lg:pt-16 lg:pb-44">
+    <section aria-labelledby="page-title" className={`grain relative ${SURFACE_BG[from]}`}>
+      <div className="page-box-wide pt-14 pb-28 text-center sm:pb-36 lg:pt-16 lg:pb-44">
         <Reveal>
           {eyebrow ? (
             <Eyebrow tone="deep" className="justify-center">
@@ -33,7 +33,7 @@ export default function PageHeroWave({
 
           <h1
             id="page-title"
-            className="m-0 mx-auto mt-4 max-w-[18ch] text-balance font-display text-banda font-extrabold uppercase leading-[0.9] text-ink"
+            className="m-0 mx-auto mt-4 max-w-[18ch] text-balance font-display text-band font-extrabold uppercase leading-[0.9] text-ink"
           >
             {accent ? (
               <>

@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import type { Crumb } from '@/components/shared/PageHero';
 import { PhotoPending } from '@/components/shared/PendingData';
 
-const RATIO_MOVIL = {
+const MOBILE_RATIO = {
   portrait: 'aspect-[4/5]',
   landscape: 'aspect-[3/2]',
 } as const;
@@ -31,7 +31,7 @@ export default function PlateHero({
   readonly titleId?: string;
   readonly lead?: ReactNode;
   readonly photo?: string | null;
-  readonly photoMobileRatio?: keyof typeof RATIO_MOVIL;
+  readonly photoMobileRatio?: keyof typeof MOBILE_RATIO;
   readonly photoMobile?: string | null;
   readonly photoMobileAlt?: string | null;
   readonly photoKeepFaces?: boolean;
@@ -43,14 +43,14 @@ export default function PlateHero({
   return (
     <section
       aria-labelledby={titleId}
-      className="bg-bone grano pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]"
+      className="bg-bone grain pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]"
     >
-      <div className={photoKeepFaces ? 'caja-ancha @container' : 'caja-ancha'}>
+      <div className={photoKeepFaces ? 'page-box-wide @container' : 'page-box-wide'}>
         {crumbs && crumbs.length > 0 ? (
           <nav aria-label="Breadcrumb" className="mb-[20px]">
             <ol className="flex flex-wrap items-center gap-x-[8px] gap-y-[2px] text-[14px] text-body/75">
               <li>
-                <Link href="/" className="link-texto">
+                <Link href="/" className="link-text">
                   Home
                 </Link>
               </li>
@@ -62,7 +62,7 @@ export default function PlateHero({
                       {c.name}
                     </span>
                   ) : (
-                    <Link href={c.path} className="link-texto">
+                    <Link href={c.path} className="link-text">
                       {c.name}
                     </Link>
                   )}
@@ -77,26 +77,26 @@ export default function PlateHero({
         </p>
         <h1
           id={titleId}
-          className="relative z-10 mx-auto mt-5 mb-[-0.94em] text-center font-display text-banda font-extrabold uppercase text-ink lg:mt-7"
+          className="relative z-10 mx-auto mt-5 mb-[-0.94em] text-center font-display text-band font-extrabold uppercase text-ink lg:mt-7"
         >
           <span className="block">{title}</span>
-          <span className="relative mx-auto block w-fit max-w-[calc(100%-4*var(--radius-frame))] text-balance rounded-b-frame bg-bone grano px-[0.3em] pb-[0.12em] text-sunset-deep">
+          <span className="relative mx-auto block w-fit max-w-[calc(100%-4*var(--radius-frame))] text-balance rounded-b-frame bg-bone grain px-[0.3em] pb-[0.12em] text-sunset-deep">
             {titleAccent}
 
               <span
               aria-hidden="true"
-              className="esquina-inversa top-[calc(100%-0.94em)] left-full"
+              className="inverted-corner top-[calc(100%-0.94em)] left-full"
             />
             <span
               aria-hidden="true"
-              className="esquina-inversa top-[calc(100%-0.94em)] right-full scale-x-[-1]"
+              className="inverted-corner top-[calc(100%-0.94em)] right-full scale-x-[-1]"
             />
           </span>
         </h1>
         <div
           className={[
             'relative w-full overflow-hidden rounded-frame',
-            RATIO_MOVIL[photoMobileRatio],
+            MOBILE_RATIO[photoMobileRatio],
             photo ? 'bg-fog' : '',
             'sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[17/9] lg:max-h-[calc(100svh-378px)]',
             photoKeepFaces ? 'lg:min-h-[56.25cqw]' : '',
@@ -134,7 +134,7 @@ export default function PlateHero({
             />
           ) : (
             <PhotoPending
-              brief={photoBrief ?? 'Falta definir qué foto va acá.'}
+              brief={photoBrief ?? 'Still need to decide which photo goes here.'}
               ratio=""
               className="absolute inset-0 h-full rounded-none border-0"
             />

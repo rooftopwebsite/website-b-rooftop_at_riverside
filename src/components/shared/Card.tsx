@@ -40,7 +40,7 @@ export default function Card({
     <Link
       href={href}
       className={[
-        'group flex h-full flex-col overflow-hidden rounded-card bg-paper sombra-card',
+        'group flex h-full flex-col overflow-hidden rounded-card bg-paper card-shadow',
         'ring-1 ring-fog',
         'transition-[transform,box-shadow] duration-200 ease-brand',
         'hover:-translate-y-0.5 hover:shadow-float',
@@ -65,7 +65,7 @@ export default function Card({
           ) : null}
         </div>
       ) : (
-        <PhotoPending brief={photoBrief ?? 'Falta definir qué foto va acá.'} ratio={ratio} className="rounded-none border-0" />
+        <PhotoPending brief={photoBrief ?? 'Still need to decide which photo goes here.'} ratio={ratio} className="rounded-none border-0" />
       )}
 
       <div className="flex flex-1 flex-col p-5">

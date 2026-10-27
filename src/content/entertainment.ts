@@ -1,58 +1,58 @@
 import { getVenueEvents, type VenueEvent } from './events';
 import { todayInVenue } from '@/lib/calendar';
 
-const enTemporada = (e: VenueEvent, hoy: string): boolean =>
-  e.from <= hoy && (e.until === null || e.until >= hoy);
+const inSeason = (e: VenueEvent, today: string): boolean =>
+  e.from <= today && (e.until === null || e.until >= today);
 
-export const CONFIRMADO = false;
+export const CONFIRMED = false;
 
-export const NOCHES_CLAIM = 5;
+export const NIGHTS_CLAIM = 5;
 
-export async function nochesConEventos(): Promise<number> {
-  const eventos = await getVenueEvents();
-  const hoy = todayInVenue();
-  const dias = new Set(
-    eventos
-      .filter((e) => e.kind === 'recurring' && enTemporada(e, hoy))
+export async function nightsWithEvents(): Promise<number> {
+  const events = await getVenueEvents();
+  const today = todayInVenue();
+  const days = new Set(
+    events
+      .filter((e) => e.kind === 'recurring' && inSeason(e, today))
       .flatMap((e) => e.weekdays),
   );
-  return dias.size;
+  return days.size;
 }
 
-export async function nochesConMusica(): Promise<number> {
-  const eventos = await getVenueEvents();
-  const hoy = todayInVenue();
-  const dias = new Set(
-    eventos
+export async function nightsWithMusic(): Promise<number> {
+  const events = await getVenueEvents();
+  const today = todayInVenue();
+  const days = new Set(
+    events
       .filter(
         (e) =>
           e.kind === 'recurring' &&
-          enTemporada(e, hoy) &&
+          inSeason(e, today) &&
           e.tags.some((t) => ['live-music', 'dj', 'music'].includes(t)),
       )
       .flatMap((e) => e.weekdays),
   );
-  return dias.size;
+  return days.size;
 }
 
-const PALABRA = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'] as const;
+const WORD = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'] as const;
 
-export async function fraseEntretenimiento(): Promise<string> {
-  if (CONFIRMADO) return `Live music ${PALABRA[NOCHES_CLAIM]} nights a week`;
-  const n = await nochesConMusica();
+export async function entertainmentPhrase(): Promise<string> {
+  if (CONFIRMED) return `Live music ${WORD[NIGHTS_CLAIM]} nights a week`;
+  const n = await nightsWithMusic();
   if (n === 0) return 'Live music on the calendar';
   if (n === 1) return 'Live music every week';
-  return `Live music ${PALABRA[n]} nights a week`;
+  return `Live music ${WORD[n]} nights a week`;
 }
 
-export async function fraseCorta(): Promise<string> {
-  if (CONFIRMADO) return `Live music ${PALABRA[NOCHES_CLAIM]} nights`;
-  const n = await nochesConMusica();
-  return n >= 2 ? `Live music ${PALABRA[n]} nights` : 'Live music this week';
+export async function shortPhrase(): Promise<string> {
+  if (CONFIRMED) return `Live music ${WORD[NIGHTS_CLAIM]} nights`;
+  const n = await nightsWithMusic();
+  return n >= 2 ? `Live music ${WORD[n]} nights` : 'Live music this week';
 }
 
-export async function fraseSemana(): Promise<string> {
-  const n = await nochesConEventos();
+export async function weekPhrase(): Promise<string> {
+  const n = await nightsWithEvents();
   if (n === 0) return 'Something on most weeks';
-  return `Something on ${PALABRA[n]} nights a week`;
+  return `Something on ${WORD[n]} nights a week`;
 }

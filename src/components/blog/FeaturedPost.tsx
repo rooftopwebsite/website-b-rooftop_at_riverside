@@ -4,7 +4,7 @@ import { postMeta, type Post } from '@/lib/blog-format';
 
 export default function FeaturedPost({ post }: { readonly post: Post }) {
   return (
-    <article className="group relative grid overflow-hidden rounded-shell bg-paper sombra-card transition-[transform,box-shadow] duration-200 ease-brand hover:-translate-y-0.5 hover:shadow-float md:grid-cols-2">
+    <article className="group relative grid overflow-hidden rounded-shell bg-paper card-shadow transition-[transform,box-shadow] duration-200 ease-brand hover:-translate-y-0.5 hover:shadow-float md:grid-cols-2">
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-3.5 z-10 rounded-shell border border-dashed border-deep/35"
@@ -23,7 +23,7 @@ export default function FeaturedPost({ post }: { readonly post: Post }) {
           ) : (
             <div
               aria-hidden="true"
-              className="grano flex h-full items-center justify-center bg-bone font-display text-d3 font-semibold uppercase text-deep/35"
+              className="grain flex h-full items-center justify-center bg-bone font-display text-d3 font-semibold uppercase text-deep/35"
             >
               Rooftop
             </div>

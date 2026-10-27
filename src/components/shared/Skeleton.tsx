@@ -1,21 +1,21 @@
 export function Bone({ className = '' }: { readonly className?: string }) {
-  return <span aria-hidden="true" className={`esqueleto block ${className}`} />;
+  return <span aria-hidden="true" className={`skeleton block ${className}`} />;
 }
 
-function Linea({ className = '' }: { readonly className?: string }) {
+function Line({ className = '' }: { readonly className?: string }) {
   return <Bone className={`h-[14px] rounded-pill ${className}`} />;
 }
 
 function HeroSkeleton() {
   return (
     <div className="bg-bone pt-[34px] pb-[48px] lg:pt-[46px] lg:pb-[64px]">
-      <div className="caja-ancha">
-        <Linea className="mb-[20px] w-[140px]" />
+      <div className="page-box-wide">
+        <Line className="mb-[20px] w-[140px]" />
         <div className="mx-auto flex max-w-[40ch] flex-col items-center gap-[10px]">
-          <Linea className="w-full" />
-          <Linea className="w-3/4" />
+          <Line className="w-full" />
+          <Line className="w-3/4" />
         </div>
-        <div className="mx-auto mt-5 flex flex-col items-center gap-[0.18em] text-banda lg:mt-7">
+        <div className="mx-auto mt-5 flex flex-col items-center gap-[0.18em] text-band lg:mt-7">
           <Bone className="h-[0.82em] w-[min(92%,9em)] rounded-card" />
           <Bone className="h-[0.82em] w-[min(70%,6em)] rounded-card" />
         </div>
@@ -30,10 +30,10 @@ function CardSkeleton() {
     <div className="overflow-hidden rounded-card border border-ink/10 bg-paper">
       <Bone className="aspect-video w-full rounded-none" />
       <div className="flex flex-col gap-[12px] p-6">
-        <Linea className="w-1/3" />
+        <Line className="w-1/3" />
         <Bone className="h-[26px] w-4/5 rounded-card" />
-        <Linea className="w-full" />
-        <Linea className="w-2/3" />
+        <Line className="w-full" />
+        <Line className="w-2/3" />
       </div>
     </div>
   );
@@ -41,12 +41,12 @@ function CardSkeleton() {
 
 function BodySkeleton() {
   return (
-    <div className="caja-ancha py-16 lg:py-24">
-      <Linea className="w-[120px]" />
+    <div className="page-box-wide py-16 lg:py-24">
+      <Line className="w-[120px]" />
       <Bone className="mt-4 h-[44px] w-[min(100%,520px)] rounded-card" />
       <div className="mt-5 flex max-w-[52ch] flex-col gap-[10px]">
-        <Linea className="w-full" />
-        <Linea className="w-5/6" />
+        <Line className="w-full" />
+        <Line className="w-5/6" />
       </div>
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <CardSkeleton />
@@ -61,7 +61,7 @@ function BodySkeleton() {
 
 function CalendarSkeleton() {
   return (
-    <div className="caja-ancha py-12 lg:py-16">
+    <div className="page-box-wide py-12 lg:py-16">
       <div className="flex flex-wrap gap-3">
         {['w-[88px]', 'w-[72px]', 'w-[104px]', 'w-[80px]', 'w-[96px]'].map((w) => (
           <Bone key={w} className={`h-10.5 rounded-pill ${w}`} />
@@ -85,15 +85,15 @@ function CalendarSkeleton() {
 
 function FormSkeleton() {
   return (
-    <div className="caja-ancha py-16 lg:py-24">
+    <div className="page-box-wide py-16 lg:py-24">
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.5fr)] lg:gap-16">
         <div>
-          <Linea className="w-[120px]" />
+          <Line className="w-[120px]" />
           <Bone className="mt-4 h-[44px] w-4/5 rounded-card" />
           <div className="mt-5 flex flex-col gap-[10px]">
-            <Linea className="w-full" />
-            <Linea className="w-5/6" />
-            <Linea className="w-2/3" />
+            <Line className="w-full" />
+            <Line className="w-5/6" />
+            <Line className="w-2/3" />
           </div>
         </div>
         <div className="rounded-frame bg-bone px-5 py-9 sm:px-9 sm:py-11">
@@ -102,7 +102,7 @@ function FormSkeleton() {
               <div key={i} className="grid gap-[16px] sm:grid-cols-2">
                 {[0, 1].map((j) => (
                   <div key={j} className="flex flex-col gap-[8px]">
-                    <Linea className="w-2/5" />
+                    <Line className="w-2/5" />
                     <Bone className="h-10.5 w-full rounded-pill" />
                   </div>
                 ))}

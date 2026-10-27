@@ -4,36 +4,36 @@ import Link from 'next/link';
 import { ArrowRight } from '@/components/shared/Icon';
 import { EventPhoto, EventWhen, SpacePill } from '@/components/shared/EventCardParts';
 import { type VenueEvent } from '@/content/events';
-import { ANCHO } from './utils';
+import { WIDTH } from './utils';
 
 export function EventCard({
   event,
   date,
   isToday,
-  fuera,
+  outside,
 }: {
   readonly event: VenueEvent;
   readonly date: string;
   readonly isToday: boolean;
-  readonly fuera: boolean;
+  readonly outside: boolean;
 }) {
-  const entradas = event.ticketUrl;
-  const href = entradas ?? '/whats-on';
-  const cta = entradas ? 'Get tickets' : 'See the calendar';
+  const tickets = event.ticketUrl;
+  const href = tickets ?? '/whats-on';
+  const cta = tickets ? 'Get tickets' : 'See the calendar';
 
-  const contenido = (
+  const content = (
     <>
       <EventPhoto
         event={event}
         sizes="(min-width: 1024px) 400px, 260px"
-        brief={`${event.title} en ${event.space}, de noche, con gente.`}
+        brief={`${event.title} at ${event.space}, at night, with people.`}
         tone="dark"
         imgClassName="object-cover transition-transform duration-500 ease-brand group-hover:scale-104"
       >
         <SpacePill>{event.space}</SpacePill>
       </EventPhoto>
       <div className="relative z-10 flex flex-1 flex-col bg-deeper px-7 pt-6.5 pb-7">
-        <EventWhen event={event} date={date} isToday={isToday} fecha="text-cream" />
+        <EventWhen event={event} date={date} isToday={isToday} dateClassName="text-cream" />
 
         <h3 className="m-0 mt-3.5 font-display text-d4 font-bold uppercase leading-none text-paper">
           {event.title}
@@ -44,41 +44,41 @@ export function EventCard({
         <span className="mt-auto inline-flex w-fit items-center gap-2.25 border-b-2 border-sunset pt-4.5 pb-0.75 font-body text-base font-semibold text-cream transition-colors duration-300 ease-brand group-hover:text-sunset">
           {cta}
           <ArrowRight className="size-4 shrink-0 transition-transform duration-300 ease-brand group-hover:translate-x-1" />
-          {entradas ? <span className="sr-only">(opens in a new tab)</span> : null}
+          {tickets ? <span className="sr-only">(opens in a new tab)</span> : null}
         </span>
       </div>
     </>
   );
 
-  const clases =
-    `group relative flex flex-col shrink-0 snap-start overflow-hidden rounded-shell bg-deeper sombra-card transition-[transform,opacity] duration-300 ease-brand hover:-translate-y-1.5 ${ANCHO} ${
-      fuera ? 'pointer-events-none opacity-0' : ''
+  const classes =
+    `group relative flex flex-col shrink-0 snap-start overflow-hidden rounded-shell bg-deeper card-shadow transition-[transform,opacity] duration-300 ease-brand hover:-translate-y-1.5 ${WIDTH} ${
+      outside ? 'pointer-events-none opacity-0' : ''
     }`;
 
-  return entradas ? (
-    <a href={entradas} target="_blank" rel="noopener noreferrer" className={clases} inert={fuera || undefined}>
-      {contenido}
+  return tickets ? (
+    <a href={tickets} target="_blank" rel="noopener noreferrer" className={classes} inert={outside || undefined}>
+      {content}
     </a>
   ) : (
-    <Link href={href} className={clases} inert={fuera || undefined}>
-      {contenido}
+    <Link href={href} className={classes} inert={outside || undefined}>
+      {content}
     </Link>
   );
 }
 
 export function CalendarCard({
-  fuera,
-  musicaLarga,
+  outside,
+  longMusic,
 }: {
-  readonly fuera: boolean;
-  readonly musicaLarga: string;
+  readonly outside: boolean;
+  readonly longMusic: string;
 }) {
   return (
     <Link
       href="/whats-on"
-      inert={fuera || undefined}
-      className={`group flex shrink-0 snap-start flex-col justify-between gap-8 rounded-shell bg-sunset p-7 sombra-card text-ink transition-[background-color,opacity] duration-300 ease-brand hover:bg-sunset-hover lg:p-9 ${ANCHO} ${
-        fuera ? 'pointer-events-none opacity-0' : ''
+      inert={outside || undefined}
+      className={`group flex shrink-0 snap-start flex-col justify-between gap-8 rounded-shell bg-sunset p-7 card-shadow text-ink transition-[background-color,opacity] duration-300 ease-brand hover:bg-sunset-hover lg:p-9 ${WIDTH} ${
+        outside ? 'pointer-events-none opacity-0' : ''
       }`}
     >
       <span className="font-body text-caption font-medium uppercase tracking-eyebrow text-ink">
@@ -90,7 +90,7 @@ export function CalendarCard({
           See the whole calendar
         </span>
         <span className="mt-4 block max-w-[26ch] font-body text-base font-light">
-          {musicaLarga}, Bingo on Wednesdays and DJ sets late on Saturdays.
+          {longMusic}, Bingo on Wednesdays and DJ sets late on Saturdays.
         </span>
       </span>
 

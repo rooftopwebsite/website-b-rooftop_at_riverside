@@ -75,7 +75,7 @@ export const NAV_MORE: readonly NavLink[] = NAV_MORE_GROUPS.flatMap((g) => g.lin
 
 export const BLOG_HREF = '/blog';
 
-export const sinBlog = <T extends { readonly href: string }>(links: readonly T[]): readonly T[] =>
+export const withoutBlog = <T extends { readonly href: string }>(links: readonly T[]): readonly T[] =>
   links.filter((l) => l.href !== BLOG_HREF);
 
 export const NAV_CTA = {

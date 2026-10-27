@@ -38,16 +38,16 @@ export default function MarketVendorForm() {
   if (state.status === 'ok') {
     return (
       <SentPanel
-        className="rounded-card border border-ink/15 bg-cream sombra-card p-[32px] lg:p-[40px]"
+        className="rounded-card border border-ink/15 bg-cream card-shadow p-[32px] lg:p-[40px]"
       >
         <Eyebrow tone="deep">Request received</Eyebrow>
         <Heading level={3} className="mt-gap-kicker text-d5 lg:text-d4">
           We&rsquo;ll be in touch
         </Heading>
-        <p className="mt-gap-bajada max-w-[52ch] text-lead text-body/80">{state.message}</p>
+        <p className="mt-gap-subhead max-w-[52ch] text-lead text-body/80">{state.message}</p>
         <p className="mt-3 max-w-[52ch] text-[16px] leading-[1.65] text-body/75">
           If you would rather talk it through, call{' '}
-          <a href={venue.phoneHref} className="link-texto font-bold">
+          <a href={venue.phoneHref} className="link-text font-bold">
             {venue.phone}
           </a>
           .

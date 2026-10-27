@@ -26,12 +26,12 @@ export default function DiscHero({
   readonly children?: ReactNode;
 }) {
   return (
-    <section aria-labelledby="page-title" className="relative overflow-hidden bg-paper grano pb-cierre pt-8 lg:pt-11">
-      <div className="caja-ancha relative">
+    <section aria-labelledby="page-title" className="relative overflow-hidden bg-paper grain pb-closing pt-8 lg:pt-11">
+      <div className="page-box-wide relative">
         <nav aria-label="Breadcrumb" className="mb-8">
           <ol className="m-0 flex list-none flex-wrap items-center gap-x-2 gap-y-0.5 p-0 font-body text-caption text-muted">
             <li>
-              <Link href="/" className="link-texto">
+              <Link href="/" className="link-text">
                 Home
               </Link>
             </li>
@@ -43,7 +43,7 @@ export default function DiscHero({
                     {c.name}
                   </span>
                 ) : (
-                  <Link href={c.path} className="link-texto">
+                  <Link href={c.path} className="link-text">
                     {c.name}
                   </Link>
                 )}
@@ -56,7 +56,7 @@ export default function DiscHero({
           <div className="relative flex flex-col items-center text-center">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute left-1/2 top-24 z-0 aspect-square w-[122%] max-w-[46rem] -translate-x-1/2 rounded-[50%] bg-cream grano sm:top-28 lg:top-36"
+              className="pointer-events-none absolute left-1/2 top-24 z-0 aspect-square w-[122%] max-w-[46rem] -translate-x-1/2 rounded-[50%] bg-cream grain sm:top-28 lg:top-36"
             />
             <div className="relative z-10 flex flex-col items-center">
               <Eyebrow tone="deep">{eyebrow}</Eyebrow>
@@ -68,7 +68,7 @@ export default function DiscHero({
               </h1>
               <div className="mt-7 w-full max-w-[34rem]">
                 {photo ? (
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-frame bg-fog sombra-card">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-frame bg-fog card-shadow">
                     <Image
                       src={photo}
                       alt={photoAlt ?? ''}

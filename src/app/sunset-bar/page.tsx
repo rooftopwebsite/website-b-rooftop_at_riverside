@@ -3,13 +3,13 @@ import Image from 'next/image';
 import { ButtonLink } from '@/components/shared/Button';
 import SoftWave from '@/components/shared/SoftWave';
 import MenuSheets from '@/components/sections/MenuSheets';
-import FeaturedEventCard, { dealsNombrados } from '@/components/shared/FeaturedEventCard';
+import FeaturedEventCard, { namedDeals } from '@/components/shared/FeaturedEventCard';
 import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
 import { Heading } from '@/components/shared/Type';
 import { getVenueEvents } from '@/content/events';
 import { GAME_DAY_DEALS, GAME_DAY_LABEL, GAME_DAY_NOTE } from '@/content/game-day';
-import { cartaDelBar } from '@/content/menus';
+import { barMenuData } from '@/content/menus';
 import { getHappyHour } from '@/content/happy-hour';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
@@ -26,10 +26,10 @@ export const metadata: Metadata = pageMeta({
 export default async function SunsetBarPage() {
   const happyHour = await getHappyHour();
 
-  const carta = await cartaDelBar();
+  const menu = await barMenuData();
 
-  const promosDelBar = (await getVenueEvents()).filter(
-    (e) => e.space === 'Sunset Bar' && dealsNombrados(e, GAME_DAY_DEALS).length > 0,
+  const barPromos = (await getVenueEvents()).filter(
+    (e) => e.space === 'Sunset Bar' && namedDeals(e, GAME_DAY_DEALS).length > 0,
   );
 
   return (
@@ -48,7 +48,7 @@ export default async function SunsetBarPage() {
         photo="/images/venue/bar-cocktails-wide.webp"
         photoAlt="Four cocktails on a table on the rooftop at golden hour, with the bar and the umbrellas behind"
       >
-        <ButtonLink href="#carta-title" variant="primary" size="lg">
+        <ButtonLink href="#bar-menu-title" variant="primary" size="lg">
           See the menu
         </ButtonLink>
         <ButtonLink href="/whats-on" variant="secondary" size="lg">
@@ -62,7 +62,7 @@ export default async function SunsetBarPage() {
             aria-hidden="true"
             className="pointer-events-none absolute top-[-104px] left-0 w-[76px] -rotate-6 sm:top-[-150px] sm:w-[118px] desk:top-[-236px] desk:w-[184px]"
           >
-            <span className="sticker-oscuro rt-flotar block">
+            <span className="sticker-dark rt-float block">
               <Image
                 src="/brand/seal.svg"
                 alt=""
@@ -76,7 +76,7 @@ export default async function SunsetBarPage() {
             aria-hidden="true"
             className="pointer-events-none absolute top-[-88px] right-0 w-[68px] rotate-6 sm:top-[-120px] sm:w-[104px] desk:top-[-172px] desk:w-[164px]"
           >
-            <span className="sticker-oscuro rt-flotar-2 block">
+            <span className="sticker-dark rt-float-2 block">
               <Image
                 src="/brand/emblem.svg"
                 alt=""
@@ -87,7 +87,7 @@ export default async function SunsetBarPage() {
             </span>
           </span>
 
-          <Heading level={2} id="hh-title" className="text-banda text-paper">
+          <Heading level={2} id="hh-title" className="text-band text-paper">
             Happy hour
           </Heading>
           <p className="mt-5 inline-block whitespace-nowrap rounded-btn border border-dashed border-cream/60 px-4 py-2 text-center font-display text-d7 uppercase tracking-[0.06em] text-cream sm:px-6 sm:py-2.5 sm:tracking-eyebrow lg:px-7 lg:py-3 lg:text-d6 desk:text-d5">
@@ -98,7 +98,7 @@ export default async function SunsetBarPage() {
             </span>
             <span>{happyHour.time}</span>
           </p>
-          <div className="relative mt-9 rounded-frame bg-bone grano px-6 py-9 sm:px-10 lg:mt-11">
+          <div className="relative mt-9 rounded-frame bg-bone grain px-6 py-9 sm:px-10 lg:mt-11">
             <span
               aria-hidden="true"
               className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-teal600/55"
@@ -127,10 +127,10 @@ export default async function SunsetBarPage() {
               See what&rsquo;s on this week
             </ButtonLink>
           </div>
-          {promosDelBar.length > 0 ? (
+          {barPromos.length > 0 ? (
             <div id="nfc-north-hq" className="mt-11 flex scroll-mt-28 flex-col gap-7 lg:mt-14 lg:gap-9">
-              {promosDelBar.map((ev) => {
-                const promos = dealsNombrados(ev, GAME_DAY_DEALS);
+              {barPromos.map((ev) => {
+                const promos = namedDeals(ev, GAME_DAY_DEALS);
                 return (
                   <div key={ev.slug}>
                     {promos.length > 0 ? (
@@ -152,7 +152,7 @@ export default async function SunsetBarPage() {
           ) : null}
         </div>
       </Section>
-      <MenuSheets pdfUrl={carta?.pdfUrl ?? null} />
+      <MenuSheets pdfUrl={menu?.pdfUrl ?? null} />
     </>
   );
 }

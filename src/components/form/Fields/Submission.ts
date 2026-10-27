@@ -7,7 +7,7 @@ export type FormAction = (prev: ActionState, fd: FormData) => Promise<ActionStat
 
 const OFFLINE =
   'You look offline, so nothing was sent. Your answers are still here: try again once you are back online.';
-const SIN_RESPUESTA =
+const NO_RESPONSE =
   'We could not reach our server, so nothing was sent. Your answers are still here: give it another try in a moment.';
 
 export function useSubmission(action: FormAction) {
@@ -25,8 +25,8 @@ export function useSubmission(action: FormAction) {
         const res = await action(IDLE, fd);
         setLocal(res);
       } catch (err) {
-        console.error('[form] el envío no llegó al servidor:', err);
-        setLocal({ status: 'error', message: SIN_RESPUESTA });
+        console.error('[form] the submission did not reach the server:', err);
+        setLocal({ status: 'error', message: NO_RESPONSE });
       }
     });
   }

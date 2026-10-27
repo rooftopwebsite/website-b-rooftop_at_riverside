@@ -1,17 +1,17 @@
-export function sinEmDash(t: string): string;
-export function sinEmDash(t: string | null): string | null;
-export function sinEmDash(t: string | null): string | null {
+export function withoutEmDash(t: string): string;
+export function withoutEmDash(t: string | null): string | null;
+export function withoutEmDash(t: string | null): string | null {
   if (!t || !t.includes('—')) return t;
   return t
     .split('—')
     .map((p) => p.trim())
-    .reduce((acc, parte, i) => {
-      if (i === 0) return parte;
-      if (!parte) return acc;
-      const palabras = acc.split(/\s+/).filter(Boolean).length;
-      if (palabras <= 3) return `${acc}: ${parte}`;
-      const conMayuscula = parte.charAt(0).toUpperCase() + parte.slice(1);
-      return `${acc.replace(/[.,;:]$/, '')}. ${conMayuscula}`;
+    .reduce((acc, part, i) => {
+      if (i === 0) return part;
+      if (!part) return acc;
+      const words = acc.split(/\s+/).filter(Boolean).length;
+      if (words <= 3) return `${acc}: ${part}`;
+      const capitalized = part.charAt(0).toUpperCase() + part.slice(1);
+      return `${acc.replace(/[.,;:]$/, '')}. ${capitalized}`;
     }, '')
     .trim();
 }

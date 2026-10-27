@@ -4,46 +4,46 @@ import Section from '@/components/shared/Section';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import { LEGAL_DOCS, type LegalBlock, type LegalDoc } from '@/content/legal-docs';
 
-function Cuerpo({ blocks }: { readonly blocks: readonly LegalBlock[] }) {
+function Body({ blocks }: { readonly blocks: readonly LegalBlock[] }) {
   return (
     <div className="prose-legal">
       {blocks.map((b, i) => {
         switch (b.kind) {
-          case 'titulo':
+          case 'heading':
             return <h2 key={i}>{b.text}</h2>;
 
-          case 'aviso':
+          case 'notice':
             return (
-              <p key={i} className="aviso">
+              <p key={i} className="notice">
                 {b.text}
               </p>
             );
 
-          case 'parrafo':
+          case 'paragraph':
             return <p key={i}>{b.text}</p>;
 
-          case 'clausula':
+          case 'clause':
             return (
               <div key={i}>
-                <h3>{b.rotulo}</h3>
-                {b.cuerpo.map((p, j) => (
+                <h3>{b.label}</h3>
+                {b.body.map((p, j) => (
                   <p key={j}>{p}</p>
                 ))}
               </div>
             );
 
-          case 'lista':
-            return b.orden === 'letras' ? (
-              <ol key={i} className="letras">
+          case 'list':
+            return b.order === 'letters' ? (
+              <ol key={i} className="letters">
                 {b.items.map((it, j) => (
-                  <li key={j}>{it.texto}</li>
+                  <li key={j}>{it.text}</li>
                 ))}
               </ol>
             ) : (
               <ul key={i}>
                 {b.items.map((it, j) => (
                   <li key={j}>
-                    {it.rotulo ? <strong>{it.rotulo}:</strong> : null} {it.texto}
+                    {it.label ? <strong>{it.label}:</strong> : null} {it.text}
                   </li>
                 ))}
               </ul>
@@ -73,7 +73,7 @@ export default function LegalPage({
   readonly blocks: readonly LegalBlock[];
   readonly docs?: readonly LegalDoc[];
 }) {
-  const fecha = lastUpdated
+  const formattedDate = lastUpdated
     ? new Date(`${lastUpdated}T00:00:00`).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
@@ -81,7 +81,7 @@ export default function LegalPage({
       })
     : null;
 
-  const otros = docs.filter((d) => d.href !== currentHref);
+  const others = docs.filter((d) => d.href !== currentHref);
 
   return (
     <>
@@ -91,16 +91,16 @@ export default function LegalPage({
           {title} <span className="text-sunset-deep">{accent}</span>
         </Heading>
         {intro ? (
-          <p className="mt-gap-bajada max-w-[62ch] text-lead bajada">{intro}</p>
+          <p className="mt-gap-subhead max-w-[62ch] text-lead subhead">{intro}</p>
         ) : null}
       </Section>
 
       <Section band="lg">
-        <article className="mx-auto max-w-[900px] rounded-frame bg-bone grano px-6 py-10 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
+        <article className="mx-auto max-w-[900px] rounded-frame bg-bone grain px-6 py-10 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
           <p className="eyebrow text-muted">
-            {lastUpdated && fecha ? (
+            {lastUpdated && formattedDate ? (
               <>
-                Last updated &middot; <time dateTime={lastUpdated}>{fecha}</time>
+                Last updated &middot; <time dateTime={lastUpdated}>{formattedDate}</time>
               </>
             ) : (
               <>Draft &middot; awaiting the final text</>
@@ -109,18 +109,18 @@ export default function LegalPage({
 
           <hr className="mt-6 mb-9 h-px w-full border-0 bg-ink/15" />
 
-          <Cuerpo blocks={blocks} />
+          <Body blocks={blocks} />
           <nav
             aria-label="The other documents"
             className="mt-12 flex flex-col items-start gap-y-2 border-t border-ink/15 pt-7 md:flex-row md:flex-wrap md:items-center md:gap-x-3"
           >
             <span className="eyebrow text-muted">Also read</span>
-            {otros.map((d, i) => (
+            {others.map((d, i) => (
               <span key={d.href} className="flex items-center gap-3">
                 {i > 0 ? (
                   <span aria-hidden="true" className="hidden h-3 w-px bg-ink/20 md:block" />
                 ) : null}
-                <Link href={d.href} className="link-texto font-body text-base font-semibold">
+                <Link href={d.href} className="link-text font-body text-base font-semibold">
                   {d.label}
                 </Link>
               </span>

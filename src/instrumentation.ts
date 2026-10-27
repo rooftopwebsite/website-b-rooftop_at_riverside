@@ -1,4 +1,4 @@
-const REQUERIDAS = [
+const REQUIRED = [
   'RESEND_API_KEY',
   'RESEND_FROM',
   'MAIL_TO_CONTACT',
@@ -11,8 +11,8 @@ const REQUERIDAS = [
 
 export function register(): void {
   if (process.env.NEXT_RUNTIME !== 'nodejs') return;
-  const faltan = REQUERIDAS.filter((nombre) => !process.env[nombre]);
-  if (faltan.length > 0) {
-    console.warn(`[env] Faltan variables: ${faltan.join(', ')}. El sitio arranca igual con sus respaldos.`);
+  const missing = REQUIRED.filter((name) => !process.env[name]);
+  if (missing.length > 0) {
+    console.warn(`[env] Missing variables: ${missing.join(', ')}. The site still starts with its fallbacks.`);
   }
 }

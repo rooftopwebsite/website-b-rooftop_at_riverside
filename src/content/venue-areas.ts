@@ -9,7 +9,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     photo: '/images/venue/wall-bartender.webp',
     photoAlt: 'A bartender making a drink behind the bar at Rooftop at Riverside',
     photoBrief:
-      "La barra de arriba entera al atardecer, con la vista al oeste detrás.",
+      "The whole upstairs bar at sunset, with the view west behind it.",
     href: '/sunset-bar',
   },
   {
@@ -20,7 +20,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     photo: '/images/venue/patio-rooftop-table.webp',
     photoAlt: 'Tables with umbrellas along the railing of the rooftop patio',
     photoBrief:
-      "El patio de arriba al aire libre, con mesas y gente, mirando hacia el patio de abajo.",
+      "The open-air upstairs patio, with tables and people, looking down toward the yard below.",
   },
   {
     slug: 'the-stage',
@@ -30,7 +30,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     photo: '/images/venue/wall-live-music-tent.webp',
     photoAlt: 'A musician playing under the tent in the yard',
     photoBrief:
-      "El escenario armado con una banda tocando y gente mirando.",
+      "The stage set up with a band playing and people watching.",
     href: '/whats-on',
   },
   {
@@ -41,7 +41,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     photo: '/images/venue/wall-yard-night-table.webp',
     photoAlt: 'A group at a table in the yard at night, with the food trucks lit up behind them',
     photoBrief:
-      "El patio cerrado con la reja puesta, de noche, durante un show con entrada.",
+      "The yard closed off with the gate up, at night, during a ticketed show.",
   },
   {
     slug: 'food-truck-park',
@@ -51,7 +51,7 @@ export const VENUE_AREAS: readonly VenueArea[] = [
     photo: '/images/venue/wall-truck-window-day.webp',
     photoAlt: 'People ordering at a food truck window in the yard during the day',
     photoBrief:
-      "Los cuatro trucks estacionados en fila, con los carteles legibles.",
+      "The four trucks parked in a row, with their signs readable.",
     href: '/food-trucks',
   },
 ];

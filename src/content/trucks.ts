@@ -32,7 +32,7 @@ export const TRUCKS: readonly Truck[] = [
     photo: '/images/trucks/ocn-seafood-1.webp',
     photoAlt: 'A seafood boil with crab legs, corn, potatoes and clams from OCN Seafood Co.',
     photoBrief:
-      "El truck de OCN Seafood Co. abierto y atendiendo, al atardecer, con la ventanilla iluminada y gente pidiendo.",
+      "The OCN Seafood Co. truck open and serving, at sunset, with the window lit and people ordering.",
     menuImage: null,
     gallery: [],
     nameConfirmed: true,
@@ -50,7 +50,7 @@ export const TRUCKS: readonly Truck[] = [
     photo: null,
     photoAlt: null,
     photoBrief:
-      "El truck de Butcher's Blvd estacionado en el patio, más un primer plano de una smashburger saliendo.",
+      "The Butcher's Blvd truck parked in the yard, plus a close-up of a smashburger going out.",
     menuImage: null,
     gallery: [],
     nameConfirmed: true,
@@ -69,7 +69,7 @@ export const TRUCKS: readonly Truck[] = [
     instagram: 'https://www.instagram.com/el_chilango_mx/',
     photo: '/images/trucks/el-chilango-3.webp',
     photoAlt: 'Chilaquiles with pulled pork, avocado and crema from El Chilango MX',
-    photoBrief: "El truck por fuera, con el cartel legible.",
+    photoBrief: "The truck from outside, with its sign readable.",
     menuImage: '/menus/el-chilango-mx.jpg',
     gallery: [
       {
@@ -98,7 +98,7 @@ export const TRUCKS: readonly Truck[] = [
     photo: null,
     photoAlt: null,
     photoBrief:
-      "El truck de Reggae Kitchen con el cartel legible, y un plato servido que muestre el color de la comida.",
+      "The Reggae Kitchen truck with its sign readable, and a plated dish that shows the color of the food.",
     menuImage: null,
     gallery: [],
     nameConfirmed: false,
@@ -118,7 +118,7 @@ export const TRUCKS: readonly Truck[] = [
     instagram: null,
     photo: '/images/trucks/prime-carvery-1.jpg',
     photoAlt: 'A burger with melted cheese served from the Prime Carvery truck',
-    photoBrief: "El truck por fuera, con el cartel legible, abierto y atendiendo.",
+    photoBrief: "The truck from outside, with its sign readable, open and serving.",
     menuImage: null,
     gallery: [],
     nameConfirmed: true,
@@ -137,7 +137,7 @@ export const TRUCKS: readonly Truck[] = [
     instagram: null,
     photo: '/images/trucks/seafood-1.jpg',
     photoAlt: 'A poke bowl with fresh fish and vegetables from Sea Me on Wheels',
-    photoBrief: "El truck por fuera, con el cartel legible, abierto y atendiendo.",
+    photoBrief: "The truck from outside, with its sign readable, open and serving.",
     menuImage: '/menus/sea-me-on-wheels.webp',
     gallery: [],
     nameConfirmed: true,
@@ -154,7 +154,7 @@ export const TRUCKS: readonly Truck[] = [
     instagram: null,
     photo: '/images/trucks/tropical-1.jpg',
     photoAlt: 'A plated dish from the Tropical Fusion food truck',
-    photoBrief: 'El truck por fuera, con el cartel legible y un plato servido.',
+    photoBrief: 'The truck from outside, with its sign readable and a plated dish.',
     menuImage: null,
     gallery: [],
     nameConfirmed: true,
@@ -164,7 +164,7 @@ export const TRUCKS: readonly Truck[] = [
 
 export const activeTrucks = (): readonly Truck[] => TRUCKS.filter((t) => t.active);
 
-export const nombreVisible = (t: Truck): string =>
+export const displayName = (t: Truck): string =>
   t.nameConfirmed ? t.name : 'Name unconfirmed';
 
 export const truckBySlug = (slug: string): Truck | undefined =>
@@ -178,18 +178,18 @@ export function retiredTruckRedirects() {
   }));
 }
 
-const normalizar = (s: string) =>
+const normalize = (s: string) =>
   s
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '');
 
-export const truckPorNombre = (nombre: string): Truck | undefined =>
-  TRUCKS.find((t) => normalizar(t.name) === normalizar(nombre));
+export const truckByName = (name: string): Truck | undefined =>
+  TRUCKS.find((t) => normalize(t.name) === normalize(name));
 
-export const menuDeTruck = (
+export const truckMenu = (
   t: Truck,
-  cartas: readonly { readonly name: string; readonly pdfUrl: string }[],
+  menus: readonly { readonly name: string; readonly pdfUrl: string }[],
 ): string | null =>
-  cartas.find((c) => normalizar(c.name) === normalizar(t.name))?.pdfUrl ?? t.menuImage;
+  menus.find((c) => normalize(c.name) === normalize(t.name))?.pdfUrl ?? t.menuImage;

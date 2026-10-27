@@ -1,2 +1,2 @@
-export { JobForm } from './FormTrabajo';
-export { ArtistForm } from './FormArtista';
+export { JobForm } from './JobForm';
+export { ArtistForm } from './ArtistForm';

@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import type { ElementType, ReactNode } from 'react';
 import { useMemo } from 'react';
 import { clip, dur, ease, viewport } from './tokens';
-import { quieto } from './quieto';
+import { still } from './still';
 
 export function RevealMedia({
   children,
@@ -25,13 +25,13 @@ export function RevealMedia({
   if (reduced) {
     const Tag = as;
     return (
-      <Tag data-reveal="" className={quieto(className)}>
+      <Tag data-reveal="" className={still(className)}>
         {children}
       </Tag>
     );
   }
 
-  const cerrado =
+  const closed =
     from === 'right'
       ? 'inset(0% 0% 0% 100%)'
       : from === 'left'
@@ -45,7 +45,7 @@ export function RevealMedia({
       whileInView="visible"
       viewport={viewport}
       variants={{
-        hidden: { clipPath: cerrado },
+        hidden: { clipPath: closed },
         visible: {
           clipPath: clip.visible,
           transition: { duration: dur.reveal, ease: ease.out, delay },
@@ -68,7 +68,7 @@ export function ScaleMedia({
 }) {
   const reduced = useReducedMotion();
 
-  if (reduced) return <div data-reveal="" className={quieto(className)}>{children}</div>;
+  if (reduced) return <div data-reveal="" className={still(className)}>{children}</div>;
 
   return (
     <motion.div

@@ -8,8 +8,8 @@ import ThreeDoors from '@/components/sections/ThreeDoors';
 import WhatsOn from '@/components/sections/WhatsOn';
 import { getVenueEvents } from '@/content/events';
 import { todayInVenue, upcomingOccurrences } from '@/lib/calendar';
-import { fraseCorta, fraseEntretenimiento } from '@/content/entertainment';
-import { fraseHappyHour } from '@/content/happy-hour';
+import { shortPhrase, entertainmentPhrase } from '@/content/entertainment';
+import { happyHourPhrase } from '@/content/happy-hour';
 import YardSteps from '@/components/sections/YardSteps';
 import { pageMeta } from '@/lib/seo';
 
@@ -18,20 +18,20 @@ export const metadata: Metadata = pageMeta({
 });
 
 export default async function HomePage() {
-  const eventos = await getVenueEvents();
-  const proximos = upcomingOccurrences(eventos, todayInVenue(), 8);
-  const musicaCorta = await fraseCorta();
-  const musicaLarga = await fraseEntretenimiento();
-  const happyHour = await fraseHappyHour();
+  const events = await getVenueEvents();
+  const upcoming = upcomingOccurrences(events, todayInVenue(), 8);
+  const shortMusic = await shortPhrase();
+  const longMusic = await entertainmentPhrase();
+  const happyHour = await happyHourPhrase();
 
   return (
     <>
-      <Hero fraseMusica={musicaCorta} fraseHappyHour={happyHour} />
-      <WhatsOn proximos={proximos} musicaLarga={musicaLarga} />
+      <Hero musicPhrase={shortMusic} happyHourPhrase={happyHour} />
+      <WhatsOn upcoming={upcoming} longMusic={longMusic} />
       <ThreeDoors />
       <PhotoDivider />
       <HowThisPlaceWorks />
-      <YardSteps fraseMusica={musicaLarga} />
+      <YardSteps musicPhrase={longMusic} />
       <EventsBanner />
       <FindUs />
     </>

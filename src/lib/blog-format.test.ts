@@ -41,55 +41,55 @@ const feed = (over: Partial<FeedPost> = {}): FeedPost => ({
 });
 
 describe('cleanHtml', () => {
-  it('saca el guion medio del texto visible', () => {
+  it('removes the em dash from visible text', () => {
     assert.equal(cleanHtml('<p>More Than Rice — A Spanish Ritual</p>'), '<p>More Than Rice: A Spanish Ritual</p>');
   });
-  it('convierte la entidad &mdash; igual que el caracter', () => {
+  it('converts the &mdash; entity the same as the character', () => {
     assert.equal(cleanHtml('<p>Rice &mdash; saffron</p>'), '<p>Rice: saffron</p>');
   });
-  it('no toca atributos', () => {
+  it('does not touch attributes', () => {
     const html = '<a href="/x" title="a — b">link</a>';
     assert.equal(cleanHtml(html), html);
   });
-  it('no toca code ni pre', () => {
+  it('does not touch code or pre', () => {
     const html = '<pre><code>a — b</code></pre><p>c — d</p>';
     assert.equal(cleanHtml(html), '<pre><code>a — b</code></pre><p>c: d</p>');
   });
-  it('conserva los espacios alrededor de etiquetas inline', () => {
+  it('keeps the spaces around inline tags', () => {
     assert.equal(cleanHtml('<p>a <strong>b</strong> — c d</p>'), '<p>a <strong>b</strong>: c d</p>');
     assert.equal(cleanHtml('<p>one two <em>x</em> y</p>'), '<p>one two <em>x</em> y</p>');
   });
-  it('baja los h1 del cuerpo a h2', () => {
+  it('demotes body h1s to h2', () => {
     assert.equal(cleanHtml('<h1 id="a">T</h1>'), '<h2 id="a">T</h2>');
   });
 });
 
 describe('safeImage', () => {
-  it('acepta las fotos de public/images/blog', () => {
+  it('accepts photos from public/images/blog', () => {
     assert.equal(safeImage(COVER), COVER);
   });
-  it('rechaza otras carpetas y otros hosts', () => {
+  it('rejects other folders and other hosts', () => {
     assert.equal(safeImage('/images/venue/bar.webp'), null);
     assert.equal(safeImage('https://example.com/a.webp'), null);
     assert.equal(safeImage(null), null);
   });
 });
 
-describe('texto, minutos y fecha', () => {
-  it('htmlToText saca etiquetas y entidades', () => {
+describe('text, minutes and date', () => {
+  it('htmlToText strips tags and entities', () => {
     assert.equal(htmlToText('<p>Fish &amp; <b>chips</b></p><p>ok</p>'), 'Fish & chips ok');
   });
-  it('readMinutes redondea a 230 ppm con mínimo 1', () => {
+  it('readMinutes rounds at 230 wpm with a minimum of 1', () => {
     assert.equal(readMinutes(''), 1);
     assert.equal(readMinutes(Array(690).fill('w').join(' ')), 3);
   });
-  it('formatDate no se corre de día y acepta ISO completo', () => {
+  it('formatDate does not shift the day and accepts a full ISO', () => {
     assert.equal(formatDate('2026-04-15'), 'April 15, 2026');
     assert.equal(formatDate('2026-04-15T23:59:00Z'), 'April 15, 2026');
     assert.equal(formatDate(''), '');
     assert.equal(formatDate('garbage'), '');
   });
-  it('postMeta no deja el separador colgando', () => {
+  it('postMeta does not leave a dangling separator', () => {
     const post = toPostFull(feed({ publishedAt: null }), SITE)!;
     assert.equal(postMeta(post), '1 min read');
     assert.equal(postMeta(toPostFull(feed(), SITE)!), 'April 15, 2026 · 1 min read');
@@ -97,7 +97,7 @@ describe('texto, minutos y fecha', () => {
 });
 
 describe('markdownToHtml', () => {
-  it('escapa HTML y arma párrafos y h2', () => {
+  it('escapes HTML and builds paragraphs and h2', () => {
     assert.equal(
       markdownToHtml('# Hi\n\nA <script>x</script> line\nsame para\n\n## Sub'),
       '<h2>Hi</h2><p>A &lt;script&gt;x&lt;/script&gt; line same para</p><h2>Sub</h2>',
@@ -106,7 +106,7 @@ describe('markdownToHtml', () => {
 });
 
 describe('faqNodes', () => {
-  it('saca FAQPage de @graph y le pone @context', () => {
+  it('pulls FAQPage out of @graph and adds @context', () => {
     const out = faqNodes([
       { '@context': 'https://schema.org', '@graph': [{ '@type': 'FAQPage', mainEntity: [] }, { '@type': 'Article' }] },
       { '@type': 'FAQPage', mainEntity: [1] },
@@ -116,71 +116,71 @@ describe('faqNodes', () => {
       { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [1] },
     ]);
   });
-  it('tolera basura', () => {
+  it('tolerates garbage', () => {
     assert.deepEqual(faqNodes(null), []);
     assert.deepEqual(faqNodes('x'), []);
   });
 });
 
 describe('toPostFull', () => {
-  it('limpia guiones de título, extracto y alt', () => {
+  it('cleans dashes from title, excerpt and alt', () => {
     const p = toPostFull(feed(), SITE)!;
     assert.equal(p.title, 'The Art of Paella. A Ritual');
     assert.equal(p.excerpt, 'Bomba rice: saffron and socarrat.');
     assert.equal(p.imageAlt, 'A paella pan: seen from above');
     assert.equal(p.html, '<h2>Title</h2><p>More Than Rice: A Spanish Ritual</p>');
   });
-  it('sin portada válida queda sin imagen', () => {
+  it('without a valid cover it has no image', () => {
     const p = toPostFull(feed({ coverImageUrl: 'https://example.com/beer.webp' }), SITE)!;
     assert.equal(p.image, null);
     assert.equal(p.ogImage, null);
   });
-  it('arma el extracto desde el HTML si el JSON no lo trajo', () => {
+  it('builds the excerpt from the HTML if the JSON did not include one', () => {
     const p = toPostFull(feed({ excerpt: null, contentHtml: '<p>Short body.</p>' }), SITE)!;
     assert.equal(p.excerpt, 'Short body.');
     assert.equal(p.metaDescription, 'Short body.');
   });
-  it('corta el extracto largo en una palabra', () => {
+  it('cuts a long excerpt at a word', () => {
     const long = Array(80).fill('word').join(' ');
     const p = toPostFull(feed({ excerpt: null, contentHtml: `<p>${long}</p>` }), SITE)!;
     assert.ok(p.excerpt.length <= 161);
     assert.ok(p.excerpt.endsWith('…'));
     assert.ok(!p.excerpt.includes('wor…'));
   });
-  it('usa el markdown si no hay contentHtml', () => {
+  it('uses the markdown if there is no contentHtml', () => {
     const p = toPostFull(feed({ contentHtml: null, content: 'Hello — world' }), SITE)!;
     assert.equal(p.html, '<p>Hello: world</p>');
   });
-  it('saca el título del slug si falta', () => {
+  it('derives the title from the slug if missing', () => {
     assert.equal(toPostFull(feed({ title: null }), SITE)!.title, 'The Art Of Paella');
   });
-  it('descarta la nota sin slug', () => {
+  it('drops the post without a slug', () => {
     assert.equal(toPostFull(feed({ slug: '  ' }), SITE), null);
   });
-  it('canonical: propio salvo que el del JSON sea del dominio', () => {
+  it('canonical: our own unless the JSON one is on the domain', () => {
     assert.equal(toPostFull(feed(), SITE)!.canonicalPath, '/blog/the-art-of-paella');
     assert.equal(toPostFull(feed({ canonicalUrl: 'https://otro.com/x' }), SITE)!.canonicalPath, '/blog/the-art-of-paella');
     assert.equal(toPostFull(feed({ canonicalUrl: `${SITE}/blog/paella` }), SITE)!.canonicalPath, '/blog/paella');
   });
-  it('og: ogTitle/ogDescription/ogImage ganan si vienen', () => {
+  it('og: ogTitle/ogDescription/ogImage win when present', () => {
     const og = `${IMAGE_ORIGIN}og.webp`;
     const p = toPostFull(feed({ ogTitle: 'OG — t', ogDescription: 'OG d', ogImage: og }), SITE)!;
     assert.equal(p.metaTitle, 'OG: t');
     assert.equal(p.metaDescription, 'OG d');
     assert.equal(p.ogImage, og);
   });
-  it('fecha: toma los 10 primeros caracteres de un ISO', () => {
+  it('date: takes the first 10 characters of an ISO', () => {
     assert.equal(toPostFull(feed({ publishedAt: '2026-04-15T10:00:00Z' }), SITE)!.publishedAt, '2026-04-15');
   });
 });
 
-describe('toPosts y splitFeatured', () => {
-  it('descarta vacíos y repetidos, respeta el orden', () => {
+describe('toPosts and splitFeatured', () => {
+  it('drops empty and duplicate entries, keeps the order', () => {
     const out = toPosts([feed({ slug: 'a' }), feed({ slug: '' }), feed({ slug: 'a', title: 'dup' }), feed({ slug: 'b' })], SITE);
     assert.deepEqual(out.map((p) => p.slug), ['a', 'b']);
     assert.notEqual(out[0].title, 'dup');
   });
-  it('la destacada es la featured, si no la primera', () => {
+  it('the highlighted one is the featured one, otherwise the first', () => {
     const posts = toPosts([feed({ slug: 'a' }), feed({ slug: 'b', featured: true }), feed({ slug: 'c' })], SITE);
     const { featured, rest } = splitFeatured(posts);
     assert.equal(featured?.slug, 'b');

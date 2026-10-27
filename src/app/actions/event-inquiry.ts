@@ -27,7 +27,7 @@ export async function submitEventInquiry(
   }
 
   const d = parsed.data;
-  const hora =
+  const hour =
     d.startTime || d.endTime ? `${d.startTime || '?'} to ${d.endTime || '?'}` : '(not given)';
 
   const result = await sendSubmission({
@@ -44,7 +44,7 @@ export async function submitEventInquiry(
       'Event type': d.eventType,
       Date: d.date,
       'Second date': d.altDate || '(not given)',
-      Time: hora,
+      Time: hour,
       Guests: d.guests,
       'Food tier': d.foodTier,
       'Bar package': d.barTier ?? '(not chosen)',

@@ -32,13 +32,13 @@ export default function EventsBanner() {
     <section
       id="events"
       aria-labelledby="events-banner-title"
-      className="banda-arco relative z-[3] bg-deep grano pt-14 pb-cierre-arco text-bone on-dark md:pt-18 lg:pt-22 desk:pt-28"
+      className="band-arc relative z-[3] bg-deep grain pt-14 pb-closing-arc text-bone on-dark md:pt-18 lg:pt-22 desk:pt-28"
     >
-      <div className="caja-ancha relative">
+      <div className="page-box-wide relative">
         <Reveal className="relative">
           <h2
             id="events-banner-title"
-            className="m-0 text-balance font-display text-banda font-extrabold uppercase text-paper"
+            className="m-0 text-balance font-display text-band font-extrabold uppercase text-paper"
           >
             The whole place <span className="text-sunset">is{' '}
             <span className="whitespace-nowrap">
@@ -52,7 +52,7 @@ export default function EventsBanner() {
               />
             </span></span>
           </h2>
-          <p className="mt-gap-bajada max-w-[62ch] font-body text-lead font-light text-paper">
+          <p className="mt-gap-subhead max-w-[62ch] font-body text-lead font-light text-paper">
             Holiday parties, client nights, fundraisers and reunions. You get the rooftop, the yard
             and the food trucks, and one person coordinating all of it.
           </p>
@@ -62,14 +62,14 @@ export default function EventsBanner() {
           Plan your event
           <ArrowRight className="size-4" />
         </ButtonLink>
-        <StaggerGroup as="ul" className="mt-bloque flex list-none flex-col gap-6 p-0 md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6">
+        <StaggerGroup as="ul" className="mt-block flex list-none flex-col gap-6 p-0 md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6">
           {CARDS.map(({ tag, title, body, src, alt }, i) => (
             <RevealItem
               as="li"
               key={src}
               className={i === 0 ? 'md:col-span-2 lg:col-span-1' : undefined}
             >
-              <div className={`group relative isolate flex aspect-square flex-col justify-end overflow-hidden rounded-shell bg-deeper sombra-card ${i === 0 ? 'md:aspect-[16/8]' : 'md:aspect-[4/5]'} lg:aspect-[4/5]`}>
+              <div className={`group relative isolate flex aspect-square flex-col justify-end overflow-hidden rounded-shell bg-deeper card-shadow ${i === 0 ? 'md:aspect-[16/8]' : 'md:aspect-[4/5]'} lg:aspect-[4/5]`}>
                 <Image
                   src={src}
                   alt={alt}
@@ -90,7 +90,7 @@ export default function EventsBanner() {
                   </h3>
                   <div className="grid grid-rows-[1fr] transition-[grid-template-rows] duration-500 ease-brand motion-reduce:transition-none lg:grid-rows-[0fr] lg:group-hover:grid-rows-[1fr] motion-reduce:lg:grid-rows-[1fr]">
                     <div className="overflow-hidden">
-                      <p className="m-0 max-w-[34ch] font-body text-dato font-light text-bone">
+                      <p className="m-0 max-w-[34ch] font-body text-data font-light text-bone">
                         {body}
                       </p>
                     </div>

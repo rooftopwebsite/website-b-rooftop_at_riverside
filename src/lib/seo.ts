@@ -82,8 +82,8 @@ const postalAddress = (v: Venue) =>
   }) as const;
 
 const schemaHours = (v: Venue): readonly string[] => {
-  const ABREV = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-  const ORDEN = [1, 2, 3, 4, 5, 6, 0];
+  const ABBR = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const ORDER = [1, 2, 3, 4, 5, 6, 0];
   const a24 = (t: string) => {
     const m = t.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i);
     if (!m) return null;
@@ -91,14 +91,14 @@ const schemaHours = (v: Venue): readonly string[] => {
     if (/pm/i.test(m[3])) h += 12;
     return `${String(h).padStart(2, '0')}:${m[2] ?? '00'}`;
   };
-  return v.hours.flatMap((fila, i) => {
-    if (/closed/i.test(fila.bar)) return [];
-    const [abre, cierra] = fila.bar.split('–').map((x) => x.trim());
-    const a = a24(abre ?? '');
-    let b = a24(cierra ?? '');
+  return v.hours.flatMap((row, i) => {
+    if (/closed/i.test(row.bar)) return [];
+    const [opens, closes] = row.bar.split('–').map((x) => x.trim());
+    const a = a24(opens ?? '');
+    let b = a24(closes ?? '');
     if (b === '00:00') b = '24:00';
     if (!a || !b) return [];
-    return [`${ABREV[ORDEN[i]]} ${a}-${b}`];
+    return [`${ABBR[ORDER[i]]} ${a}-${b}`];
   });
 };
 

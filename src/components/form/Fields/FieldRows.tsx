@@ -1,9 +1,9 @@
 'use client';
 
 import { useContext } from 'react';
-import { Ctx, useField } from './contexto';
-import { ErrorText } from './Primitivos';
-import { INPUT_BASE, OK } from './constantes';
+import { Ctx, useField } from './context';
+import { ErrorText } from './Primitives';
+import { INPUT_BASE, OK } from './constants';
 
 export function FieldRows({
   name,
@@ -23,7 +23,7 @@ export function FieldRows({
   const { uid } = useContext(Ctx);
   const { eid, err } = useField(name);
   const grid = 'grid gap-[12px] sm:grid-cols-2 lg:grid-cols-4';
-  const LABEL_CELDA = 'font-body text-[16px] font-bold text-ink';
+  const LABEL_CELL = 'font-body text-[16px] font-bold text-ink';
 
   return (
     <fieldset aria-describedby={err ? eid : undefined} id={uid + '-' + name} className="flex flex-col gap-[8px]">
@@ -35,7 +35,7 @@ export function FieldRows({
         <span className="w-[16px] shrink-0" />
         <div className={`flex-1 ${grid}`}>
           {cols.map((c) => (
-            <span key={c.key} className={`${LABEL_CELDA} text-center`}>
+            <span key={c.key} className={`${LABEL_CELL} text-center`}>
               {c.label}
             </span>
           ))}
@@ -53,17 +53,17 @@ export function FieldRows({
             </span>
             <div className={`flex-1 ${grid}`}>
               {cols.map((c) => {
-                const campo = `${prefix}.${c.key}`;
-                const fid = `${uid}-${campo}-${i}`;
+                const field = `${prefix}.${c.key}`;
+                const fid = `${uid}-${field}-${i}`;
                 return (
                   <div key={c.key} className="flex flex-col gap-[6px]">
-                    <label htmlFor={fid} className={`${LABEL_CELDA} lg:sr-only`}>
+                    <label htmlFor={fid} className={`${LABEL_CELL} lg:sr-only`}>
                       {c.label}
                       <span className="sr-only">, row {i + 1}</span>
                     </label>
                     <input
                       id={fid}
-                      name={campo}
+                      name={field}
                       type="text"
                       className={[INPUT_BASE, OK].join(' ')}
                     />

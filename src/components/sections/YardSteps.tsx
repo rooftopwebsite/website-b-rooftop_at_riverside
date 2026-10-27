@@ -6,9 +6,9 @@ import { RevealItem, StaggerGroup } from '@/components/shared/Motion';
 import { type Step } from '@/components/shared/StepStair';
 import { TAG } from '@/lib/tag';
 
-const ANCHO = 'w-[calc(100%-20px)] md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)]';
+const WIDTH = 'w-[calc(100%-20px)] md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)]';
 
-const VISIBLES = [
+const VISIBLE = [
   { mq: '(min-width: 1024px)', n: 3 },
   { mq: '(min-width: 768px)', n: 2 },
 ] as const;
@@ -20,7 +20,7 @@ interface TicketStep extends Step {
   readonly cta?: { readonly label: string; readonly href: string };
 }
 
-const steps = (fraseMusica: string): readonly TicketStep[] => [
+const steps = (musicPhrase: string): readonly TicketStep[] => [
   {
     n: '01',
     kicker: 'Sunset Bar',
@@ -39,45 +39,45 @@ const steps = (fraseMusica: string): readonly TicketStep[] => [
     n: '03',
     kicker: 'What’s on',
     title: 'Your favorite local artists',
-    body: `${fraseMusica}, Bingo on Wednesdays and DJ sets late on Saturdays. Stay for the music, the friends and the fun.`,
-    tags: [fraseMusica, 'Bingo Wednesdays', 'DJ sets Saturdays'],
+    body: `${musicPhrase}, Bingo on Wednesdays and DJ sets late on Saturdays. Stay for the music, the friends and the fun.`,
+    tags: [musicPhrase, 'Bingo Wednesdays', 'DJ sets Saturdays'],
     cta: { label: 'What’s on tonight', href: '/whats-on' },
   },
 ];
 
-export default function YardSteps({ fraseMusica }: { readonly fraseMusica: string }) {
-  const STEPS = steps(fraseMusica);
-  const cajaRef = useRef<HTMLDivElement | null>(null);
-  const track = () => (cajaRef.current?.firstElementChild as HTMLElement | null) ?? null;
+export default function YardSteps({ musicPhrase }: { readonly musicPhrase: string }) {
+  const STEPS = steps(musicPhrase);
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const track = () => (boxRef.current?.firstElementChild as HTMLElement | null) ?? null;
 
-  const [visibles, setVisibles] = useState(1);
+  const [visibleItems, setVisibleItems] = useState(1);
   const [index, setIndex] = useState(0);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
 
   useEffect(() => {
-    const mqs = VISIBLES.map((v) => ({ ...v, m: window.matchMedia(v.mq) }));
-    const aplicar = () => setVisibles(mqs.find((v) => v.m.matches)?.n ?? 1);
-    aplicar();
-    mqs.forEach((v) => v.m.addEventListener('change', aplicar));
-    return () => mqs.forEach((v) => v.m.removeEventListener('change', aplicar));
+    const mqs = VISIBLE.map((v) => ({ ...v, m: window.matchMedia(v.mq) }));
+    const apply = () => setVisibleItems(mqs.find((v) => v.m.matches)?.n ?? 1);
+    apply();
+    mqs.forEach((v) => v.m.addEventListener('change', apply));
+    return () => mqs.forEach((v) => v.m.removeEventListener('change', apply));
   }, []);
 
-  const maxIndex = Math.max(0, STEPS.length - visibles);
+  const maxIndex = Math.max(0, STEPS.length - visibleItems);
   const maxIndexRef = useRef(0);
   maxIndexRef.current = maxIndex;
 
-  const paso = () => {
+  const stepWidth = () => {
     const t = track();
     const card = t?.firstElementChild;
     const gap = t ? parseFloat(getComputedStyle(t).columnGap) || GAP : GAP;
     return card ? card.getBoundingClientRect().width + gap : 320;
   };
 
-  const medir = useCallback(() => {
+  const measure = useCallback(() => {
     const t = track();
     if (!t) return;
-    setIndex(Math.min(maxIndexRef.current, Math.round(t.scrollLeft / paso())));
+    setIndex(Math.min(maxIndexRef.current, Math.round(t.scrollLeft / stepWidth())));
     setCanPrev(t.scrollLeft > 1);
     setCanNext(t.scrollLeft < t.scrollWidth - t.clientWidth - 1);
   }, []);
@@ -85,47 +85,47 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
   useEffect(() => {
     const t = track();
     if (!t) return;
-    medir();
-    t.addEventListener('scroll', medir, { passive: true });
-    window.addEventListener('resize', medir, { passive: true });
+    measure();
+    t.addEventListener('scroll', measure, { passive: true });
+    window.addEventListener('resize', measure, { passive: true });
     return () => {
-      t.removeEventListener('scroll', medir);
-      window.removeEventListener('resize', medir);
+      t.removeEventListener('scroll', measure);
+      window.removeEventListener('resize', measure);
     };
-  }, [medir]);
+  }, [measure]);
 
-  useEffect(() => medir(), [visibles, medir]);
+  useEffect(() => measure(), [visibleItems, measure]);
 
-  const irA = (i: number) => {
+  const goTo = (i: number) => {
     const t = track();
     if (!t) return;
-    t.scrollTo({ left: Math.max(0, Math.min(maxIndex, i)) * paso(), behavior: 'smooth' });
+    t.scrollTo({ left: Math.max(0, Math.min(maxIndex, i)) * stepWidth(), behavior: 'smooth' });
   };
 
-  const correr = (dir: 1 | -1) => {
+  const run = (dir: 1 | -1) => {
     const t = track();
     if (!t) return;
-    t.scrollBy({ left: dir * paso(), behavior: 'smooth' });
+    t.scrollBy({ left: dir * stepWidth(), behavior: 'smooth' });
   };
 
   return (
     <section
       id="yard"
       aria-label="How ordering works"
-      className="relative bg-bone grano pt-bloque pb-cierre"
+      className="relative bg-bone grain pt-block pb-closing"
     >
-      <div ref={cajaRef}>
+      <div ref={boxRef}>
         <StaggerGroup
           as="ol"
           tabIndex={0}
           aria-label="How ordering works, step by step"
-          className="caja-ancha scroll-px-borde flex snap-x snap-mandatory list-none gap-4 overflow-x-auto md:gap-6 pt-2 pb-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="page-box-wide scroll-px-edge flex snap-x snap-mandatory list-none gap-4 overflow-x-auto md:gap-6 pt-2 pb-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
         {STEPS.map((step) => (
           <RevealItem
             key={step.n}
             as="li"
-            className={`relative flex shrink-0 snap-start pt-12.5 [filter:drop-shadow(0_1px_2px_rgba(10,31,30,0.10))_drop-shadow(0_8px_16px_rgba(10,31,30,0.16))] ${ANCHO}`}
+            className={`relative flex shrink-0 snap-start pt-12.5 [filter:drop-shadow(0_1px_2px_rgba(10,31,30,0.10))_drop-shadow(0_8px_16px_rgba(10,31,30,0.16))] ${WIDTH}`}
           >
             <span className="sticker absolute top-0 left-1/2 z-30 grid size-20 -translate-x-1/2 place-items-center rounded-pill bg-paper p-1">
               <span className="grid size-full place-items-center rounded-pill bg-sunset p-1.25">
@@ -139,7 +139,7 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
                 </span>
               </span>
             </span>
-            <div className="troquel relative flex flex-1 flex-col items-center gap-3.5 rounded-ticket bg-paper px-5.5 pt-12 pb-13 text-center transition-transform duration-300 ease-brand hover:-translate-y-1.5 lg:px-8 lg:pt-15 lg:pb-16">
+            <div className="die-cut relative flex flex-1 flex-col items-center gap-3.5 rounded-ticket bg-paper px-5.5 pt-12 pb-13 text-center transition-transform duration-300 ease-brand hover:-translate-y-1.5 lg:px-8 lg:pt-15 lg:pb-16">
               <span className="font-body text-caption font-medium uppercase tracking-[0.18em] text-muted">
                 {step.kicker}
               </span>
@@ -174,10 +174,10 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
         </StaggerGroup>
       </div>
       {maxIndex > 0 ? (
-        <div className="caja-ancha flex items-center justify-center gap-5 pt-2">
+        <div className="page-box-wide flex items-center justify-center gap-5 pt-2">
           <button
             type="button"
-            onClick={() => correr(-1)}
+            onClick={() => run(-1)}
             disabled={!canPrev}
             className="hidden size-13 place-items-center rounded-pill bg-deep md:grid text-cream ring-1 ring-deep transition-all duration-300 ease-brand hover:bg-sunset hover:text-ink active:scale-95 disabled:pointer-events-none disabled:opacity-30"
           >
@@ -190,7 +190,7 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
               <button
                 key={step.n}
                 type="button"
-                onClick={() => irA(i)}
+                onClick={() => goTo(i)}
                 aria-current={i === index ? 'true' : undefined}
                 className="group -mx-1 grid size-11 place-items-center rounded-pill"
               >
@@ -208,7 +208,7 @@ export default function YardSteps({ fraseMusica }: { readonly fraseMusica: strin
 
           <button
             type="button"
-            onClick={() => correr(1)}
+            onClick={() => run(1)}
             disabled={!canNext}
             className="hidden size-13 place-items-center rounded-pill bg-deep md:grid text-cream ring-1 ring-deep transition-all duration-300 ease-brand hover:bg-sunset hover:text-ink active:scale-95 disabled:pointer-events-none disabled:opacity-30"
           >

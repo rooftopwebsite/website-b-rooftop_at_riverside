@@ -1,3 +1,3 @@
-export const CAJA_ALTA = true;
+export const TALL_BOX = true;
 
-export const CAJA_ALTA_CLS = CAJA_ALTA ? 'uppercase tracking-cta' : '';
+export const TALL_BOX_CLS = TALL_BOX ? 'uppercase tracking-cta' : '';

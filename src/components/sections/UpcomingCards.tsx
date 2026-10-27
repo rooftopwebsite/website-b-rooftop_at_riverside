@@ -1,9 +1,9 @@
-import { EventDialogProvider, VerMas } from '@/components/sections/EventDialogProvider';
-import CuerpoExpandible from '@/components/sections/CuerpoExpandible';
+import { EventDialogProvider, SeeMore } from '@/components/sections/EventDialogProvider';
+import ExpandableBody from '@/components/sections/ExpandableBody';
 import { EventPhoto, EventWhen, SpacePill } from '@/components/shared/EventCardParts';
 import {
-  cuerpoSinPrecios,
-  dealsNombrados,
+  bodyWithoutPrices,
+  namedDeals,
   type FeaturedDeal,
 } from '@/components/shared/FeaturedEventCard';
 import { ArrowSquareOut } from '@/components/shared/Icon';
@@ -35,48 +35,48 @@ export default function UpcomingCards({
   );
 }
 
-const RENGLON_PRECIO = /^(\$\d+(?:\.\d{1,2})?(?:\s+off)?)\s+(.+)$/i;
+const PRICE_LINE = /^(\$\d+(?:\.\d{1,2})?(?:\s+off)?)\s+(.+)$/i;
 
-const RENGLON_PASO = /^\d+[.)]\s+(.+)$/;
+const STEP_LINE = /^\d+[.)]\s+(.+)$/;
 
-type BloqueCuerpo =
-  | { readonly tipo: 'parrafo'; readonly texto: string }
-  | { readonly tipo: 'pasos'; readonly items: readonly string[] };
+type BodyBlock =
+  | { readonly type: 'paragraph'; readonly text: string }
+  | { readonly type: 'steps'; readonly items: readonly string[] };
 
-function preciosDelCuerpo(parrafos: readonly string[]): {
-  readonly bloques: readonly BloqueCuerpo[];
+function bodyPrices(paragraphs: readonly string[]): {
+  readonly blocks: readonly BodyBlock[];
   readonly promos: readonly FeaturedDeal[];
 } {
-  const bloques: BloqueCuerpo[] = [];
+  const blocks: BodyBlock[] = [];
   const promos: FeaturedDeal[] = [];
 
-  const empujarPaso = (item: string) => {
-    const ultimo = bloques[bloques.length - 1];
-    if (ultimo && ultimo.tipo === 'pasos') {
-      bloques[bloques.length - 1] = { tipo: 'pasos', items: [...ultimo.items, item] };
+  const pushStep = (item: string) => {
+    const last = blocks[blocks.length - 1];
+    if (last && last.type === 'steps') {
+      blocks[blocks.length - 1] = { type: 'steps', items: [...last.items, item] };
       return;
     }
-    bloques.push({ tipo: 'pasos', items: [item] });
+    blocks.push({ type: 'steps', items: [item] });
   };
 
-  for (const parrafo of parrafos) {
-    for (const renglon of parrafo
+  for (const paragraph of paragraphs) {
+    for (const line of paragraph
       .split('\n')
       .map((l) => l.trim())
       .filter(Boolean)) {
-      const m = RENGLON_PRECIO.exec(renglon);
+      const m = PRICE_LINE.exec(line);
       if (m) {
         promos.push({ price: m[1], name: m[2].charAt(0).toUpperCase() + m[2].slice(1), how: '' });
         continue;
       }
 
-      const paso = RENGLON_PASO.exec(renglon);
-      if (paso) empujarPaso(paso[1]);
-      else bloques.push({ tipo: 'parrafo', texto: renglon });
+      const step = STEP_LINE.exec(line);
+      if (step) pushStep(step[1]);
+      else blocks.push({ type: 'paragraph', text: line });
     }
   }
 
-  return { bloques, promos };
+  return { blocks, promos };
 }
 
 function UpcomingCard({
@@ -91,34 +91,34 @@ function UpcomingCard({
   readonly dealsLabel?: string;
 }) {
   const { event, date } = item;
-  const tipo = eventTypeLabel(event);
-  const cuerpoId = `cuerpo-${event.slug}-${date}`;
+  const type = eventTypeLabel(event);
+  const bodyId = `cuerpo-${event.slug}-${date}`;
 
-  const curadas = dealsNombrados(event, deals);
-  const { bloques, promos: escritas } = preciosDelCuerpo(cuerpoSinPrecios(event, curadas));
-  const promos = [...curadas, ...escritas];
+  const curated = namedDeals(event, deals);
+  const { blocks, promos: written } = bodyPrices(bodyWithoutPrices(event, curated));
+  const promos = [...curated, ...written];
 
-  const primero = bloques[0];
-  const hayMas =
-    bloques.length > 1 ||
+  const first = blocks[0];
+  const hasMore =
+    blocks.length > 1 ||
     promos.length > 0 ||
-    (primero !== undefined && (primero.tipo === 'pasos' || primero.texto.length > 60));
+    (first !== undefined && (first.type === 'steps' || first.text.length > 60));
 
   return (
-    <article className="grano relative grid h-full grid-cols-[112px_minmax(0,1fr)] overflow-hidden rounded-card sm:flex sm:flex-col border border-ink/12 bg-paper transition-colors hover:border-ink/30">
+    <article className="grain relative grid h-full grid-cols-[112px_minmax(0,1fr)] overflow-hidden rounded-card sm:flex sm:flex-col border border-ink/12 bg-paper transition-colors hover:border-ink/30">
       <EventPhoto
         event={event}
         sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 112px"
-        brief={`Afiche de ${event.title} en ${event.space}.`}
-        fondo="bg-bone"
-        ventana="max-sm:aspect-auto max-sm:h-full max-sm:min-h-28"
+        brief={`Poster for ${event.title} at ${event.space}.`}
+        background="bg-bone"
+        windowClassName="max-sm:aspect-auto max-sm:h-full max-sm:min-h-28"
       >
         <span className="max-sm:hidden">
           <SpacePill>{event.space}</SpacePill>
-          {tipo ? (
-            <SpacePill lado="der">
+          {type ? (
+            <SpacePill side="right">
               <span className={`size-[8px] shrink-0 rounded-pill ${eventDot(event)}`} aria-hidden="true" />
-              {tipo}
+              {type}
             </SpacePill>
           ) : null}
         </span>
@@ -130,14 +130,14 @@ function UpcomingCard({
         <h3 className="mt-2 font-display text-d6 font-semibold uppercase leading-[1.05] text-ink sm:mt-3.5 sm:text-d5 lg:text-d4">
           {event.title}
         </h3>
-        <CuerpoExpandible
-          id={cuerpoId}
-          titulo={event.title}
-          lineas={promos.length > 0 ? 12 - promos.length - 2 : 12}
-          despues={
+        <ExpandableBody
+          id={bodyId}
+          title={event.title}
+          lines={promos.length > 0 ? 12 - promos.length - 2 : 12}
+          after={
             promos.length > 0 ? (
             <div className="max-sm:hidden">
-              {dealsLabel && curadas.length > 0 ? (
+              {dealsLabel && curated.length > 0 ? (
                 <p className="mt-[14px] text-caption font-bold uppercase tracking-[0.1em] text-deep">
                   {dealsLabel}
                 </p>
@@ -162,30 +162,30 @@ function UpcomingCard({
             ) : null
           }
         >
-          {bloques.map((b, i) =>
-            b.tipo === 'parrafo' ? (
+          {blocks.map((b, i) =>
+            b.type === 'paragraph' ? (
               <p
-                key={b.texto}
+                key={b.text}
                 className={i === 0 ? 'max-sm:line-clamp-2 max-sm:text-[15px] max-sm:leading-[1.5]' : 'max-sm:hidden'}
               >
-                {b.texto}
+                {b.text}
               </p>
             ) : (
               <ol key={b.items[0]} className="m-0 flex list-none flex-col gap-[6px] p-0 max-sm:hidden">
-                {b.items.map((paso, i) => (
-                  <li key={paso} className="flex gap-[8px] text-[15px] leading-[1.5]">
+                {b.items.map((step, i) => (
+                  <li key={step} className="flex gap-[8px] text-[15px] leading-[1.5]">
                     <span className="w-[1.2em] shrink-0 font-bold tabular-nums text-deep">
                       {i + 1}.
                     </span>
-                    <span>{paso}</span>
+                    <span>{step}</span>
                   </li>
                 ))}
               </ol>
             ),
           )}
-        </CuerpoExpandible>
+        </ExpandableBody>
 
-        <VerMas event={event} date={date} visible={hayMas} className={hayMas ? 'mt-[10px] sm:hidden' : 'sm:hidden'} />
+        <SeeMore event={event} date={date} visible={hasMore} className={hasMore ? 'mt-[10px] sm:hidden' : 'sm:hidden'} />
         {isTicketed(event) && event.ticketUrl ? (
           <p className="relative z-10 m-0 mt-auto pt-[14px]">
             <a

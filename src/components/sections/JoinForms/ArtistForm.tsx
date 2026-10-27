@@ -9,7 +9,7 @@ import {
   useSubmission,
 } from '@/components/form/Fields';
 import { artistFromForm, artistSchema, MAX_IMAGE_MB, MAX_REQUEST_MB } from '@/lib/schemas/join';
-import { Exito } from './Compartido';
+import { Success } from './Shared';
 
 const ART_LABELS: Record<string, string> = {
   firstName: 'First name',
@@ -30,9 +30,9 @@ export function ArtistForm() {
 
   if (state.status === 'ok') {
     return (
-      <Exito eyebrow="Material received" titulo="We&rsquo;ll listen">
+      <Success eyebrow="Material received" title="We&rsquo;ll listen">
         {state.message}
-      </Exito>
+      </Success>
     );
   }
 

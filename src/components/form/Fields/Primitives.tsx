@@ -50,15 +50,15 @@ export function SelectCaret() {
   );
 }
 
-export function muestraContador(largo: number, max: number | undefined): max is number {
-  return max !== undefined && largo >= max * 0.8;
+export function showsCounter(length: number, max: number | undefined): max is number {
+  return max !== undefined && length >= max * 0.8;
 }
 
-export function Contador({ id, largo, max }: { readonly id: string; readonly largo: number; readonly max: number }) {
-  if (!muestraContador(largo, max)) return null;
+export function Counter({ id, length, max }: { readonly id: string; readonly length: number; readonly max: number }) {
+  if (!showsCounter(length, max)) return null;
   return (
-    <p id={id} className={`text-right text-[14px] tabular-nums ${largo >= max ? 'font-bold text-terra' : 'text-body/70'}`}>
-      {largo} / {max}
+    <p id={id} className={`text-right text-[14px] tabular-nums ${length >= max ? 'font-bold text-terra' : 'text-body/70'}`}>
+      {length} / {max}
     </p>
   );
 }

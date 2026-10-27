@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import type { EventoAbierto } from '@/components/sections/EventDialog';
+import type { OpenedEvent } from '@/components/sections/EventDialog';
 import { Ticket } from '@/components/shared/Icon';
 import { formatTime, isTicketed, standsOut, type VenueEvent } from '@/content/events';
 import { dayNumber, monthDay, weekdayLong } from '@/lib/calendar';
@@ -11,16 +11,16 @@ import { colorKey, eventDot } from '@/lib/event-color';
 const EventDialog = dynamic(() => import('@/components/sections/EventDialog'), { ssr: false });
 
 const WEEKDAY_HEADERS = [
-  { corto: 'Sun', largo: 'Sunday' },
-  { corto: 'Mon', largo: 'Monday' },
-  { corto: 'Tue', largo: 'Tuesday' },
-  { corto: 'Wed', largo: 'Wednesday' },
-  { corto: 'Thu', largo: 'Thursday' },
-  { corto: 'Fri', largo: 'Friday' },
-  { corto: 'Sat', largo: 'Saturday' },
+  { short: 'Sun', long: 'Sunday' },
+  { short: 'Mon', long: 'Monday' },
+  { short: 'Tue', long: 'Tuesday' },
+  { short: 'Wed', long: 'Wednesday' },
+  { short: 'Thu', long: 'Thursday' },
+  { short: 'Fri', long: 'Friday' },
+  { short: 'Sat', long: 'Saturday' },
 ] as const;
 
-const LEYENDA =
+const LEGEND =
   'flex items-center gap-[7px] text-caption font-bold uppercase tracking-[0.08em] text-body/70';
 
 interface DayEvents {
@@ -41,10 +41,10 @@ export default function MonthCalendar({
   readonly today: string;
   readonly venueName: string;
 }) {
-  const delMes = [...eventsByDate.values()].flatMap((l) => l.map((o) => o.event));
-  const referencia = colorKey(delMes);
-  const hayDestacados = delMes.some(standsOut);
-  const hayEntradas = delMes.some(isTicketed);
+  const ofMonth = [...eventsByDate.values()].flatMap((l) => l.map((o) => o.event));
+  const reference = colorKey(ofMonth);
+  const hasFeatured = ofMonth.some(standsOut);
+  const hasTickets = ofMonth.some(isTicketed);
 
   const agenda: readonly DayEvents[] = grid
     .flat()
@@ -52,11 +52,11 @@ export default function MonthCalendar({
     .map((date) => ({ date, events: eventsByDate.get(date) ?? [] }))
     .filter((d) => d.events.length > 0);
 
-  const [abierto, setAbierto] = useState<EventoAbierto | null>(null);
+  const [isOpen, setIsOpen] = useState<OpenedEvent | null>(null);
 
   return (
     <div className="mt-[28px]">
-      {abierto ? <EventDialog abierto={abierto} onClose={() => setAbierto(null)} /> : null}
+      {isOpen ? <EventDialog isOpen={isOpen} onClose={() => setIsOpen(null)} /> : null}
       <table className="hidden w-full table-fixed border-collapse lg:table">
         <caption className="sr-only">
           Events at {venueName} in {label}
@@ -65,12 +65,12 @@ export default function MonthCalendar({
           <tr>
             {WEEKDAY_HEADERS.map((d) => (
               <th
-                key={d.corto}
+                key={d.short}
                 scope="col"
                 className="pb-[8px] text-center text-caption font-bold uppercase tracking-[0.08em] text-body/70 lg:text-left lg:tracking-[0.12em]"
               >
-                <span aria-hidden="true">{d.corto}</span>
-                <span className="sr-only">{d.largo}</span>
+                <span aria-hidden="true">{d.short}</span>
+                <span className="sr-only">{d.long}</span>
               </th>
             ))}
           </tr>
@@ -78,16 +78,16 @@ export default function MonthCalendar({
         <tbody>
           {grid.map((week, wi) => (
             <tr key={wi}>
-              {week.map((date, di) => {
+              {week.map((date, dayIdx) => {
                 const events = date ? eventsByDate.get(date) : undefined;
-                const esHoy = date === today;
+                const isToday = date === today;
 
                 return (
                   <td
-                    key={date ?? `empty-${wi}-${di}`}
+                    key={date ?? `empty-${wi}-${dayIdx}`}
                     className={[
                       'border-b border-r border-ink/10 p-[4px] align-top lg:p-[8px]',
-                      di === 0 ? 'border-l' : '',
+                      dayIdx === 0 ? 'border-l' : '',
                       date ? '' : 'bg-ink/[0.02]',
                     ].join(' ')}
                   >
@@ -96,10 +96,10 @@ export default function MonthCalendar({
                         <span
                           className={[
                             'grid size-[26px] shrink-0 place-items-center font-display text-d6 tabular-nums lg:size-[30px]',
-                            esHoy ? 'rounded-pill bg-sunset font-semibold text-ink' : 'text-body/75',
+                            isToday ? 'rounded-pill bg-sunset font-semibold text-ink' : 'text-body/75',
                           ].join(' ')}
                         >
-                          {esHoy ? <span className="sr-only">Today, </span> : null}
+                          {isToday ? <span className="sr-only">Today, </span> : null}
                           {dayNumber(date)}
                         </span>
 
@@ -107,7 +107,7 @@ export default function MonthCalendar({
                           <ul className="mt-[5px] flex list-none flex-col gap-[3px]">
                             {events.map(({ event }) => (
                               <li key={`chip-${date}-${event.slug}`}>
-                                <Chip event={event} date={date} onOpen={setAbierto} />
+                                <Chip event={event} date={date} onOpen={setIsOpen} />
                               </li>
                             ))}
                           </ul>
@@ -121,19 +121,19 @@ export default function MonthCalendar({
           ))}
         </tbody>
       </table>
-      {referencia.length > 1 || hayDestacados ? (
+      {reference.length > 1 || hasFeatured ? (
         <ul className="mt-[16px] flex list-none flex-wrap gap-x-[18px] gap-y-[8px]">
-          {referencia.length > 1
-            ? referencia.map((c) => (
-                <li key={c.id} className={LEYENDA}>
+          {reference.length > 1
+            ? reference.map((c) => (
+                <li key={c.id} className={LEGEND}>
                   <span className={`size-[9px] shrink-0 rounded-pill ${c.dot}`} aria-hidden="true" />
                   {c.label}
                 </li>
               ))
             : null}
 
-          {hayDestacados ? (
-            <li className={LEYENDA}>
+          {hasFeatured ? (
+            <li className={LEGEND}>
               <span
                 className="h-[14px] w-[22px] shrink-0 rounded-[5px] bg-cream"
                 aria-hidden="true"
@@ -142,8 +142,8 @@ export default function MonthCalendar({
             </li>
           ) : null}
 
-          {hayEntradas ? (
-            <li className={LEYENDA}>
+          {hasTickets ? (
+            <li className={LEGEND}>
               <Ticket className="size-[13px] shrink-0" aria-hidden="true" />
               Tickets on Eventbrite
             </li>
@@ -174,7 +174,7 @@ export default function MonthCalendar({
               <ul className="mt-[10px] flex list-none flex-col gap-[8px] p-0">
                 {events.map(({ event }) => (
                   <li key={`agenda-${date}-${event.slug}`}>
-                    <AgendaCard event={event} date={date} onOpen={setAbierto} />
+                    <AgendaCard event={event} date={date} onOpen={setIsOpen} />
                   </li>
                 ))}
               </ul>
@@ -193,7 +193,7 @@ function AgendaCard({
 }: {
   readonly event: VenueEvent;
   readonly date: string;
-  readonly onOpen: (a: EventoAbierto) => void;
+  readonly onOpen: (a: OpenedEvent) => void;
 }) {
   return (
     <button
@@ -232,9 +232,9 @@ function Chip({
 }: {
   readonly event: VenueEvent;
   readonly date: string;
-  readonly onOpen: (a: EventoAbierto) => void;
+  readonly onOpen: (a: OpenedEvent) => void;
 }) {
-  const cuerpo = (
+  const body = (
     <>
       <span
         className={`mt-[5px] size-[7px] shrink-0 rounded-pill ${eventDot(event)}`}
@@ -250,7 +250,7 @@ function Chip({
     </>
   );
 
-  const clases = [
+  const classes = [
     'flex w-full gap-[6px] rounded-[5px] px-[5px] py-[4px] text-left text-[14px] leading-[1.35]',
     standsOut(event) ? 'bg-cream' : '',
     isTicketed(event) ? 'text-deep underline underline-offset-2 hover:text-terra' : 'text-ink',
@@ -260,8 +260,8 @@ function Chip({
 
   if (isTicketed(event) && event.ticketUrl) {
     return (
-      <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer" className={clases}>
-        {cuerpo}
+      <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer" className={classes}>
+        {body}
         <span className="sr-only">
           Buy tickets for {event.title} on Eventbrite (opens in a new tab)
         </span>
@@ -273,9 +273,9 @@ function Chip({
     <button
       type="button"
       onClick={() => onOpen({ event, date })}
-      className={`${clases} ${standsOut(event) ? '' : 'hover:bg-ink/6'} transition-colors`}
+      className={`${classes} ${standsOut(event) ? '' : 'hover:bg-ink/6'} transition-colors`}
     >
-      {cuerpo}
+      {body}
       <span className="sr-only">— see details</span>
     </button>
   );

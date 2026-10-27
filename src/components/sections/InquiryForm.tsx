@@ -14,7 +14,7 @@ import {
   useSubmission,
 } from '@/components/form/Fields';
 import { Eyebrow, Heading } from '@/components/shared/Type';
-import { hoyEnFlorida, inquiryFromForm, inquirySchema } from '@/lib/schemas/event-inquiry';
+import { todayInFlorida, inquiryFromForm, inquirySchema } from '@/lib/schemas/event-inquiry';
 import {
   AREAS_OF_INTEREST,
   BAR_TIERS,
@@ -44,7 +44,7 @@ const LABELS: Record<string, string> = {
   referral: 'How did you hear about us?',
 };
 
-function Grupo({ children }: { readonly children: React.ReactNode }) {
+function Group({ children }: { readonly children: React.ReactNode }) {
   return <legend className="eyebrow mb-[6px] text-body/75">{children}</legend>;
 }
 
@@ -55,18 +55,18 @@ export default function InquiryForm({
 } = {}) {
   const submission = useSubmission(submitEventInquiry);
   const { state } = submission;
-  const hoy = hoyEnFlorida();
+  const today = todayInFlorida();
 
   if (state.status === 'ok') {
     return (
       <SentPanel
-        className="rounded-card border border-ink/15 bg-cream sombra-card p-[32px] lg:p-[48px]"
+        className="rounded-card border border-ink/15 bg-cream card-shadow p-[32px] lg:p-[48px]"
       >
         <Eyebrow tone="deep">Request received</Eyebrow>
         <Heading level={2} className="mt-gap-kicker text-d4">
           We&rsquo;ll come back within one business day
         </Heading>
-        <p className="mt-gap-bajada max-w-[54ch] text-lead text-body/80">{state.message}</p>
+        <p className="mt-gap-subhead max-w-[54ch] text-lead text-body/80">{state.message}</p>
         <p className="mt-3 max-w-[54ch] text-[16px] leading-[1.65] text-body/75">
           Rental rates, food options and the fees are all on this page if you want them now.
         </p>
@@ -77,7 +77,7 @@ export default function InquiryForm({
   return (
     <FormShell submission={submission} schema={inquirySchema} fromForm={inquiryFromForm}>
       <fieldset className="flex flex-col gap-[16px]">
-        <Grupo>About you</Grupo>
+        <Group>About you</Group>
         <div className="grid gap-[16px] sm:grid-cols-2">
           <TextField name="name" label={LABELS.name} required autoComplete="name" />
           <TextField name="email" label={LABELS.email} type="email" required autoComplete="email" />
@@ -90,7 +90,7 @@ export default function InquiryForm({
         </div>
       </fieldset>
       <fieldset className="flex flex-col gap-[16px]">
-        <Grupo>The event</Grupo>
+        <Group>The event</Group>
 
         <SelectField
           name="eventType"
@@ -100,8 +100,8 @@ export default function InquiryForm({
           options={EVENT_SUBTYPES.map((o) => ({ value: o, label: o }))}
         />
         <div className="grid gap-[16px] sm:grid-cols-2">
-          <DateField name="date" label={LABELS.date} required min={hoy} />
-          <DateField name="altDate" label={LABELS.altDate} min={hoy} />
+          <DateField name="date" label={LABELS.date} required min={today} />
+          <DateField name="altDate" label={LABELS.altDate} min={today} />
         </div>
         <div className="grid gap-[16px] sm:grid-cols-2">
           <TextField name="startTime" label={LABELS.startTime} type="time" />
@@ -135,7 +135,7 @@ export default function InquiryForm({
       </fieldset>
       <FoodTier />
       <fieldset className="flex flex-col gap-[16px]">
-        <Grupo>The bar</Grupo>
+        <Group>The bar</Group>
         <SelectField
           name="barTier"
           label={LABELS.barTier}
@@ -144,7 +144,7 @@ export default function InquiryForm({
         />
       </fieldset>
       <fieldset className="flex flex-col gap-[16px]">
-        <Grupo>Anything else</Grupo>
+        <Group>Anything else</Group>
         <TextAreaField name="comments" label={LABELS.comments} rows={4} maxLength={4000} />
         <SelectField
           name="referral"

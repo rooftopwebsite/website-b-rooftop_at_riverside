@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 export type HeadingLevel = 1 | 2 | 3 | 4;
 
-const FUERA_DE_DISPLAY =
+const OUTSIDE_DISPLAY =
   'font-body font-medium text-[20px] leading-[1.3] normal-case lg:text-[24px]';
 
 const LABEL =
@@ -12,13 +12,13 @@ const SIZES: Record<HeadingLevel, string> = {
   1: 'text-h1',
   2: 'text-h2',
   3: 'text-h3',
-  4: FUERA_DE_DISPLAY,
+  4: OUTSIDE_DISPLAY,
 };
 
 const ROLES = {
   section: null,
   hero: 'text-hero',
-  card: FUERA_DE_DISPLAY,
+  card: OUTSIDE_DISPLAY,
   label: LABEL,
 } as const;
 
@@ -115,11 +115,11 @@ export function SectionHead({
   readonly children?: ReactNode;
 }) {
   const centered = align === 'center';
-  const ancho = measure === 'full' ? 'max-w-none' : 'max-w-head';
+  const width = measure === 'full' ? 'max-w-none' : 'max-w-head';
   return (
     <div
       className={[
-        centered ? `mx-auto ${ancho} text-center` : ancho,
+        centered ? `mx-auto ${width} text-center` : width,
         className,
       ]
         .filter(Boolean)
@@ -136,7 +136,7 @@ export function SectionHead({
       {lead ? (
         <p
           className={[
-            'mt-gap-bajada max-w-[60ch] text-lead bajada',
+            'mt-gap-subhead max-w-[60ch] text-lead subhead',
             centered ? 'mx-auto' : '',
           ]
             .filter(Boolean)

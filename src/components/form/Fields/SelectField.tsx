@@ -1,9 +1,9 @@
 'use client';
 
-import { useField } from './contexto';
-import { Label, ErrorText, Wrap, Control, SelectCaret } from './Primitivos';
-import { INPUT_BASE, OK, BAD } from './constantes';
-import type { BaseFieldProps, Option } from './tipos';
+import { useField } from './context';
+import { Label, ErrorText, Wrap, Control, SelectCaret } from './Primitives';
+import { INPUT_BASE, OK, BAD } from './constants';
+import type { BaseFieldProps, Option } from './types';
 
 export function SelectField({
   options,

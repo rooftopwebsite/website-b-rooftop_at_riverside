@@ -6,33 +6,33 @@ import type { Hours } from '@/types/content';
 import { venueStatus } from '@/lib/hours';
 import { CaretDown } from './Icon';
 
-const FILA = 'flex items-center justify-between gap-x-4 py-3';
+const ROW = 'flex items-center justify-between gap-x-4 py-3';
 
-const BORDE = 'border-b border-muted-dark/30';
+const BORDER = 'border-b border-muted-dark/30';
 
 export default function HoursCard({ hours }: { readonly hours?: readonly Hours[] } = {}) {
   const venue = useVenue();
-  const filas = hours ?? venue.hours;
+  const rows = hours ?? venue.hours;
   const [status, setStatus] = useState<ReturnType<typeof venueStatus>>(null);
 
-  useEffect(() => setStatus(venueStatus(filas, 'bar')), [filas]);
+  useEffect(() => setStatus(venueStatus(rows, 'bar')), [rows]);
 
   const todayIdx = status?.dayIndex ?? -1;
 
   return (
-    <div className="flex flex-col rounded-shell bg-deep p-6.5 text-bone on-dark sombra-card lg:p-9">
+    <div className="flex flex-col rounded-shell bg-deep p-6.5 text-bone on-dark card-shadow lg:p-9">
       <h3 className="m-0 mb-5.5 font-display text-d5 font-bold uppercase leading-none tracking-[0.02em] text-paper">
         Hours
       </h3>
       <div className="m-0">
-        {filas.map((row, i) => {
+        {rows.map((row, i) => {
           const isToday = i === todayIdx;
-          const cerrado = /closed/i.test(row.bar);
-          const vuelve = cerrado
-            ? filas.slice(i + 1).concat(filas.slice(0, i)).find((f) => !/closed/i.test(f.bar))?.day
+          const closed = /closed/i.test(row.bar);
+          const returns = closed
+            ? rows.slice(i + 1).concat(rows.slice(0, i)).find((f) => !/closed/i.test(f.bar))?.day
             : undefined;
 
-          const dia = (
+          const day = (
             <span
               className={[
                 'font-body text-base',
@@ -44,23 +44,23 @@ export default function HoursCard({ hours }: { readonly hours?: readonly Hours[]
             </span>
           );
 
-          const hora = (
+          const hour = (
             <span
               className={[
-                'font-body text-dato whitespace-nowrap tabular-nums',
+                'font-body text-data whitespace-nowrap tabular-nums',
                 isToday ? 'text-cream' : 'text-paper',
               ].join(' ')}
             >
-              {cerrado ? (vuelve ? `Back ${vuelve}` : '') : row.bar}
+              {closed ? (returns ? `Back ${returns}` : '') : row.bar}
             </span>
           );
 
-          if (cerrado) {
+          if (closed) {
             return (
-              <div key={row.day} className={`${FILA} ${BORDE}`}>
-                {dia}
+              <div key={row.day} className={`${ROW} ${BORDER}`}>
+                {day}
                 <span className="flex items-center gap-3">
-                  {hora}
+                  {hour}
                   <span aria-hidden="true" className="size-3.25" />
                 </span>
               </div>
@@ -68,13 +68,13 @@ export default function HoursCard({ hours }: { readonly hours?: readonly Hours[]
           }
 
           return (
-            <details key={row.day} open={isToday} className={`group ${BORDE}`}>
+            <details key={row.day} open={isToday} className={`group ${BORDER}`}>
               <summary
-                className={`${FILA} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}
+                className={`${ROW} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}
               >
-                {dia}
+                {day}
                 <span className="flex items-center gap-3">
-                  {hora}
+                  {hour}
                   <CaretDown
                     aria-hidden="true"
                     className="size-3.25 text-muted-dark transition-transform duration-200 group-open:rotate-180"
@@ -83,7 +83,7 @@ export default function HoursCard({ hours }: { readonly hours?: readonly Hours[]
               </summary>
               <div className="grid grid-cols-[auto_1fr] gap-x-5 pb-3">
                 <span className="font-body text-caption text-muted-dark">Trucks</span>
-                <span className="font-body text-dato tabular-nums text-paper">
+                <span className="font-body text-data tabular-nums text-paper">
                   {/closed/i.test(row.trucks) ? 'Bar only' : row.trucks}
                 </span>
               </div>

@@ -1,90 +1,89 @@
 # Rooftop at Riverside
 
-Sitio de Rooftop at Riverside (Bonita Springs, FL): bar en la terraza sobre un
-parque de food trucks. Reemplaza al sitio de Wix `eatdrinkparadise.com`.
+Website for Rooftop at Riverside (Bonita Springs, FL): a rooftop bar over a
+food truck park. It replaces the Wix site `eatdrinkparadise.com`.
 
-Next.js 16 (App Router) · React 19 · Tailwind 4 · Vercel. Hecho por RestoExp.
+Next.js 16 (App Router) · React 19 · Tailwind 4 · Vercel. Built by RestoExp.
 
-## Arrancar
+## Getting started
 
 ```bash
 npm install
-cp .env.example .env.local   # y completar lo que falte (ver abajo)
+cp .env.example .env.local   # and fill in whatever is missing (see below)
 npm run dev
 ```
 
-## Comandos
+## Commands
 
-| Comando | Qué hace |
+| Command | What it does |
 |---|---|
-| `npm run dev` / `build` / `start` | Lo de siempre de Next |
-| `npm run events:verify` | Revisa `src/content/events.json`: que cada evento tenga su afiche, que el archivo exista, que todas las fechas de un evento usen la misma foto y que dos eventos no la compartan |
-| `npm run media` | Genera las fotos y videos de `public/` desde `public/multimedia/` (originales, fuera de git) |
-| `npm run og` | Genera las imágenes para compartir en redes (`public/og/`). El diseño original va en `_interno/og/` |
-| `npm run media:import` | Baja las fotos del sitio viejo a `public/images/` |
-| `npm run media:fetch-old-site` | Descarga todo el material publicado en el sitio vigente |
-| `npm run media:photo-bank` | Arma el banco de fotos único, sin repetidas |
-| `npm run greca` / `horizonte` | Regeneran dos piezas gráficas de marca |
-| `npm run a11y` · `contrast` · `check:*` | Auditorías: accesibilidad, contraste, SEO, CSS, tokens, sombras, grano, ritmo de superficies y movimiento reducido |
+| `npm run dev` / `build` / `start` | The usual Next commands |
+| `npm run events:verify` | Checks `src/content/events.json`: that every event has its poster, that the file exists, that all dates of an event use the same photo and that no two events share one |
+| `npm run media` | Generates the photos and videos in `public/` from `public/multimedia/` (originals, outside git) |
+| `npm run og` | Generates the social sharing images (`public/og/`). The original design lives in `_interno/og/` |
+| `npm run media:import` | Downloads the old site's photos into `public/images/` |
+| `npm run media:fetch-old-site` | Downloads all the material published on the current site |
+| `npm run media:photo-bank` | Builds the single photo bank, without duplicates |
+| `npm run greek-key` / `horizon` | Regenerate two brand graphic pieces |
+| `npm run a11y` · `contrast` · `check:*` | Audits: accessibility, contrast, SEO, CSS, tokens, shadows, grain, surface rhythm and reduced motion |
 
-Las auditorías que abren páginas necesitan el server corriendo. Por defecto
-apuntan a `localhost:3157`; se cambia con `BASE=http://localhost:PUERTO`.
+The audits that open pages need the server running. By default they point to
+`localhost:3157`; change it with `BASE=http://localhost:PORT`.
 
-## Variables de entorno
+## Environment variables
 
-La plantilla comentada es `.env.example`. En resumen:
+The commented template is `.env.example`. In short:
 
-- **`RESEND_API_KEY`**: variable compartida del team en Vercel. No se crea a
-  nivel proyecto, porque la pisaría.
-- **`RESEND_FROM`**: tiene que ser `@restoexp.com`, el único dominio
-  verificado en Resend.
+- **`RESEND_API_KEY`**: shared team variable on Vercel. It is not created at
+  the project level, because that would override it.
+- **`RESEND_FROM`**: has to be `@restoexp.com`, the only verified domain in
+  Resend.
 - **`MAIL_TO_CONTACT`, `MAIL_TO_EVENTS`, `MAIL_TO_CAREERS`, `MAIL_TO_MARKET`,
-  `MAIL_TO_BOOKING`**: a qué buzón llega cada formulario. El ruteo está en
+  `MAIL_TO_BOOKING`**: which inbox each form goes to. The routing is in
   `src/lib/inboxes.ts`.
-- **`NEWSLETTER_SHEETS_WEBHOOK_URL`**: pendiente, la planilla todavía no existe.
+- **`NEWSLETTER_SHEETS_WEBHOOK_URL`**: pending, the spreadsheet doesn't exist yet.
 
-No hay base de datos ni ninguna variable para leer contenido.
+There is no database and no variable is needed to read content.
 
-## Datos editables
+## Editable data
 
-Todo el contenido que cambia vive en JSON dentro de `src/content/`. Se edita el
-archivo, se hace commit y Vercel publica. No hay base de datos ni dashboard.
+All the content that changes lives in JSON inside `src/content/`. You edit the
+file, commit, and Vercel publishes. There is no database and no dashboard.
 
-| Archivo | Qué tiene |
+| File | What it holds |
 |---|---|
-| `contact.json` | Teléfono, mails (general, eventos, empleo), dirección, coordenadas, link de Google Maps, redes, gift cards y Eventbrite |
-| `hours.json` | Horario del bar (`bar`) y de los trucks (`trucks`) por día. Cada día es `{ "open": "15:00", "close": "21:00" }` en 24 h, o `"closed"`. Un cierre después de medianoche se escribe tal cual (`"02:00"`) |
-| `menus.json` | Las cartas en PDF: `name`, `description`, `pdf` (ruta dentro de `public/`, p. ej. `/menus/sunset-bar.pdf`) y `active`. La que se llama `Sunset Bar` es la del bar; el resto se empareja por nombre con los trucks de `trucks.ts` |
-| `events.json` | El calendario. Una entrada por fecha (un evento que se repite en fechas sueltas lleva varias). Afiche en `public/images/events/posters/`, referido en `bannerUrl`. Los recurrentes llevan `isRecurring: true` y `recurrenceDays` con los días (`"[0,6]"`, 0 = domingo). El lugar sale de `tags` (`sunset-bar`, `the-yard`, `game-lounge`) y `featured` lo destaca |
-| `jobs.json` | Vacantes de `/join-us`. Vacío = no se listan. Campos: `id`, `title`, `description`, `requirements`, `employment_type`, `department`, `salary_type`, `salary_min`, `salary_max`, `status` (`open`) |
-| `blog.json` | Notas del blog. Vacío = el blog se esconde del menú, el pie y el sitemap. Campos mínimos: `id`, `slug`, `title`, `excerpt`, `contentHtml` (o `content` en markdown), `coverImageUrl` (en `public/images/blog/`), `coverImageAlt`, `publishedAt`, `featured` |
+| `contact.json` | Phone, emails (general, events, hiring), address, coordinates, Google Maps link, social, gift cards and Eventbrite |
+| `hours.json` | Opening hours for the bar (`bar`) and the trucks (`trucks`) per day. Each day is `{ "open": "15:00", "close": "21:00" }` in 24 h, or `"closed"`. A closing time after midnight is written as is (`"02:00"`) |
+| `menus.json` | The PDF menus: `name`, `description`, `pdf` (path inside `public/`, e.g. `/menus/sunset-bar.pdf`) and `active`. The one called `Sunset Bar` is the bar's; the rest are matched by name with the trucks in `trucks.ts` |
+| `events.json` | The calendar. One entry per date (an event repeated on scattered dates has several). Poster in `public/images/events/posters/`, referenced in `bannerUrl`. Recurring ones have `isRecurring: true` and `recurrenceDays` with the days (`"[0,6]"`, 0 = Sunday). The venue comes from `tags` (`sunset-bar`, `the-yard`, `game-lounge`) and `featured` highlights it |
+| `jobs.json` | Openings for `/join-us`. Empty = none are listed. Fields: `id`, `title`, `description`, `requirements`, `employment_type`, `department`, `salary_type`, `salary_min`, `salary_max`, `status` (`open`) |
+| `blog.json` | Blog posts. Empty = the blog is hidden from the menu, the footer and the sitemap. Minimum fields: `id`, `slug`, `title`, `excerpt`, `contentHtml` (or `content` in markdown), `coverImageUrl` (in `public/images/blog/`), `coverImageAlt`, `publishedAt`, `featured` |
 
-Después de tocar eventos conviene correr `npm run events:verify`.
+After touching events it's worth running `npm run events:verify`.
 
-## Dónde está cada cosa
+## Where everything is
 
 ```
-src/app/            rutas; cada formulario tiene su server action en app/actions/
-src/components/     form/ (campos compartidos), sections/ (bloques de página), shared/
-src/content/        todo el texto y los datos del sitio: TypeScript y los JSON editables
-src/lib/            venue, SEO, mail, schemas de formularios (lib/schemas/)
-public/             sólo lo que se publica: fotos derivadas, videos, OG, PDFs
-scripts/            generadores de medios y auditorías (ver tabla de arriba)
-docs/               decisiones del proyecto e inventario del sitio viejo
-design-audit/       capturas antes/después de la auditoría visual
-_interno/           material del cliente y de trabajo. NO se versiona ni se publica
+src/app/            routes; each form has its server action in app/actions/
+src/components/     form/ (shared fields), sections/ (page blocks), shared/
+src/content/        all the site's text and data: TypeScript and the editable JSON
+src/lib/            venue, SEO, mail, form schemas (lib/schemas/)
+public/             only what gets published: derived photos, videos, OG, PDFs
+scripts/            media generators and audits (see the table above)
+docs/               project decisions and the old site's inventory
+design-audit/       before/after captures from the visual audit
+_interno/           client and working material. NOT versioned or published
 ```
 
-## Reglas que no se ven en el código
+## Rules you can't see in the code
 
-- **Material del cliente fuera de git.** PDFs, briefs, originales de foto y
-  fuentes con licencia van a `_interno/`. `.gitignore` y `.vercelignore` lo
-  tapan.
-- **Nada de datos inventados.** Un hueco de contenido se marca con
-  `<PhotoPending>`, `<PendingData>` o `<PendingBlock>` y se va solo cuando llega
-  el dato.
-- **Los 301 del sitio viejo no se tocan** sin revisar `next.config.ts` y
-  `docs/current-site-inventory.md`.
-- **No se corre Prettier:** el repo no lo usa y reescribiría cada archivo.
-- El contexto del cliente vive en `docs/` (empezar por
-  `docs/current-site-inventory.md` y `docs/pedido-al-cliente.md`).
+- **Client material stays out of git.** PDFs, briefs, photo originals and
+  licensed fonts go to `_interno/`. `.gitignore` and `.vercelignore` cover it.
+- **No made-up data.** A content gap is marked with `<PhotoPending>`,
+  `<PendingData>` or `<PendingBlock>` and only goes away when the data arrives.
+- **The old site's 301s are not touched** without reviewing `next.config.ts`
+  and `docs/current-site-inventory.md`.
+- **Prettier is not run:** the repo doesn't use it and it would rewrite every
+  file.
+- The client's context lives in `docs/` (start with
+  `docs/current-site-inventory.md` and `docs/client-requests.md`).

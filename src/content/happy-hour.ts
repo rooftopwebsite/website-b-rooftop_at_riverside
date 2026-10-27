@@ -13,20 +13,20 @@ export const HAPPY_HOUR: HappyHour = {
   note: 'Superior Light Beer is the featured pour.',
 };
 
-const RENGLON_OFERTA = /^(\$\d+(?:\.\d{1,2})?(?:\s+off)?)\s+(.+)$/i;
+const OFFER_LINE = /^(\$\d+(?:\.\d{1,2})?(?:\s+off)?)\s+(.+)$/i;
 
-function desdeEvento(e: VenueEvent): HappyHour {
-  const renglones = e.body.flatMap((p) => p.split('\n')).map((l) => l.trim()).filter(Boolean);
+function fromEvent(e: VenueEvent): HappyHour {
+  const lines = e.body.flatMap((p) => p.split('\n')).map((l) => l.trim()).filter(Boolean);
 
   const deals: { price: string; what: string }[] = [];
-  const sueltos: string[] = [];
+  const loose: string[] = [];
 
-  for (const renglon of renglones) {
-    const m = RENGLON_OFERTA.exec(renglon);
+  for (const line of lines) {
+    const m = OFFER_LINE.exec(line);
     if (m) {
       deals.push({ price: m[1], what: m[2].charAt(0).toUpperCase() + m[2].slice(1) });
     } else {
-      sueltos.push(renglon);
+      loose.push(line);
     }
   }
 
@@ -35,21 +35,21 @@ function desdeEvento(e: VenueEvent): HappyHour {
     daysShort: weekdaysLabel(e.weekdays, true),
     time: `${formatTime(e.startTime)} – ${formatTime(e.endTime)}`,
     deals: deals.length > 0 ? deals : HAPPY_HOUR.deals,
-    note: sueltos.slice(1).join(' ') || null,
+    note: loose.slice(1).join(' ') || null,
   };
 }
 
 export async function getHappyHour(): Promise<HappyHour> {
-  const eventos = await getVenueEvents();
-  const evento = eventos.find((e) => /happy\s*hour/i.test(e.title));
-  return evento ? desdeEvento(evento) : HAPPY_HOUR;
+  const events = await getVenueEvents();
+  const event = events.find((e) => /happy\s*hour/i.test(e.title));
+  return event ? fromEvent(event) : HAPPY_HOUR;
 }
 
-const TOPE_PILL = 22;
+const PILL_CAP = 22;
 
-export async function fraseHappyHour(): Promise<string> {
-  const eventos = await getVenueEvents();
-  const titulo = eventos.find((e) => /happy\s*hour/i.test(e.title))?.title;
-  if (titulo && titulo.length <= TOPE_PILL) return titulo;
+export async function happyHourPhrase(): Promise<string> {
+  const events = await getVenueEvents();
+  const title = events.find((e) => /happy\s*hour/i.test(e.title))?.title;
+  if (title && title.length <= PILL_CAP) return title;
   return 'Happy hour';
 }

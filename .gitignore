@@ -13,47 +13,48 @@ next-env.d.ts
 .playwright-mcp
 a11y-report.json
 
-# Capturas de referencia locales (no forman parte del sitio)
+# Local reference captures (not part of the site)
 /n*.png
 /ref*.png
 
-# Fuentes originales (.otf/.ttf). Las que usa el sitio ya están convertidas en
-# src/app/fonts/; el script que las convertía (install-fonts.mjs) no existe más.
-# Se mudaron a _interno/fuentes/ el 2026-09-23; la regla queda por si vuelven.
+# Original fonts (.otf/.ttf). The ones the site uses are already converted in
+# src/app/fonts/; the script that converted them (install-fonts.mjs) no longer
+# exists. They moved to _interno/fuentes/ on 2026-09-23; the rule stays in
+# case they come back.
 public/fonts/_drop/
 
-# Originales de multimedia del cliente (681 MB). Entrada de `npm run media`;
-# lo que se versiona son los derivados de public/images/venue y public/videos.
+# Client media originals (681 MB). Input for `npm run media`; what gets
+# versioned are the derivatives in public/images/venue and public/videos.
 public/multimedia/
 
-# Capturas de trabajo del rediseño. Los ENTREGABLES —baseline/, after/,
-# COMPARAR-*.png, specimen-*.png— sí se versionan; estas son intermedias y se
-# regeneran con los scripts de design-audit/.
+# Working captures from the redesign. The DELIVERABLES (baseline/, after/,
+# COMPARE-*.png, specimen-*.png) are versioned; these are intermediate and are
+# regenerated with the design-audit/ scripts.
 design-audit/fase*/
 design-audit/HOJA-*.png
 design-audit/tmp/
 design-audit/specimen.html
 
 # ─────────────────────────────────────────────────────────────────────────
-# MATERIAL INTERNO DEL CLIENTE. NO SE SUBE NUNCA.
-# Acá van los PDF de brief, el brand book, el moodboard y cualquier archivo
-# con datos del cliente (emails, teléfonos, fees, presupuestos). Regla de
-# Camila, 2026-09-11: si es del cliente o es nuestro material de trabajo
-# interno, vive acá y no entra a git jamás.
+# INTERNAL CLIENT MATERIAL. NEVER UPLOADED.
+# This is where the brief PDFs, the brand book, the moodboard and any file
+# with client data (emails, phone numbers, fees, budgets) go. Camila's rule,
+# 2026-09-11: if it's the client's or it's our internal working material, it
+# lives here and never goes into git.
 # ─────────────────────────────────────────────────────────────────────────
 /_interno/
 
-# Volcado crudo del sitio Wix vigente. Material de referencia, NO se publica
-# ni se versiona: es el ORIGINAL, y adentro van precios de eventos del cliente
-# y un mail interno (ver _interno/LEEME.md y docs/INVARIANTES.md §5b). Lo que
-# se versiona es el derivado: el dato transcrito en content/*.ts.
-# Se regenera con design-audit/tmp/scrape-wix.mjs
+# Raw dump of the current Wix site. Reference material, NOT published or
+# versioned: it is the ORIGINAL, and it contains the client's event prices and
+# an internal email (see _interno/LEEME.md and docs/INVARIANTS.md §5b). What
+# gets versioned is the derivative: the data transcribed into content/*.ts.
+# Regenerated with design-audit/tmp/scrape-wix.mjs
 src/content/_source/
 
-# Log del `next dev` cuando se lo corre a un archivo. Artefacto local.
+# `next dev` log when it is run to a file. Local artifact.
 dev-server.log
 
-# Basura del sistema operativo. `desktop.ini` es la personalización de carpeta
-# de Windows: se entró por error en 5e34c6e y se sacó el 2026-09-23.
+# Operating system junk. `desktop.ini` is Windows folder customization: it got
+# in by mistake in 5e34c6e and was removed on 2026-09-23.
 desktop.ini
 Thumbs.db

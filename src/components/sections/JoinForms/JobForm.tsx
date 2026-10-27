@@ -27,7 +27,7 @@ import {
   SHIFTS,
   YES_NO,
 } from '@/lib/schemas/join';
-import { Bloque, Exito } from './Compartido';
+import { Block, Success } from './Shared';
 
 const JOB_LABELS: Record<string, string> = {
   position: 'Position',
@@ -55,9 +55,9 @@ export function JobForm() {
 
   if (state.status === 'ok') {
     return (
-      <Exito eyebrow="Application sent" titulo="It landed">
+      <Success eyebrow="Application sent" title="It landed">
         {state.message}
-      </Exito>
+      </Success>
     );
   }
 
@@ -90,7 +90,7 @@ export function JobForm() {
         cols={SHIFTS.map((s) => ({ value: s.value, label: s.label }))}
       />
 
-      <Bloque>Personal information</Bloque>
+      <Block>Personal information</Block>
       <div className="grid gap-[16px] sm:grid-cols-2">
         <TextField
           name="firstName"

@@ -27,7 +27,7 @@ export const SPACES: readonly Space[] = [
     photo: null,
     photoAlt: null,
     photoBrief:
-      "La terraza al atardecer, mirando al oeste sobre el río, con la barra y las mesas en cuadro.",
+      "The rooftop at sunset, looking west over the river, with the bar and the tables in frame.",
     status: 'available',
   },
   {
@@ -43,7 +43,7 @@ export const SPACES: readonly Space[] = [
     photo: null,
     photoAlt: null,
     photoBrief:
-      "El patio desde arriba con los cuatro trucks estacionados y el escenario armado, tomada desde la terraza.",
+      "The yard from above with the four trucks parked and the stage set up, shot from the rooftop.",
     status: 'available',
   },
   {
@@ -59,7 +59,7 @@ export const SPACES: readonly Space[] = [
     photo: null,
     photoAlt: null,
     photoBrief:
-      "El patio cubierto una vez terminada la reforma. Plano general que muestre cómo conecta el patio con la barra.",
+      "The covered patio once the renovation is finished. A wide shot showing how the patio connects with the bar.",
     status: 'renovating',
   },
   {
@@ -75,7 +75,7 @@ export const SPACES: readonly Space[] = [
     photo: null,
     photoAlt: null,
     photoBrief:
-      "Un evento privado en curso, con la terraza y el patio llenos los dos, tomada desde la vereda.",
+      "A private event underway, with both the rooftop and the yard full, shot from the sidewalk.",
     status: 'available',
   },
 ];

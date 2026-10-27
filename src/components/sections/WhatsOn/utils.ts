@@ -4,11 +4,11 @@ export const MAX_CARDS = 8;
 
 export const gapTrack = (track: HTMLElement) => parseFloat(getComputedStyle(track).columnGap) || 0;
 
-export const bordeTrack = (track: HTMLElement) => parseFloat(getComputedStyle(track).paddingLeft) || 0;
+export const trackEdge = (track: HTMLElement) => parseFloat(getComputedStyle(track).paddingLeft) || 0;
 
-export const ANCHO = 'w-[calc(100%-20px)] md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)]';
+export const WIDTH = 'w-[calc(100%-20px)] md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)]';
 
-export const VISIBLES = [
+export const VISIBLE = [
   { mq: '(min-width: 1024px)', n: 3 },
   { mq: '(min-width: 768px)', n: 2 },
 ] as const;

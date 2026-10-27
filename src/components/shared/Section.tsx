@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 
 const TONES = {
-  paper: 'bg-paper grano text-body',
-  bone: 'bg-bone grano text-body',
-  cream: 'bg-cream grano text-body',
-  mint: 'bg-mint grano text-body',
-  teal: 'bg-teal600 grano text-paper on-dark',
-  deep: 'bg-deep grano text-paper on-dark',
+  paper: 'bg-paper grain text-body',
+  bone: 'bg-bone grain text-body',
+  cream: 'bg-cream grain text-body',
+  mint: 'bg-mint grain text-body',
+  teal: 'bg-teal600 grain text-paper on-dark',
+  deep: 'bg-deep grain text-paper on-dark',
   none: '',
 } as const;
 
@@ -35,7 +35,7 @@ const PB = {
 } as const;
 
 const WIDTHS = {
-  site: 'caja',
+  site: 'page-box',
   prose: 'mx-auto w-full max-w-[720px]',
   full: 'w-full',
 } as const;
@@ -85,7 +85,7 @@ export default function Section({
         .join(' ')}
     >
       {tone === 'teal' ? (
-        <span aria-hidden="true" className="piedra pointer-events-none absolute inset-0" />
+        <span aria-hidden="true" className="stone pointer-events-none absolute inset-0" />
       ) : null}
       <div className={['relative z-[1]', WIDTHS[width], innerClassName].filter(Boolean).join(' ')}>
         {children}
