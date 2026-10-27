@@ -1,9 +1,3 @@
-/**
- * Contact sheet of a folder of images, with a numbered index.
- *   node design-audit/contact-sheet.mjs <dir> <output.png> [cols] [cell] [from] [to]
- *
- * It's for LOOKING at a whole batch at once instead of opening 36 files.
- */
 import sharp from 'sharp';
 import { readdirSync } from 'node:fs';
 
@@ -27,9 +21,6 @@ for (const f of files) {
   const y = row * (CELL + LABEL);
   try {
     const buf = await sharp(`${dir}/${f}`)
-      /* ⚠️ .rotate() WITHOUT arguments applies the EXIF orientation. Without it, the
-         photos taken in portrait with the camera turned come out lying down: it happened
-         with six of the 36 on the first try. */
       .rotate()
       .resize(CELL - 4, CELL - 4, { fit: 'cover' })
       .toBuffer();

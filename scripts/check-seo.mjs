@@ -1,46 +1,13 @@
 import { chromium } from 'playwright';
 import { assertFresh } from './assert-fresh.mjs';
 
-/**
- * Compares what the site RENDERS against the brief's table.
- *
- * Verifies, page by page:
- *   · the exact `<title>`
- *   · the exact H1, and that there is **only one**
- *   · that a non-empty meta description exists
- *   · that the canonical points to the correct URL
- *   · that no banned vocabulary appears in the visible text
- *
- * Runs against the production build:
- *   npm run build && npx next start --port 3120
- *   node scripts/check-seo.mjs
- */
-
 import { PAGE_SEO } from '../src/content/seo-pages.ts';
 
-/*
- * ⚠️ ONE SINGLE port for the three guards, and an uncommon one on purpose.
- * Each script used to have its own (3114, 3119, 3120) and all three collided
- * with stale servers from other sessions, hence the false results. Serve the
- * build here:
- *
- *   npm run build && npx next start --port 3157
- *
- * assertFresh() verifies that whatever answers really is the current build.
- */
 const BASE = process.env.BASE ?? 'http://localhost:3157';
 
 await assertFresh(BASE);
 const SITE = 'https://rooftopatriverside.com';
 
-/**
- * Vocabulary banned by the brief. Searched for in the VISIBLE text.
- *
- * ⚠️ The exceptions are deliberate and each one is a phrase where the word
- * appears in order to DENY it: «Is Rooftop at Riverside a restaurant? No.» Banning the
- * word outright would make it impossible to dispel the confusion, which is
- * precisely the site's job.
- */
 const BANNED = [
   { re: /\bour kitchen\b/i, note: 'the venue has no kitchen' },
   { re: /\bour chefs?\b/i, note: 'the venue has no cooks' },
@@ -51,7 +18,6 @@ const BANNED = [
   { re: /\btwo-story bar\b/i, note: 'old naming' },
 ];
 
-/** Phrases where a banned word appears in order to deny it. */
 const ALLOWED_CONTEXT = [
   /no delivery, no takeout, no online ordering/i,
   /is rooftop at riverside a restaurant\?/i,
@@ -84,7 +50,6 @@ for (const [route, expected] of Object.entries(PAGE_SEO)) {
     };
   });
 
-  // The blog is hidden (noindex, no H1) while there are no posts: it's not an error.
   if (data.noindex && data.h1s.length === 0) {
     console.log(`⏸  ${route} hidden (noindex, no content): skipped`);
     continue;
@@ -99,7 +64,6 @@ for (const [route, expected] of Object.entries(PAGE_SEO)) {
   if (!data.description) issues.push('no meta description');
   else if (data.description !== expected.description) issues.push('meta description differs from the table');
 
-  // A noindex page doesn't declare a canonical: they'd be two opposite signals (2026-09-23).
   const wantCanonical = data.noindex ? '' : `${SITE}${route === '/' ? '' : route}`;
   if (data.canonical !== wantCanonical) {
     issues.push(`canonical: ${data.canonical || '(none)'} ≠ ${wantCanonical}`);
@@ -108,7 +72,6 @@ for (const [route, expected] of Object.entries(PAGE_SEO)) {
   for (const { re, note } of BANNED) {
     const hit = data.text.match(re);
     if (!hit) continue;
-    // Is it inside a phrase that denies it?
     const around = data.text.slice(Math.max(0, hit.index - 120), hit.index + 120);
     if (ALLOWED_CONTEXT.some((ok) => ok.test(around))) continue;
     issues.push(`banned vocabulary «${hit[0]}» — ${note}`);

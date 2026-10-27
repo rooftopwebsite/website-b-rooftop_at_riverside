@@ -1,27 +1,12 @@
-/**
- * Generates `design-audit/specimen.html`: the type scale and the surfaces
- * RENDERED, to look at them before applying them to the site.
- *
- *   node design-audit/specimen.mjs
- *
- * ⚠️ Everything is read from `src/app/globals.css`. Not a single value written here. It's the
- * replacement for `public/_specimen.html`, which had been left pointing to the three
- * discarded families and to .woff2 files that no longer exist.
- *
- * The fonts are referenced by a path relative to `src/app/fonts/`, so the
- * file opens with `file://` and doesn't need a server.
- */
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const CSS = readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8');
 
-/** Reads a token from @theme (static value) and its `:root` override if it exists. */
 function token(name) {
   const all = [...CSS.matchAll(new RegExp(`--${name}:\\s*([^;]+);`, 'g'))].map((m) =>
     m[1].trim(),
   );
   if (all.length === 0) return null;
-  /* The last one wins: `:root` comes after `@theme` in the file. */
   return all[all.length - 1];
 }
 

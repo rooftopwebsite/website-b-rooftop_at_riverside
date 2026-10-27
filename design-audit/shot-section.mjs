@@ -1,13 +1,3 @@
-/**
- * Captures ONE section. `node design-audit/shot-section.mjs "<selector>" name`
- *
- * ⚠️ It scrolls through the whole page BEFORE capturing, and
- * `scrollIntoViewIfNeeded()` isn't enough: with Lenis interpolating the wheel, that jump doesn't
- * produce the scroll event the `whileInView` IntersectionObserver needs,
- * so the section gets captured with the reveals not fired
- * —an image with a closed `clip-path` comes out blank—. Confirmed by measuring the
- * computed style: scrolling slowly, zero elements stay invisible.
- */
 import { chromium } from 'playwright';
 
 const sel = process.argv[2];

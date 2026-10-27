@@ -1,32 +1,9 @@
-/**
- * Sync guard between the two declarations of the palette.
- *
- *   npm run check:tokens
- *
- * ⚠️ WHY IT EXISTS. The palette is written in two places and it has to be:
- *
- *   · `src/app/globals.css`, `@theme` block → it's what RENDERS. Tailwind v4
- *     is CSS-first, there's no `tailwind.config.ts` and a `.ts` can't be imported
- *     inside `@theme`.
- *   · `src/lib/brand.ts`, `COLORS` object → it's what can be READ from
- *     TypeScript and from the scripts, and where the usage rules live.
- *
- * Without a guard, the two copies drift apart without anything warning. It already happened: for
- * months `brand.ts` declared `paper: '#FFFFFF'` and `ink: '#000000'` while the
- * site painted `#FDFCF7` and `#0A1F1E`. `scripts/contrast.mjs` read the stale
- * copy, so the entire contrast audit was calculated against
- * colors the site didn't use and the documented ratios weren't the real ones.
- * Nobody noticed because the build passed.
- *
- * This script compares token by token and fails with the detail of the difference.
- */
 import { readFileSync } from 'node:fs';
 
 const root = new URL('../', import.meta.url);
 const CSS = readFileSync(new URL('src/app/globals.css', root), 'utf8');
 const TS = readFileSync(new URL('src/lib/brand.ts', root), 'utf8');
 
-/** The CSS's `--color-*: #hex;`. The ones that are `var(...)` are aliases and get skipped. */
 function cssPalette() {
   const p = new Map();
   const alias = new Set();
@@ -39,7 +16,6 @@ function cssPalette() {
   return { palette: p, alias };
 }
 
-/** The `COLORS` object from brand.ts. Accepts keys with and without quotes. */
 function tsPalette() {
   const block = TS.match(/export const COLORS = \{([\s\S]*?)\n\} as const;/);
   if (!block) throw new Error('`export const COLORS` was not found in src/lib/brand.ts');
@@ -66,8 +42,6 @@ for (const [name, value] of ts) {
   }
 }
 
-/* The reverse is only a warning: @theme can have tokens TypeScript doesn't
-   need to see, and forcing total symmetry would be noise. */
 const cssOnly = [...css.keys()].filter((n) => !ts.has(n) && !alias.has(n));
 
 console.log(`check:tokens — ${css.size} colors in globals.css, ${ts.size} in brand.ts`);

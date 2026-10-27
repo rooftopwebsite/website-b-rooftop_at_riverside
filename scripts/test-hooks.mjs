@@ -2,13 +2,6 @@ import { registerHooks } from 'node:module';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-/**
- * Only for the tests run with `node --test`. Next resolves `./restoexp` and `@/lib/x`
- * on its own; Node doesn't. This hook teaches it both things: the `@/` alias points to
- * `src/`, and a relative import without an extension tries `.ts`.
- *
- *   node --import ./scripts/test-hooks.mjs --test "src/**\/*.test.ts"
- */
 const SRC = pathToFileURL(path.resolve('src') + path.sep).href;
 
 registerHooks({

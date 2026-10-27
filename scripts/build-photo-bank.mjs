@@ -1,49 +1,3 @@
-/**
- * THE PHOTO BANK: all the material in a single folder, with no duplicates.
- *
- *   node scripts/build-photo-bank.mjs
- *
- * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ WHY IT EXISTS. Camila, 2026-09-22: «in one folder put the ones we use in
- * our redesign and the ones on the original website, clean out the duplicates,
- * fill the gaps».
- *
- * Until today the material lived in three places that didn't talk to each other:
- *
- *   · `public/multimedia/` — the client's delivery (36 photos and 5 videos), which
- *     is where everything the site publishes today comes from;
- *   · `_internal/photos/_web-originals/` — the 81 the client publishes on their
- *     Wix, downloaded with `fetch-old-site-media.mjs`;
- *   · `_internal/photos/from-camila/` — whatever Camila adds by hand.
- *
- * And they overlapped: several of the 81 WERE ALREADY in the delivery, because the
- * client uploaded to their website the same photos they gave us. Looking at them one by one
- * you can't tell; in a single folder, you can.
- *
- * ⚠️ IT DOESN'T DELETE ANYTHING FROM THE SOURCE FOLDERS. The bank is a FOURTH folder
- * that gathers them by copying. If something goes wrong, the bank is deleted and
- * regenerated; the originals are never touched.
- *
- * ⚠️ AND IT ISN'T VERSIONED, like all of `_internal/` (§5b of INVARIANTS).
- *
- * ──────────────────────────────────────────────────────────────────────────
- * ⚠️ HOW IT DECIDES WHAT A DUPLICATE IS. Two passes, and the second is the one
- * that matters:
- *
- *   1. EXACT HASH (sha1 of the file). Catches the same file uploaded twice.
- *      It's cheap and never fails.
- *   2. PERCEPTUAL FINGERPRINT (16×16 dHash over the grayscale image). Catches the
- *      same photo re-exported, recompressed or resized, which is the real
- *      case: the client's delivery and their Wix have the same photos in
- *      two sizes.
- *
- * ⚠️ WHAT IT DOESN'T CATCH, AND YOU HAVE TO KNOW IT: two different shots of the same
- * moment. It happened in this project —`live-band-crowd` and `wall-yard-night-crowd`
- * are the same singer on the same night with two framings— and no hash flags
- * them, because as images they're different. That's seen by looking, not measuring.
- * The index keeps them together so they're seen one at a time.
- * ══════════════════════════════════════════════════════════════════════════
- */
 import { createHash } from 'node:crypto';
 import { mkdir, readdir, readFile, writeFile, copyFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -51,7 +5,6 @@ import sharp from 'sharp';
 
 const BANK = '_internal/photos/bank';
 
-/** Where each thing comes from, in priority order: the first one wins the name. */
 const SOURCES = [
   { dir: 'public/multimedia', label: 'client delivery', prefix: '' },
   { dir: '_internal/photos/from-camila', label: 'added by Camila', prefix: 'cami-' },
@@ -60,14 +13,6 @@ const SOURCES = [
 
 const IS_IMAGE = /\.(jpe?g|png|webp|gif|avif)$/i;
 
-/**
- * The perceptual fingerprint: 16×16 dHash.
- *
- * ⚠️ IT COMPARES GRADIENTS, NOT PIXELS. Each bit says whether a pixel is lighter
- * than the one to its right, and that survives the image being rescaled,
- * recompressed or changing brightness — which is exactly what happens to a photo
- * when Wix re-exports it.
- */
 async function fingerprint(filePath) {
   const px = await sharp(filePath)
     .rotate()
@@ -84,7 +29,6 @@ async function fingerprint(filePath) {
   return bits;
 }
 
-/** How many bits differ. Fewer than 12 out of 256 is the same photo. */
 const distance = (a, b) => {
   let d = 0;
   for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d++;
@@ -93,7 +37,6 @@ const distance = (a, b) => {
 
 await mkdir(BANK, { recursive: true });
 
-/* ── 1 · Gather everything there is ─────────────────────────────────────── */
 const files = [];
 for (const f of SOURCES) {
   if (!existsSync(f.dir)) continue;
@@ -105,7 +48,6 @@ for (const f of SOURCES) {
 
 console.log(`${files.length} images in ${SOURCES.length} folders.\n`);
 
-/* ── 2 · Measure each one ───────────────────────────────────────────────── */
 for (const a of files) {
   const buf = await readFile(a.path);
   a.sha = createHash('sha1').update(buf).digest('hex');
@@ -122,7 +64,6 @@ for (const a of files) {
 
 const good = files.filter((a) => !a.broken);
 
-/* ── 3 · Group duplicates ───────────────────────────────────────────────── */
 const groups = [];
 for (const a of good) {
   const g = groups.find(
@@ -132,16 +73,10 @@ for (const a of good) {
   else groups.push([a]);
 }
 
-/*
- * From each group THE LARGEST one is kept, not the first one found: between the
- * delivery's version and the one Wix re-exported, the one that's useful for cropping
- * is the one with more pixels.
- */
 for (const g of groups) g.sort((x, y) => y.px - x.px);
 
 const duplicates = groups.filter((g) => g.length > 1);
 
-/* ── 4 · Copy to the bank ───────────────────────────────────────────────── */
 let n = 0;
 for (const g of groups) {
   const a = g[0];
@@ -151,7 +86,6 @@ for (const g of groups) {
   n += 1;
 }
 
-/* ── 5 · Which of this is published today ───────────────────────────────── */
 const pipeline = await readFile('scripts/build-media.mjs', 'utf8');
 const inUse = new Map();
 for (const m of pipeline.matchAll(/src:\s*'([^']+)'[^}]*out:\s*'([^']+)'/g)) {
@@ -159,7 +93,6 @@ for (const m of pipeline.matchAll(/src:\s*'([^']+)'[^}]*out:\s*'([^']+)'/g)) {
   inUse.get(m[1]).push(m[2].replace('public/', '/'));
 }
 
-/* ── 6 · The index ──────────────────────────────────────────────────────── */
 const rows = groups
   .map((g) => {
     const a = g[0];

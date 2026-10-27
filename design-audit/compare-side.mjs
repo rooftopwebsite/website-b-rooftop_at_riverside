@@ -1,11 +1,3 @@
-/**
- * SIDE-BY-SIDE, scaled comparison, for full pages.
- *   node design-audit/compare-side.mjs output.png colWidth "Label A" a.png "Label B" b.png
- *
- * ⚠️ It exists because stacking two full home pages gave an image 13,000px
- * tall, which can't be looked at. Scaled and in parallel, the surface rhythm
- * —which is what has to be compared— shows at a glance.
- */
 import sharp from 'sharp';
 
 const [out, widthStr, ...rest] = process.argv.slice(2);

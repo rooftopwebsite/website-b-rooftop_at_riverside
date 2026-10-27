@@ -1,11 +1,9 @@
-/** Measured WCAG 2.1 contrast. No numbers from memory. */
 const hx = (h) => { h = h.replace('#',''); if(h.length===3) h=[...h].map(c=>c+c).join(''); return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16)/255); };
 const lin = (c) => (c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4));
 const L = (h) => { const [r,g,b] = hx(h).map(lin); return 0.2126*r + 0.7152*g + 0.0722*b; };
 export const ratio = (a,b) => { const x=L(a), y=L(b); return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05); };
 
 const rgb2hex = (r,g,b) => '#' + [r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase();
-/* HSL helpers to desaturate cream-deep in a controlled way. */
 function hex2hsl(h){const [r,g,b]=hx(h);const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;let hh=0;
  if(d){if(mx===r)hh=((g-b)/d)%6;else if(mx===g)hh=(b-r)/d+2;else hh=(r-g)/d+4;hh*=60;if(hh<0)hh+=360;}
  const l=(mx+mn)/2;const s=d?d/(1-Math.abs(2*l-1)):0;return[hh,s,l];}

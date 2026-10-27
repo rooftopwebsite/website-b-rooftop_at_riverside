@@ -1,13 +1,3 @@
-/**
- * Baseline / after capturer.
- *   node shoot.mjs <outDir> [url]
- *
- * Produces:
- *   <outDir>/home-desktop.png   full page 1440
- *   <outDir>/home-mobile.png    full page 390
- *   <outDir>/sections/NN-<id>-{desktop,mobile}.png  per section
- *   <outDir>/sections.json      measured inventory (height, computed background)
- */
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -22,7 +12,6 @@ const VIEWPORTS = [
   { name: 'mobile', width: 390, height: 844 },
 ];
 
-/** Scrolls down to the footer in steps, so the scroll reveals fire. */
 async function scrollThrough(page) {
   await page.evaluate(async () => {
     const step = Math.round(window.innerHeight * 0.6);
@@ -48,13 +37,11 @@ for (const vp of VIEWPORTS) {
   });
   const page = await ctx.newPage();
   await page.goto(url, { waitUntil: 'networkidle' });
-  // The site's preloader has its own entrance animation.
   await page.waitForTimeout(2500);
   await scrollThrough(page);
 
   await page.screenshot({ path: join(outDir, `home-${vp.name}.png`), fullPage: true });
 
-  // Inventory + per-section capture: the direct children of <main>.
   const sections = await page.evaluate(() => {
     const main = document.querySelector('main');
     return [...main.children].map((el, i) => {

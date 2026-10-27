@@ -1,8 +1,3 @@
-/**
- * Surface split MEASURED on the pixels of the full-page screenshot.
- *   node design-audit/surface-split.mjs <png>
- * Classifies each pixel to the nearest palette token and reports the %.
- */
 import sharp from 'sharp';
 
 const TOKENS = {
@@ -17,7 +12,6 @@ const TOKENS = {
 const REF = [];
 for (const [name, hexes] of Object.entries(TOKENS))
   for (const h of hexes) REF.push([name, [1,3,5].map((i)=>parseInt(h.slice(i-1+1-1+1,0)||'0',16))]);
-// correct parse
 REF.length = 0;
 for (const [name, hexes] of Object.entries(TOKENS))
   for (const h of hexes) {
@@ -33,7 +27,6 @@ const ch = info.channels;
 
 const tally = new Map();
 let others = 0, total = 0;
-// Sampling every 3 px: 1/9 of the pixels, error well below 1 point.
 for (let y = 0; y < info.height; y += 3) {
   for (let x = 0; x < info.width; x += 3) {
     const o = (y * info.width + x) * ch;
@@ -44,7 +37,6 @@ for (let y = 0; y < info.height; y += 3) {
       if (d < bd) { bd = d; best = name; }
     }
     total++;
-    // 42² ≈ tolerance of ~24 per channel. Farther than that is photo, map or gray.
     if (bd > 1800) { others++; continue; }
     tally.set(best, (tally.get(best) ?? 0) + 1);
   }

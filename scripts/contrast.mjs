@@ -1,22 +1,7 @@
-/**
- * Generates `design-audit/CONTRAST.md` with the WCAG 2.1 ratios of every pair in use.
- *
- *   node scripts/contrast.mjs          → writes CONTRAST.md
- *   node scripts/contrast.mjs --check  → only fails if some pair doesn't pass
- *
- * ⚠️ THE PALETTE IS READ FROM `src/app/globals.css`, it isn't written here.
- *
- * It's the fix for a real problem the audit found: the palette in
- * `scripts/contrast.mjs` was copied by hand, went stale when the `@theme`
- * changed, and because of that ALL the ratios in `docs/contrast-audit.md` were
- * calculated against colors the site didn't paint. A script that reads the
- * source can't drift out of sync.
- */
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const CSS = readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8');
 
-/** Extracts the `--color-*` from the @theme block. */
 function readPalette() {
   const p = {};
   for (const m of CSS.matchAll(/--color-([a-z0-9-]+):\s*(#[0-9a-fA-F]{3,8})\s*;/g)) {
@@ -47,10 +32,6 @@ function ratio(a, b) {
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
 }
 
-/**
- * The pairs ACTUALLY IN USE on the redesigned home page.
- * type: body (≥4.5) · large (≥3, text ≥24px or ≥19px bold) · ui (≥3) · deco (exempt)
- */
 const PAIRS = [
   ['— Text on the two light surfaces —'],
   ['ink', 'paper', 'Headlines and body on the base', 'body'],
@@ -129,7 +110,6 @@ for (const pair of PAIRS) {
   const r = ratio(f, b);
   const passes = r >= minimum(type);
   const banned = use.startsWith('❌');
-  /* A banned pair that does NOT pass is expected: it doesn't count as a failure. */
   if (!passes && !banned && type !== 'deco') failures++;
   rows.push({ f, b, use, type, r, passes, banned });
 }

@@ -1,7 +1,3 @@
-/**
- * Joins screenshots into ONE image, stacked and labeled.
- *   node design-audit/compare.mjs output.png "Label A" a.png "Label B" b.png ...
- */
 import sharp from 'sharp';
 
 const [out, ...rest] = process.argv.slice(2);
