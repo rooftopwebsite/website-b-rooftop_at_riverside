@@ -1,13 +1,3 @@
-# ══════════════════════════════════════════════════════════════════════════
-# WHAT NEVER GOES UP TO VERCEL in a deploy made from the machine.
-#
-# Git deploys already respect .gitignore, but `vercel deploy` from the CLI
-# packages the FOLDER. Without this, the client's originals
-# (public/multimedia/, 681 MB) would be uploaded and end up published at a
-# public URL, along with the internal material. Same criterion as the
-# _internal/ block in .gitignore: if it's the client's or it's working
-# material, it doesn't get published.
-# ══════════════════════════════════════════════════════════════════════════
 /_internal/
 /public/multimedia/
 /public/fonts/_drop/
