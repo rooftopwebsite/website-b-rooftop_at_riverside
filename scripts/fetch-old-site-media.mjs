@@ -13,7 +13,7 @@
  * Camila, 2026-09-22: «download all the photos from the original website and put them in a
  * folder in the repo, along with the ones I've already given you myself».
  *
- * ⚠️ WHAT IT DOWNLOADS GOES TO `_interno/`, WHICH IS NOT VERSIONED. It's rule §5b of
+ * ⚠️ WHAT IT DOWNLOADS GOES TO `_internal/`, WHICH IS NOT VERSIONED. It's rule §5b of
  * `docs/INVARIANTS.md`: the client's material doesn't go into git; what goes in
  * is the DERIVATIVE —the cropped and optimized image the site serves—. This
  * script fills the input folder; `scripts/build-media.mjs` is the one that
@@ -33,7 +33,7 @@ import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 
 const BASE = 'https://www.eatdrinkparadise.com';
-const OUTPUT = '_interno/fotos/_originales-web';
+const OUTPUT = '_internal/photos/_web-originals';
 
 /**
  * The current site's routes, taken from `docs/current-site-inventory.md`.
@@ -179,7 +179,7 @@ const index = [
   '',
 ].join('\n');
 
-await writeFile(`${OUTPUT}/INDICE.md`, index);
+await writeFile(`${OUTPUT}/INDEX.md`, index);
 
-console.log(`✅ ${downloaded} downloaded, ${skipped} were already there. Index at ${OUTPUT}/INDICE.md`);
+console.log(`✅ ${downloaded} downloaded, ${skipped} were already there. Index at ${OUTPUT}/INDEX.md`);
 void readFile;

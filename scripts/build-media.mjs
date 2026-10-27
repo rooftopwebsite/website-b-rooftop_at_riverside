@@ -17,7 +17,7 @@
  * `<video>` stays black. They have to be re-encoded to H.264 anyway.
  *
  * So `public/multimedia/` is the INPUT folder —it's in `.gitignore`,
- * just like the font originals in `_interno/fuentes/`— and what gets versioned are the derivatives in
+ * just like the font originals in `_internal/fonts/`— and what gets versioned are the derivatives in
  * `public/images/venue/` and `public/videos/`.
  * ══════════════════════════════════════════════════════════════════════════
  *
@@ -220,13 +220,13 @@ const PHOTOS = [
      before is from the downstairs patio. Same 3:4 as the other tabs. */
   /* ⚠️ AND IT WAS REPLACED THE SAME DAY BY A FRAME FROM THE HERO VIDEO. Camila didn't
      find the terrace in the bank but did in the home page video: it's
-     second 44.0 of `_interno/video-sitio/home-hero-1080p.mp4` —the table with an
+     second 44.0 of `_internal/site-video/home-hero-1080p.mp4` —the table with an
      umbrella against the railing, with Old 41 behind—, extracted to lossless PNG
      and chosen among 56 frames by sharpness (variance of the Laplacian). The
      original is 1920×1080, so the 3:4 derivative comes out of 810×1080 and goes at
      that size: enlarging it would only invent pixels. */
   {
-    src: 'terraza-video-44s.png',
+    src: 'terrace-video-44s.png',
     out: 'public/images/venue/patio-rooftop-table.webp',
     w: 810,
     h: 1080,
@@ -316,7 +316,7 @@ const PHOTOS = [
      center leaves the heads whole and below the plate at every width
      is in `docs/INVARIANTS.md`, next to `photoKeepFaces`. */
   /* ⚠️ REPLACED ON 2026-10-02 at Chris's request (the umbrellas one
-     was the same as Gayborhood's). Original `_interno/fotos/de-camila/
+     was the same as Gayborhood's). Original `_internal/photos/from-camila/
      DSC02165.JPG`, portrait 4672×7008: five friends with orange wigs, at
      night. The faces go from edge to edge, so the crop uses the WHOLE
      width and is never cropped from the side. The heads occupy from 20 % to 46 %
@@ -661,14 +661,14 @@ const PHOTOS = [
 
      It replaces `wall-yard-night-crowd.jpg`, which was a wall tile of
      540×720 served full screen. See the component's note. */
-  { src: 'fondo-hojas.jpg', out: 'public/images/venue/leaf-backdrop.webp', turn: 90, w: 1800, h: 760, q: 68 },
+  { src: 'leaf-backdrop.jpg', out: 'public/images/venue/leaf-backdrop.webp', turn: 90, w: 1800, h: 760, q: 68 },
   /* ══════════════════════════════════════════════════════════════════════
      THE SECOND BATCH FROM THE CURRENT SITE — 2026-09-22
 
      ⚠️ SAME ORIGIN AS THE MARKET AND THE TWO FLYERS: they don't come from the
      36-photo delivery, but from `eatdrinkparadise.com`. Camila: «download all
      the photos from the original website and put them in a folder in the repo». The 81
-     ended up in `_interno/fotos/_originales-web/` —which isn't versioned— and
+     ended up in `_internal/photos/_web-originals/` —which isn't versioned— and
      these nineteen are the ones the new site needed.
 
      They're downloaded by `node scripts/fetch-old-site-media.mjs`. The originals go to

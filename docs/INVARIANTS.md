@@ -173,7 +173,7 @@ design removes those elements.
 ## 5b. Client material: never goes into git
 
 Camila's rule, 2026-09-11. **No PDF, brief, brand book, moodboard or
-file with client data is versioned.** All of that lives in `_interno/`,
+file with client data is versioned.** All of that lives in `_internal/`,
 which is in `.gitignore` and is never pushed.
 
 The reason is concrete: those files carry the owners' personal emails and phone numbers,

@@ -1,6 +1,6 @@
 # Reading the moodboard
 
-The ten files are in `_interno/moodboard/`, out of git since 2026-09-11:
+The ten files are in `_internal/moodboard/`, out of git since 2026-09-11:
 it's client material and is not versioned. They're Pinterest
 screenshots, so what gets read is the layout inside, not the screenshot.
 

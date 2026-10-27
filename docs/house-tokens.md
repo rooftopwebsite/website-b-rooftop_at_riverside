@@ -210,7 +210,7 @@ looked clumped.
 ⚠️ The families changed entirely on September 9, and all three for **licensing**
 reasons, not design. Today there are two, both Google OFL and both variable:
 **Big Shoulders Display** for display and **Jost** for body (400) and eyebrows (500).
-The details are in the header of `globals.css` and in `public/fonts/_drop/LEEME.md`.
+The details are in the header of `globals.css` and in `public/fonts/_drop/README.md`.
 
 ---
 

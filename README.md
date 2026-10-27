@@ -20,7 +20,7 @@ npm run dev
 | `npm run dev` / `build` / `start` | The usual Next commands |
 | `npm run events:verify` | Checks `src/content/events.json`: that every event has its poster, that the file exists, that all dates of an event use the same photo and that no two events share one |
 | `npm run media` | Generates the photos and videos in `public/` from `public/multimedia/` (originals, outside git) |
-| `npm run og` | Generates the social sharing images (`public/og/`). The original design lives in `_interno/og/` |
+| `npm run og` | Generates the social sharing images (`public/og/`). The original design lives in `_internal/og/` |
 | `npm run media:import` | Downloads the old site's photos into `public/images/` |
 | `npm run media:fetch-old-site` | Downloads all the material published on the current site |
 | `npm run media:photo-bank` | Builds the single photo bank, without duplicates |
@@ -72,13 +72,13 @@ public/             only what gets published: derived photos, videos, OG, PDFs
 scripts/            media generators and audits (see the table above)
 docs/               project decisions and the old site's inventory
 design-audit/       before/after captures from the visual audit
-_interno/           client and working material. NOT versioned or published
+_internal/           client and working material. NOT versioned or published
 ```
 
 ## Rules you can't see in the code
 
 - **Client material stays out of git.** PDFs, briefs, photo originals and
-  licensed fonts go to `_interno/`. `.gitignore` and `.vercelignore` cover it.
+  licensed fonts go to `_internal/`. `.gitignore` and `.vercelignore` cover it.
 - **No made-up data.** A content gap is marked with `<PhotoPending>`,
   `<PendingData>` or `<PendingBlock>` and only goes away when the data arrives.
 - **The old site's 301s are not touched** without reviewing `next.config.ts`

@@ -19,7 +19,7 @@ a11y-report.json
 
 # Original fonts (.otf/.ttf). The ones the site uses are already converted in
 # src/app/fonts/; the script that converted them (install-fonts.mjs) no longer
-# exists. They moved to _interno/fuentes/ on 2026-09-23; the rule stays in
+# exists. They moved to _internal/fonts/ on 2026-09-23; the rule stays in
 # case they come back.
 public/fonts/_drop/
 
@@ -42,11 +42,11 @@ design-audit/specimen.html
 # 2026-09-11: if it's the client's or it's our internal working material, it
 # lives here and never goes into git.
 # ─────────────────────────────────────────────────────────────────────────
-/_interno/
+/_internal/
 
 # Raw dump of the current Wix site. Reference material, NOT published or
 # versioned: it is the ORIGINAL, and it contains the client's event prices and
-# an internal email (see _interno/LEEME.md and docs/INVARIANTS.md §5b). What
+# an internal email (see _internal/README.md and docs/INVARIANTS.md §5b). What
 # gets versioned is the derivative: the data transcribed into content/*.ts.
 # Regenerated with design-audit/tmp/scrape-wix.mjs
 src/content/_source/

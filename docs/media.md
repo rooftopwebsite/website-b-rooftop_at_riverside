@@ -267,7 +267,7 @@ Wix had already added, and there WebP weighs **more** than the JPEG. Converting 
 would mean changing the format in exchange for size, a second lossy pass and
 nothing in favor — that is, exactly the opposite of the request.
 
-The original of each one was searched for among the 118 photos in `_interno/fotos/banco/` by
+The original of each one was searched for among the 118 photos in `_internal/photos/bank/` by
 perceptual fingerprint. None has one: the closest candidates are
 different photos. If the client delivers those originals, they get regenerated and go in.
 

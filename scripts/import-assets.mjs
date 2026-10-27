@@ -4,7 +4,7 @@
  *   node scripts/import-assets.mjs
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ IT READS FROM `_interno/fotos/_originales-web/`, WHICH IS WHERE THEY REALLY ARE.
+ * ⚠️ IT READS FROM `_internal/photos/_web-originals/`, WHICH IS WHERE THEY REALLY ARE.
  * Until today it pointed to the scratchpad of a 2026-09-09 session that hasn't
  * existed for a while, so the script didn't run: it remained as a record of how
  * those files had been generated, not as something re-runnable. The same photos
@@ -36,7 +36,7 @@ import sharp from 'sharp';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-const RAW = '_interno/fotos/_originales-web';
+const RAW = '_internal/photos/_web-originals';
 const OUT = 'public';
 
 /**

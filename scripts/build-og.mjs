@@ -22,7 +22,7 @@ import { existsSync, mkdirSync, statSync } from 'node:fs';
  *   4. sRGB WITH NO ODD PROFILE. A photo in Display P3 or Adobe RGB comes out washed
  *      out in half the readers, which ignore the profile.
  *
- * ⚠️ THE ORIGINAL OF THE DEFAULT OG GOES IN `_interno/og/`, which isn't
+ * ⚠️ THE ORIGINAL OF THE DEFAULT OG GOES IN `_internal/og/`, which isn't
  * versioned (house rule: working material doesn't go into git). It's uploaded
  * there with the name `og-default` and any extension (.png, .jpg, .webp).
  * While it isn't there, the photo of the yard from the terrace is used.
@@ -40,12 +40,12 @@ function first(...paths) {
 }
 
 const UPLOAD = first(
-  '_interno/og/og-default.png',
-  '_interno/og/og-default.jpg',
-  '_interno/og/og-default.jpeg',
-  '_interno/og/og-default.webp',
+  '_internal/og/og-default.png',
+  '_internal/og/og-default.jpg',
+  '_internal/og/og-default.jpeg',
+  '_internal/og/og-default.webp',
   // The name the first one was uploaded with, on 2026-09-23.
-  '_interno/og/OG.png',
+  '_internal/og/OG.png',
 );
 
 /*
@@ -101,5 +101,5 @@ for (const e of INPUTS) {
 }
 
 if (!UPLOAD) {
-  console.log('\nℹ️  There is no _interno/og/og-default.*: the default OG comes from the yard photo.');
+  console.log('\nℹ️  There is no _internal/og/og-default.*: the default OG comes from the yard photo.');
 }

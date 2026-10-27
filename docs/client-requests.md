@@ -104,7 +104,7 @@ it starts to look dirty on a large screen. The only real lever is cutting it:
 Cutting it contradicts the «as is» of the request, so **it wasn't cut**. If the
 client or Camila decide the home page can't weigh that much, the stretch is chosen and
 trimmed in one `ffmpeg` run; the 1080p source file is stored
-outside git, in `_interno/video-sitio/`.
+outside git, in `_internal/site-video/`.
 
 ---
 

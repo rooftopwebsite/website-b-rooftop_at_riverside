@@ -12,9 +12,9 @@
  *
  *   · `public/multimedia/` — the client's delivery (36 photos and 5 videos), which
  *     is where everything the site publishes today comes from;
- *   · `_interno/fotos/_originales-web/` — the 81 the client publishes on their
+ *   · `_internal/photos/_web-originals/` — the 81 the client publishes on their
  *     Wix, downloaded with `fetch-old-site-media.mjs`;
- *   · `_interno/fotos/de-camila/` — whatever Camila adds by hand.
+ *   · `_internal/photos/from-camila/` — whatever Camila adds by hand.
  *
  * And they overlapped: several of the 81 WERE ALREADY in the delivery, because the
  * client uploaded to their website the same photos they gave us. Looking at them one by one
@@ -24,7 +24,7 @@
  * that gathers them by copying. If something goes wrong, the bank is deleted and
  * regenerated; the originals are never touched.
  *
- * ⚠️ AND IT ISN'T VERSIONED, like all of `_interno/` (§5b of INVARIANTS).
+ * ⚠️ AND IT ISN'T VERSIONED, like all of `_internal/` (§5b of INVARIANTS).
  *
  * ──────────────────────────────────────────────────────────────────────────
  * ⚠️ HOW IT DECIDES WHAT A DUPLICATE IS. Two passes, and the second is the one
@@ -49,13 +49,13 @@ import { mkdir, readdir, readFile, writeFile, copyFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs';
 import sharp from 'sharp';
 
-const BANK = '_interno/fotos/banco';
+const BANK = '_internal/photos/bank';
 
 /** Where each thing comes from, in priority order: the first one wins the name. */
 const SOURCES = [
   { dir: 'public/multimedia', label: 'client delivery', prefix: '' },
-  { dir: '_interno/fotos/de-camila', label: 'added by Camila', prefix: 'cami-' },
-  { dir: '_interno/fotos/_originales-web', label: 'current website', prefix: 'web-' },
+  { dir: '_internal/photos/from-camila', label: 'added by Camila', prefix: 'cami-' },
+  { dir: '_internal/photos/_web-originals', label: 'current website', prefix: 'web-' },
 ];
 
 const IS_IMAGE = /\.(jpe?g|png|webp|gif|avif)$/i;
@@ -200,7 +200,7 @@ const md = [
   '',
 ].join('\n');
 
-await writeFile(`${BANK}/INDICE.md`, md);
+await writeFile(`${BANK}/INDEX.md`, md);
 
 console.log(`✅ ${n} distinct photos in ${BANK}`);
 console.log(`   ${duplicates.length} duplicate groups, ${good.length - n} extra files`);
