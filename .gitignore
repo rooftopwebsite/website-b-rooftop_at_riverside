@@ -30,8 +30,8 @@ public/multimedia/
 # Working captures from the redesign. The DELIVERABLES (baseline/, after/,
 # COMPARE-*.png, specimen-*.png) are versioned; these are intermediate and are
 # regenerated with the design-audit/ scripts.
-design-audit/fase*/
-design-audit/HOJA-*.png
+design-audit/phase*/
+design-audit/SHEET-*.png
 design-audit/tmp/
 design-audit/specimen.html
 

@@ -56,7 +56,7 @@ had to change color.
 ## The band inserted into the "Three doors" headline
 
 It's the last thing that went in, and it comes from a reference that showed up halfway through:
-`design-audit/referencia-dftc/`, that is, **defoodtruckclub.nl**, a food
+`design-audit/reference-dftc/`, that is, **defoodtruckclub.nl**, a food
 truck business. Its home page opens with `LET'S CHANGE` / the photo / `CATERING!`. The same gesture
 had been noted in `MOODBOARD.md` for `IMG_2905` since phase 1 and had never
 been built.

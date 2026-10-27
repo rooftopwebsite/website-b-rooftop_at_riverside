@@ -30,7 +30,7 @@ illustration, it's noted as confirmation and not as a source.
   blog module.
 - **Status:** the row of three without cards is in `ThreeDoors`. The headline
   crossed with the media was built, but in the variant from
-  `referencia-dftc/` (the image INSERTED between the two lines, not behind
+  `reference-dftc/` (the image INSERTED between the two lines, not behind
   them) and in `ThreeDoors` and not in `WhatsOn`: the "Three doors" h2 was already
   split by a period, so the break didn't have to be invented. The
   "headline covered by the photos" version from this image is still unbuilt, and it's a different

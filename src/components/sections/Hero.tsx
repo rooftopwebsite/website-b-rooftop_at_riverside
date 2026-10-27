@@ -172,7 +172,7 @@ export default function Hero({
             </span>
           </span>
           <span
-            key={`icono-${message.text}`}
+            key={`icon-${message.text}`}
             className={`rt-medal grid size-11 shrink-0 place-items-center rounded-pill lg:size-23 ${message.medal}`}
           >
             <message.Icon className="size-6 lg:size-11" strokeWidth="1.8" />
