@@ -92,7 +92,7 @@ function UpcomingCard({
 }) {
   const { event, date } = item;
   const type = eventTypeLabel(event);
-  const bodyId = `cuerpo-${event.slug}-${date}`;
+  const bodyId = `body-${event.slug}-${date}`;
 
   const curated = namedDeals(event, deals);
   const { blocks, promos: written } = bodyPrices(bodyWithoutPrices(event, curated));

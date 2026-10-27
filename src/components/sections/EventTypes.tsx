@@ -16,13 +16,13 @@ const STACK_CAP = [
 
 export default function EventTypes() {
   return (
-    <Section tone="mint" band="lg" labelledBy="tipos-title">
+    <Section tone="mint" band="lg" labelledBy="event-types-title">
       <StackWithHead
         background="bg-mint grain"
         head={
           <>
       <h2
-        id="tipos-title"
+        id="event-types-title"
         className="mx-auto max-w-[18ch] text-center font-display text-band font-extrabold uppercase"
       >
         <span className="text-ink">Every reason</span>{' '}

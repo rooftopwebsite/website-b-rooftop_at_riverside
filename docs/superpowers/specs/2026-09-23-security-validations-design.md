@@ -89,7 +89,7 @@ The textareas, `company` and the `table()` cells keep the cap they already have.
 - **The broken `blog-format` test.** See «How the tests run».
 
 - **Sanitizing the blog HTML** (`src/app/blog/[slug]/page.tsx`). It requires a sanitization dependency, and the sub-project adds no dependencies. Writing a sanitizer by hand is riskier than the current state: the content comes from RestoExp's own dashboard.
-- **Supabase security rules for anonymous writes.** `scripts/propagar-banner-evento.mjs` writes with the anon key; it has to be confirmed in Supabase, outside the repo, that the database blocks them for the public.
+- **Supabase security rules for anonymous writes.** `scripts/propagate-event-banner.mjs` writes with the anon key; it has to be confirmed in Supabase, outside the repo, that the database blocks them for the public.
 - **Distributed rate limit.** The in-memory limiter is per instance; the real cross-instance limit is Vercel's firewall, which is configured in the dashboard.
 
 ## Testing

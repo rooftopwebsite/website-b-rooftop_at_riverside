@@ -99,8 +99,8 @@ describe('text, minutes and date', () => {
 describe('markdownToHtml', () => {
   it('escapes HTML and builds paragraphs and h2', () => {
     assert.equal(
-      markdownToHtml('# Hi\n\nA <script>x</script> line\nsame para\n\n## Sub'),
-      '<h2>Hi</h2><p>A &lt;script&gt;x&lt;/script&gt; line same para</p><h2>Sub</h2>',
+      markdownToHtml('# Hi\n\nA <script>x</script> line\nsame paragraph\n\n## Sub'),
+      '<h2>Hi</h2><p>A &lt;script&gt;x&lt;/script&gt; line same paragraph</p><h2>Sub</h2>',
     );
   });
 });
@@ -159,7 +159,7 @@ describe('toPostFull', () => {
   });
   it('canonical: our own unless the JSON one is on the domain', () => {
     assert.equal(toPostFull(feed(), SITE)!.canonicalPath, '/blog/the-art-of-paella');
-    assert.equal(toPostFull(feed({ canonicalUrl: 'https://otro.com/x' }), SITE)!.canonicalPath, '/blog/the-art-of-paella');
+    assert.equal(toPostFull(feed({ canonicalUrl: 'https://other.com/x' }), SITE)!.canonicalPath, '/blog/the-art-of-paella');
     assert.equal(toPostFull(feed({ canonicalUrl: `${SITE}/blog/paella` }), SITE)!.canonicalPath, '/blog/paella');
   });
   it('og: ogTitle/ogDescription/ogImage win when present', () => {

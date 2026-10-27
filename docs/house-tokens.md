@@ -412,7 +412,7 @@ STAGGER       = 0.08
 viewport      = { once: true, amount: 0.3 }   // trigger threshold
 ```
 
-Second curve in the house: `cubic-bezier(0.22, 1, 0.36, 1)` — The Orient (`--ease-salida`),
+Second curve in the house: `cubic-bezier(0.22, 1, 0.36, 1)` — The Orient (its exit easing token),
 Zakia (`zk-enter`, 0.85s) and Tre Vele (`--ease-brand`). Both are ease-out-expo, almost identical.
 
 Marquee: 30s (Zakia) · 28s (YAVA) · 40s by default (Tre Vele) · 30–45s (Showdown reference).

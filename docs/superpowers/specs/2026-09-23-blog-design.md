@@ -44,7 +44,7 @@ What is **not** copied:
 
 - `no-store` + `force-dynamic` everywhere, and the feed fetch in Pretty Hens'
   root layout: one call to the dashboard for every page on the site.
-- Yava's schema, which builds `https://sitio/https://supabase…` as the image.
+- Yava's schema, which builds `https://site/https://supabase…` as the image.
 - Yava's excerpt, which comes out empty when `contentHtml` arrives.
 - The visible author: the feed sends «Resto Experience», which is the agency.
 - Yava's justified text at 1280px.

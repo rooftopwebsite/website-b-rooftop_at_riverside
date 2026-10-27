@@ -630,7 +630,7 @@ git commit -m "Attachments are verified by their real content, come from what wa
 
 **Interfaces:**
 - Produces:
-  - `fetchWithTimeout(url: string, init?: RequestInit, opciones?: { ms?: number; retries?: number }): Promise<Response>`
+  - `fetchWithTimeout(url: string, init?: RequestInit, options?: { ms?: number; retries?: number }): Promise<Response>`
   - `withTimeout<T>(promise: Promise<T>, ms: number): Promise<T>`
 
 - [ ] **Step 1: Write the failing tests**
