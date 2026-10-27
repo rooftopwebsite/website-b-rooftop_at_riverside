@@ -1,129 +1,129 @@
-# Auditoría — home de Rooftop at Riverside
+# Audit: Rooftop at Riverside home page
 
-Rama `redesign/light-tropical`. Baseline en `design-audit/baseline/`, capturado con
-`design-audit/shoot.mjs` sobre el árbol de `main` en 9569ef6.
+Branch `redesign/light-tropical`. Baseline in `design-audit/baseline/`, captured with
+`design-audit/shoot.mjs` on the `main` tree at 9569ef6.
 
-Todos los números de acá están **medidos**, no estimados. Las herramientas quedan
-en la rama: `shoot.mjs` (capturas), `surface-split.mjs` (reparto de superficie por
-píxel), `measure.mjs` / `measure2.mjs` (contraste WCAG).
+Every number here is **measured**, not estimated. The tools stay in the branch:
+`shoot.mjs` (screenshots), `surface-split.mjs` (surface share per pixel),
+`measure.mjs` / `measure2.mjs` (WCAG contrast).
 
 ---
 
-## 0. El número que resume el problema
+## 0. The number that sums up the problem
 
-Reparto de superficie **medido sobre el píxel** de `baseline/home-desktop.png`
-(1440×6197, 991.680 píxeles muestreados):
+Surface share **measured per pixel** on `baseline/home-desktop.png`
+(1440×6197, 991,680 pixels sampled):
 
-| superficie | hoy | objetivo |
+| surface | today | target |
 |---|---:|---:|
-| **deep + deeper** (verde oscuro) | **55,4 %** | 20–25 % |
-| paper (blanco/hueso) | 30,7 % | \_\_\_ |
-| cream / bone (claro cálido) | 9,7 % | 70–75 % juntas |
-| river / mint | 0,9 % | decorativo |
-| sunset | 0,6 % | ≤ 5 % |
-| cream-deep | 0,5 % | ≤ 5 % |
-| foto / mapa / gris sin token | 2,3 % | — |
+| **deep + deeper** (dark green) | **55.4%** | 20–25% |
+| paper (white/off-white) | 30.7% | \_\_\_ |
+| cream / bone (warm light) | 9.7% | 70–75% combined |
+| river / mint | 0.9% | decorative |
+| sunset | 0.6% | ≤ 5% |
+| cream-deep | 0.5% | ≤ 5% |
+| photo / map / untokenized gray | 2.3% | — |
 
-**Claro: 40,3 %. Oscuro: 55,4 %.** El objetivo es casi exactamente el inverso.
-No es una impresión: más de la mitad de la home es verde oscuro.
+**Light: 40.3%. Dark: 55.4%.** The target is almost exactly the inverse.
+It is not an impression: more than half of the home page is dark green.
 
-Y hay un agravante que el porcentaje no muestra: el oscuro está en las **dos
-primeras pantallas**. El hero es 100svh de `deep` sólido y la sección que lo
-sigue a una pantalla de distancia es otra losa `deep` de 1.309px. Quien entra
-ve verde, scrollea, y vuelve a ver verde.
+And there is an aggravating factor the percentage doesn't show: the dark sits in the **first
+two screens**. The hero is 100svh of solid `deep`, and the section that follows it
+one screen later is another `deep` slab of 1,309px. Whoever lands sees green,
+scrolls, and sees green again.
 
 ---
 
-## 1. Tabla por sección
+## 1. Table by section
 
-Alturas medidas en desktop 1440. `main` mide 5.625px; el footer suma aparte.
+Heights measured on desktop 1440. `main` measures 5,625px; the footer adds on top of that.
 
-| # | Sección | Componente | Superficie actual | Problema | Dirección nueva |
+| # | Section | Component | Current surface | Problem | New direction |
 |---|---|---|---|---|---|
-| 1 | Hero | `Hero` + `VideoWall` | `deep` sólido, 900px, 100svh | La primera pantalla es la más oscura del sitio. Y la mitad derecha son **12 recuadros grises rotulados «VIDEO»**: el lugar donde el brief pide imágenes protagonistas está literalmente vacío | Invertir la luminosidad: columna de texto sobre `paper` con el titular al tope de la escala. La columna del muro se queda donde está —es la geometría que aprobó Camila— pero cargada con **fotografía real**, que es lo que la vuelve protagonista |
-| 2 | What's on | `WhatsOn` | `paper`, 1.053px | Tres tarjetas redondeadas idénticas: mismo radio, misma `shadow-card`, mismo ancho. Es el kit SaaS del anti-patrón. La primera se diferencia pintándose `bg-deep`, o sea con color en vez de con jerarquía. Y las tres fotos son placeholders «IMAGE MISSING» | Se cae el contenedor de tarjeta. Foto arriba, texto directamente sobre la superficie, filete de 1px separando. El ítem de hoy se distingue por **tamaño** (ocupa dos columnas), no por color |
-| 3 | cenefa | `WaveBorder` | transición `paper`→`deep` | Correcta y es arte real del Figma. Pero hoy separa claro de oscuro; con la home clara hay menos cortes que marcar | Se preserva. Pasa a marcar el único corte a `deep` que queda, y cambia de color según las superficies que une |
-| 4 | How this place works | `HomeSections` + `StepStair` | **`deep`, 1.309px** | La losa oscura más grande del sitio, y la escalera diagonal deja ~2/3 de la grilla vacía: 1.309px de verde para tres párrafos cortos. Los `01/02/03` van en `river` sobre `deep` (2,43:1 contra blanco; sobre deep es todavía menos) | Pasa a `cream`. La escalera se conserva —es la tercera forma y salió de for-living.it— pero el triángulo vacío deja de ser verde muerto y se compacta |
-| 5 | cenefa | `WaveBorder` | `deep`→`paper` | ver #3 | Se preserva |
-| 6 | Three doors | `ThreeDoors` | `paper`, 665px | **La sección más cerca del objetivo.** Ya son filetes de 1px, ícono chico, micro-etiqueta, título, cuerpo — el mandato de WeWork está cumplido. Lo que sobra: el ícono en caja `bg-bone` redondeada, el eyebrow encima del h2 *además* de los tres eyebrows de columna, y el h2 a 46px en una página de 1440 | Se toca poco: sube la escala del h2, sale la caja del ícono, y de los cuatro eyebrows queda uno |
-| 7 | Events banner | `EventsBanner` | `bone` 569px con una card `bg-deep/90` sobre foto adentro | La card oscura hace que la sección lea oscura sin ser una sección oscura. Los tres ítems de la derecha son tres cajas `bg-paper/10` con el mismo radio — tarjetas otra vez | **Es la que se queda con el corte oscuro.** Pasa a `Section tone="deep"` a sangre: un solo corte marcado, en la vertical que más factura. Los tres ítems pasan a filas con filete |
-| 8 | Find us | `FindUs` | `paper` 1.029px con **dos cards `bg-deep`** flanqueando el mapa | Dos bloques oscuros de ~620px dentro de una sección clara: en la captura la sección lee oscura. Es el segundo aporte grande al 55 % | Las dos cards pasan a claras con filete de 1px. El mapa queda como la única pieza con peso visual |
-| — | Header | `Header` | `bg-deeper` fijo, translúcido | Barra oscura fija sobre toda la página. Con la home clara es el elemento que más va a pesar, y `deeper`/`deep` se separan sólo 1,26:1 — sobre el hero verde el header casi no se distingue | A revisar en la fase de componentes globales (FASE 4, paso 3) |
-| — | Footer | `Footer` | `bg-deep` | Correcto y no se discute: el pie es oscuro | Se queda |
+| 1 | Hero | `Hero` + `VideoWall` | solid `deep`, 900px, 100svh | The first screen is the darkest on the site. And the right half is **12 gray boxes labeled "VIDEO"**: the spot where the brief asks for hero imagery is literally empty | Invert the luminosity: text column on `paper` with the headline at the top of the scale. The wall column stays where it is (it's the geometry Camila approved) but loaded with **real photography**, which is what makes it the protagonist |
+| 2 | What's on | `WhatsOn` | `paper`, 1,053px | Three identical rounded cards: same radius, same `shadow-card`, same width. It's the SaaS-kit anti-pattern. The first one stands out by painting itself `bg-deep`, that is, with color instead of hierarchy. And all three photos are "IMAGE MISSING" placeholders | The card container goes away. Photo on top, text directly on the surface, a 1px rule as separator. Today's item stands out by **size** (it spans two columns), not by color |
+| 3 | border | `WaveBorder` | `paper`→`deep` transition | Correct, and it's real art from the Figma. But today it separates light from dark; with a light home page there are fewer breaks to mark | Preserved. It now marks the only remaining break into `deep`, and changes color according to the surfaces it joins |
+| 4 | How this place works | `HomeSections` + `StepStair` | **`deep`, 1,309px** | The biggest dark slab on the site, and the diagonal staircase leaves ~2/3 of the grid empty: 1,309px of green for three short paragraphs. The `01/02/03` are in `river` on `deep` (2.43:1 against white; on deep it's even less) | Moves to `cream`. The staircase is kept (it's the third shape and came from for-living.it) but the empty triangle stops being dead green and gets compacted |
+| 5 | border | `WaveBorder` | `deep`→`paper` | see #3 | Preserved |
+| 6 | Three doors | `ThreeDoors` | `paper`, 665px | **The section closest to the target.** It's already 1px rules, small icon, micro-label, title, body: the WeWork mandate is met. What's extra: the icon in a rounded `bg-bone` box, the eyebrow above the h2 *in addition to* the three column eyebrows, and the h2 at 46px on a 1440 page | Barely touched: the h2 scale goes up, the icon box goes away, and of the four eyebrows one remains |
+| 7 | Events banner | `EventsBanner` | `bone` 569px with a `bg-deep/90` card over a photo inside | The dark card makes the section read dark without being a dark section. The three items on the right are three `bg-paper/10` boxes with the same radius: cards again | **This is the one that keeps the dark break.** It moves to a full-bleed `Section tone="deep"`: a single marked break, in the vertical that bills the most. The three items become rows with rules |
+| 8 | Find us | `FindUs` | `paper` 1,029px with **two `bg-deep` cards** flanking the map | Two dark blocks of ~620px inside a light section: in the screenshot the section reads dark. It's the second big contributor to the 55% | Both cards become light with a 1px rule. The map remains the only piece with visual weight |
+| — | Header | `Header` | fixed `bg-deeper`, translucent | Fixed dark bar over the whole page. With a light home page it's the element that will weigh the most, and `deeper`/`deep` are only 1.26:1 apart; over the green hero the header is barely distinguishable | To be reviewed in the global components phase (PHASE 4, step 3) |
+| — | Footer | `Footer` | `bg-deep` | Correct and not up for debate: the footer is dark | Stays |
 
 ---
 
-## 2. Inventario: dónde está aplicado hoy el `deep` como **superficie**
+## 2. Inventory: where `deep` is applied today as a **surface**
 
-Separado de `deep` como color de texto, que es otra cosa y está bien.
+Kept separate from `deep` as a text color, which is a different thing and is fine.
 
-### Superficies oscuras en la home
-| Archivo | Línea | Qué |
+### Dark surfaces on the home page
+| File | Line | What |
 |---|---|---|
-| `src/components/sections/Hero.tsx` | 59 | `bg-deep` en la sección entera, 100svh |
-| `src/components/sections/HomeSections.tsx` | 80 | `Section tone="deep"` — la losa de 1.309px |
-| `src/components/sections/EventsBanner.tsx` | 79 | `bg-deep/90` sobre la foto, dentro de una sección `bone` |
-| `src/components/sections/FindUs.tsx` | 222, 298 | dos cards `bg-deep` |
-| `src/components/sections/WhatsOn.tsx` | 82 | la primera card del listado, `bg-deep` |
-| `src/components/shared/Footer.tsx` | 88 | el pie. Se queda |
+| `src/components/sections/Hero.tsx` | 59 | `bg-deep` on the whole section, 100svh |
+| `src/components/sections/HomeSections.tsx` | 80 | `Section tone="deep"`: the 1,309px slab |
+| `src/components/sections/EventsBanner.tsx` | 79 | `bg-deep/90` over the photo, inside a `bone` section |
+| `src/components/sections/FindUs.tsx` | 222, 298 | two `bg-deep` cards |
+| `src/components/sections/WhatsOn.tsx` | 82 | the first card in the list, `bg-deep` |
+| `src/components/shared/Footer.tsx` | 88 | the footer. Stays |
 | `src/components/shared/Header.tsx` | 135–136 | `bg-deeper` / `bg-deeper/90` |
-| `src/components/shared/Section.tsx` | 39 | la definición del tono `deep` |
+| `src/components/shared/Section.tsx` | 39 | the definition of the `deep` tone |
 
-### Superficies oscuras fuera de la home (no son de esta rama, quedan anotadas)
+### Dark surfaces outside the home page (not part of this branch, noted here)
 `src/app/nfc-north-hq/page.tsx:134`, `src/app/our-story/page.tsx:202`,
-`src/app/sunset-bar/page.tsx:63` — una `Section tone="deep"` cada una.
+`src/app/sunset-bar/page.tsx:63`: one `Section tone="deep"` each.
 
-### Overlays de marca, que se preservan
-`src/components/shared/PageTransition.tsx:48` y `Preloader.tsx:40` usan `bg-deep`.
-Son la cortina y el preloader; el brief pide preservar `.transition` y sólo revisar
-que el color acompañe la paleta clara.
+### Brand overlays, which are preserved
+`src/components/shared/PageTransition.tsx:48` and `Preloader.tsx:40` use `bg-deep`.
+They are the curtain and the preloader; the brief asks to preserve `.transition` and only check
+that the color goes along with the light palette.
 
-### Falsos positivos
-`Eyebrow tone="deep"` (12 call sites) es **color de texto**, no superficie, y da
-10,83:1 sobre blanco. No se toca.
+### False positives
+`Eyebrow tone="deep"` (12 call sites) is **text color**, not a surface, and gives
+10.83:1 on white. Not touched.
 
 ---
 
-## 3. Estado de los tokens: tres fuentes de verdad, y no coinciden
+## 3. State of the tokens: three sources of truth, and they don't match
 
-Esto es el hallazgo más serio del audit, porque invalida la documentación de
-contraste que ya existe.
+This is the most serious finding of the audit, because it invalidates the existing contrast
+documentation.
 
 | Token | `src/lib/brand.ts` | `src/app/globals.css` `@theme` | `scripts/contrast.mjs` |
 |---|---|---|---|
 | `paper` | `#FFFFFF` | **`#FDFCF7`** | `#FFFFFF` |
 | `ink` | `#000000` | **`#0A1F1E`** | `#000000` |
 | `body` | `#0A0A0A` | **`#0A1F1E`** | `#0A0A0A` |
-| `bone` | — no existe | `#F7F1E3` | — |
-| `deeper` | — no existe | `#013434` | — |
-| `chalk` | — no existe | `#FFFFFF` | — |
-| `fog` | — no existe | `#E6E1D4` | — |
+| `bone` | — does not exist | `#F7F1E3` | — |
+| `deeper` | — does not exist | `#013434` | — |
+| `chalk` | — does not exist | `#FFFFFF` | — |
+| `fog` | — does not exist | `#E6E1D4` | — |
 
-**Lo que renderiza es `globals.css`.** `brand.ts` quedó describiendo una paleta
-que el sitio no usa desde que se revisó el tema contra Showdown Social, y
-`scripts/contrast.mjs` arrastra la misma paleta vieja — así que **cada ratio de
-`docs/contrast-audit.md` está calculado contra colores que no se pintan**. Los
-veredictos gruesos siguen valiendo (los pares problemáticos son los mismos) pero
-los números no son los del sitio.
+**What renders is `globals.css`.** `brand.ts` was left describing a palette
+the site hasn't used since the theme was revised against Showdown Social, and
+`scripts/contrast.mjs` carries the same old palette, so **every ratio in
+`docs/contrast-audit.md` is calculated against colors that aren't painted**. The
+broad verdicts still hold (the problematic pairs are the same) but
+the numbers aren't the site's.
 
-Consecuencia para el brief: «Ningún hex fuera de `lib/brand.ts`» no se puede
-cumplir literalmente. Tailwind v4 no tiene `tailwind.config.ts` —el tema es
-CSS-first, en `@theme`— y no se puede importar un `.ts` ahí. **Propuesta en
-`DIRECCION-VISUAL.md` §7.**
+Consequence for the brief: "No hex outside `lib/brand.ts`" can't be
+met literally. Tailwind v4 has no `tailwind.config.ts` (the theme is
+CSS-first, in `@theme`) and a `.ts` can't be imported there. **Proposal in
+`VISUAL-DIRECTION.md` §7.**
 
-### Componentes con hex o clase arbitraria de color
-| Archivo | Qué | Veredicto |
+### Components with a hex or arbitrary color class
+| File | What | Verdict |
 |---|---|---|
-| `shared/AgencyBar.tsx` | `bg-[#f5f5f5]`, `text-[#5c5c5c]` ×5, `via-[#7c7c7c]` ×2 | **violación real** — 8 hexes de gris de sistema, fuera de paleta |
-| `shared/Button.tsx:35` | `hover:bg-[#e0741a]` | **violación real** — el hover del CTA primario |
-| `app/layout.tsx:25` | `themeColor: '#FFFFFF'` | legítimo: es metadata del navegador, no un estilo. Hay que actualizarlo si cambia `paper` |
-| `app/nfc-north-hq/page.tsx:39-42` | colores de equipos de la NFL | legítimo: son marcas ajenas, no nuestra paleta. Fuera de esta rama |
-| `app/globals.css` | 21 hexes | son las **definiciones** de los tokens y los comentarios. Es donde tienen que estar |
+| `shared/AgencyBar.tsx` | `bg-[#f5f5f5]`, `text-[#5c5c5c]` ×5, `via-[#7c7c7c]` ×2 | **real violation**: 8 system-gray hexes, off-palette |
+| `shared/Button.tsx:35` | `hover:bg-[#e0741a]` | **real violation**: the hover of the primary CTA |
+| `app/layout.tsx:25` | `themeColor: '#FFFFFF'` | legitimate: it's browser metadata, not a style. It must be updated if `paper` changes |
+| `app/nfc-north-hq/page.tsx:39-42` | NFL team colors | legitimate: they're third-party brands, not our palette. Outside this branch |
+| `app/globals.css` | 21 hexes | they're the token **definitions** and the comments. It's where they belong |
 
-### Valores arbitrarios de espaciado y tamaño — el problema de escala
-Conteo en `src/app` + `src/components`:
+### Arbitrary spacing and size values: the scale problem
+Count in `src/app` + `src/components`:
 
-| patrón | ocurrencias |
+| pattern | occurrences |
 |---|---:|
 | `p-[` | 230 |
 | `gap-[` | 198 |
@@ -140,102 +140,102 @@ Conteo en `src/app` + `src/components`:
 | `tracking-[` | 20 |
 | `mb-[` | 8 |
 | `bg-[` | 2 |
-| **total** | **1.217** |
+| **total** | **1,217** |
 
-El brief pide «cero valores arbitrarios». Son 1.217 call sites repartidos en 23
-rutas. Llevarlos todos a token en esta rama es un reemplazo mecánico masivo con
-riesgo alto de romper algo por un sed mal puesto, y la mayoría vive en páginas
-internas que esta rama no rediseña. **Necesito una decisión de alcance — §8 de
-`DIRECCION-VISUAL.md`.**
+The brief asks for "zero arbitrary values". There are 1,217 call sites spread across 23
+routes. Moving all of them to tokens in this branch is a massive mechanical replacement with
+a high risk of breaking something through a misplaced sed, and most of them live in inner
+pages this branch doesn't redesign. **I need a scope decision: §8 of
+`VISUAL-DIRECTION.md`.**
 
 ---
 
-## 4. Estado tipográfico
+## 4. Typographic state
 
-### Las familias viejas: ninguna en código
-`Steelfish`, `Bronx` y `Futura` aparecen **28 veces en `src/`, todas en
-comentarios** — el encabezado de `globals.css` que documenta por qué se fueron, y
-el JSDoc de `Type.tsx`. Ni una referencia ejecutable. El grep de control de FASE 5
-va a dar positivo mientras esos comentarios existan, así que hay que reescribirlos
-para que nombren las fuentes reales. También aparecen en 4 archivos de `docs/`.
+### The old families: none in code
+`Steelfish`, `Bronx` and `Futura` appear **28 times in `src/`, all in
+comments**: the header of `globals.css` that documents why they left, and
+the JSDoc of `Type.tsx`. Not a single executable reference. The PHASE 5 control grep
+will come up positive as long as those comments exist, so they need to be rewritten
+to name the real fonts. They also appear in 4 files in `docs/`.
 
-### Lo que hay, y funciona
-Big Shoulders Display + Jost, las dos variables, las dos OFL, **auto-hospedadas**
-en `public/fonts/*.woff2` vía `@font-face` en `globals.css` (35 KB y 27 KB). No hay
-`<link>` a `fonts.googleapis`. El brief pide `next/font/google`; lo que hay es
-equivalente o mejor —cero request externo— pero no es lo que pide el brief. **§8.**
+### What's there, and works
+Big Shoulders Display + Jost, both variable, both OFL, **self-hosted**
+in `public/fonts/*.woff2` via `@font-face` in `globals.css` (35 KB and 27 KB). There's no
+`<link>` to `fonts.googleapis`. The brief asks for `next/font/google`; what's there is
+equivalent or better (zero external requests) but it isn't what the brief asks for. **§8.**
 
-### La escala, y por qué la jerarquía no se lee
-Medido en `Type.tsx`:
+### The scale, and why the hierarchy doesn't read
+Measured in `Type.tsx`:
 
-| rol | hoy | objetivo del brief | salto |
+| role | today | brief's target | jump |
 |---|---|---|---|
-| h1 hero | `--text-hero`, clamp(56→112px) | clamp(3.5rem, 9vw, 9rem) = 56→**144px** | +29 % arriba |
-| h2 sección | `text-d5 md:text-d4 lg:text-d3` = 28→36→**46px** | clamp(2.5rem, 6vw, 5.5rem) = 40→**88px** | **+91 %** |
+| h1 hero | `--text-hero`, clamp(56→112px) | clamp(3.5rem, 9vw, 9rem) = 56→**144px** | +29% at the top |
+| h2 section | `text-d5 md:text-d4 lg:text-d3` = 28→36→**46px** | clamp(2.5rem, 6vw, 5.5rem) = 40→**88px** | **+91%** |
 | h3 | `text-d6 lg:text-d5` = 22→28px | — | |
-| bajada | `--text-lead` clamp(16→18px) | clamp(1.0625rem, 1.6vw, 1.375rem) = 17→22px | +22 % |
+| subhead | `--text-lead` clamp(16→18px) | clamp(1.0625rem, 1.6vw, 1.375rem) = 17→22px | +22% |
 
-El h2 a 46px en un lienzo de 1440 es la razón concreta de que «no se lea SaaS
-moderno». La relación h2/bajada hoy es **46/18 = 2,6×**; el brief pide ≥3,5×. Con
-88/22 = **4,0×**. La jerarquía se arregla subiendo el título, que es exactamente lo
-que dice el brief.
+The h2 at 46px on a 1440 canvas is the concrete reason it "doesn't read as modern
+SaaS". The h2/subhead ratio today is **46/18 = 2.6×**; the brief asks for ≥3.5×. With
+88/22 = **4.0×**. The hierarchy gets fixed by raising the title, which is exactly
+what the brief says.
 
-### Tres decisiones del brief que contradicen decisiones ya aprobadas
-Están en el código con el pedido de Camila citado textual. No las cambio sin
-preguntar.
+### Three brief decisions that contradict already-approved decisions
+They're in the code with Camila's request quoted verbatim. I won't change them without
+asking.
 
-| Eje | Aprobado antes | Pide el brief |
+| Axis | Approved before | The brief asks for |
 |---|---|---|
-| **Peso del display** | `font-normal` (400). `Type.tsx:76`: «Camila: *en regular nunca en peso alto*» | 600–800 |
-| **Tracking del display** | positivo, 0,02→0,05em en escala óptica. `globals.css:265`: el tracking negativo «era el motivo por el que Camila rechazó la Steelfish: *se ve muy pegada*» | −0,01em |
-| **Caja** | `uppercase` siempre en display, `Type.tsx:80` | el brief no lo menciona |
+| **Display weight** | `font-normal` (400). `Type.tsx:76`: "Camila: *regular, never a heavy weight*" | 600–800 |
+| **Display tracking** | positive, 0.02→0.05em on an optical scale. `globals.css:265`: negative tracking "was the reason Camila rejected Steelfish: *it looks too cramped*" | −0.01em |
+| **Case** | `uppercase` always on display, `Type.tsx:80` | the brief doesn't mention it |
 
-A 144px, caps + peso 700 + tracking negativo es un objeto muy distinto del que
-está aprobado. **§8.**
+At 144px, caps + weight 700 + negative tracking is a very different object from the one
+that's approved. **§8.**
 
-### Eyebrows: sobran
-Contados en la home: `What's on`, `In the yard`, `Happy hour`, `How this place
+### Eyebrows: too many
+Counted on the home page: `What's on`, `In the yard`, `Happy hour`, `How this place
 works`, `Three places one gate`, `Eat`, `Drink`, `Rent`, `Planning a work event?`,
-`Find us`, `Contact`, `Location`, `Parking`, `Follow` — **14**. El brief permite
-máximo 3.
+`Find us`, `Contact`, `Location`, `Parking`, `Follow`: **14**. The brief allows
+3 at most.
 
 ---
 
-## 5. Estado del motion
+## 5. State of the motion
 
-Lo que hay en `shared/Motion.tsx`, y está mejor de lo que el brief supone:
+What's in `shared/Motion.tsx`, and it's in better shape than the brief assumes:
 
-| pieza | estado |
+| piece | state |
 |---|---|
-| `Reveal`, `StaggerGroup` + `RevealItem` | ✅ existen y son reutilizables |
-| `MaskedLines` | ✅ **ya es el reveal por líneas con máscara** que pide el brief para titulares |
+| `Reveal`, `StaggerGroup` + `RevealItem` | ✅ exist and are reusable |
+| `MaskedLines` | ✅ **is already the masked line-by-line reveal** the brief asks for on headlines |
 | `HeroFadeUp`, `Marquee`, `DragCarousel`, `CountUp` | ✅ |
-| `useReducedMotion` | ✅ respetado en todos; los loops del muro y del marquee tienen fallback CSS |
-| `once: false` | ✅ **cero ocurrencias** |
-| `italic` | 1 violación real (`app/sunset-bar/page.tsx:203`). Las otras 2 son `not-italic` en `<address>`, que es lo correcto |
-| Lenis | ✅ corre en `SmoothScroll.tsx`, se apaga entero con reduced-motion |
-| `.transition` | ✅ `PageTransition.tsx` — cortina `bg-deep`. Se preserva; sólo se revisa el color |
+| `useReducedMotion` | ✅ respected in all of them; the wall and marquee loops have a CSS fallback |
+| `once: false` | ✅ **zero occurrences** |
+| `italic` | 1 real violation (`app/sunset-bar/page.tsx:203`). The other 2 are `not-italic` on `<address>`, which is correct |
+| Lenis | ✅ runs in `SmoothScroll.tsx`, shuts off entirely with reduced-motion |
+| `.transition` | ✅ `PageTransition.tsx`: `bg-deep` curtain. Preserved; only the color is reviewed |
 
-### Lo que falta
-- **No hay `lib/motion.ts`.** Los tokens viven en `Motion.tsx` como `EASE_BRAND`,
+### What's missing
+- **There is no `lib/motion.ts`.** The tokens live in `Motion.tsx` as `EASE_BRAND`,
   `DURATION`, `REVEAL_OFFSET`, `STAGGER`, `REVEAL_AMOUNT`.
-- Los valores están **por debajo** de lo que pide el brief:
-  `DURATION.base 0,45` vs `dur.reveal 0,70` · `STAGGER 0,06` vs `0,08` ·
+- The values are **below** what the brief asks for:
+  `DURATION.base 0.45` vs `dur.reveal 0.70` · `STAGGER 0.06` vs `0.08` ·
   `REVEAL_OFFSET 24` vs `dist.text 32` / `dist.media 48`.
-  `EASE_BRAND [0.16, 1, 0.3, 1]` **ya es** el `ease.out` del brief.
-- `viewport` usa `{ once: true, amount: 0.2 }`, no el `margin: "0px 0px -20% 0px"`
-  del brief.
-- **Cero salidas.** No hay un solo `useScroll` / `useTransform` en el repo.
-- **Un solo mecanismo para todo.** `Reveal` es fade + y para cualquier contenido.
-  No hay `clip-path` para imágenes ni `ParallaxMedia`. Es justo el anti-patrón que
-  el brief llama «la firma de una web autogenerada».
-- El ítem que abre en la sección de servicios (mandato de agencefoudre) no existe
-  todavía en la home.
+  `EASE_BRAND [0.16, 1, 0.3, 1]` **already is** the brief's `ease.out`.
+- `viewport` uses `{ once: true, amount: 0.2 }`, not the brief's
+  `margin: "0px 0px -20% 0px"`.
+- **Zero exits.** There isn't a single `useScroll` / `useTransform` in the repo.
+- **A single mechanism for everything.** `Reveal` is fade + y for any content.
+  There's no `clip-path` for images and no `ParallaxMedia`. It's exactly the anti-pattern
+  the brief calls "the signature of an auto-generated website".
+- The item that opens in the services section (agencefoudre mandate) doesn't exist
+  on the home page yet.
 
 ---
 
-## 6. Lo que NO se toca en esta rama
+## 6. What is NOT touched in this branch
 
-Copy, rutas, metadata, SEO, `content/`, `lib/seo.ts`, `lib/calendar.ts`,
-`lib/nav.ts`, las 22 páginas internas y los scripts de `scripts/`. Ningún
-componente se borra: si algo se reemplaza queda en el árbol y anotado acá.
+Copy, routes, metadata, SEO, `content/`, `lib/seo.ts`, `lib/calendar.ts`,
+`lib/nav.ts`, the 22 inner pages and the scripts in `scripts/`. No
+component is deleted: if something is replaced it stays in the tree and noted here.

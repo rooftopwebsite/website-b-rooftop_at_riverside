@@ -1,142 +1,143 @@
-# Rediseño de la home + tipografía + footer — plan de implementación
+# Home redesign + typography + footer — implementation plan
 
-> ## ✅ EJECUTADO — 9 de septiembre de 2026
+> ## ✅ EXECUTED — September 9, 2026
 >
-> **Las 14 tareas están hechas y comiteadas.** Los checkboxes de abajo quedaron
-> sin marcar: el registro real de qué se hizo son los commits, que explican cada
-> decisión con sus mediciones. Este documento se conserva como el razonamiento
-> PREVIO, no como una lista de pendientes.
+> **All 14 tasks are done and committed.** The checkboxes below were left
+> unchecked: the real record of what was done is the commits, which explain each
+> decision with its measurements. This document is kept as the PRIOR reasoning,
+> not as a to-do list.
 >
-> | Fase | Commits |
+> | Phase | Commits |
 > |---|---|
-> | 1 · Tipografía | `dca3cbe` `31666db` |
-> | 2 · PromoBar y sticky | `927d245` `56b173f` `c2f629e` |
-> | 3 · Hero y muro | `5e69f8d` `3f58ece` |
-> | 4 · Secciones | `512225a` `fbfb51d` `0ddcf44` `bc97b3b` |
+> | 1 · Typography | `dca3cbe` `31666db` |
+> | 2 · PromoBar and sticky | `927d245` `56b173f` `c2f629e` |
+> | 3 · Hero and wall | `5e69f8d` `3f58ece` |
+> | 4 · Sections | `512225a` `fbfb51d` `0ddcf44` `bc97b3b` |
 > | 5 · Footer | `b4aa399` |
-> | 6 · Documentación | `4dd01fb` |
+> | 6 · Documentation | `4dd01fb` |
 >
-> **Lo que salió en el camino y NO estaba en el plan**, porque apareció al
-> medir:
+> **What came up along the way and was NOT in the plan**, because it surfaced
+> while measuring:
 >
-> - `fd34cf7` — el preloader reescrito en CSS. Se colgaba: la cortina la pinta
->   el servidor y sólo el JS podía levantarla (medido: 12.4s en arranque frío).
-> - `1cc40f6` `9ba10bd` — las **tres** familias del brand book reemplazadas por
->   licencia, no por diseño. El plan sólo anticipaba dos.
-> - `927d245` — `Button` unía clases con `join(' ')`, así que un `hidden` por
->   props no pisaba al `inline-flex` de base. El header desbordaba en mobile
->   desde siempre, invisible porque era `fixed`.
-> - `8eb5fb0` — la franja de horarios no era alcanzable con teclado (luego se
->   eliminó por pedido de Camila).
+> - `fd34cf7` — the preloader rewritten in CSS. It hung: the curtain is painted
+>   by the server and only the JS could lift it (measured: 12.4s on cold start).
+> - `1cc40f6` `9ba10bd` — **all three** brand book families replaced because of
+>   licensing, not design. The plan only anticipated two.
+> - `927d245` — `Button` joined classes with `join(' ')`, so a `hidden` passed via
+>   props didn't override the base `inline-flex`. The header had always overflowed
+>   on mobile, invisible because it was `fixed`.
+> - `8eb5fb0` — the hours band wasn't reachable by keyboard (later removed at
+>   Camila's request).
 >
-> **Dos desvíos del plan, decididos con Camila:**
+> **Two deviations from the plan, decided with Camila:**
 >
-> 1. §4.1 decía «recalcular el `top` del header». Al medirlo, el arreglo real
->    era pasar el bloque superior a `sticky` en flujo — con `fixed` el banner
->    era imposible.
-> 2. La franja de estado («Closed now…») se eliminó entera. No estaba en el
+> 1. §4.1 said "recalculate the header's `top`". When measured, the real fix
+>    was to move the top block to `sticky` in flow — with `fixed` the banner
+>    was impossible.
+> 2. The status band ("Closed now…") was removed entirely. It wasn't in the
 >    plan.
 >
-> **Pendiente y fuera de alcance:** los 12 videos del muro y las páginas
-> legales.
+> **Pending and out of scope:** the 12 wall videos and the legal
+> pages.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rehacer la home de Rooftop at Riverside con la forma de Superside (hero con muro de videos, cards de eventos, «Our difference», banner de eventos), corregir la tipografía de display, y reestructurar el footer con la estructura de la agencia.
+**Goal:** Rebuild the Rooftop at Riverside home page in Superside's shape (hero with a video wall, event cards, "Our difference", events banner), fix the display typography, and restructure the footer with the agency's structure.
 
-**Architecture:** Next.js 16 App Router con React 19. Todo server component salvo lo que necesita saber la hora en `America/New_York` o mantener estado de UI. El acordeón de horarios usa `<details name>` nativo, sin JavaScript. El muro del hero reusa el patrón de `Marquee` con una variante que permite scroll manual bajo `prefers-reduced-motion`.
+**Architecture:** Next.js 16 App Router with React 19. Everything is a server component except what needs to know the time in `America/New_York` or hold UI state. The hours accordion uses native `<details name>`, with no JavaScript. The hero wall reuses the `Marquee` pattern with a variant that allows manual scrolling under `prefers-reduced-motion`.
 
-**Tech Stack:** Next 16.3.4 (Turbopack), React 19.2.8, Tailwind CSS v4, motion 13, Playwright + axe-core para los guards.
+**Tech Stack:** Next 16.3.4 (Turbopack), React 19.2.8, Tailwind CSS v4, motion 13, Playwright + axe-core for the guards.
 
 **Spec:** [`docs/superpowers/specs/2026-09-09-home-redesign-design.md`](../specs/2026-09-09-home-redesign-design.md)
 
 ## Global Constraints
 
-- **No hay framework de tests unitarios.** El ciclo de verificación de cada tarea son los guards del proyecto: `npm run build`, `npm run check:css`, `npm run check:surfaces`, `npm run contrast`, `npm run a11y`, `npm run check:motion`. No inventar Jest ni Vitest.
-- **`a11y` y `check:motion` corren contra el build de producción**, en el puerto **3114**: `npm run build && npx next start --port 3114` y en otra terminal el script. Dev inyecta el overlay de Next y ensucia el reporte.
-- **Prohibido `localStorage`, `sessionStorage` y cualquier API de storage del navegador.** Es una restricción del brief y ya hay precedente: `Preloader.tsx` guarda su bandera en un módulo en memoria.
-- **Ninguna animación pasa de 600ms.** Los loops continuos (marquee) no cuentan, pero deben apagarse con `prefers-reduced-motion`.
-- **`prefers-reduced-motion` no puede cambiar el layout.** `check:motion` compara la caja de cada elemento con `id` o encabezado en los dos modos y falla si no coinciden.
-- **Ritmo de superficies** (`check:surfaces`): máximo **dos** secciones `cream` por página, máximo **una** `deep`, y **nunca dos secciones de color seguidas**. Cuenta los `tone=` de los `<Section>`. Una card oscura *dentro* de una `Section tone="paper"` no cuenta — es el truco que ya usa `ForEventPlanners`.
-- **Texto sobre `sunset` va en NEGRO** (8.26:1). Blanco da 2.54:1.
-- **`sunset` y `river` nunca como color de texto sobre claro.** Sobre `paper` dan 2.48:1 y 2.43:1.
-- **Acento de titular**: `terra` #a62000 sobre superficies claras, `sunset` #f58521 sobre `deep`.
-- **No inventar datos.** Lo que falta se marca con `<PendingData>` o `<PhotoPending>` de `shared/PendingData.tsx`.
-- **Comentarios y docs en español**, como el resto del repo. Los comentarios explican POR QUÉ, no QUÉ.
-- **Trabajar directo en `main`.** Sin ramas nuevas.
-- **Un commit por tarea**, al final de la tarea.
+- **There is no unit test framework.** Each task's verification loop is the project's guards: `npm run build`, `npm run check:css`, `npm run check:surfaces`, `npm run contrast`, `npm run a11y`, `npm run check:motion`. Don't invent Jest or Vitest.
+- **`a11y` and `check:motion` run against the production build**, on port **3114**: `npm run build && npx next start --port 3114` and the script in another terminal. Dev injects the Next overlay and pollutes the report.
+- **`localStorage`, `sessionStorage` and any browser storage API are forbidden.** It's a constraint from the brief and there's already precedent: `Preloader.tsx` keeps its flag in an in-memory module.
+- **No animation goes over 600ms.** Continuous loops (marquee) don't count, but they must turn off with `prefers-reduced-motion`.
+- **`prefers-reduced-motion` cannot change the layout.** `check:motion` compares the box of every element with an `id` or heading in both modes and fails if they don't match.
+- **Surface rhythm** (`check:surfaces`): at most **two** `cream` sections per page, at most **one** `deep`, and **never two colored sections in a row**. It counts the `tone=` of the `<Section>`s. A dark card *inside* a `Section tone="paper"` doesn't count — it's the trick `ForEventPlanners` already uses.
+- **Text on `sunset` goes in BLACK** (8.26:1). White gives 2.54:1.
+- **`sunset` and `river` never as text color on light.** On `paper` they give 2.48:1 and 2.43:1.
+- **Headline accent**: `terra` #a62000 on light surfaces, `sunset` #f58521 on `deep`.
+- **Don't invent data.** Whatever is missing is marked with `<PendingData>` or `<PhotoPending>` from `shared/PendingData.tsx`.
+- **Comments and docs in Spanish**, like the rest of the repo. Comments explain WHY, not WHAT.
+- **Work directly on `main`.** No new branches.
+- **One commit per task**, at the end of the task.
 
 ---
 
 ## File Structure
 
-**Nuevos**
+**New**
 
-| Archivo | Responsabilidad |
+| File | Responsibility |
 |---|---|
-| `src/components/shared/PromoBar.tsx` | Los cuatro hechos, fila fija arriba del header. Server component. |
-| `src/components/shared/VideoWall.tsx` | Dos filas de tiles 3:4 en loop opuesto, con placeholder «video». |
-| `src/components/shared/AgencyBar.tsx` | Barra «powered by Resto Experience». Portada de the-orient. |
-| `src/components/sections/WhatsOn.tsx` | Fusión de `TonightAtTheYard` + `ThisWeek`, cards Superside. |
-| `src/components/sections/ThreeDoors.tsx` | Las tres unidades en forma «Our difference». |
-| `src/components/sections/EventsBanner.tsx` | Banner de eventos en forma «Our global team». |
-| `src/components/sections/FindUs.tsx` | Mapa + acordeón `<details>` de los siete días. |
+| `src/components/shared/PromoBar.tsx` | The four facts, fixed row above the header. Server component. |
+| `src/components/shared/VideoWall.tsx` | Two rows of 3:4 tiles in opposite loops, with a "video" placeholder. |
+| `src/components/shared/AgencyBar.tsx` | "powered by Resto Experience" bar. Ported from the-orient. |
+| `src/components/sections/WhatsOn.tsx` | Merge of `TonightAtTheYard` + `ThisWeek`, Superside cards. |
+| `src/components/sections/ThreeDoors.tsx` | The three units in the "Our difference" shape. |
+| `src/components/sections/EventsBanner.tsx` | Events banner in the "Our global team" shape. |
+| `src/components/sections/FindUs.tsx` | Map + `<details>` accordion of the seven days. |
 
-**Modificados**
+**Modified**
 
-| Archivo | Cambio |
+| File | Change |
 |---|---|
-| `src/app/globals.css` | Escala de tracking, token de acento, clase del muro, offsets del top. |
-| `src/components/shared/Type.tsx` | `Heading` en Regular; `h4`/card salen de Steelfish; acento. |
-| `src/components/shared/Header.tsx` | Header + StatusBar pasan de `fixed` a `sticky` en flujo. |
-| `src/components/shared/PageHero.tsx` | Padding superior recalculado. |
-| `src/components/sections/Hero.tsx` | Rediseño; pierde foto, `FACTS` e `INTENTS`. |
-| `src/components/shared/Footer.tsx` | Estructura de la agencia; sin datos, sin newsletter, sin last call. |
-| `src/components/sections/HomeSections.tsx` | Se van `FeaturesMarquee`, `ThreeVerticals`, `ForEventPlanners`, `ThisWeek`, `StoryTeaser`, `FindUs`. |
-| `src/app/page.tsx` | Composición nueva. |
-| `src/app/layout.tsx` | Monta `PromoBar`, desmonta `BrandTrail`. |
-| `src/app/actions.ts` | Se va `subscribeToNewsletter`. |
-| `src/app/events/page.tsx` | Recibe los tres pasos del proceso. |
-| `src/lib/brand.ts` | Constante `AGENCY`. |
-| `scripts/contrast.mjs` | Pares nuevos. |
+| `src/app/globals.css` | Tracking scale, accent token, wall class, top offsets. |
+| `src/components/shared/Type.tsx` | `Heading` in Regular; `h4`/card move off Steelfish; accent. |
+| `src/components/shared/Header.tsx` | Header + StatusBar go from `fixed` to `sticky` in flow. |
+| `src/components/shared/PageHero.tsx` | Top padding recalculated. |
+| `src/components/sections/Hero.tsx` | Redesign; loses the photo, `FACTS` and `INTENTS`. |
+| `src/components/shared/Footer.tsx` | Agency structure; no contact data, no newsletter, no last call. |
+| `src/components/sections/HomeSections.tsx` | `FeaturesMarquee`, `ThreeVerticals`, `ForEventPlanners`, `ThisWeek`, `StoryTeaser`, `FindUs` go away. |
+| `src/app/page.tsx` | New composition. |
+| `src/app/layout.tsx` | Mounts `PromoBar`, unmounts `BrandTrail`. |
+| `src/app/actions.ts` | `subscribeToNewsletter` goes away. |
+| `src/app/events/page.tsx` | Receives the three process steps. |
+| `src/lib/brand.ts` | `AGENCY` constant. |
+| `scripts/contrast.mjs` | New pairs. |
 
-**Borrados**
+**Deleted**
 
 `src/components/shared/BrandTrail.tsx`, `src/components/shared/NewsletterForm.tsx`, `src/components/sections/TonightAtTheYard.tsx`.
 
 ---
 
-# Fase 1 — Tipografía
+# Phase 1 — Typography
 
-Va primero porque toca las 23 rutas y cambia cómo se ve todo lo demás. Hacerla al final obligaría a revisar dos veces cada sección nueva.
+It goes first because it touches all 23 routes and changes how everything else looks. Doing it last would force reviewing each new section twice.
 
-### Task 1: Escala óptica de tracking y peso Regular
+### Task 1: Optical tracking scale and Regular weight
 
 **Files:**
-- Modify: `src/app/globals.css:284-295` (escala de display), `src/app/globals.css:365` (token viejo)
+- Modify: `src/app/globals.css:284-295` (display scale), `src/app/globals.css:365` (old token)
 - Modify: `src/components/shared/Type.tsx:20-30`, `src/components/shared/Type.tsx:57`
 - Modify: `src/components/sections/Hero.tsx:94`, `src/components/sections/Hero.tsx:149`
 
 **Interfaces:**
-- Consumes: nada.
-- Produces: `Heading` sigue exportando la misma firma (`level`, `role`, `className`, `id`, `children`). Los escalones `text-hero`, `text-d1`…`text-d4` ganan `letter-spacing` propio. `ROLES.card` y `SIZES[4]` dejan de ser Steelfish.
+- Consumes: nothing.
+- Produces: `Heading` keeps exporting the same signature (`level`, `role`, `className`, `id`, `children`). The `text-hero`, `text-d1`…`text-d4` steps get their own `letter-spacing`. `ROLES.card` and `SIZES[4]` stop being Steelfish.
 
-- [ ] **Step 1: Agregar el letter-spacing a la escala de display**
+- [ ] **Step 1: Add letter-spacing to the display scale**
 
-En `src/app/globals.css`, dentro del mismo `@theme` donde ya viven `--text-d1` y `--text-d1--line-height`, agregar un sub-token de tracking por escalón. Es el mismo mecanismo que ya usa el line-height, así que cada utilidad se lleva su tracking a todos los breakpoints sin tocar componentes:
+In `src/app/globals.css`, inside the same `@theme` where `--text-d1` and `--text-d1--line-height` already live, add a tracking sub-token per step. It's the same mechanism line-height already uses, so each utility carries its tracking to every breakpoint without touching components:
 
 ```css
-  /* ── Tracking de display — escala ÓPTICA, no un valor único ──────────────
-     Steelfish es una condensada de caja alta: a menor cuerpo se cierra más y
-     necesita MÁS aire. Un solo número deja el d3 apretado o el d1 desarmado.
+  /* ── Display tracking — an OPTICAL scale, not a single value ──────────────
+     Steelfish is an all-caps condensed face: the smaller the size, the tighter
+     it gets and the MORE air it needs. A single number leaves d3 cramped or d1
+     falling apart.
 
-     ⚠️ Reemplaza a `--tracking-display: -0.02em`, que era NEGATIVO y venía
-     heredado de The Orient — que usa Lusitana, una serif. Un tracking
-     negativo sobre una condensada de caja alta es exactamente lo que la
-     apelmaza. Ver docs/house-tokens.md.
+     ⚠️ Replaces `--tracking-display: -0.02em`, which was NEGATIVE and was
+     inherited from The Orient — which uses Lusitana, a serif. Negative
+     tracking on an all-caps condensed face is exactly what makes it look
+     clumped. See docs/house-tokens.md.
 
-     ⚠️ d5, d6 y d7 NO llevan tracking acá: de ese cuerpo para abajo los usa
-     Futura y no Steelfish. Su tracking va explícito en la clase. */
+     ⚠️ d5, d6 and d7 get NO tracking here: from that size down they use
+     Futura, not Steelfish. Their tracking is explicit in the class. */
   --text-hero--letter-spacing: 0.02em;
   --text-d1--letter-spacing: 0.02em;
   --text-d2--letter-spacing: 0.03em;
@@ -144,136 +145,136 @@ En `src/app/globals.css`, dentro del mismo `@theme` donde ya viven `--text-d1` y
   --text-d4--letter-spacing: 0.04em;
 ```
 
-- [ ] **Step 2: Eliminar el token viejo y sus dos usos**
+- [ ] **Step 2: Remove the old token and its two uses**
 
-Borrar `--tracking-display: -0.02em;` de `globals.css:365`. Quitar la clase `tracking-display` de `Hero.tsx:94` y de `Hero.tsx:149` — ahora el tracking lo pone el escalón de tamaño.
+Delete `--tracking-display: -0.02em;` from `globals.css:365`. Remove the `tracking-display` class from `Hero.tsx:94` and from `Hero.tsx:149` — the tracking is now set by the size step.
 
-Verificar que no quede ningún uso:
+Verify that no use remains:
 
 ```bash
 grep -rn "tracking-display" src/
 ```
 
-Esperado: sin resultados.
+Expected: no results.
 
-- [ ] **Step 3: Heading en Regular, y Steelfish sólo en h1–h3**
+- [ ] **Step 3: Heading in Regular, and Steelfish only on h1–h3**
 
-En `src/components/shared/Type.tsx`, cambiar la línea 57 y los mapas de tamaño:
+In `src/components/shared/Type.tsx`, change line 57 and the size maps:
 
 ```tsx
 const SIZES: Record<HeadingLevel, string> = {
   1: 'text-d4 md:text-d3 lg:text-d2',
   2: 'text-d5 md:text-d4 lg:text-d3',
   3: 'text-d6 lg:text-d5',
-  /* ⚠️ h4 sale de Steelfish. Camila: «solo para títulos grandes, o sea h1, h2
-     y h3». Va en Futura PT Medium en caja MIXTA: a este cuerpo la condensada
-     de caja alta se lee como una etiqueta, no como un título. */
+  /* ⚠️ h4 moves off Steelfish. Camila: "only for big titles, meaning h1, h2
+     and h3". It goes in Futura PT Medium in MIXED case: at this size the
+     all-caps condensed face reads like a label, not a title. */
   4: 'font-body font-medium text-[20px] leading-[1.3] tracking-[0.01em] normal-case lg:text-[24px]',
 };
 
 const ROLES = {
   section: null,
   hero: 'text-hero',
-  /* Mismo criterio que h4: los títulos de card van en Futura Medium. No en
-     Bronx, que es caja alta con tracking abierto por definición —es la de los
-     eyebrows— y en un título de dos líneas se vuelve ilegible. */
+  /* Same criterion as h4: card titles go in Futura Medium. Not in Bronx,
+     which is all caps with open tracking by definition —it's the eyebrow
+     face— and in a two-line title it becomes illegible. */
   card: 'font-body font-medium text-[20px] leading-[1.3] tracking-[0.01em] normal-case lg:text-[24px]',
   label: 'text-d7',
 } as const;
 ```
 
-Y en el `className` del `Tag`, cambiar el peso:
+And in the `Tag`'s `className`, change the weight:
 
 ```tsx
-        // ⚠️ Regular, NUNCA peso alto. Camila: «en regular nunca en peso
-        // alto». Estaba en `font-bold` en TODOS los niveles, que junto con el
-        // tracking negativo era la causa de que se viera apelmazada.
+        // ⚠️ Regular, NEVER a heavy weight. Camila: "in regular, never in a
+        // heavy weight". It was `font-bold` on ALL levels, which together with
+        // the negative tracking was why it looked clumped.
         //
-        // `uppercase` y `font-display` los ponen los escalones que siguen
-        // siendo Steelfish; h4 y card los apagan con `normal-case` y
+        // `uppercase` and `font-display` are set by the steps that are still
+        // Steelfish; h4 and card turn them off with `normal-case` and
         // `font-body`.
         'font-display font-normal uppercase',
 ```
 
-- [ ] **Step 4: Build y guard de CSS**
+- [ ] **Step 4: Build and CSS guard**
 
 ```bash
 npm run build && npm run check:css
 ```
 
-Esperado: build OK y `check:css` sin fallos. Este guard existe por un fallo real donde Tailwind dejó de emitir todas las utilidades de tema sin un solo warning — si el `@theme` quedó mal escrito, salta acá.
+Expected: build OK and `check:css` with no failures. This guard exists because of a real failure where Tailwind stopped emitting all theme utilities without a single warning — if the `@theme` was written wrong, it trips here.
 
-- [ ] **Step 5: Verificar a ojo que el tracking llegó**
+- [ ] **Step 5: Eyeball that the tracking landed**
 
 ```bash
 npx next start --port 3114
 ```
 
-En otra terminal:
+In another terminal:
 
 ```bash
 node -e "const{chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage();await p.goto('http://localhost:3114/');await p.evaluate(()=>document.fonts.ready);for(const s of ['h1','h2']){const el=await p.$(s);if(!el)continue;const r=await el.evaluate(n=>{const c=getComputedStyle(n);return{tag:n.tagName,ls:c.letterSpacing,fw:c.fontWeight,ff:c.fontFamily.split(',')[0]}});console.log(r)}await b.close()})()"
 ```
 
-Esperado: `letterSpacing` positivo (no `-1.xx px`), `fontWeight` `400`, `fontFamily` `Steelfish`.
+Expected: positive `letterSpacing` (not `-1.xx px`), `fontWeight` `400`, `fontFamily` `Steelfish`.
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add src/app/globals.css src/components/shared/Type.tsx src/components/sections/Hero.tsx
-git commit -m "Tipografia de display: escala optica de tracking y peso Regular"
+git commit -m "Display typography: optical tracking scale and Regular weight"
 ```
 
 ---
 
-### Task 2: Acento de titular en color
+### Task 2: Headline accent in color
 
 **Files:**
-- Modify: `src/components/shared/Type.tsx` (nuevo export `Accent`)
-- Modify: `src/components/shared/Motion.tsx` (`MaskedLines`, prop de color de acento)
-- Modify: `scripts/contrast.mjs` (pares nuevos)
+- Modify: `src/components/shared/Type.tsx` (new `Accent` export)
+- Modify: `src/components/shared/Motion.tsx` (`MaskedLines`, accent color prop)
+- Modify: `scripts/contrast.mjs` (new pairs)
 
 **Interfaces:**
-- Consumes: `Heading` de la Task 1.
+- Consumes: `Heading` from Task 1.
 - Produces:
-  - `Accent({ on, children }: { on: 'light' | 'dark'; children: ReactNode }): JSX.Element` — exportado desde `shared/Type.tsx`. `on="light"` pinta `terra`, `on="dark"` pinta `sunset`.
-  - `MaskedLines` acepta `accentOn?: 'light' | 'dark'` (default `'dark'`) además del `accentLast` que ya tiene.
+  - `Accent({ on, children }: { on: 'light' | 'dark'; children: ReactNode }): JSX.Element` — exported from `shared/Type.tsx`. `on="light"` paints `terra`, `on="dark"` paints `sunset`.
+  - `MaskedLines` accepts `accentOn?: 'light' | 'dark'` (default `'dark'`) in addition to the `accentLast` it already has.
 
-- [ ] **Step 1: Agregar los pares nuevos al guard de contraste**
+- [ ] **Step 1: Add the new pairs to the contrast guard**
 
-En `scripts/contrast.mjs`, dentro de `PAIRS`, agregar:
+In `scripts/contrast.mjs`, inside `PAIRS`, add:
 
 ```js
- ['terra','paper','Acento de titular sobre claro','large'],
- ['terra','cream','Acento de titular sobre crema','large'],
- ['sunset','deep','Acento de titular sobre oscuro','large'],
+ ['terra','paper','Headline accent on light','large'],
+ ['terra','cream','Headline accent on cream','large'],
+ ['sunset','deep','Headline accent on dark','large'],
 ```
 
-- [ ] **Step 2: Correr el guard y ver que pasan**
+- [ ] **Step 2: Run the guard and see them pass**
 
 ```bash
 npm run contrast
 ```
 
-Esperado: los tres pares nuevos en verde. `terra`/`paper` da 7.23:1, `terra`/`cream` 6.47:1 y `sunset`/`deep` 4.26:1, todos sobre el mínimo de 3:1 del texto grande.
+Expected: the three new pairs in green. `terra`/`paper` gives 7.23:1, `terra`/`cream` 6.47:1 and `sunset`/`deep` 4.26:1, all above the 3:1 minimum for large text.
 
-- [ ] **Step 3: Escribir el componente `Accent`**
+- [ ] **Step 3: Write the `Accent` component**
 
-En `src/components/shared/Type.tsx`:
+In `src/components/shared/Type.tsx`:
 
 ```tsx
 /**
- * El acento tipográfico dentro del titular.
+ * The typographic accent inside the headline.
  *
- * ⚠️ Va en COLOR y no en itálica. Camila: «usar cambio de color no itálica,
- * porque el brand no usa itálica». La referencia (wework, superside) lo hace
- * con una serif itálica de otra familia; acá no hay serif y la identidad
- * quedó cerrada, así que el contraste lo da el color.
+ * ⚠️ It goes in COLOR, not italics. Camila: "use a color change, not italics,
+ * because the brand doesn't use italics". The reference (wework, superside) does
+ * it with an italic serif from another family; here there's no serif and the
+ * identity is closed, so the contrast comes from color.
  *
- * ⚠️ DOS colores, según la superficie, y no uno. `sunset` sobre claro da
- * 2.48:1 — no alcanza ni el 3:1 que pide el texto grande. Sobre `deep` sí
- * (4.26:1). Sobre claro va `terra`, que además es el color que ya usan los
- * eyebrows, así que no entra un color nuevo a la paleta.
+ * ⚠️ TWO colors, depending on the surface, not one. `sunset` on light gives
+ * 2.48:1 — it doesn't even reach the 3:1 that large text requires. On `deep` it
+ * does (4.26:1). On light it's `terra`, which is also the color the eyebrows
+ * already use, so no new color enters the palette.
  */
 export function Accent({
   on,
@@ -286,15 +287,15 @@ export function Accent({
 }
 ```
 
-- [ ] **Step 4: Que `MaskedLines` acepte el acento por superficie**
+- [ ] **Step 4: Make `MaskedLines` accept the accent per surface**
 
-En `src/components/shared/Motion.tsx`, en `MaskedLines`, agregar la prop y usarla donde hoy hardcodea el color del acento:
+In `src/components/shared/Motion.tsx`, in `MaskedLines`, add the prop and use it where the accent color is hardcoded today:
 
 ```tsx
   readonly accentOn?: 'light' | 'dark';
 ```
 
-Con default `'dark'` (el hero, que es la única llamada actual) y aplicando `text-sunset` o `text-terra` según el valor. Buscar la clase de acento actual:
+With default `'dark'` (the hero, which is the only current call) and applying `text-sunset` or `text-terra` depending on the value. Find the current accent class:
 
 ```bash
 grep -n "accentLast" -A 12 src/components/shared/Motion.tsx
@@ -306,24 +307,24 @@ grep -n "accentLast" -A 12 src/components/shared/Motion.tsx
 npm run build && npm run check:css
 ```
 
-Esperado: OK.
+Expected: OK.
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add src/components/shared/Type.tsx src/components/shared/Motion.tsx scripts/contrast.mjs
-git commit -m "Acento de titular en color: terra sobre claro, sunset sobre oscuro"
+git commit -m "Headline accent in color: terra on light, sunset on dark"
 ```
 
 ---
 
-# Fase 2 — PromoBar y el top del sitio
+# Phase 2 — PromoBar and the top of the site
 
-### Task 3: PromoBar y el paso a sticky
+### Task 3: PromoBar and the move to sticky
 
-⚠️ **Esta tarea refina la §4.1 de la spec.** La spec decía «recalcular el `top` del header». Al medir el código el arreglo resultó ser otro y hay que decirlo: el header es `fixed top-0` (`Header.tsx:98`) y la `StatusBar` es `fixed top-[64px]` (`Header.tsx:268`), con los heroes compensando con `padding-top`. Un banner **no sticky** arriba de un header **fixed** es imposible sin JS: el header lo taparía de entrada, y al scrollear quedaría un hueco.
+⚠️ **This task refines §4.1 of the spec.** The spec said "recalculate the header's `top`". When the code was measured the fix turned out to be a different one, and it has to be said: the header is `fixed top-0` (`Header.tsx:98`) and the `StatusBar` is `fixed top-[64px]` (`Header.tsx:268`), with the heroes compensating with `padding-top`. A **non-sticky** banner above a **fixed** header is impossible without JS: the header would cover it from the start, and on scroll a gap would be left.
 
-La solución sin JS es que el bloque superior viva **en el flujo**: el PromoBar estático y el header + status en un `sticky top-0`. El promo se va con el scroll porque está en flujo, el header se queda pegado, y desaparecen los `padding-top` mágicos de los heroes. De paso el header `bg-deep` y el hero `bg-deep` quedan continuos, que es justo lo que hace Superside.
+The no-JS solution is for the top block to live **in the flow**: the PromoBar static and the header + status in a `sticky top-0`. The promo scrolls away because it's in flow, the header stays stuck, and the heroes' magic `padding-top`s disappear. As a bonus, the `bg-deep` header and the `bg-deep` hero become continuous, which is exactly what Superside does.
 
 **Files:**
 - Create: `src/components/shared/PromoBar.tsx`
@@ -334,10 +335,10 @@ La solución sin JS es que el bloque superior viva **en el flujo**: el PromoBar 
 - Modify: `src/app/globals.css:662`, `src/app/globals.css:667`
 
 **Interfaces:**
-- Consumes: nada.
-- Produces: `PromoBar(): JSX.Element` (default export). El bloque superior deja de ser `fixed`, así que **ningún hero necesita compensar la altura del header**.
+- Consumes: nothing.
+- Produces: `PromoBar(): JSX.Element` (default export). The top block stops being `fixed`, so **no hero needs to compensate for the header's height**.
 
-- [ ] **Step 1: Escribir el PromoBar**
+- [ ] **Step 1: Write the PromoBar**
 
 `src/components/shared/PromoBar.tsx`:
 
@@ -345,19 +346,19 @@ La solución sin JS es que el bloque superior viva **en el flujo**: el PromoBar 
 import { BRAND } from '@/lib/brand';
 
 /**
- * Banner promocional: los cuatro hechos del lugar, arriba del header.
+ * Promo banner: the venue's four facts, above the header.
  *
- * Venían de la fila `FACTS` del hero. Camila los quiso arriba, «como hoy está
- * el Closed now pero arriba, como un banner promocional» — y como la
- * `StatusBar`, va en el layout, así que aparece en las 23 rutas.
+ * They came from the hero's `FACTS` row. Camila wanted them on top, "like the
+ * Closed now is today but on top, like a promo banner" — and like the
+ * `StatusBar`, it goes in the layout, so it shows up on all 23 routes.
  *
- * ⚠️ NO es sticky: está en el flujo y se va con el scroll. Es lo que decidió
- * Camila y es también la razón por la que el header pasó a `sticky` — ver la
- * nota de Header.tsx.
+ * ⚠️ It is NOT sticky: it's in the flow and scrolls away. That's what Camila
+ * decided and it's also the reason the header moved to `sticky` — see the
+ * note in Header.tsx.
  *
- * ⚠️ Es una <ul> y no una fila de <span>: son cuatro hechos independientes y
- * un lector de pantalla tiene que poder contarlos. Las viñetas van
- * `aria-hidden`: la lista ya se anuncia como lista.
+ * ⚠️ It's a <ul> and not a row of <span>s: they are four independent facts and
+ * a screen reader has to be able to count them. The bullets are
+ * `aria-hidden`: the list is already announced as a list.
  */
 const FACTS = [
   'Four food trucks',
@@ -369,13 +370,13 @@ const FACTS = [
 export default function PromoBar() {
   return (
     <div className="bg-deep px-gutter md:px-gutter-lg">
-      <ul className="caja flex flex-wrap items-center justify-center gap-x-[10px] gap-y-[4px] py-[9px]">
+      <ul className="page-box flex flex-wrap items-center justify-center gap-x-[10px] gap-y-[4px] py-[9px]">
         {FACTS.map((fact, i) => (
           <li key={fact} className="flex items-center gap-[10px]">
             {i > 0 ? (
               <span aria-hidden="true" className="h-[3px] w-[3px] rounded-pill bg-sunset" />
             ) : null}
-            {/* `paper` sobre `deep` da 15.4:1. */}
+            {/* `paper` on `deep` gives 15.4:1. */}
             <span className="eyebrow text-paper/80">{fact}</span>
           </li>
         ))}
@@ -385,30 +386,30 @@ export default function PromoBar() {
 }
 ```
 
-- [ ] **Step 2: Pasar el header y la status bar a sticky**
+- [ ] **Step 2: Move the header and the status bar to sticky**
 
-En `src/components/shared/Header.tsx`, línea 98, cambiar `fixed inset-x-0 top-0 z-[99]` por `sticky top-0 z-[99]` y agregar el comentario del por qué:
+In `src/components/shared/Header.tsx`, line 98, change `fixed inset-x-0 top-0 z-[99]` to `sticky top-0 z-[99]` and add the comment explaining why:
 
 ```tsx
-      {/* ⚠️ `sticky` y no `fixed`. Era `fixed top-0`, y con el PromoBar nuevo
-          arriba eso no funciona: un banner que se va con el scroll debajo de
-          un header fijo queda tapado de entrada y deja un hueco después.
-          En flujo + sticky el promo se va solo y el header se pega, sin JS.
+      {/* ⚠️ `sticky` and not `fixed`. It was `fixed top-0`, and with the new
+          PromoBar on top that doesn't work: a banner that scrolls away under
+          a fixed header is covered from the start and leaves a gap afterwards.
+          In flow + sticky the promo goes away on its own and the header sticks, no JS.
 
-          Consecuencia: el header YA OCUPA espacio, así que los heroes no
-          compensan más su altura con padding-top. */}
+          Consequence: the header NOW TAKES UP space, so the heroes no longer
+          compensate for its height with padding-top. */}
       <div className="sticky top-0 z-[99] bg-deep">
 ```
 
-⚠️ El `GUTTER` que estaba en ese div va al hijo, no al sticky, para que el fondo siga siendo a todo el ancho.
+⚠️ The `GUTTER` that was on that div goes to the child, not to the sticky, so the background stays full width.
 
-En la línea 268, la `StatusBar` deja de ser `fixed top-[64px]` y pasa a ser hermana en el mismo bloque sticky: `z-[98] bg-deeper` sin posicionamiento.
+On line 268, the `StatusBar` stops being `fixed top-[64px]` and becomes a sibling in the same sticky block: `z-[98] bg-deeper` with no positioning.
 
-⚠️ Las dos —header y status— tienen que quedar **dentro del mismo contenedor sticky**, no ser dos sticky separados: si no, al scrollear se superponen.
+⚠️ Both —header and status— have to end up **inside the same sticky container**, not be two separate stickies: otherwise they overlap on scroll.
 
-- [ ] **Step 3: Montar el PromoBar en el layout**
+- [ ] **Step 3: Mount the PromoBar in the layout**
 
-En `src/app/layout.tsx`, importar y montar `PromoBar` **arriba** de `<Header />`, y **desmontar `BrandTrail`** (se elimina en la Task 11; acá sólo se saca del árbol):
+In `src/app/layout.tsx`, import and mount `PromoBar` **above** `<Header />`, and **unmount `BrandTrail`** (it's deleted in Task 11; here it's only taken out of the tree):
 
 ```tsx
         <SmoothScroll />
@@ -418,78 +419,78 @@ En `src/app/layout.tsx`, importar y montar `PromoBar` **arriba** de `<Header />`
         <Header />
 ```
 
-- [ ] **Step 4: Recalcular los paddings de los heroes**
+- [ ] **Step 4: Recalculate the heroes' paddings**
 
-El bloque superior mide `64 + 34 = 98px` en mobile y `76 + 34 = 110px` desde `desk`. Como ahora ocupa flujo, hay que **restarlo** de los paddings:
+The top block measures `64 + 34 = 98px` on mobile and `76 + 34 = 110px` from `desk` up. Since it now takes up flow, it has to be **subtracted** from the paddings:
 
 - `Hero.tsx:78`: `pt-[150px]` → `pt-[52px]`, `lg:pt-[176px]` → `lg:pt-[66px]`
 - `PageHero.tsx:50`: `pt-[132px]` → `pt-[34px]`, `lg:pt-[156px]` → `lg:pt-[46px]`
 
-Y el `scroll-margin-top` de `globals.css:662` y `:667` pasa a la altura del bloque pegado más 16px de aire:
+And the `scroll-margin-top` at `globals.css:662` and `:667` becomes the height of the stuck block plus 16px of air:
 
 ```css
-  scroll-margin-top: 114px;      /* 64 header + 34 status + 16 aire */
+  scroll-margin-top: 114px;      /* 64 header + 34 status + 16 air */
 ```
 ```css
-    scroll-margin-top: 126px;    /* 76 header + 34 status + 16 aire */
+    scroll-margin-top: 126px;    /* 76 header + 34 status + 16 air */
 ```
 
-- [ ] **Step 5: Build y verificar las 23 rutas a ojo**
+- [ ] **Step 5: Build and eyeball the 23 routes**
 
 ```bash
 npm run build && npx next start --port 3114
 ```
 
-En otra terminal, comprobar que en ninguna ruta el header tapa el primer encabezado:
+In another terminal, check that on no route does the header cover the first heading:
 
 ```bash
-node -e "const{chromium}=require('playwright');const R=['/','/visit','/events','/events/inquire','/events/spaces','/food-trucks','/whats-on','/market','/our-story','/faq','/contact','/join-us','/the-experience','/sunset-bar','/the-yard','/nfc-north-hq','/events/corporate','/events/celebrations','/events/fundraisers','/events/game-truck','/events/holiday-parties'];(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:900}});for(const r of R){await p.goto('http://localhost:3114'+r);const bad=await p.evaluate(()=>{const h=document.querySelector('h1');if(!h)return 'sin h1';const t=h.getBoundingClientRect().top;return t<110?('h1 tapado, top='+Math.round(t)):null});if(bad)console.log(r,'->',bad)}console.log('listo');await b.close()})()"
+node -e "const{chromium}=require('playwright');const R=['/','/visit','/events','/events/inquire','/events/spaces','/food-trucks','/whats-on','/market','/our-story','/faq','/contact','/join-us','/the-experience','/sunset-bar','/the-yard','/nfc-north-hq','/events/corporate','/events/celebrations','/events/fundraisers','/events/game-truck','/events/holiday-parties'];(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:900}});for(const r of R){await p.goto('http://localhost:3114'+r);const bad=await p.evaluate(()=>{const h=document.querySelector('h1');if(!h)return 'no h1';const t=h.getBoundingClientRect().top;return t<110?('h1 covered, top='+Math.round(t)):null});if(bad)console.log(r,'->',bad)}console.log('done');await b.close()})()"
 ```
 
-Esperado: sólo `listo`. Cualquier ruta que imprima algo tiene el h1 debajo del bloque pegado.
+Expected: only `done`. Any route that prints something has its h1 under the stuck block.
 
-- [ ] **Step 6: Guard de motion**
+- [ ] **Step 6: Motion guard**
 
 ```bash
 npm run check:motion
 ```
 
-Esperado: OK. El paso de `fixed` a `sticky` cambia el layout de todo el sitio, así que este guard es el que detecta si alguna caja se movió sólo en uno de los dos modos.
+Expected: OK. The move from `fixed` to `sticky` changes the layout of the whole site, so this guard is the one that detects whether any box moved in only one of the two modes.
 
 - [ ] **Step 7: Commit**
 
 ```bash
 git add src/components/shared/PromoBar.tsx src/components/shared/Header.tsx src/app/layout.tsx src/components/shared/PageHero.tsx src/components/sections/Hero.tsx src/app/globals.css
-git commit -m "PromoBar arriba del header y bloque superior en flujo sticky"
+git commit -m "PromoBar above the header and top block in sticky flow"
 ```
 
 ---
 
-# Fase 3 — Hero y muro de videos
+# Phase 3 — Hero and video wall
 
 ### Task 4: VideoWall
 
 **Files:**
 - Create: `src/components/shared/VideoWall.tsx`
-- Modify: `src/app/globals.css` (clase `rt-wall`)
+- Modify: `src/app/globals.css` (`rt-wall` class)
 
 **Interfaces:**
-- Consumes: nada.
-- Produces: `VideoWall(): JSX.Element` (default export). Sin props: los slots son internos hasta que lleguen los clips.
+- Consumes: nothing.
+- Produces: `VideoWall(): JSX.Element` (default export). No props: the slots are internal until the clips arrive.
 
-- [ ] **Step 1: La clase CSS del muro**
+- [ ] **Step 1: The wall's CSS class**
 
-En `src/app/globals.css`, junto a `.rt-marquee`:
+In `src/app/globals.css`, next to `.rt-marquee`:
 
 ```css
 /**
- * El muro del hero. Mismo loop que `.rt-marquee` pero con una diferencia que
- * importa: bajo `prefers-reduced-motion` la fila no queda congelada y
- * recortada —con los tiles de la derecha inalcanzables— sino que se vuelve
- * scrolleable a mano.
+ * The hero wall. Same loop as `.rt-marquee` but with one difference that
+ * matters: under `prefers-reduced-motion` the row isn't left frozen and
+ * cropped —with the tiles on the right unreachable— but becomes
+ * scrollable by hand.
  *
- * ⚠️ El cambio es de `overflow`, no de tamaño ni de posición: las cajas de los
- * tiles miden lo mismo en los dos modos, que es lo que exige check:motion.
+ * ⚠️ The change is to `overflow`, not to size or position: the tiles' boxes
+ * measure the same in both modes, which is what check:motion requires.
  */
 .rt-wall {
   overflow: hidden;
@@ -516,41 +517,41 @@ En `src/app/globals.css`, junto a `.rt-marquee`:
 }
 ```
 
-- [ ] **Step 2: Escribir el componente**
+- [ ] **Step 2: Write the component**
 
 `src/components/shared/VideoWall.tsx`:
 
 ```tsx
 /**
- * El muro del hero: dos filas de piezas cortas del lugar, en loop opuesto.
+ * The hero wall: two rows of short pieces from the venue, in opposite loops.
  *
- * Es la forma del hero de Superside, que Camila fijó como referencia: titular,
- * bajada corta, un CTA, y debajo dos filas de tiles que corren.
+ * It's the shape of Superside's hero, which Camila set as the reference: headline,
+ * short subhead, one CTA, and below it two rows of tiles that run.
  *
- * ⚠️ TODAVÍA NO HAY VIDEOS. En `public/` no hay ni un `.mp4`. Cada slot es un
- * recuadro gris rotulado «video» —decisión de Camila: «poné los recuadros en
- * gris que digan video»— y el componente ya está cableado para el `<video>`:
- * cuando lleguen los clips se cambia `SLOTS` por sus rutas y no se toca nada
- * más.
+ * ⚠️ THERE ARE NO VIDEOS YET. There isn't a single `.mp4` in `public/`. Each slot is a
+ * gray box labeled "video" —Camila's decision: "put the gray boxes in that
+ * say video"— and the component is already wired for the `<video>`:
+ * when the clips arrive, `SLOTS` is swapped for their paths and nothing else
+ * is touched.
  *
- * ⚠️ SON 12, seis por fila, y es un mínimo medido, no un número redondo: con
- * menos de seis por fila el loop repite el mismo tile en pantalla al mismo
- * tiempo. Lo ideal son 16.
+ * ⚠️ THERE ARE 12, six per row, and it's a measured minimum, not a round number:
+ * with fewer than six per row the loop repeats the same tile on screen at the
+ * same time. The ideal is 16.
  *
- * Especificación de los clips: 3:4 vertical, 4–8 s, sin audio, ~1–2 MB,
+ * Clip spec: 3:4 vertical, 4–8 s, no audio, ~1–2 MB,
  * .mp4 H.264.
  */
 const PER_ROW = 6;
 
-/** Un tile. `src === null` mientras el clip no exista. */
+/** A tile. `src === null` while the clip doesn't exist. */
 function Tile({ src }: { readonly src: string | null }) {
   return (
     <div className="mr-[12px] aspect-[3/4] w-[150px] shrink-0 overflow-hidden rounded-card bg-body/25 lg:w-[190px]">
       {src === null ? (
         <div className="grid h-full place-items-center">
-          {/* `paper/70` sobre `body/25` compuesto sobre `deep` — verificado con
-              axe en el guard de a11y, que mide el píxel renderizado y no el
-              par de paleta. */}
+          {/* `paper/70` on `body/25` composited over `deep` — verified with
+              axe in the a11y guard, which measures the rendered pixel and not
+              the palette pair. */}
           <span className="eyebrow text-paper/70">video</span>
         </div>
       ) : (
@@ -573,17 +574,17 @@ function Row({ reverse }: { readonly reverse: boolean }) {
   return (
     <div
       className={['rt-wall', reverse ? 'rt-wall-reverse' : ''].filter(Boolean).join(' ')}
-      // La fila es scrolleable con reduced-motion, así que necesita ser
-      // alcanzable por teclado y anunciarse. Sin esto es una trampa de foco
-      // al revés: contenido que existe y no se puede llegar.
+      // The row is scrollable with reduced-motion, so it needs to be
+      // reachable by keyboard and announce itself. Without this it's a reverse
+      // focus trap: content that exists and can't be reached.
       tabIndex={0}
       role="group"
       aria-label={reverse ? 'Second row of clips from the venue' : 'Clips from the venue'}
     >
       <div className="rt-wall-track">
         {tiles}
-        {/* La segunda copia es la que hace el loop continuo. `aria-hidden`
-            porque es exactamente el mismo contenido. */}
+        {/* The second copy is what makes the loop continuous. `aria-hidden`
+            because it's exactly the same content. */}
         <div className="flex shrink-0" aria-hidden="true">
           {tiles}
         </div>
@@ -608,37 +609,37 @@ export default function VideoWall() {
 npm run build && npm run check:css
 ```
 
-Esperado: OK.
+Expected: OK.
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add src/components/shared/VideoWall.tsx src/app/globals.css
-git commit -m "VideoWall: dos filas de tiles con placeholder de video"
+git commit -m "VideoWall: two rows of tiles with a video placeholder"
 ```
 
 ---
 
-### Task 5: Hero rediseñado
+### Task 5: Redesigned hero
 
 **Files:**
-- Modify: `src/components/sections/Hero.tsx` (reescritura)
+- Modify: `src/components/sections/Hero.tsx` (rewrite)
 
 **Interfaces:**
 - Consumes: `VideoWall` (Task 4), `Accent`/`MaskedLines` (Task 2).
-- Produces: `Hero(): JSX.Element` (default export). **Ya no exporta ni monta `INTENTS`** — las tres puertas pasan a `ThreeDoors` (Task 7).
+- Produces: `Hero(): JSX.Element` (default export). **It no longer exports or mounts `INTENTS`** — the three doors move to `ThreeDoors` (Task 7).
 
-- [ ] **Step 1: Reescribir el hero**
+- [ ] **Step 1: Rewrite the hero**
 
-Reemplazar todo `src/components/sections/Hero.tsx`. Los puntos que no se pueden perder:
+Replace all of `src/components/sections/Hero.tsx`. The points that can't be lost:
 
-- **Se va la foto de fondo y el velo.** Queda `bg-deep` plano. Con el muro debajo, foto y videos compiten; Superside apoya los tiles sobre fondo plano justamente por eso. Y el header `bg-deep` ahora es continuo con el hero.
-- **Se va la fila `FACTS`** (está en el PromoBar) y **la sección `INTENTS`** (va a `ThreeDoors`).
-- **Titular** con `MaskedLines lines={['Bonita comes', 'together']} accentLast accentOn="dark"`.
-- **Bajada de una línea**: `Rooftop bar. Four kitchens. Walk in.`
-- **Un CTA**: `What's on tonight` a `/whats-on`. «Plan an event» ya está en el header.
-- El isotipo `/brand/isotype-truck.svg` se queda arriba del titular.
-- `VideoWall` va después del CTA, a sangre — o sea **fuera** del `caja`/`max-w`, pero dentro de la sección.
+- **The background photo and the veil go away.** Plain `bg-deep` remains. With the wall below, photo and videos compete; Superside sets the tiles on a flat background precisely for that reason. And the `bg-deep` header is now continuous with the hero.
+- **The `FACTS` row goes away** (it's in the PromoBar) and **so does the `INTENTS` section** (it goes to `ThreeDoors`).
+- **Headline** with `MaskedLines lines={['Bonita comes', 'together']} accentLast accentOn="dark"`.
+- **One-line subhead**: `Rooftop bar. Four kitchens. Walk in.`
+- **One CTA**: `What's on tonight` to `/whats-on`. "Plan an event" is already in the header.
+- The isotype `/brand/isotype-truck.svg` stays above the headline.
+- `VideoWall` goes after the CTA, full bleed — that is, **outside** the `page-box`/`max-w`, but inside the section.
 
 ```tsx
 export default function Hero() {
@@ -646,11 +647,11 @@ export default function Hero() {
     <section aria-labelledby="hero-title" className="bg-deep pb-[56px] lg:pb-[68px]">
       <div className={`${GUTTER} pt-[52px] lg:pt-[66px]`}>
         <div className="mx-auto flex max-w-[900px] flex-col items-center text-center">
-          {/* isotipo, Heading role="hero", bajada, un ButtonLink */}
+          {/* isotype, Heading role="hero", subhead, one ButtonLink */}
         </div>
       </div>
 
-      {/* El muro va a sangre: sin gutter ni caja. */}
+      {/* The wall goes full bleed: no gutter or container. */}
       <div className="mt-[44px] lg:mt-[56px]">
         <VideoWall />
       </div>
@@ -665,17 +666,17 @@ export default function Hero() {
 npm run build
 ```
 
-Esperado: OK. Si falla por `INTENTS` sin usar, borrar la constante.
+Expected: OK. If it fails because of an unused `INTENTS`, delete the constant.
 
-- [ ] **Step 3: Guard de superficies**
+- [ ] **Step 3: Surfaces guard**
 
 ```bash
 npm run check:surfaces
 ```
 
-Esperado: OK. El hero no es un `<Section>` con `tone`, así que no cuenta contra el máximo de una `deep` por página — pero conviene confirmarlo antes de agregar más secciones oscuras.
+Expected: OK. The hero isn't a `<Section>` with a `tone`, so it doesn't count against the maximum of one `deep` per page — but it's worth confirming before adding more dark sections.
 
-- [ ] **Step 4: Ver el hero**
+- [ ] **Step 4: Look at the hero**
 
 ```bash
 npx next start --port 3114
@@ -685,51 +686,51 @@ npx next start --port 3114
 node -e "const{chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:1000}});await p.goto('http://localhost:3114/');await p.evaluate(()=>document.fonts.ready);await p.screenshot({path:'hero-check.png'});await b.close()})()"
 ```
 
-Mirar `hero-check.png`: fondo oscuro continuo desde el header, titular en dos líneas con `together` en naranja, un solo botón, y las dos filas de recuadros grises rotulados «video». **Borrar el PNG antes de commitear.**
+Look at `hero-check.png`: dark background continuous from the header, two-line headline with `together` in orange, a single button, and the two rows of gray boxes labeled "video". **Delete the PNG before committing.**
 
 - [ ] **Step 5: Commit**
 
 ```bash
 rm -f hero-check.png
 git add src/components/sections/Hero.tsx
-git commit -m "Hero: frase corta, un CTA y muro de videos"
+git commit -m "Hero: short line, one CTA and video wall"
 ```
 
 ---
 
-# Fase 4 — Las secciones de la home
+# Phase 4 — The home sections
 
-### Task 6: WhatsOn — fusión de Tonight y This week
+### Task 6: WhatsOn — merge of Tonight and This week
 
 **Files:**
 - Create: `src/components/sections/WhatsOn.tsx`
 - Delete: `src/components/sections/TonightAtTheYard.tsx`
 
 **Interfaces:**
-- Consumes: `EVENTS`, `type VenueEvent`, `type Weekday`, `timeRange` de `@/content/events`; `activeTrucks` de `@/content/trucks`; `recurringEvents`, `whenLabel` de `@/content/events`.
+- Consumes: `EVENTS`, `type VenueEvent`, `type Weekday`, `timeRange` from `@/content/events`; `activeTrucks` from `@/content/trucks`; `recurringEvents`, `whenLabel` from `@/content/events`.
 - Produces: `WhatsOn(): JSX.Element` (default export).
 
-- [ ] **Step 1: Escribir la sección**
+- [ ] **Step 1: Write the section**
 
-Una sola sección con las cards de Superside. Lo que hay que conservar del componente que reemplaza:
+A single section with Superside's cards. What has to be kept from the component it replaces:
 
-- **Client component.** Necesita el día en `America/New_York`. Reusar tal cual la función `venueWeekday()` y el patrón `const [today, setToday] = useState<Weekday | null>(null)` + `useEffect` de `TonightAtTheYard.tsx`: el servidor pinta un estado útil y el día real aparece al montar. Sin esto hay mismatch de hidratación y, peor, se publica un dato que puede estar mal.
-- **`CLOSED_DAYS = [1, 2]`** (lunes y martes) se mantiene.
-- **El fallback de trucks se mantiene textualmente**: la rotación diaria **no existe** como dato. La card de hoy no puede decir «hoy están estos cuatro». Muestra el roster y dice la verdad.
-- **Card Superside**: foto arriba, bloque de color abajo con el tag y el título.
-  - Card 1: `bg-sunset` con texto `ink` (8.26:1). **Nunca `paper` sobre `sunset`.**
-  - Card 2: `bg-deep` con texto `paper`.
-  - Card 3: `bg-chalk` con texto `ink`.
-- **La primera card es la de hoy**, con el tag `Tonight`. El resto lleva su tag de día (`whenLabel(e)`).
-- Hover: `scale(1.03)` sobre la imagen y nada más, 250ms. Es lo que le gustó de las cards de Superside.
-- Sin foto real para un evento, `<PhotoPending>`.
-- `Section tone="cream"` y un `ArrowLink` a `/whats-on`.
+- **Client component.** It needs the day in `America/New_York`. Reuse as-is the `venueWeekday()` function and the `const [today, setToday] = useState<Weekday | null>(null)` + `useEffect` pattern from `TonightAtTheYard.tsx`: the server paints a useful state and the real day appears on mount. Without this there's a hydration mismatch and, worse, a piece of data that may be wrong gets published.
+- **`CLOSED_DAYS = [1, 2]`** (Monday and Tuesday) stays.
+- **The trucks fallback stays verbatim**: the daily rotation **doesn't exist** as data. Today's card can't say "today these four are here". It shows the roster and tells the truth.
+- **Superside card**: photo on top, color block below with the tag and the title.
+  - Card 1: `bg-sunset` with `ink` text (8.26:1). **Never `paper` on `sunset`.**
+  - Card 2: `bg-deep` with `paper` text.
+  - Card 3: `bg-chalk` with `ink` text.
+- **The first card is today's**, with the `Tonight` tag. The rest carry their day tag (`whenLabel(e)`).
+- Hover: `scale(1.03)` on the image and nothing else, 250ms. It's what she liked about Superside's cards.
+- With no real photo for an event, `<PhotoPending>`.
+- `Section tone="cream"` and an `ArrowLink` to `/whats-on`.
 
-La card, que es el patrón que Camila señaló explícitamente:
+The card, which is the pattern Camila explicitly pointed out:
 
 ```tsx
-/* Los tres colores de bloque, en orden. El texto de cada uno NO es
-   intercambiable: sobre `sunset` va `ink` (8.26:1) y blanco daría 2.54:1. */
+/* The three block colors, in order. The text of each one is NOT
+   interchangeable: on `sunset` it's `ink` (8.26:1) and white would give 2.54:1. */
 const BLOCKS = [
   { surface: 'bg-sunset', text: 'text-ink', sub: 'text-ink/80' },
   { surface: 'bg-deep', text: 'text-paper', sub: 'text-paper/80' },
@@ -749,8 +750,8 @@ function EventCard({
 }) {
   return (
     <Link href={href} className="group flex h-full flex-col overflow-hidden rounded-card">
-      {/* La foto arriba. `overflow-hidden` acá y el zoom en la imagen: si el
-          zoom va en la card entera, el bloque de color también escala. */}
+      {/* The photo on top. `overflow-hidden` here and the zoom on the image: if
+          the zoom goes on the whole card, the color block scales too. */}
       <div className="relative aspect-[4/3] overflow-hidden bg-body/10">
         {photo === null ? (
           <PhotoPending />
@@ -765,7 +766,7 @@ function EventCard({
         )}
       </div>
 
-      {/* El bloque de color abajo, con el tag y el título. */}
+      {/* The color block below, with the tag and the title. */}
       <div className={`flex flex-1 flex-col ${block.surface} p-[22px]`}>
         <span
           className={`w-fit rounded-pill border border-current/30 px-[10px] py-[3px] eyebrow ${block.sub}`}
@@ -782,11 +783,11 @@ function EventCard({
 }
 ```
 
-- [ ] **Step 2: Sacar `ThisWeek` de `HomeSections.tsx`**
+- [ ] **Step 2: Take `ThisWeek` out of `HomeSections.tsx`**
 
-Borrar la función `ThisWeek` y, si quedan sin uso, sus imports (`recurringEvents`, `whenLabel`, `HAPPY_HOUR`). La línea de happy hour que estaba al pie de `ThisWeek` se mueve a `WhatsOn`.
+Delete the `ThisWeek` function and, if they end up unused, its imports (`recurringEvents`, `whenLabel`, `HAPPY_HOUR`). The happy hour line that was at the bottom of `ThisWeek` moves to `WhatsOn`.
 
-- [ ] **Step 3: Borrar el componente viejo**
+- [ ] **Step 3: Delete the old component**
 
 ```bash
 git rm src/components/sections/TonightAtTheYard.tsx
@@ -798,37 +799,37 @@ git rm src/components/sections/TonightAtTheYard.tsx
 npm run build && npm run check:surfaces
 ```
 
-Esperado: OK, y el conteo de superficies de la home debe seguir dentro de dos `cream` y una `deep`.
+Expected: OK, and the home's surface count must stay within two `cream` and one `deep`.
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add -A src/components/sections src/app/page.tsx
-git commit -m "WhatsOn: una sola seccion de eventos con hoy destacado"
+git commit -m "WhatsOn: a single events section with today featured"
 ```
 
 ---
 
-### Task 7: ThreeDoors — forma «Our difference»
+### Task 7: ThreeDoors — "Our difference" shape
 
 **Files:**
 - Create: `src/components/sections/ThreeDoors.tsx`
-- Modify: `src/components/sections/HomeSections.tsx` (borrar `ThreeVerticals`)
+- Modify: `src/components/sections/HomeSections.tsx` (delete `ThreeVerticals`)
 
 **Interfaces:**
 - Consumes: `Accent` (Task 2), `Section`, `Eyebrow`, `Heading`, `ArrowLink`.
 - Produces: `ThreeDoors(): JSX.Element` (default export).
 
-- [ ] **Step 1: Escribir la sección**
+- [ ] **Step 1: Write the section**
 
-Forma medida en la referencia «Our difference» de Superside: eyebrow centrado, titular grande con acento, y una fila de columnas con ícono chico + micro-etiqueta en versalitas + título + cuerpo, **separadas por filetes de 1px y no por tarjetas pesadas**. Es el gesto que `docs/design-references.md` tenía pendiente de aplicar de wework/superside.
+Shape measured on Superside's "Our difference" reference: centered eyebrow, big headline with accent, and a row of columns with a small icon + small-caps micro-label + title + body, **separated by 1px rules and not by heavy cards**. It's the gesture `docs/design-references.md` had pending to apply from wework/superside.
 
-Las tres puertas, con el contenido que ya existía en `INTENTS` y `ThreeVerticals`:
+The three doors, with the content that already existed in `INTENTS` and `ThreeVerticals`:
 
 ```tsx
-/* ⚠️ El cuerpo de cada puerta dice un hecho verificado y no una promesa. El
-   de «Eat» en particular es la corrección más importante del sitio: la comida
-   no es nuestra, la sirven los trucks. Es la confusión que más caro sale. */
+/* ⚠️ The body of each door states a verified fact, not a promise. The
+   one for "Eat" in particular is the most important correction on the site: the food
+   isn't ours, the trucks serve it. It's the most costly confusion. */
 const DOORS = [
   {
     href: '/food-trucks',
@@ -851,13 +852,13 @@ const DOORS = [
 ] as const;
 ```
 
-- Titular con `<Accent on="light">` — la sección va sobre claro, así que el acento es `terra`.
-- Los tres íconos se dibujan **SVG inline**, en el lenguaje de la marca: no hay íconos de bar, música ni eventos en `public/`. Trazo de 1.6, `currentColor`, `aria-hidden`.
+- Headline with `<Accent on="light">` — the section sits on light, so the accent is `terra`.
+- The three icons are drawn as **inline SVG**, in the brand's language: there are no bar, music or event icons in `public/`. 1.6 stroke, `currentColor`, `aria-hidden`.
 - `Section tone="paper"`.
 
-- [ ] **Step 2: Borrar `ThreeVerticals`**
+- [ ] **Step 2: Delete `ThreeVerticals`**
 
-Borrar la función completa de `HomeSections.tsx` y los imports que queden sin uso.
+Delete the whole function from `HomeSections.tsx` and any imports left unused.
 
 - [ ] **Step 3: Build**
 
@@ -869,42 +870,42 @@ npm run build && npm run check:surfaces
 
 ```bash
 git add -A src/components/sections
-git commit -m "ThreeDoors: las tres unidades en una sola seccion"
+git commit -m "ThreeDoors: the three units in a single section"
 ```
 
 ---
 
-### Task 8: EventsBanner y la mudanza del proceso a /events
+### Task 8: EventsBanner and moving the process to /events
 
 **Files:**
 - Create: `src/components/sections/EventsBanner.tsx`
-- Modify: `src/components/sections/HomeSections.tsx` (borrar `ForEventPlanners`)
-- Modify: `src/app/events/page.tsx` (recibe los tres pasos)
+- Modify: `src/components/sections/HomeSections.tsx` (delete `ForEventPlanners`)
+- Modify: `src/app/events/page.tsx` (receives the three steps)
 
 **Interfaces:**
 - Consumes: `Accent` (Task 2).
 - Produces: `EventsBanner(): JSX.Element` (default export).
 
-- [ ] **Step 1: Escribir el banner**
+- [ ] **Step 1: Write the banner**
 
-Forma medida en `superside.com/our-creative-talent` («OUR GLOBAL TEAM»): card oscura con la imagen arriba —inset, con radio—, y debajo eyebrow, titular con acento, bajada y tres barras de una línea con lo más importante.
+Shape measured on `superside.com/our-creative-talent` ("OUR GLOBAL TEAM"): dark card with the image on top —inset, with radius—, and below it eyebrow, headline with accent, subhead and three one-line bars with the most important points.
 
-⚠️ **La card va `deep` DENTRO de una `Section tone="paper"`**, no como `Section tone="deep"`. `check:surfaces` permite una sola sección `deep` por página y hay que dejarla libre; es el mismo truco que usaba `ForEventPlanners` con su card `sunset`.
+⚠️ **The card goes `deep` INSIDE a `Section tone="paper"`**, not as a `Section tone="deep"`. `check:surfaces` allows only one `deep` section per page and it has to be left free; it's the same trick `ForEventPlanners` used with its `sunset` card.
 
-- Imagen: `/images/events/event-a.webp`.
-- Titular con `<Accent on="dark">` (`sunset`, 4.26:1 sobre `deep`).
-- Los tres items son los ya confirmados: coordinamos los trucks, la barra es nuestra, el espacio es tuyo. Cada uno en una barra `bg-deeper` de una línea.
-- Un CTA a `/events`.
+- Image: `/images/events/event-a.webp`.
+- Headline with `<Accent on="dark">` (`sunset`, 4.26:1 on `deep`).
+- The three items are the ones already confirmed: we coordinate the trucks, the bar is ours, the space is yours. Each one in a one-line `bg-deeper` bar.
+- One CTA to `/events`.
 
-- [ ] **Step 2: Mudar los tres pasos del proceso a /events**
+- [ ] **Step 2: Move the three process steps to /events**
 
-`PLANNER_STEPS` (request a proposal → get the packet → see the spaces) es contenido que hoy **sólo existe en la home**. Moverlo a `src/app/events/page.tsx` como bloque de proceso, con la misma forma de lista numerada que ya tiene la página para `WHAT_WE_DO`. No duplicar: `WHAT_WE_DO` es «qué hacemos», esto es «cómo empieza».
+`PLANNER_STEPS` (request a proposal → get the packet → see the spaces) is content that today **only exists on the home page**. Move it to `src/app/events/page.tsx` as a process block, with the same numbered-list shape the page already has for `WHAT_WE_DO`. Don't duplicate: `WHAT_WE_DO` is "what we do", this is "how it starts".
 
-- [ ] **Step 3: Borrar `ForEventPlanners`**
+- [ ] **Step 3: Delete `ForEventPlanners`**
 
-Borrar la función y `PLANNER_STEPS` de `HomeSections.tsx`.
+Delete the function and `PLANNER_STEPS` from `HomeSections.tsx`.
 
-- [ ] **Step 4: Build y guards**
+- [ ] **Step 4: Build and guards**
 
 ```bash
 npm run build && npm run check:surfaces && npm run contrast
@@ -914,31 +915,31 @@ npm run build && npm run check:surfaces && npm run contrast
 
 ```bash
 git add -A src/components/sections src/app/events/page.tsx
-git commit -m "EventsBanner en la home y el proceso de eventos a /events"
+git commit -m "EventsBanner on the home and the events process to /events"
 ```
 
 ---
 
-### Task 9: FindUs con acordeón nativo
+### Task 9: FindUs with a native accordion
 
 **Files:**
 - Create: `src/components/sections/FindUs.tsx`
-- Modify: `src/components/sections/HomeSections.tsx` (borrar la `FindUs` vieja)
+- Modify: `src/components/sections/HomeSections.tsx` (delete the old `FindUs`)
 
 **Interfaces:**
-- Consumes: `HOURS`, `BRAND`, `addressLine`, `mapsUrl` de `@/lib/brand`.
+- Consumes: `HOURS`, `BRAND`, `addressLine`, `mapsUrl` from `@/lib/brand`.
 - Produces: `FindUs(): JSX.Element` (default export).
 
-- [ ] **Step 1: Escribir la sección**
+- [ ] **Step 1: Write the section**
 
-Estructura de `yava/app/components/LocationSection.tsx`: mapa a un lado, panel de datos al otro, el día de hoy destacado. Lo que se **agrega** sobre yava es el acordeón — yava lista los siete días planos.
+Structure from `yava/app/components/LocationSection.tsx`: map on one side, data panel on the other, today's day highlighted. What gets **added** on top of yava is the accordion — yava lists the seven days flat.
 
 ```tsx
 {HOURS.map((row) => (
   <details key={row.day} name="hours" className="...">
     <summary className="...">
       <span>{row.day}</span>
-      {/* el resumen de una línea, para no obligar a abrir */}
+      {/* the one-line summary, so opening isn't required */}
     </summary>
     <dl>
       <dt>Bar</dt><dd>{row.bar}</dd>
@@ -948,46 +949,46 @@ Estructura de `yava/app/components/LocationSection.tsx`: mapa a un lado, panel d
 ))}
 ```
 
-⚠️ **El `name` compartido es lo que hace el acordeón exclusivo —abrir uno cierra el otro— sin una línea de JavaScript**, y trae gratis el foco, el teclado y el anuncio del estado. Donde el navegador no soporte `name` en `<details>` degrada a siete desplegables independientes: se pueden abrir varios a la vez y nada más. Es una degradación aceptable, no una rotura.
+⚠️ **The shared `name` is what makes the accordion exclusive —opening one closes the other— without a line of JavaScript**, and it brings focus, keyboard and state announcement for free. Where the browser doesn't support `name` on `<details>` it degrades to seven independent disclosures: several can be open at once and that's all. It's an acceptable degradation, not a breakage.
 
-⚠️ Los siete días se renderizan en el **servidor**. Lo único que aporta el JS es cuál arranca abierto: un client component chico marca `open` en el día de hoy al montar, porque el día depende de `America/New_York` y el servidor no lo puede saber sin arriesgar una página cacheada con el día equivocado.
+⚠️ The seven days are rendered on the **server**. The only thing the JS adds is which one starts open: a small client component marks `open` on today's day on mount, because the day depends on `America/New_York` and the server can't know it without risking a cached page with the wrong day.
 
-Se conservan de la versión vieja: dirección como link a Maps, teléfono, parking con su `ArrowLink` a `/visit#parking`, y el `<iframe>` del mapa con `loading="lazy"` y su `title` (un iframe sin título es un fallo de WCAG 4.1.2).
+Kept from the old version: address as a link to Maps, phone, parking with its `ArrowLink` to `/visit#parking`, and the map `<iframe>` with `loading="lazy"` and its `title` (an iframe without a title is a WCAG 4.1.2 failure).
 
-- [ ] **Step 2: Borrar la `FindUs` vieja de `HomeSections.tsx`**
+- [ ] **Step 2: Delete the old `FindUs` from `HomeSections.tsx`**
 
-- [ ] **Step 3: Build y a11y**
+- [ ] **Step 3: Build and a11y**
 
 ```bash
 npm run build && npx next start --port 3114
 ```
 
-En otra terminal:
+In another terminal:
 
 ```bash
 npm run a11y
 ```
 
-Esperado: cero violaciones. El acordeón es el elemento nuevo más expuesto a fallos de accesibilidad.
+Expected: zero violations. The accordion is the new element most exposed to accessibility failures.
 
-- [ ] **Step 4: Verificar que se lee sin JS**
+- [ ] **Step 4: Verify it reads without JS**
 
 ```bash
-node -e "const{chromium}=require('playwright');(async()=>{const b=await chromium.launch();const c=await b.newContext({javaScriptEnabled:false});const p=await c.newPage();await p.goto('http://localhost:3114/');const n=await p.locator('details[name=hours]').count();const txt=await p.locator('details[name=hours]').first().innerText();console.log('details:',n,'| primer bloque incluye horario:',/AM|PM|Closed/.test(txt));await b.close()})()"
+node -e "const{chromium}=require('playwright');(async()=>{const b=await chromium.launch();const c=await b.newContext({javaScriptEnabled:false});const p=await c.newPage();await p.goto('http://localhost:3114/');const n=await p.locator('details[name=hours]').count();const txt=await p.locator('details[name=hours]').first().innerText();console.log('details:',n,'| first block includes hours:',/AM|PM|Closed/.test(txt));await b.close()})()"
 ```
 
-Esperado: `details: 7` y `true`. Con JS apagado los siete días existen y su contenido es alcanzable.
+Expected: `details: 7` and `true`. With JS off the seven days exist and their content is reachable.
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add -A src/components/sections
-git commit -m "FindUs: mapa y acordeon nativo de los siete dias"
+git commit -m "FindUs: map and native accordion for the seven days"
 ```
 
 ---
 
-### Task 10: HowThisPlaceWorks más sutil
+### Task 10: A subtler HowThisPlaceWorks
 
 **Files:**
 - Modify: `src/components/sections/HomeSections.tsx` (`HowThisPlaceWorks`)
@@ -995,66 +996,66 @@ git commit -m "FindUs: mapa y acordeon nativo de los siete dias"
 
 **Interfaces:**
 - Consumes: `PinnedList`, `type PinnedItem`.
-- Produces: sin cambios de firma.
+- Produces: no signature changes.
 
-- [ ] **Step 1: Afinar el acabado**
+- [ ] **Step 1: Refine the finish**
 
-Camila: «me gusta, pero rediseñemos un poco para hacerlo más sutil, más actual y de identidad sofisticado». **Se mantiene el mecanismo de `PinnedList`**; cambia sólo el acabado:
+Camila: "I like it, but let's redesign it a bit to make it subtler, more current and sophisticated in identity". **The `PinnedList` mechanism stays**; only the finish changes:
 
-- Filetes de 1px en vez de 2px.
-- Etiquetas de paso más chicas, en Bronx versalita, **sin relleno de color**.
-- Título activo en Steelfish **Regular** con el tracking nuevo (ya viene de la Task 1), sin peso alto.
-- Riel de progreso de 1px.
-- Más aire entre paso y paso.
+- 1px rules instead of 2px.
+- Smaller step labels, in Bronx small caps, **with no color fill**.
+- Active title in Steelfish **Regular** with the new tracking (it already comes from Task 1), no heavy weight.
+- 1px progress rail.
+- More air between one step and the next.
 
-No tocar el recorrido de scroll (55vh por ítem) ni el `cubic-bezier`: son decisiones ya validadas y documentadas.
+Don't touch the scroll distance (55vh per item) or the `cubic-bezier`: those are decisions already validated and documented.
 
-- [ ] **Step 2: Build y guard de motion**
+- [ ] **Step 2: Build and motion guard**
 
 ```bash
 npm run build && npm run check:motion
 ```
 
-Esperado: OK. `PinnedList` hace trabajo de layout con el scroll, así que este guard es el que importa acá.
+Expected: OK. `PinnedList` does layout work on scroll, so this guard is the one that matters here.
 
 - [ ] **Step 3: Commit**
 
 ```bash
 git add src/components/sections/HomeSections.tsx src/components/shared/PinnedList.tsx
-git commit -m "How this place works: acabado mas sutil"
+git commit -m "How this place works: subtler finish"
 ```
 
 ---
 
-### Task 11: Eliminaciones y composición de la home
+### Task 11: Deletions and the home composition
 
 **Files:**
 - Delete: `src/components/shared/BrandTrail.tsx`
-- Modify: `src/components/sections/HomeSections.tsx` (borrar `StoryTeaser` y `FeaturesMarquee`)
-- Modify: `src/app/page.tsx` (reescritura de la composición)
+- Modify: `src/components/sections/HomeSections.tsx` (delete `StoryTeaser` and `FeaturesMarquee`)
+- Modify: `src/app/page.tsx` (rewrite of the composition)
 
 **Interfaces:**
-- Consumes: todos los componentes de las Tasks 5–10.
+- Consumes: all the components from Tasks 5–10.
 - Produces: `HomePage(): JSX.Element`.
 
-- [ ] **Step 1: Borrar `BrandTrail`**
+- [ ] **Step 1: Delete `BrandTrail`**
 
 ```bash
 git rm src/components/shared/BrandTrail.tsx
 grep -rn "BrandTrail" src/
 ```
 
-Esperado: sin resultados (el desmontaje del layout se hizo en la Task 3).
+Expected: no results (unmounting it from the layout was done in Task 3).
 
-- [ ] **Step 2: Borrar `StoryTeaser` y `FeaturesMarquee`**
+- [ ] **Step 2: Delete `StoryTeaser` and `FeaturesMarquee`**
 
-`StoryTeaser` sale porque «Nuestra historia» vive en `/our-story`. `FeaturesMarquee` sale porque dice lo mismo que el PromoBar nuevo en la misma pantalla — aprobado por Camila.
+`StoryTeaser` goes because "Our story" lives at `/our-story`. `FeaturesMarquee` goes because it says the same thing as the new PromoBar on the same screen — approved by Camila.
 
-Borrar también `FEATURES` y los imports que queden sin uso (`Marquee` puede quedar usado por `ReviewsMarquee`; **no borrar `ReviewsMarquee`**, que está escrito y sin usar a propósito).
+Also delete `FEATURES` and any imports left unused (`Marquee` may still be used by `ReviewsMarquee`; **don't delete `ReviewsMarquee`**, which is written and unused on purpose).
 
-- [ ] **Step 3: Reescribir la composición**
+- [ ] **Step 3: Rewrite the composition**
 
-`src/app/page.tsx`, con el comentario de orden actualizado:
+`src/app/page.tsx`, with the order comment updated:
 
 ```tsx
 export default function HomePage() {
@@ -1071,26 +1072,26 @@ export default function HomePage() {
 }
 ```
 
-⚠️ Revisar los `<Scallop>`: el festón va **sólo donde la superficie cambia de verdad**, y con el orden nuevo los cortes son otros. Puesto en cada corte deja de ser un gesto de marca y pasa a ser un patrón de fondo.
+⚠️ Review the `<Scallop>`s: the scallop goes **only where the surface really changes**, and with the new order the breaks are different. Placed at every break it stops being a brand gesture and becomes a background pattern.
 
-- [ ] **Step 4: Build y los tres guards de página**
+- [ ] **Step 4: Build and the three page guards**
 
 ```bash
 npm run build && npm run check:surfaces && npm run check:seo
 ```
 
-Esperado: OK. `check:surfaces` resuelve la home siguiendo los imports, así que acá se ve el conteo real de superficies.
+Expected: OK. `check:surfaces` resolves the home by following the imports, so this is where the real surface count shows up.
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add -A src
-git commit -m "Home: composicion nueva y baja de BrandTrail, StoryTeaser y FeaturesMarquee"
+git commit -m "Home: new composition and removal of BrandTrail, StoryTeaser and FeaturesMarquee"
 ```
 
 ---
 
-# Fase 5 — Footer
+# Phase 5 — Footer
 
 ### Task 12: AgencyBar
 
@@ -1100,12 +1101,12 @@ git commit -m "Home: composicion nueva y baja de BrandTrail, StoryTeaser y Featu
 - Modify: `src/lib/brand.ts`
 
 **Interfaces:**
-- Consumes: `AGENCY` de `@/lib/brand`.
+- Consumes: `AGENCY` from `@/lib/brand`.
 - Produces:
   - `AgencyBar(): JSX.Element` (default export).
-  - `AGENCY: { url: string; label: string; tagline: string; year: string }` exportado desde `lib/brand.ts`.
+  - `AGENCY: { url: string; label: string; tagline: string; year: string }` exported from `lib/brand.ts`.
 
-- [ ] **Step 1: Traer el asset**
+- [ ] **Step 1: Bring in the asset**
 
 ```bash
 mkdir -p public/images/agency
@@ -1113,14 +1114,14 @@ cp "/c/Users/Cami/Desktop/RestoExp/the-orient/public/images/agency/resto-experie
 ls -la public/images/agency/
 ```
 
-- [ ] **Step 2: La constante `AGENCY`**
+- [ ] **Step 2: The `AGENCY` constant**
 
-En `src/lib/brand.ts`, junto a `BRAND.credit`, que hoy es sólo `{ label, url }`:
+In `src/lib/brand.ts`, next to `BRAND.credit`, which today is only `{ label, url }`:
 
 ```ts
 /**
- * La agencia. `credit` ya tenía label y url; la barra del footer necesita
- * además el tagline y el año, que en los otros sitios de la casa viven acá.
+ * The agency. `credit` already had label and url; the footer bar also needs
+ * the tagline and the year, which on the house's other sites live here.
  */
 export const AGENCY = {
   url: 'https://restoexp.com',
@@ -1130,14 +1131,14 @@ export const AGENCY = {
 } as const;
 ```
 
-- [ ] **Step 3: Portar el componente**
+- [ ] **Step 3: Port the component**
 
-Copiar la estructura de `the-orient/src/components/shared/agency-bar.tsx`, adaptando:
+Copy the structure of `the-orient/src/components/shared/agency-bar.tsx`, adapting:
 
-- La fuente auxiliar: en the-orient es DM Sans; acá va `font-body` (Futura).
-- El `GUTTER` va **en el envoltorio** y la `caja` adentro sin padding propio, para que la fila alinee por los extremos con el resto del footer.
-- El `aria-label` del link **contiene el texto visible**, que es lo que exige WCAG 2.5.3 (Label in Name), y avisa de la pestaña nueva ahí y no en un `<span>` oculto: algunos checkers no leen texto con `clip`.
-- Contrastes ya verificados en the-orient: `#5c5c5c` sobre `#f5f5f5` da 6.13:1.
+- The auxiliary font: in the-orient it's DM Sans; here it's `font-body` (Futura).
+- The `GUTTER` goes **on the wrapper** and the `page-box` inside without its own padding, so the row aligns at the edges with the rest of the footer.
+- The link's `aria-label` **contains the visible text**, which is what WCAG 2.5.3 (Label in Name) requires, and announces the new tab there and not in a hidden `<span>`: some checkers don't read text with `clip`.
+- Contrasts already verified in the-orient: `#5c5c5c` on `#f5f5f5` gives 6.13:1.
 
 - [ ] **Step 4: Build**
 
@@ -1149,51 +1150,51 @@ npm run build
 
 ```bash
 git add public/images/agency src/components/shared/AgencyBar.tsx src/lib/brand.ts
-git commit -m "AgencyBar: barra powered by Resto Experience"
+git commit -m "AgencyBar: powered by Resto Experience bar"
 ```
 
 ---
 
-### Task 13: Footer reestructurado
+### Task 13: Restructured footer
 
 **Files:**
-- Modify: `src/components/shared/Footer.tsx` (reescritura)
+- Modify: `src/components/shared/Footer.tsx` (rewrite)
 - Delete: `src/components/shared/NewsletterForm.tsx`
 - Modify: `src/app/actions.ts`
 
 **Interfaces:**
-- Consumes: `AgencyBar` (Task 12), `AGENCY` y `BRAND`.
+- Consumes: `AgencyBar` (Task 12), `AGENCY` and `BRAND`.
 - Produces: `Footer(): JSX.Element`.
 
-- [ ] **Step 1: Reestructurar**
+- [ ] **Step 1: Restructure**
 
-Estructura compartida de la casa (the-orient, santa-maria, casa-pirul, pretty-hens): columna de identidad a la izquierda, columnas de links a la derecha.
+The house's shared structure (the-orient, santa-maria, casa-pirul, pretty-hens): identity column on the left, link columns on the right.
 
-- **Columna de identidad**: logo, una bajada corta y el CTA.
-- ⚠️ **SIN dirección, SIN horarios, SIN teléfono.** Camila: «los horarios y dirección, teléfonos, etc. no van allí». Es una consecuencia aceptada: en las otras 20 rutas esos datos no quedan en ninguna parte. Viven en la home, `/visit` y `/contact`.
-- **Tres columnas de links** adaptadas a las 23 rutas, más las redes. El corte de la casa es «lo que pasa en el lugar» / «el resto del sitio» / «conocernos».
-- **Franja inferior**: copyright y links legales.
-- **`<AgencyBar />` al final.**
-- **Se va el bloque «Last call».**
-- Conservar el helper `SocialLink` que ya está al pie del archivo.
+- **Identity column**: logo, a short subhead and the CTA.
+- ⚠️ **NO address, NO hours, NO phone.** Camila: "the hours and address, phones, etc. don't go there". It's an accepted consequence: on the other 20 routes that data isn't anywhere. It lives on the home page, `/visit` and `/contact`.
+- **Three link columns** adapted to the 23 routes, plus the socials. The house's split is "what happens at the venue" / "the rest of the site" / "getting to know us".
+- **Bottom band**: copyright and legal links.
+- **`<AgencyBar />` at the end.**
+- **The "Last call" block goes away.**
+- Keep the `SocialLink` helper that's already at the bottom of the file.
 
-- [ ] **Step 2: Borrar el newsletter**
+- [ ] **Step 2: Delete the newsletter**
 
-No está en la web actual —no figura en `docs/current-site-inventory.md`— y el cliente no lo pidió. Camila: «si el cliente no lo pidió y la web actual no tiene nada similar, no lo pongamos».
+It's not on the current site —it doesn't appear in `docs/current-site-inventory.md`— and the client didn't ask for it. Camila: "if the client didn't ask for it and the current site has nothing similar, let's not add it".
 
 ```bash
 git rm src/components/shared/NewsletterForm.tsx
 ```
 
-En `src/app/actions.ts`, borrar `subscribeToNewsletter` y el tipo `ActionState` **sólo si no lo usa `submitEventInquiry`**.
+In `src/app/actions.ts`, delete `subscribeToNewsletter` and the `ActionState` type **only if `submitEventInquiry` doesn't use it**.
 
-⚠️ **NO TOCAR `submitEventInquiry` ni `lib/mail.ts`.** Comparten el envío con el formulario de eventos, que sí es una capacidad real del sitio.
+⚠️ **DO NOT TOUCH `submitEventInquiry` or `lib/mail.ts`.** They share the submission with the events form, which is a real capability of the site.
 
 ```bash
 grep -rn "subscribeToNewsletter\|NewsletterForm" src/
 ```
 
-Esperado: sin resultados.
+Expected: no results.
 
 - [ ] **Step 3: Build**
 
@@ -1201,7 +1202,7 @@ Esperado: sin resultados.
 npm run build && npm run check:css
 ```
 
-- [ ] **Step 4: a11y sobre el footer nuevo**
+- [ ] **Step 4: a11y on the new footer**
 
 ```bash
 npx next start --port 3114
@@ -1211,20 +1212,20 @@ npx next start --port 3114
 npm run a11y
 ```
 
-Esperado: cero violaciones. El footer aparece en las 23 rutas, así que un fallo acá se multiplica por 23.
+Expected: zero violations. The footer shows up on all 23 routes, so a failure here is multiplied by 23.
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add -A src
-git commit -m "Footer con la estructura de la agencia, sin datos ni newsletter"
+git commit -m "Footer with the agency structure, no contact data or newsletter"
 ```
 
 ---
 
-# Fase 6 — Documentación y verificación final
+# Phase 6 — Documentation and final verification
 
-### Task 14: Documentación y guards completos
+### Task 14: Documentation and full guards
 
 **Files:**
 - Modify: `docs/design-references.md`
@@ -1232,25 +1233,25 @@ git commit -m "Footer con la estructura de la agencia, sin datos ni newsletter"
 - Modify: `docs/contrast-audit.md`
 
 **Interfaces:**
-- Consumes: todo lo anterior.
-- Produces: nada de código.
+- Consumes: everything above.
+- Produces: no code.
 
 - [ ] **Step 1: `docs/design-references.md`**
 
-Dos correcciones:
+Two corrections:
 
-- La tabla de la sección 5 documenta `BrandTrail` como el gesto adoptado de ronnsquare.fr. **Se eliminó** por pedido de Camila, así que de ronnsquare queda sólo `PageTransition`. Anotarlo con el motivo.
-- «Pendiente de aplicar: el acento tipográfico dentro del titular (wework / superside) y las filas de ícono + versalita + título». **Los dos se aplicaron** — el acento en color (no en itálica) y las filas en `ThreeDoors`. Marcar como hecho y anotar que el acento va en color porque el brand no usa itálica y no hay serif en el sistema.
+- The table in section 5 documents `BrandTrail` as the gesture adopted from ronnsquare.fr. **It was removed** at Camila's request, so from ronnsquare only `PageTransition` remains. Note it with the reason.
+- "Pending to apply: the typographic accent inside the headline (wework / superside) and the icon + small caps + title rows". **Both were applied** — the accent in color (not in italics) and the rows in `ThreeDoors`. Mark it as done and note that the accent is in color because the brand doesn't use italics and there's no serif in the system.
 
 - [ ] **Step 2: `docs/house-tokens.md`**
 
-La sección de Tracking fija el token heredado de The Orient. Registrar que `--tracking-display: -0.02em` se reemplazó por una escala óptica positiva, y por qué: The Orient usa Lusitana (serif) y Rooftop usa Steelfish (condensada de caja alta), donde un tracking negativo apelmaza.
+The Tracking section pins the token inherited from The Orient. Record that `--tracking-display: -0.02em` was replaced by a positive optical scale, and why: The Orient uses Lusitana (serif) and Rooftop uses Steelfish (all-caps condensed), where negative tracking makes it look clumped.
 
 - [ ] **Step 3: `docs/contrast-audit.md`**
 
-Agregar los pares nuevos con sus valores medidos: `terra`/`paper` 7.23:1, `terra`/`cream` 6.47:1, `sunset`/`deep` 4.26:1. Y dejar anotado explícitamente que **`sunset` no puede ser acento de titular sobre claro** (2.48:1), que es la razón de que el acento tenga dos colores.
+Add the new pairs with their measured values: `terra`/`paper` 7.23:1, `terra`/`cream` 6.47:1, `sunset`/`deep` 4.26:1. And note explicitly that **`sunset` cannot be a headline accent on light** (2.48:1), which is the reason the accent has two colors.
 
-- [ ] **Step 4: La batería completa**
+- [ ] **Step 4: The full battery**
 
 ```bash
 npm run build
@@ -1260,7 +1261,7 @@ npm run check:seo
 npm run contrast
 ```
 
-Y con el server de producción arriba:
+And with the production server up:
 
 ```bash
 npx next start --port 3114
@@ -1271,30 +1272,30 @@ npm run a11y
 npm run check:motion
 ```
 
-Esperado: todos en verde.
+Expected: all green.
 
-- [ ] **Step 5: Revisión visual de las 23 rutas**
+- [ ] **Step 5: Visual review of the 23 routes**
 
 ```bash
 node -e "const{chromium}=require('playwright');const R=['/','/visit','/events','/events/inquire','/events/spaces','/events/corporate','/events/celebrations','/events/fundraisers','/events/game-truck','/events/holiday-parties','/food-trucks','/whats-on','/market','/our-story','/faq','/contact','/join-us','/the-experience','/sunset-bar','/the-yard','/nfc-north-hq'];(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:900}});for(const r of R){await p.goto('http://localhost:3114'+r);await p.evaluate(()=>document.fonts.ready);const o=await p.evaluate(()=>{const h=document.querySelector('h1');return{h1Top:h?Math.round(h.getBoundingClientRect().top):null,overflow:document.documentElement.scrollWidth>window.innerWidth}});console.log(r.padEnd(26),o.h1Top,o.overflow?'OVERFLOW-X':'ok')}await b.close()})()"
 ```
 
-Esperado: ningún `OVERFLOW-X` y ningún `h1Top` por debajo de 110.
+Expected: no `OVERFLOW-X` and no `h1Top` below 110.
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add docs
-git commit -m "Docs: referencias, tokens y contrastes al dia con el rediseno"
+git commit -m "Docs: references, tokens and contrasts up to date with the redesign"
 ```
 
 ---
 
-## Lo que queda pendiente y NO lo cierra este plan
+## What remains pending and this plan does NOT close
 
-Anotado en la §8 de la spec:
+Noted in §8 of the spec:
 
-1. **Licencia de Bronx** — el fuente es `Bronx_PersonalUse.otf`. Verificar antes de publicar, y confirmar contra la página 13 del brand book cuál de las tres tipografías llamadas Bronx es la correcta.
-2. **`Futura PT` es Futura Cyrillic** — el `@font-face` declara una familia que no sirve. Corregir el nombre antes de publicar.
-3. **Red de seguridad en CSS del `Preloader`** — cortina opaca cuya única salida es un timer de JS.
-4. **Los 12 videos** — hasta que lleguen, el muro muestra recuadros grises rotulados «video». Especificación: 3:4 vertical, 4–8 s, sin audio, ~1–2 MB, `.mp4` H.264.
+1. **Bronx license** — the font file is `Bronx_PersonalUse.otf`. Verify before publishing, and confirm against page 13 of the brand book which of the three typefaces named Bronx is the correct one.
+2. **`Futura PT` is Futura Cyrillic** — the `@font-face` declares a family that doesn't work. Fix the name before publishing.
+3. **CSS safety net for the `Preloader`** — an opaque curtain whose only way out is a JS timer.
+4. **The 12 videos** — until they arrive, the wall shows gray boxes labeled "video". Spec: 3:4 vertical, 4–8 s, no audio, ~1–2 MB, `.mp4` H.264.

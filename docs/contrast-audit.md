@@ -1,191 +1,191 @@
-# Auditoría de contraste — Rooftop at Riverside
+# Contrast audit — Rooftop at Riverside
 
-> ## ⚠️ SUPERSEDIDO — los ratios de este archivo NO son los del sitio
+> ## ⚠️ SUPERSEDED — the ratios in this file are NOT the site's
 >
-> **La tabla vigente es [`design-audit/CONTRASTE.md`](../design-audit/CONTRASTE.md)**,
-> que la genera `npm run contrast` leyendo la paleta de `src/app/globals.css`.
+> **The current table is [`design-audit/CONTRAST.md`](../design-audit/CONTRAST.md)**,
+> which `npm run contrast` generates by reading the palette from `src/app/globals.css`.
 >
-> Los números de más abajo están calculados contra una paleta que el sitio dejó
-> de pintar. `scripts/contrast.mjs` tenía los hexes **copiados a mano** y quedó
-> viejo cuando cambió el bloque `@theme`: seguía midiendo `paper` como `#FFFFFF`
-> e `ink` como `#000000` cuando el sitio pintaba `#FDFCF7` y `#0A1F1E`. El build
-> pasaba, así que nadie lo notó. Encontrado en la auditoría de
-> `redesign/light-tropical` — ver [`design-audit/AUDIT.md`](../design-audit/AUDIT.md) §3.
+> The numbers below are calculated against a palette the site stopped
+> painting. `scripts/contrast.mjs` had the hexes **copied by hand** and went
+> stale when the `@theme` block changed: it kept measuring `paper` as `#FFFFFF`
+> and `ink` as `#000000` while the site was painting `#FDFCF7` and `#0A1F1E`. The build
+> passed, so nobody noticed. Found in the audit of
+> `redesign/light-tropical` — see [`design-audit/AUDIT.md`](../design-audit/AUDIT.md) §3.
 >
-> Ya está arreglado en dos frentes: el script ahora **lee** la paleta en vez de
-> tenerla escrita, y `npm run check:tokens` falla si `globals.css` y
-> `src/lib/brand.ts` divergen.
+> It's already fixed on two fronts: the script now **reads** the palette instead of
+> having it written in, and `npm run check:tokens` fails if `globals.css` and
+> `src/lib/brand.ts` diverge.
 >
-> **Este archivo se conserva por el razonamiento, no por los números.** Los dos
-> casos resueltos del §«Los dos casos que hubo que resolver» y el conflicto del
-> hover naranja siguen siendo la explicación de decisiones que están vigentes;
-> sólo hay que leer los ratios en la tabla nueva.
+> **This file is kept for the reasoning, not for the numbers.** The two
+> resolved cases in §"The two cases that had to be resolved" and the orange hover
+> conflict are still the explanation for decisions that are in force;
+> just read the ratios in the new table.
 
-Calculado sobre luminancia relativa según **WCAG 2.1** (fórmula de 1.4.3 / 1.4.11).
+Calculated on relative luminance per **WCAG 2.1** (formula from 1.4.3 / 1.4.11).
 
-**Mínimos aplicados:** 4.5:1 texto de cuerpo · 3:1 texto grande (≥24px, o ≥18.66px bold)
-y elementos de interfaz no textuales.
+**Minimums applied:** 4.5:1 body text · 3:1 large text (≥24px, or ≥18.66px bold)
+and non-text interface elements.
 
 ---
 
-## El problema de partida
+## The starting problem
 
-`sunset` #F58521 y `river` #0EB6B8 son dos tonos medios con luminancia casi idéntica:
-**2.54:1** y **2.50:1** sobre blanco. Ninguno de los dos alcanza AA como color de texto
-sobre fondo claro, en ningún tamaño. De ahí salen las reglas duras de abajo.
+`sunset` #F58521 and `river` #0EB6B8 are two mid tones with almost identical luminance:
+**2.54:1** and **2.50:1** on white. Neither reaches AA as a text color
+on a light background, at any size. That's where the hard rules below come from.
 
 ---
 
-## Tabla de pares en uso
+## Table of pairs in use
 
-| Par | Uso | Ratio | Mínimo | Estado |
+| Pair | Use | Ratio | Minimum | Status |
 |---|---|---:|---:|---|
-| `body` sobre `paper` | Cuerpo de texto — el 92% del sitio | **19.80:1** | 4.5:1 | ✅ AAA |
-| `ink` sobre `paper` | Títulos, nav, todo encabezado | **21.00:1** | 4.5:1 | ✅ AAA |
-| `ink` sobre `sunset` | Texto del CTA primario | **8.26:1** | 4.5:1 | ✅ AAA |
-| `ink` sobre `river` | Texto sobre relleno teal | **8.40:1** | 4.5:1 | ✅ AAA |
-| `ink` sobre `cream` | Texto sobre la superficie crema | **18.30:1** | 4.5:1 | ✅ AAA |
-| `ink` sobre `mint` | Texto sobre mint | **17.26:1** | 4.5:1 | ✅ AAA |
-| `deep` sobre `paper` | Eyebrow y texto de color sobre blanco | **10.83:1** | 4.5:1 | ✅ AAA |
-| `plum` sobre `paper` | Texto de color alternativo | **13.51:1** | 4.5:1 | ✅ AAA |
-| `terra` sobre `paper` | Alertas y precios destacados | **7.43:1** | 4.5:1 | ✅ AAA |
-| `magenta` sobre `paper` | Acento editorial | **5.64:1** | 4.5:1 | ✅ AA |
-| `teal600` sobre `paper` | Texto de color sobre BLANCO | **4.59:1** | 4.5:1 | ✅ AA |
-| `deep` sobre `cream` | Eyebrow sobre crema | **9.44:1** | 4.5:1 | ✅ AAA |
-| `plum` sobre `cream` | Texto de color sobre crema | **11.77:1** | 4.5:1 | ✅ AAA |
-| `terra` sobre `cream` | Acento sobre crema | **6.47:1** | 4.5:1 | ✅ AA |
-| `magenta` sobre `cream` | Acento sobre crema | **4.92:1** | 4.5:1 | ✅ AA |
-| `teal600` sobre `cream` | ⚠️ PROHIBIDO — no llega a AA | **4.00:1** | 4.5:1 | ❌ FALLA |
-| `paper` sobre `deep` | Texto sobre la superficie oscura | **10.83:1** | 4.5:1 | ✅ AAA |
-| `cream` sobre `deep` | Texto y eyebrow sobre oscuro | **9.44:1** | 4.5:1 | ✅ AAA |
-| `mint` sobre `deep` | Detalle sobre oscuro | **8.90:1** | 4.5:1 | ✅ AAA |
-| `sunset` sobre `deep` | Acento GRANDE sobre oscuro | **4.26:1** | 3:1 | ✅ AA |
-| `river` sobre `deep` | Acento GRANDE sobre oscuro | **4.33:1** | 3:1 | ✅ AA |
-| `ink` sobre `paper` | Anillo de foco sobre blanco | **21.00:1** | 3:1 | ✅ AA |
-| `ink` sobre `sunset` | Anillo de foco sobre el CTA | **8.26:1** | 3:1 | ✅ AA |
-| `cream` sobre `deep` | Anillo de foco sobre oscuro | **9.44:1** | 3:1 | ✅ AA |
-| `ink45` sobre `paper` | Subrayado de link en REPOSO (identifica el link) | **3.36:1** | 3:1 | ✅ AA |
-| `sunset` sobre `paper` | Subrayado en HOVER — redundante con el grosor | **2.54:1** | n/a | ✅ exento — decorativo |
+| `body` on `paper` | Body text — 92% of the site | **19.80:1** | 4.5:1 | ✅ AAA |
+| `ink` on `paper` | Titles, nav, every heading | **21.00:1** | 4.5:1 | ✅ AAA |
+| `ink` on `sunset` | Primary CTA text | **8.26:1** | 4.5:1 | ✅ AAA |
+| `ink` on `river` | Text on teal fill | **8.40:1** | 4.5:1 | ✅ AAA |
+| `ink` on `cream` | Text on the cream surface | **18.30:1** | 4.5:1 | ✅ AAA |
+| `ink` on `mint` | Text on mint | **17.26:1** | 4.5:1 | ✅ AAA |
+| `deep` on `paper` | Eyebrow and colored text on white | **10.83:1** | 4.5:1 | ✅ AAA |
+| `plum` on `paper` | Alternate colored text | **13.51:1** | 4.5:1 | ✅ AAA |
+| `terra` on `paper` | Alerts and highlighted prices | **7.43:1** | 4.5:1 | ✅ AAA |
+| `magenta` on `paper` | Editorial accent | **5.64:1** | 4.5:1 | ✅ AA |
+| `teal600` on `paper` | Colored text on WHITE | **4.59:1** | 4.5:1 | ✅ AA |
+| `deep` on `cream` | Eyebrow on cream | **9.44:1** | 4.5:1 | ✅ AAA |
+| `plum` on `cream` | Colored text on cream | **11.77:1** | 4.5:1 | ✅ AAA |
+| `terra` on `cream` | Accent on cream | **6.47:1** | 4.5:1 | ✅ AA |
+| `magenta` on `cream` | Accent on cream | **4.92:1** | 4.5:1 | ✅ AA |
+| `teal600` on `cream` | ⚠️ FORBIDDEN — doesn't reach AA | **4.00:1** | 4.5:1 | ❌ FAILS |
+| `paper` on `deep` | Text on the dark surface | **10.83:1** | 4.5:1 | ✅ AAA |
+| `cream` on `deep` | Text and eyebrow on dark | **9.44:1** | 4.5:1 | ✅ AAA |
+| `mint` on `deep` | Detail on dark | **8.90:1** | 4.5:1 | ✅ AAA |
+| `sunset` on `deep` | LARGE accent on dark | **4.26:1** | 3:1 | ✅ AA |
+| `river` on `deep` | LARGE accent on dark | **4.33:1** | 3:1 | ✅ AA |
+| `ink` on `paper` | Focus ring on white | **21.00:1** | 3:1 | ✅ AA |
+| `ink` on `sunset` | Focus ring on the CTA | **8.26:1** | 3:1 | ✅ AA |
+| `cream` on `deep` | Focus ring on dark | **9.44:1** | 3:1 | ✅ AA |
+| `ink45` on `paper` | Link underline at REST (identifies the link) | **3.36:1** | 3:1 | ✅ AA |
+| `sunset` on `paper` | Underline on HOVER — redundant with the thickness | **2.54:1** | n/a | ✅ exempt — decorative |
 
 ---
 
-## Reglas duras que salen de la tabla
+## Hard rules that come out of the table
 
-1. **`sunset` y `river` nunca como color de texto** sobre blanco ni sobre crema.
-   Se usan como SUPERFICIE (con texto negro encima) o como forma (isotipo, patrón).
-2. **Sobre naranja o sobre teal el texto va en NEGRO** — 8.26:1 y 8.40:1. Nunca en blanco:
-   blanco sobre `sunset` da 2.54:1 y sobre `river` 2.50:1.
-3. **Sobre `deep` #014545** el texto va en blanco (10.83:1) o en crema (9.44:1).
-4. **`magenta` no se usa sobre `deep`** — 1.92:1. Es el único acento que se apaga sobre
-   la superficie oscura.
-5. **El anillo de foco va en tinta** (21:1 sobre blanco, 8.26:1 sobre el naranja del CTA)
-   y se invierte a crema dentro de `.on-dark` (9.44:1).
-   No va en `sunset`: 2.54:1 no llega al 3:1 de 1.4.11.
+1. **`sunset` and `river` never as a text color** on white or on cream.
+   They're used as a SURFACE (with black text on top) or as a shape (logomark, pattern).
+2. **On orange or on teal the text goes in BLACK** — 8.26:1 and 8.40:1. Never in white:
+   white on `sunset` gives 2.54:1 and on `river` 2.50:1.
+3. **On `deep` #014545** the text goes in white (10.83:1) or in cream (9.44:1).
+4. **`magenta` is not used on `deep`** — 1.92:1. It's the only accent that goes dull on
+   the dark surface.
+5. **The focus ring goes in ink** (21:1 on white, 8.26:1 on the CTA orange)
+   and inverts to cream inside `.on-dark` (9.44:1).
+   It doesn't go in `sunset`: 2.54:1 doesn't reach the 3:1 of 1.4.11.
 
 ---
 
-## Los dos casos que hubo que resolver
+## The two cases that had to be resolved
 
-### 1. `teal600` sobre crema — **prohibido**
+### 1. `teal600` on cream — **forbidden**
 
-El brief lista `#028382` entre los colores de texto admitidos «sobre fondo claro»,
-con 4.6:1. Ese número es correcto **sobre blanco** (4.59:1). **Sobre crema da 4.00:1**
-y no llega a AA para cuerpo.
+The brief lists `#028382` among the allowed text colors "on a light background",
+with 4.6:1. That number is correct **on white** (4.59:1). **On cream it gives 4.00:1**
+and doesn't reach AA for body text.
 
-Es la única cifra del brief que no se sostiene, y no porque esté mal calculada:
-la regla dice «fondo claro» sin distinguir blanco de crema, y crema es más oscuro.
+It's the only figure in the brief that doesn't hold up, and not because it's miscalculated:
+the rule says "light background" without distinguishing white from cream, and cream is darker.
 
-**Resuelto quitándolo, no justificándolo.** `COLOR_RULES.colorTextOnCream` en
-`src/lib/brand.ts` excluye `teal600`. Sobre crema quedan `deep` (9.44), `plum` (11.77),
-`terra` (6.47) y `magenta` (4.92).
+**Resolved by removing it, not by justifying it.** `COLOR_RULES.colorTextOnCream` in
+`src/lib/brand.ts` excludes `teal600`. On cream that leaves `deep` (9.44), `plum` (11.77),
+`terra` (6.47) and `magenta` (4.92).
 
-### 2. El hover naranja de los links — **choque entre dos reglas del brief**
+### 2. The orange link hover — **clash between two rules of the brief**
 
-El brief pide las dos cosas a la vez:
+The brief asks for both things at once:
 
-- «Sunset Orange — … en el **hover de links**»
-- «Todo el texto cumple WCAG AA» / «si un par no pasa, **cambialo, no lo justifiques**»
+- "Sunset Orange — … on the **link hover**"
+- "All text meets WCAG AA" / "if a pair doesn't pass, **change it, don't justify it**"
 
-Pero el naranja sobre blanco da 2.54:1 y no llega al 3:1 que pide 1.4.11 para un
-indicador de interfaz. Pintar el subrayado de naranja y seguir de largo rompería la
-segunda regla.
+But orange on white gives 2.54:1 and doesn't reach the 3:1 that 1.4.11 requires for an
+interface indicator. Painting the underline orange and moving on would break the
+second rule.
 
-**Resuelto separando qué indicador sostiene la accesibilidad:**
+**Resolved by separating which indicator carries the accessibility:**
 
-| Estado | Subrayado | Ratio | Rol |
+| State | Underline | Ratio | Role |
 |---|---|---:|---|
-| Reposo | 1px, tinta al 45% (#8C8C8C) | **3.36:1** ✅ | **Es acá donde el link se identifica como link.** Cumple 1.4.11. |
-| Hover | 2px, `sunset` | 2.54:1 | Gesto. El cambio de estado se comunica **también por grosor**, así que no depende del color (1.4.1). |
+| Rest | 1px, ink at 45% (#8C8C8C) | **3.36:1** ✅ | **This is where the link is identified as a link.** Meets 1.4.11. |
+| Hover | 2px, `sunset` | 2.54:1 | Gesture. The state change is communicated **also through thickness**, so it doesn't depend on color (1.4.1). |
 
-El texto del link se mantiene en tinta a 21:1 en los dos estados. Si alguien no distingue
-el naranja, no pierde ninguna información: el link estaba subrayado antes y el subrayado
-se engrosó.
+The link text stays in ink at 21:1 in both states. If someone can't distinguish
+the orange, they lose no information: the link was underlined before and the underline
+got thicker.
 
-Implementado en la utilidad `link-texto` de `globals.css`.
+Implemented in the `link-text` utility in `globals.css`.
 
 ---
 
-## El acento del titular — agregado el 9 de septiembre de 2026
+## The headline accent — added on September 9, 2026
 
-El rediseño sumó un acento tipográfico dentro del titular, en **color y no en
-itálica**. Necesita **dos** colores y no uno, y este es el motivo medido:
+The redesign added a typographic accent inside the headline, in **color and not in
+italics**. It needs **two** colors and not one, and this is the measured reason:
 
-| Par | Uso | Ratio | Veredicto |
+| Pair | Use | Ratio | Verdict |
 |---|---|---|---|
-| `sunset` sobre `paper` | acento sobre claro | **2.48:1** | ❌ no llega ni al 3:1 de texto grande |
-| `terra` sobre `paper` | acento sobre claro | **7.43:1** | ✅ AAA |
-| `terra` sobre `cream` | acento sobre crema | **6.47:1** | ✅ AA |
-| `sunset` sobre `deep` | acento sobre oscuro | **4.26:1** | ✅ AA |
+| `sunset` on `paper` | accent on light | **2.48:1** | ❌ doesn't even reach the 3:1 for large text |
+| `terra` on `paper` | accent on light | **7.43:1** | ✅ AAA |
+| `terra` on `cream` | accent on cream | **6.47:1** | ✅ AA |
+| `sunset` on `deep` | accent on dark | **4.26:1** | ✅ AA |
 
-Medidos y descartados para claro: `river` 2.43:1 (falla), `tomato` 3.77:1 (pasa
-raspando, sólo texto grande), `plum` 13.15:1 y `deep` 10.55:1 (pasan, pero
-siendo oscuros como el titular el acento no se lee como acento).
+Measured and discarded for light: `river` 2.43:1 (fails), `tomato` 3.77:1 (barely
+passes, large text only), `plum` 13.15:1 and `deep` 10.55:1 (they pass, but
+being dark like the headline, the accent doesn't read as an accent).
 
-**Regla:** sobre superficie clara el acento es `terra`; sobre `deep` es
-`sunset`. Lo encapsula el componente `Accent`, cuya prop es la **superficie** y
-no el color, justamente para que nadie tenga que acordarse de esto.
+**Rule:** on a light surface the accent is `terra`; on `deep` it's
+`sunset`. The `Accent` component encapsulates it, and its prop is the **surface** and
+not the color, precisely so nobody has to remember this.
 
 ---
 
-## Colores COMPUESTOS — lo que esta tabla no puede prever
+## COMPOSITE colors — what this table can't foresee
 
-⚠️ Tres fallos reales de esta sesión, y los tres los encontró `npm run a11y`
-midiendo el píxel renderizado, no esta tabla:
+⚠️ Three real failures in this session, and all three were found by `npm run a11y`
+measuring the rendered pixel, not by this table:
 
-| Dónde | Declarado | Medido | Arreglo |
+| Where | Declared | Measured | Fix |
 |---|---|---|---|
-| Rótulo «video» del muro | `paper/55` sobre `paper/12` sobre `deep` | **3.51:1** | `paper/75` → 5.08:1 |
-| Rótulos Bar/Trucks de FindUs | `body/60` sobre `paper` | **3.92:1** | `body/70` → 5.30:1 |
-| Número inactivo de la lista de pasos | `body/45` sobre `paper` | **2.61:1** | corregido a `/65` (4.57:1); hoy el módulo es `StepStair` sobre `deep` y va `paper/70` → 8.05:1 |
+| "video" label on the wall | `paper/55` on `paper/12` on `deep` | **3.51:1** | `paper/75` → 5.08:1 |
+| FindUs Bar/Trucks labels | `body/60` on `paper` | **3.92:1** | `body/70` → 5.30:1 |
+| Inactive number in the steps list | `body/45` on `paper` | **2.61:1** | corrected to `/65` (4.57:1); today the module is `StepStair` on `deep` and uses `paper/70` → 8.05:1 |
 
-Los tres son **una opacidad sobre otra**, o una opacidad sobre un fondo que ya
-es una opacidad. Un par de paleta no los describe: el color real no está
-declarado en ninguna parte, sale de la composición.
+All three are **one opacity on top of another**, or an opacity on a background that is
+already an opacity. A palette pair doesn't describe them: the real color isn't
+declared anywhere, it comes out of the composition.
 
-⚠️ Y el tercero enseña algo más: axe marca el contraste **aunque el elemento
-sea `aria-hidden`**. Tiene razón — sigue siendo texto visible para quien ve,
-aunque no lo lea un lector de pantalla. Esconder algo del árbol de
-accesibilidad no es una salida para un contraste que no pasa.
+⚠️ And the third one teaches something more: axe flags the contrast **even if the element
+is `aria-hidden`**. It's right — it's still visible text for anyone who can see,
+even if a screen reader doesn't read it. Hiding something from the accessibility
+tree is not a way out for a contrast that doesn't pass.
 
 ---
 
-## Lo que todavía no está cubierto
+## What still isn't covered
 
-Esta tabla cubre los pares del **sistema**. Falta verificar, cuando existan:
+This table covers the **system** pairs. Still to verify, once they exist:
 
-- **Texto sobre fotografía.** Ya no aplica al hero —se quedó sin foto de fondo y
-  hoy es `deep` sólido, donde `paper` da 15.4:1 sin depender de nada—, pero
-  sigue valiendo para cualquier texto que se ponga sobre imagen en otra página.
-  El par real se mide sobre el color compuesto y no sobre el declarado, que es
-  el error clásico que ningún checker automático detecta.
-- **El patrón de azulejo.** Ya llegó el asset real (`public/brand/tile-pattern.svg`,
-  del Figma) y va como banda decorativa `aria-hidden`, así que hoy no hay texto
-  encima de él. Si alguna vez se apoya texto, hay que medirlo sobre el píxel
-  renderizado: son cuatro colores y el par cambia según dónde caiga la letra.
-- **Texto sobre foto desenfocada** (el banner de eventos de la home). Resuelto con
-  un velo `deep/90`, que es un piso calculado: con una foto blanca pura el peor
-  caso da 5,3:1. Medido sobre el píxel renderizado con la foto real —axe informa
-  «incomplete» cuando el fondo es imagen— da entre 6,4:1 y 8,2:1. Si se cambia la
-  foto no hace falta volver a medir, pero si se baja el velo, sí.
-- **Estados de error de formulario.** Van con texto además de color (requisito de Fase 4),
-  pero el par de color todavía no está definido.
+- **Text on photography.** It no longer applies to the hero —it was left without a
+  background photo and today it's solid `deep`, where `paper` gives 15.4:1 without
+  depending on anything—, but it still holds for any text placed on an image on another
+  page. The real pair is measured on the composite color and not on the declared one,
+  which is the classic mistake no automatic checker detects.
+- **The tile pattern.** The real asset has arrived (`public/brand/tile-pattern.svg`,
+  from Figma) and it goes in as an `aria-hidden` decorative band, so today there's no
+  text on top of it. If text is ever placed on it, it has to be measured on the rendered
+  pixel: there are four colors and the pair changes depending on where the letter lands.
+- **Text on a blurred photo** (the events banner on the home page). Resolved with
+  a `deep/90` veil, which is a calculated floor: with a pure white photo the worst
+  case gives 5.3:1. Measured on the rendered pixel with the real photo —axe reports
+  "incomplete" when the background is an image— it gives between 6.4:1 and 8.2:1. If the
+  photo changes there's no need to measure again, but if the veil is lowered, there is.
+- **Form error states.** They use text in addition to color (Phase 4 requirement),
+  but the color pair isn't defined yet.

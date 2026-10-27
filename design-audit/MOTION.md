@@ -1,24 +1,24 @@
-# Motion — el vocabulario, sección por sección
+# Motion — the vocabulary, section by section
 
-Formato de nueve slots, como pide el brief: **elemento · API exacta ·
-disparador · propiedades de→a · timing · orquestación · estado inicial ·
-fallback · entrega**.
+Nine-slot format, as the brief asks: **element · exact API ·
+trigger · properties from→to · timing · orchestration · initial state ·
+fallback · delivery**.
 
-Los tokens viven en [`src/lib/motion.ts`](../src/lib/motion.ts) y los
-componentes en [`src/components/shared/Motion.tsx`](../src/components/shared/Motion.tsx).
+The tokens live in [`src/lib/motion.ts`](../src/lib/motion.ts) and the
+components in [`src/components/shared/Motion.tsx`](../src/components/shared/Motion.tsx).
 
 ---
 
-## 0. Los tokens
+## 0. The tokens
 
 ```
-ease.out      [0.16, 1, 0.30, 1]      easeOutExpo — arranca rápido, frena largo
-ease.inOut    [0.22, 1, 0.36, 1]      para lo que vuelve: acordeones, alturas
+ease.out      [0.16, 1, 0.30, 1]      easeOutExpo — starts fast, brakes long
+ease.inOut    [0.22, 1, 0.36, 1]      for things that come back: accordions, heights
 
 dur.micro     0.20   hover, tap
 dur.ui        0.35   nav, dropdowns
-dur.reveal    0.70   entradas de sección
-dur.hero      1.10   ⚠️ SÓLO la secuencia del hero, y sólo al cargar
+dur.reveal    0.70   section entrances
+dur.hero      1.10   ⚠️ ONLY the hero sequence, and only on load
 
 stagger       0.08
 dist.text     32px
@@ -27,335 +27,335 @@ viewport      { once: true, margin: '0px 0px -20% 0px' }
 clip          inset(0% 0% 100% 0%) → inset(0% 0% 0% 0%)
 ```
 
-**El tope de 600ms y su única excepción.** La regla de la casa era «ninguna
-animación pasa de 600ms», y sigue en pie para todo lo que el usuario dispara o
-ve repetidas veces. Una entrada lenta que se repite ocho veces mientras
-scrolleás no se lee como elegante, se lee como lag. `dur.hero` es la excepción
-declarada: corre **una vez, al cargar**, no se repite, y es el momento
-memorable de la página.
+**The 600ms cap and its single exception.** The house rule was "no
+animation goes over 600ms", and it still stands for everything the user triggers or
+sees repeatedly. A slow entrance that repeats eight times while
+you scroll doesn't read as elegant, it reads as lag. `dur.hero` is the
+declared exception: it runs **once, on load**, it doesn't repeat, and it's the
+memorable moment of the page.
 
-**`margin` y no `amount`.** `amount: 0.2` esperaba que el 20 % del elemento
-estuviera visible, lo que en una sección alta significa scrollear media
-pantalla más allá de que asome. El margen negativo dispara cuando al elemento
-le falta un 20 % del viewport para entrar, que es cuando el ojo ya lo busca.
+**`margin` and not `amount`.** `amount: 0.2` waited for 20% of the element
+to be visible, which in a tall section means scrolling half a
+screen past the point where it peeks in. The negative margin fires when the element
+is 20% of the viewport away from entering, which is when the eye is already looking for it.
 
 ---
 
-## 1. Un mecanismo por tipo de contenido
+## 1. One mechanism per content type
 
-Esto es la regla de diseño, no un detalle de implementación. El mismo
-fade + slide-up en las ocho secciones es la firma de una web autogenerada.
+This is the design rule, not an implementation detail. The same
+fade + slide-up across all eight sections is the signature of an auto-generated website.
 
-| tipo de contenido | mecanismo | por qué ése |
+| content type | mechanism | why that one |
 |---|---|---|
-| titulares grandes | `MaskedLines` | reveal por líneas con máscara: el titular se **descubre**, no se desliza |
-| imágenes a sangre | `RevealMedia` | `clip-path` que se abre. Una foto grande que se desliza arrastra el bloque; una que se descubre se lee como que estaba ahí |
-| **banda dentro de un titular** | `RevealMedia from="left"` | el mismo mecanismo, pero abriéndose en el sentido de lectura del renglón que interrumpe. Es la única foto del sitio que es tipografía: si se abriera desde abajo, se delataría como una imagen que llegó de otra parte. Con `delay` de 0,12s, o sea después del primer renglón |
-| grillas y filas | `StaggerGroup` + `RevealItem` | desfasaje: son elementos equivalentes de una lista |
-| media en contenedor | `ScaleMedia` | escala mínima. Un `clip-path` dentro de una caja con radio pelea con el recorte del contenedor |
-| bloques de texto | `Reveal` | fade + desplazamiento corto |
-| **salidas** | `ScrollExit` | ligado al progreso del scroll. Sólo en dos lugares |
+| large headlines | `MaskedLines` | masked line-by-line reveal: the headline is **uncovered**, it doesn't slide |
+| full-bleed images | `RevealMedia` | a `clip-path` that opens. A large photo that slides drags the block; one that is uncovered reads as if it had been there all along |
+| **band inside a headline** | `RevealMedia from="left"` | the same mechanism, but opening in the reading direction of the line it interrupts. It's the only photo on the site that is typography: if it opened from below, it would give itself away as an image that came from somewhere else. With a `delay` of 0.12s, that is, after the first line |
+| grids and rows | `StaggerGroup` + `RevealItem` | stagger: they are equivalent items in a list |
+| media in a container | `ScaleMedia` | minimal scale. A `clip-path` inside a box with a radius fights with the container's crop |
+| text blocks | `Reveal` | fade + short offset |
+| **exits** | `ScrollExit` | tied to scroll progress. Only in two places |
 
 ---
 
-## 2. Sección por sección
+## 2. Section by section
 
-### Hero — la secuencia de carga
+### Hero — the load sequence
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | h1 «Bonita comes / together», dos líneas |
-| **API** | `MaskedLines` → `motion.span` dentro de un `<span class="block overflow-hidden">` por línea |
-| **disparador** | `animate` al montar. **No** `whileInView`: es la primera pantalla, ya está visible |
-| **de → a** | `y: '105%'` → `y: '0%'` |
+| **element** | h1 "Bonita comes / together", two lines |
+| **API** | `MaskedLines` → `motion.span` inside a `<span class="block overflow-hidden">` per line |
+| **trigger** | `animate` on mount. **Not** `whileInView`: it's the first screen, it's already visible |
+| **from → to** | `y: '105%'` → `y: '0%'` |
 | **timing** | `dur.hero` (1.10s), `ease.out`, `delay: 0.08 + i × 0.07` |
-| **orquestación** | 0.07s entre las dos líneas — **no** el `stagger` de 0.08. Dos líneas de un mismo titular tienen que leerse como UN gesto, no como dos ítems |
-| **estado inicial** | la línea fuera de su máscara, abajo. El `overflow-hidden` del padre la oculta |
-| **fallback** | `useReducedMotion` → texto plano, sin máscaras. El layout es idéntico: las máscaras no aportan altura |
-| **entrega** | ✅ |
+| **orchestration** | 0.07s between the two lines — **not** the 0.08 `stagger`. Two lines of the same headline have to read as ONE gesture, not as two items |
+| **initial state** | the line outside its mask, below. The parent's `overflow-hidden` hides it |
+| **fallback** | `useReducedMotion` → plain text, no masks. The layout is identical: the masks add no height |
+| **delivery** | ✅ |
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | isotipo, bajada y los dos CTAs |
+| **element** | isotype, subhead and the two CTAs |
 | **API** | `HeroFadeUp` → `motion.div` |
-| **disparador** | `animate` al montar |
-| **de → a** | `opacity: 0, y: 16` → `opacity: 1, y: 0` |
+| **trigger** | `animate` on mount |
+| **from → to** | `opacity: 0, y: 16` → `opacity: 1, y: 0` |
 | **timing** | `dur.ui` (0.35s), `ease.out`, delays 0 / 0.26 / 0.34 |
-| **orquestación** | tres delays escritos a mano, escalonados detrás del titular |
-| **estado inicial** | invisible, 16px abajo |
-| **fallback** | tag plano |
-| **entrega** | ✅ |
+| **orchestration** | three hand-written delays, staggered behind the headline |
+| **initial state** | invisible, 16px below |
+| **fallback** | plain tag |
+| **delivery** | ✅ |
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | el abanico de nueve cards (`CardArc`) |
-| **API** | `motion.li` con `initial`/`animate` por card |
-| **disparador** | `animate` al montar |
-| **de → a** | `opacity: 0, y: −subida + 40` → `opacity: 1, y: −subida`. La `subida` es la del arco: la animación mueve 40px **sobre** su posición geométrica, no la reemplaza |
-| **timing** | `dur.reveal`, `ease.out`, `delay: 0.35 + |i − centro| × 0.06` |
-| **orquestación** | el desfasaje sale del **centro hacia afuera**, no de izquierda a derecha: así el abanico se abre en vez de barrerse |
-| **estado inicial** | invisible, 40px por debajo de su lugar en el arco |
-| **fallback** | `initial`/`animate` en `undefined` → la card queda en su posición final |
-| **entrega** | ✅ |
+| **element** | the fan of nine cards (`CardArc`) |
+| **API** | `motion.li` with `initial`/`animate` per card |
+| **trigger** | `animate` on mount |
+| **from → to** | `opacity: 0, y: −rise + 40` → `opacity: 1, y: −rise`. The `rise` (rise) is the arc's: the animation moves 40px **on top of** its geometric position, it doesn't replace it |
+| **timing** | `dur.reveal`, `ease.out`, `delay: 0.35 + |i − center| × 0.06` |
+| **orchestration** | the stagger runs from the **center outward**, not left to right: that way the fan opens instead of sweeping |
+| **initial state** | invisible, 40px below its place in the arc |
+| **fallback** | `initial`/`animate` set to `undefined` → the card stays in its final position |
+| **delivery** | ✅ |
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | los dos clips del abanico |
+| **element** | the two clips in the fan |
 | **API** | `WallVideo` → `<video autoPlay muted loop playsInline preload="none">` |
-| **disparador** | autoplay al montar |
-| **de → a** | loop continuo de 6s |
-| **timing** | el del clip |
-| **orquestación** | ninguna. Los dos clips están separados por tres posiciones en `wall-slots.ts` para que no caigan juntos |
-| **estado inicial** | el póster (un frame real del clip) |
-| **fallback** | ⚠️ **componente cliente**, porque un `<video autoPlay>` **no se apaga con CSS**. Con reduced-motion se renderiza el póster |
-| **entrega** | ✅ |
+| **trigger** | autoplay on mount |
+| **from → to** | continuous 6s loop |
+| **timing** | the clip's own |
+| **orchestration** | none. The two clips are three positions apart in `wall-slots.ts` so they don't land together |
+| **initial state** | the poster (a real frame from the clip) |
+| **fallback** | ⚠️ **client component**, because a `<video autoPlay>` **can't be turned off with CSS**. With reduced-motion the poster is rendered |
+| **delivery** | ✅ |
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | el bloque de texto del hero, al salir |
+| **element** | the hero text block, on exit |
 | **API** | `ScrollExit` → `useScroll` + `useTransform` |
-| **disparador** | progreso del scroll, `offset: ['end end', 'end start']` |
-| **de → a** | `y: 0 → −70` |
-| **timing** | ninguno: está ligado al scroll, no al reloj |
-| **orquestación** | — |
-| **estado inicial** | en su lugar. El progreso vale 0 durante toda la lectura |
-| **fallback** | tag plano, sin `useScroll` activo |
-| **entrega** | ✅ · ⚠️ **sin opacidad** — ver §3 |
+| **trigger** | scroll progress, `offset: ['end end', 'end start']` |
+| **from → to** | `y: 0 → −70` |
+| **timing** | none: it's tied to the scroll, not the clock |
+| **orchestration** | — |
+| **initial state** | in place. Progress is 0 throughout the whole read |
+| **fallback** | plain tag, no active `useScroll` |
+| **delivery** | ✅ · ⚠️ **no opacity** — see §3 |
 
 ---
 
-### What's on — el track de cuatro cards
+### What's on — the four-card track
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | las cuatro cards de evento |
+| **element** | the four event cards |
 | **API** | `StaggerGroup as="ul"` + `RevealItem as="li"` |
-| **disparador** | `whileInView`, token `viewport` |
-| **de → a** | `opacity: 0, y: dist.text (32)` → `opacity: 1, y: 0` |
+| **trigger** | `whileInView`, `viewport` token |
+| **from → to** | `opacity: 0, y: dist.text (32)` → `opacity: 1, y: 0` |
 | **timing** | `dur.reveal`, `ease.out` |
-| **orquestación** | `staggerChildren: 0.08`, `delayChildren: 0.04` |
-| **estado inicial** | invisibles, 32px abajo |
-| **fallback** | tags planos |
-| **entrega** | ✅ |
+| **orchestration** | `staggerChildren: 0.08`, `delayChildren: 0.04` |
+| **initial state** | invisible, 32px below |
+| **fallback** | plain tags |
+| **delivery** | ✅ |
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | la foto de cada card, en hover |
+| **element** | each card's photo, on hover |
 | **API** | CSS `transition-transform` + `group-hover:scale-[1.03]` |
-| **disparador** | hover del `<Link>` contenedor |
-| **de → a** | `scale: 1 → 1.03` |
+| **trigger** | hover on the containing `<Link>` |
+| **from → to** | `scale: 1 → 1.03` |
 | **timing** | 250ms, `ease-brand` |
-| **orquestación** | — |
-| **estado inicial** | `scale: 1` |
-| **fallback** | ⚠️ el `@media (prefers-reduced-motion)` global de `globals.css` neutraliza las transiciones |
-| **entrega** | ✅ |
+| **orchestration** | — |
+| **initial state** | `scale: 1` |
+| **fallback** | ⚠️ the global `@media (prefers-reduced-motion)` in `globals.css` neutralizes transitions |
+| **delivery** | ✅ |
 
 ---
 
-### Five businesses — los tres cuadros
+### Five businesses — the three squares
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | los tres cuadros de color con textura |
+| **element** | the three textured color squares |
 | **API** | `StaggerGroup as="ul"` + `RevealItem as="li"` |
-| **disparador** | `whileInView`, token `viewport` |
-| **de → a** | `opacity: 0, y: 32` → `opacity: 1, y: 0` |
+| **trigger** | `whileInView`, `viewport` token |
+| **from → to** | `opacity: 0, y: 32` → `opacity: 1, y: 0` |
 | **timing** | `dur.reveal`, `ease.out` |
-| **orquestación** | `stagger` 0.08 |
-| **estado inicial** | invisibles, 32px abajo |
-| **fallback** | tags planos |
-| **entrega** | ✅ · el contenedor lleva `tabIndex={0}` + `aria-label` porque es una región scrolleable sin nada enfocable adentro |
+| **orchestration** | `stagger` 0.08 |
+| **initial state** | invisible, 32px below |
+| **fallback** | plain tags |
+| **delivery** | ✅ · the container carries `tabIndex={0}` + `aria-label` because it's a scrollable region with nothing focusable inside |
 
 ---
 
-### El horizonte — la transición a la banda oscura
+### The horizon — the transition into the dark band
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | el medallón de sol y palmera |
-| **API** | `motion.div` con `whileInView` |
-| **disparador** | `whileInView`, token `viewport` |
-| **de → a** | `opacity: 0, y: 26` → `opacity: 1, y: 0` |
+| **element** | the sun-and-palm medallion |
+| **API** | `motion.div` with `whileInView` |
+| **trigger** | `whileInView`, `viewport` token |
+| **from → to** | `opacity: 0, y: 26` → `opacity: 1, y: 0` |
 | **timing** | `dur.reveal`, `ease.out` |
-| **orquestación** | ninguna: es un elemento único |
-| **estado inicial** | invisible, 26px abajo — detrás de la línea de la ola |
-| **fallback** | `initial`/`animate` en `undefined` |
-| **entrega** | ✅ |
+| **orchestration** | none: it's a single element |
+| **initial state** | invisible, 26px below — behind the wave line |
+| **fallback** | `initial`/`animate` set to `undefined` |
+| **delivery** | ✅ |
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | el disco dentado del sol |
-| **API** | CSS `@keyframes rt-sol` |
-| **disparador** | al montar, infinito |
-| **de → a** | `rotate: 0 → 360deg` |
-| **timing** | **90s**, `linear`. A esa velocidad el movimiento no se ve mirándolo: se nota al volver a la sección. A 20s es un spinner de carga |
-| **orquestación** | — |
-| **estado inicial** | sin rotar |
-| **fallback** | `animation: none` en el media query |
-| **entrega** | ✅ |
+| **element** | the sun's toothed disc |
+| **API** | CSS `@keyframes rt-sun` |
+| **trigger** | on mount, infinite |
+| **from → to** | `rotate: 0 → 360deg` |
+| **timing** | **90s**, `linear`. At that speed you can't see the movement by watching it: you notice it when you come back to the section. At 20s it's a loading spinner |
+| **orchestration** | — |
+| **initial state** | unrotated |
+| **fallback** | `animation: none` in the media query |
+| **delivery** | ✅ |
 
-⚠️ **La ola NO se anima.** Ya se mueve el sol; mover las dos cosas convierte
-una transición en una escena.
+⚠️ **The wave is NOT animated.** The sun already moves; moving both things turns
+a transition into a scene.
 
 ---
 
-### Events banner — la banda oscura
+### Events banner — the dark band
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | el bloque de dos columnas |
+| **element** | the two-column block |
 | **API** | `Reveal` → `motion.div` |
-| **disparador** | `whileInView`, token `viewport` |
-| **de → a** | `opacity: 0, y: 32` → `opacity: 1, y: 0` |
+| **trigger** | `whileInView`, `viewport` token |
+| **from → to** | `opacity: 0, y: 32` → `opacity: 1, y: 0` |
 | **timing** | `dur.reveal`, `ease.out` |
-| **orquestación** | — |
-| **estado inicial** | invisible, 32px abajo |
-| **fallback** | tag plano |
-| **entrega** | ✅ |
+| **orchestration** | — |
+| **initial state** | invisible, 32px below |
+| **fallback** | plain tag |
+| **delivery** | ✅ |
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | el mismo bloque, al salir |
+| **element** | the same block, on exit |
 | **API** | `ScrollExit` |
-| **disparador** | progreso del scroll |
-| **de → a** | `y: 0 → −70` |
-| **timing** | ligado al scroll |
-| **orquestación** | `ScrollExit` **afuera** y `Reveal` **adentro**, en ese orden: al revés, el transform de la salida sería ancestro del reveal y los dos escribirían el mismo `y` |
-| **estado inicial** | en su lugar |
-| **fallback** | tag plano |
-| **entrega** | ✅ |
+| **trigger** | scroll progress |
+| **from → to** | `y: 0 → −70` |
+| **timing** | tied to the scroll |
+| **orchestration** | `ScrollExit` **outside** and `Reveal` **inside**, in that order: the other way around, the exit's transform would be an ancestor of the reveal and both would write the same `y` |
+| **initial state** | in place |
+| **fallback** | plain tag |
+| **delivery** | ✅ |
 
 ---
 
 ### Global
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | la cortina de transición entre páginas (`.transition` de ronnsquare) |
-| **API** | `AnimatePresence` + `motion.div`, con la cenefa de olas como borde inferior |
-| **disparador** | cambio de `pathname`. **No** en la primera carga: ahí trabaja el preloader |
-| **de → a** | `y: 0 → −110vh` |
+| **element** | the page-transition curtain (ronnsquare's `.transition`) |
+| **API** | `AnimatePresence` + `motion.div`, with the wave border as the bottom edge |
+| **trigger** | `pathname` change. **Not** on first load: the preloader handles that |
+| **from → to** | `y: 0 → −110vh` |
 | **timing** | `DURATION.slow` = `dur.reveal`, `ease.out` |
-| **orquestación** | — |
-| **estado inicial** | cubriendo la pantalla, con los 10vh de ola por debajo del viewport |
-| **fallback** | no se monta nada |
-| **entrega** | ✅ **DIBUJA UNA FORMA.** La ola del brand book, volteada, como borde que barre. Reutiliza los paths de `npm run horizonte`: cero arte nuevo |
+| **orchestration** | — |
+| **initial state** | covering the screen, with the 10vh of wave below the viewport |
+| **fallback** | nothing is mounted |
+| **delivery** | ✅ **IT DRAWS A SHAPE.** The brand book's wave, flipped, as a sweeping edge. It reuses the paths from `npm run horizon`: zero new art |
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | el scroll de la página |
+| **element** | page scrolling |
 | **API** | Lenis, `lerp: 0.1`, `anchors: false` |
-| **disparador** | rueda / touch |
-| **de → a** | interpolación de la posición |
+| **trigger** | wheel / touch |
+| **from → to** | position interpolation |
 | **timing** | `lerp` |
-| **orquestación** | — |
-| **estado inicial** | — |
-| **fallback** | **no se instancia** con reduced-motion. El scroll suave es exactamente el movimiento que marea |
-| **entrega** | ✅ |
+| **orchestration** | — |
+| **initial state** | — |
+| **fallback** | **not instantiated** with reduced-motion. Smooth scrolling is exactly the kind of motion that makes people dizzy |
+| **delivery** | ✅ |
 
-| slot | valor |
+| slot | value |
 |---|---|
-| **elemento** | botones y links |
+| **element** | buttons and links |
 | **API** | CSS `transition` |
-| **disparador** | hover, focus, tap |
-| **de → a** | color de relleno, color de anillo, grosor del subrayado |
+| **trigger** | hover, focus, tap |
+| **from → to** | fill color, ring color, underline thickness |
 | **timing** | `dur.micro` (200ms) / 250ms |
-| **orquestación** | — |
-| **estado inicial** | reposo |
-| **fallback** | media query global |
-| **entrega** | ✅ · foco de teclado visible en todo lo interactivo, con el anillo invertido a `cream` dentro de `.on-dark` |
+| **orchestration** | — |
+| **initial state** | resting |
+| **fallback** | global media query |
+| **delivery** | ✅ · visible keyboard focus on everything interactive, with the ring inverted to `cream` inside `.on-dark` |
 
 ---
 
-## 3. Lo que NO está, y por qué
+## 3. What is NOT there, and why
 
-### La opacidad en las salidas — **sacada a propósito**
+### Opacity on exits — **removed on purpose**
 
-El brief pide «opacidad e `y` ligados al progreso». La opacidad se implementó y
-se quitó: `npm run a11y` la reprobó. Los dos bloques con salida contienen CTAs,
-y a mitad del fundido el botón primario quedaba en **3.3:1** (`#54615d` sobre
-`#f7a85f` — `ink` y `sunset` a un tercio de opacidad sobre el fondo claro).
+The brief asks for "opacity and `y` tied to progress". Opacity was implemented and
+removed: `npm run a11y` failed it. Both blocks with an exit contain CTAs,
+and halfway through the fade the primary button sat at **3.3:1** (`#54615d` on
+`#f7a85f` — `ink` and `sunset` at a third of their opacity over the light background).
 
-Y el contraste es el menor de los dos problemas: **un botón al 35 % de opacidad
-sigue siendo clickeable**. Queda un control activo, enfocable con teclado, que
-se ve apagado. Eso no es una salida elegante, es un control que miente sobre si
-funciona.
+And contrast is the lesser of the two problems: **a button at 35% opacity
+is still clickable**. What's left is an active control, keyboard-focusable, that
+looks switched off. That isn't an elegant exit, it's a control that lies about whether
+it works.
 
-La salida quedó como desplazamiento solo. Sigue ligada al progreso del scroll,
-que es lo que el brief busca, y no toca la legibilidad de nada.
+The exit stayed as an offset only. It's still tied to scroll progress,
+which is what the brief is after, and it doesn't touch the legibility of anything.
 
-### `ParallaxMedia` — **no existe, y el mandato se da de baja**
+### `ParallaxMedia` — **doesn't exist, and the mandate is dropped**
 
-El brief lo nombra como componente reutilizable. En su lugar está `ScaleMedia`,
-que resuelve el caso real que apareció (media dentro de un contenedor con
-radio). No hay parallax en el sitio, y el propio `Motion.tsx` tiene la regla
-escrita desde antes: «nada de parallax sobre fotos de comida o de gente».
+The brief names it as a reusable component. In its place is `ScaleMedia`,
+which solves the real case that came up (media inside a container with a
+radius). There's no parallax on the site, and `Motion.tsx` itself has had the rule
+written down since before: "no parallax over photos of food or people".
 
-**Resuelto: el mandato se retira.** Y no por la regla, que se podría discutir,
-sino porque **no hay dónde ponerlo**. Fui a buscarle destino y los candidatos
-son tres, y los tres se caen:
+**Resolved: the mandate is withdrawn.** And not because of the rule, which could be argued,
+but because **there's nowhere to put it**. I went looking for a home for it and there are
+three candidates, and all three fall through:
 
-- **El arco de cards del hero.** Son nueve piezas de 16,5vw sobre un arco
-  calculado, cada una con su `rotate` y su `y` de subida. Un desplazamiento
-  ligado al scroll encima de eso pelea con la geometría del abanico.
-- **Las fotos de What's on.** Caras y platos. Es exactamente el caso que la
-  regla de `Motion.tsx` prohíbe, y la prohibición es buena: una cara que se
-  mueve dentro de su marco se lee como un error de render.
-- **La aérea desenfocada del Events banner.** Es el único candidato defendible
-  —ni comida ni gente a escala legible—, pero esa sección **ya tiene** un
-  mecanismo ligado al scroll: su `ScrollExit`. Dos mecanismos de scroll en el
-  mismo bloque es sobre-animar uno solo, que es justo lo que la doctrina de
-  esta rama evita.
+- **The hero card arc.** Nine pieces at 16.5vw on a computed arc,
+  each with its own `rotate` and its own rising `y`. A scroll-tied offset
+  on top of that fights with the fan's geometry.
+- **The What's on photos.** Faces and plates. It's exactly the case the
+  `Motion.tsx` rule forbids, and the ban is a good one: a face that
+  moves inside its frame reads as a render bug.
+- **The blurred aerial in the Events banner.** It's the only defensible candidate
+  —neither food nor people at a legible scale—, but that section **already has** a
+  scroll-tied mechanism: its `ScrollExit`. Two scroll mechanisms in the
+  same block is over-animating a single one, which is exactly what this
+  branch's doctrine avoids.
 
-Un componente sin ningún call site no es un sistema, es código muerto. Si
-aparece un bloque que lo pida, se construye ahí y con su razón.
+A component with no call site isn't a system, it's dead code. If
+a block shows up that calls for it, it gets built there and with its reason.
 
-### La sección de servicios estilo **agencefoudre** — **el mandato se da de baja en la home**
+### The **agencefoudre**-style services section — **the mandate is dropped on the home page**
 
-El mandato del brief es «dos columnas pegadas, ítem activo que abre su bloque
-con `min-height`». La home **no tiene** sección de servicios: el contenido que
-más se le parecía —los tres pasos de «Five businesses»— pasó a ser tres cuadros
-de color por pedido explícito.
+The brief's mandate is "two columns side by side, an active item that opens its block
+with `min-height`". The home page **has no** services section: the content that
+came closest —the three steps of "Five businesses"— became three color
+squares by explicit request.
 
-**Resuelto: no se crea una sección para alojar el mandato.** Inventar contenido
-para que un patrón de motion tenga dónde vivir es hacerlo al revés, y el brief
-lo prohíbe en la misma lista donde prohíbe tocar el copy: no hay servicios
-nuevos que anunciar, y los que hay —las tres puertas— ya aparecen una vez y con
-otra forma.
+**Resolved: no section is created to house the mandate.** Inventing content
+so that a motion pattern has somewhere to live is doing it backwards, and the brief
+forbids it in the same list where it forbids touching the copy: there are no new services
+to announce, and the ones that exist —the three doors— already appear once and in
+another form.
 
-Dónde SÍ encaja, para cuando se abra: **`/events/spaces`**. Ahí hay cuatro
-espacios con su tabla de capacidades, o sea literalmente una lista de ítems
-donde uno activo abriría su bloque, y hoy son cuatro fichas apiladas. Está
-fuera del alcance de esta rama, que es sólo la home. Anotado como destino, no
-como deuda.
+Where it DOES fit, for when it opens up: **`/events/spaces`**. There are four
+spaces there with their capacity table, that is, literally a list of items
+where an active one would open its block, and today they are four stacked
+cards. It's outside the scope of this branch, which is the home page only. Noted as a destination, not
+as debt.
 
-### El color de la cortina — **revisado, y se queda en `deep`**
+### The curtain color — **reviewed, and it stays `deep`**
 
-El brief pedía «revisá que el color de la forma acompañe la paleta clara».
-Revisado: **se queda**. Una cortina tiene que TAPAR, y con el sitio en 74 %
-claro una cortina clara sería invisible y no cubriría el salto de página —que
-es su único trabajo—. El verde de marca es lo único que contrasta contra las
-dos páginas, la que se va y la que llega. Mismo razonamiento para el
+The brief asked to "check that the shape's color goes with the light palette".
+Reviewed: **it stays**. A curtain has to COVER, and with the site at 74%
+light a light curtain would be invisible and wouldn't cover the page jump —which
+is its only job—. The brand green is the only thing that contrasts against
+both pages, the one leaving and the one arriving. Same reasoning for the
 `Preloader`.
 
-Lo que sí cambió es la FORMA, no el color: ver la fila de la cortina en §2.
+What did change is the SHAPE, not the color: see the curtain row in §2.
 
-### Un error que cometí y corregí, por si vuelve
+### A mistake I made and fixed, in case it comes back
 
-La primera versión de la cortina con forma puso la ola **arriba**. No se ve
-nunca: la cortina **sube**, así que el borde que barre la pantalla es el de
-abajo y el de arriba sale de cuadro en el primer frame. La ola va abajo y
-volteada con `scaleY(-1)`, porque el dibujo tiene las crestas hacia arriba —está
-hecho para que una superficie EMERJA— y acá la superficie se RETIRA.
+The first version of the shaped curtain put the wave **on top**. It's never
+seen: the curtain **rises**, so the edge that sweeps the screen is the
+bottom one and the top one leaves the frame on the first frame. The wave goes at the bottom and
+flipped with `scaleY(-1)`, because the drawing has its crests pointing up —it's
+made for a surface to EMERGE— and here the surface RECEDES.
 
 ---
 
-## 4. Verificación
+## 4. Verification
 
-| check | estado |
+| check | status |
 |---|---|
-| `npm run check:motion` — layout idéntico con y sin movimiento, 6 rutas | ✅ |
-| `npm run a11y` — 20 páginas × 2 anchos | ✅ 0 violaciones |
-| `once: false` en el repo | ✅ cero |
-| `useScroll`/`useTransform` fuera de `ScrollExit` | ✅ ninguno (el `useScrolled` del Header es un hook propio, sin relación) |
-| ninguna animación de interacción supera 600ms | ✅ |
+| `npm run check:motion` — identical layout with and without motion, 6 routes | ✅ |
+| `npm run a11y` — 20 pages × 2 widths | ✅ 0 violations |
+| `once: false` in the repo | ✅ zero |
+| `useScroll`/`useTransform` outside `ScrollExit` | ✅ none (the Header's `useScrolled` is a custom hook, unrelated) |
+| no interaction animation exceeds 600ms | ✅ |

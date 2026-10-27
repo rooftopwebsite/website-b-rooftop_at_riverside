@@ -1,6 +1,6 @@
-# Layout y movimiento — Rooftop at Riverside
+# Layout and motion — Rooftop at Riverside
 
-Se apoya en `docs/house-tokens.md`. Ante conflicto, **ganan los tokens medidos**.
+Builds on `docs/house-tokens.md`. In case of conflict, **the measured tokens win**.
 
 ---
 
@@ -8,118 +8,118 @@ Se apoya en `docs/house-tokens.md`. Ante conflicto, **ganan los tokens medidos**
 
 | | |
 |---|---|
-| Alto | 67px · 77px desde `desk` |
-| Posición | `fixed`, opaco, sombra al scrollear (umbral 40px) |
-| Logo | lockup completo; se reduce de 58px a 42px al scrollear |
-| Nav visible | Sunset Bar · Food Trucks · What's On · Events · The Yard |
-| Mega-menú | «More», 8 links con descripción de una línea, en 2 columnas |
-| CTAs | `Plan an Event` primario (sunset, texto negro) · `What's On` secundario (borde) |
-| Mobile | menú **full-screen**, lista con flecha por ítem, los 2 CTAs fijos abajo |
+| Height | 67px · 77px from `desk` |
+| Position | `fixed`, opaque, shadow on scroll (40px threshold) |
+| Logo | full lockup; shrinks from 58px to 42px on scroll |
+| Visible nav | Sunset Bar · Food Trucks · What's On · Events · The Yard |
+| Mega menu | "More", 8 links with a one-line description, in 2 columns |
+| CTAs | `Plan an Event` primary (sunset, black text) · `What's On` secondary (outline) |
+| Mobile | **full-screen** menu, list with an arrow per item, the 2 CTAs pinned at the bottom |
 
-**No hay «Book Now»**: el venue es walk-in y no toma reservas de mesa.
+**There's no "Book Now"**: the venue is walk-in and doesn't take table reservations.
 
-### Barra de estado
+### Status bar
 
-Pegada debajo del header, 34px, sobre crema. Una línea:
+Stuck under the header, 34px, on cream. One line:
 `● Open now | BAR 3PM–8PM | TRUCKS 4PM–8PM`
 
-Es la pregunta que más se hace del negocio y la confusión número uno —los dos
-horarios son distintos— por 34px de alto. Client-side: el servidor no sabe qué
-hora es en Bonita Springs y una página cacheada mostraría un estado viejo.
+It's the most asked question about the business and the number one confusion —the two
+schedules are different— for 34px of height. Client-side: the server doesn't know what
+time it is in Bonita Springs and a cached page would show a stale status.
 
 ---
 
 ## Footer
 
-Cuatro columnas sobre `#014545`:
+Four columns on `#014545`:
 
-1. **Identidad** — logo, una línea de posicionamiento, IG · FB · Google
-2. **Contacto** — dirección, teléfono, `info@`, botón de direcciones
-3. **Horarios** — los **dos sets** en columnas contiguas. Es donde el footer hace
-   trabajo de posicionamiento: mostrarlos juntos dice «bar y trucks son cosas
-   distintas» sin una línea de copy
+1. **Identity** — logo, a positioning line, IG · FB · Google
+2. **Contact** — address, phone, `info@`, directions button
+3. **Hours** — the **two sets** in adjacent columns. This is where the footer does
+   positioning work: showing them together says "the bar and the trucks are different
+   things" without a line of copy
 4. **Quick links** — Events Packet, Event Spaces, Corporate, Join Us, FAQ,
    Gift Cards, Careers
 
-Franja inferior: legales + badge de Resto Experience.
+Bottom band: legal + Resto Experience badge.
 
-⚠️ **`events@` no va en el footer.** Vive sólo en el hub de eventos y en
-`/contact`: una consulta de $20.000 no puede caer en el mismo buzón que una
-pregunta sobre estacionamiento.
+⚠️ **`events@` does not go in the footer.** It lives only in the events hub and on
+`/contact`: a $20,000 inquiry can't land in the same inbox as a
+question about parking.
 
-⚠️ **El logo va invertido a blanco** (`brightness-0 invert`). El lockup a color
-tiene el wordmark en NEGRO y sobre teal profundo no se lee. Es un compromiso
-hasta que llegue el lockup reversado del brand book: se pierden el aro naranja
-y la onda teal.
-
----
-
-## Ritmo de superficies
-
-- Blanco por defecto
-- Máximo **2 secciones de crema** por página
-- Máximo **1 de teal profundo**
-- **Nunca dos secciones de color seguidas**
-
-Verificado en cada build: `node scripts/surface-rhythm.mjs`.
-
-La cenefa de olas (`<WaveBorder>`) sólo donde la superficie cambia de verdad, dos
-o tres por página. En cada corte dejaría de ser un gesto de marca y sería un
-patrón de fondo.
-
-Es el separador del brand book, sacado del Figma —página «Elementos», nodo
-2001:2414—, no un dibujo propio. Reemplazó a `<Scallop>`, que era un festón de
-arcos inventado mientras no teníamos el archivo.
-
-Dos cosas que hay que respetar al usarla:
-
-- **El color va en la sección de ABAJO.** Las olas tienen las crestas hacia
-  arriba: pintadas del color de arriba quedarían colgando dadas vuelta.
-- **El período de repetición es 383,5px, no los 422 que mide el dibujo.** La
-  tira no cierra sola; en el archivo el diseñador superpone las copias. Medido
-  renderizando 422, 400 y 383,5 en paralelo: sólo 383,5 corre sin hueco.
+⚠️ **The logo is inverted to white** (`brightness-0 invert`). The color lockup
+has the wordmark in BLACK and it can't be read on deep teal. It's a compromise
+until the reversed lockup from the brand book arrives: the orange ring
+and the teal wave are lost.
 
 ---
 
-## Vocabulario de motion — nueve slots
+## Surface rhythm
 
-Lenis para el scroll, Motion para entradas y micro-estados. GSAP quedó **sin
-usar**: ninguno de los nueve slots lo necesitó, y sumar 70 KB para nada no se
-justifica.
+- White by default
+- At most **2 cream sections** per page
+- At most **1 deep teal**
+- **Never two colored sections in a row**
 
-| # | Slot | Dónde | Cómo |
+Verified on every build: `node scripts/surface-rhythm.mjs`.
+
+The wave border (`<WaveBorder>`) only where the surface really changes, two
+or three per page. At every cut it would stop being a brand gesture and become a
+background pattern.
+
+It's the brand book's divider, taken from the Figma —page "Elementos", node
+2001:2414—, not a drawing of our own. It replaced `<Scallop>`, which was a scallop of
+arcs invented while we didn't have the file.
+
+Two things to respect when using it:
+
+- **The color goes on the section BELOW.** The waves have their crests pointing
+  up: painted in the color of the section above they would hang upside down.
+- **The repeat period is 383.5px, not the 422 the drawing measures.** The
+  strip doesn't close on its own; in the file the designer overlaps the copies. Measured
+  by rendering 422, 400 and 383.5 side by side: only 383.5 runs without a gap.
+
+---
+
+## Motion vocabulary — nine slots
+
+Lenis for scrolling, Motion for entrances and micro-states. GSAP ended up **unused**:
+none of the nine slots needed it, and adding 70 KB for nothing isn't
+justified.
+
+| # | Slot | Where | How |
 |---|---|---|---|
-| 1 | Preloader | global | % con el isotipo, salida en cortina. Fade 300ms + lift 600ms |
-| 2 | Entrada del hero | `/` | H1 por líneas con máscara, stagger 70ms |
-| 3 | Reveal de sección | global | fade + 24px, una vez, threshold 20% |
-| 4 | Marquee | `/` | loop CSS, pausa en hover y con foco dentro |
-| 5 | Hover de tarjeta | trucks, espacios, eventos | −2px, imagen ×1.03, título a `#014545` |
-| 6 | Sticky de event planners | `/` | `position: sticky` puro, sólo desde `lg` |
-| 7 | Carrusel de trucks | `/food-trucks` | scroll nativo + `scroll-snap`, arrastre con mouse |
-| 8 | Contador | `/events` | 25.000–30.000 del 4 de julio. **Único del sitio** |
-| 9 | Transición de página | global | cortina corta, misma curva que el preloader |
+| 1 | Preloader | global | % with the isotype, curtain exit. Fade 300ms + lift 600ms |
+| 2 | Hero entrance | `/` | H1 by lines with a mask, stagger 70ms |
+| 3 | Section reveal | global | fade + 24px, once, threshold 20% |
+| 4 | Marquee | `/` | CSS loop, pauses on hover and with focus inside |
+| 5 | Card hover | trucks, spaces, events | −2px, image ×1.03, title to `#014545` |
+| 6 | Event planners sticky | `/` | pure `position: sticky`, only from `lg` |
+| 7 | Trucks carousel | `/food-trucks` | native scroll + `scroll-snap`, mouse drag |
+| 8 | Counter | `/events` | 25,000–30,000 for the 4th of July. **The only one on the site** |
+| 9 | Page transition | global | short curtain, same curve as the preloader |
 
-**Curva:** `cubic-bezier(0.16, 1, 0.3, 1)` · **Tope: 600ms**, sin excepciones.
+**Curve:** `cubic-bezier(0.16, 1, 0.3, 1)` · **Cap: 600ms**, no exceptions.
 
-### Reglas verificadas
+### Verified rules
 
-- Sin parallax en fotos de comida ni de gente
-- Sin scroll hijacking — Lenis interpola la rueda, no cambia a dónde llegás
-- Ninguna animación pasa de 600ms
-- **Con `prefers-reduced-motion` el layout es idéntico**, comprobado midiendo
-  cada caja con y sin la preferencia: `node scripts/reduced-motion.mjs`
+- No parallax on food or people photos
+- No scroll hijacking — Lenis interpolates the wheel, it doesn't change where you land
+- No animation exceeds 600ms
+- **With `prefers-reduced-motion` the layout is identical**, checked by measuring
+  every box with and without the preference: `node scripts/reduced-motion.mjs`
 
 ---
 
-## ⚠️ Bug de breakpoints que encontramos acá
+## ⚠️ Breakpoint bug we found here
 
-`--breakpoint-desk` estaba declarado en **px** (`1344px`) mientras los de
-Tailwind vienen en **rem**. Tailwind ordena los media queries por valor, no
-puede comparar unidades distintas, y emitía el bloque de `desk` **antes** que
-los defaults.
+`--breakpoint-desk` was declared in **px** (`1344px`) while Tailwind's
+come in **rem**. Tailwind sorts media queries by value, it can't
+compare different units, and it emitted the `desk` block **before**
+the defaults.
 
-Consecuencia: `sm:grid-cols-2` le ganaba a `desk:grid-cols-4` en una pantalla de
-1440px. Medido: el bloque de 1344px caía en el byte 39975 y el de 40rem en 40927.
+Consequence: `sm:grid-cols-2` beat `desk:grid-cols-4` on a
+1440px screen. Measured: the 1344px block fell at byte 39975 and the 40rem one at 40927.
 
-Arreglado pasándolo a `84rem` (= 1344px exactos). Afectaba a **todas** las
-combinaciones `sm:`/`md:`/`lg:` + `desk:` del sitio, no sólo al footer.
+Fixed by switching it to `84rem` (= exactly 1344px). It affected **all**
+`sm:`/`md:`/`lg:` + `desk:` combinations on the site, not just the footer.

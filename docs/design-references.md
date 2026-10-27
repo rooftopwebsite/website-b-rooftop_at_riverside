@@ -1,202 +1,202 @@
-# Referencias de diseño — qué se mide, qué se toma, qué se descarta
+# Design references — what gets measured, what gets taken, what gets discarded
 
-Camila fue mandando siete referencias. Este documento existe para que no se
-promedien: **una referencia no se copia entera, se le saca un mecanismo**. Cada
-fila de abajo dice qué se midió con el navegador (no de memoria) y qué se
-adoptó.
+Camila sent seven references over time. This document exists so they don't get
+averaged: **a reference isn't copied whole, a mechanism is pulled from it**. Each
+row below says what was measured with the browser (not from memory) and what was
+adopted.
 
-Fecha de medición: 8 de septiembre de 2026.
-Actualizado el 9 de septiembre tras el rediseño de la home, que sumó
-superside.com como referencia de forma y dio de baja dos gestos.
+Measurement date: September 8, 2026.
+Updated on September 9 after the home page redesign, which added
+superside.com as the form reference and retired two gestures.
 
 ---
 
-## 1. Lo que midió el navegador
+## 1. What the browser measured
 
-### visitors.now — la piel
+### visitors.now — the skin
 
-Llegó con su propio `design.md`. Píldoras, sombras suaves, pila centrada, campo
-de color debajo del hero.
+It came with its own `design.md`. Pills, soft shadows, centered stack, color
+field below the hero.
 
-⚠️ **Ya no queda nada suyo en el sitio.** Fue la referencia del primer lenguaje
-de `Button`, `Header` y `Hero`, y se cayó entera cuando Camila fijó Showdown
-Social primero y superside después: ninguna de las dos usa píldoras ni sombras
-suaves. Se deja documentada porque explica por qué el sitio pasó por una etapa
-que hoy no se ve.
+⚠️ **Nothing of it is left on the site.** It was the reference for the first language
+of `Button`, `Header` and `Hero`, and it fell away entirely when Camila set Showdown
+Social first and superside afterward: neither of the two uses pills or soft
+shadows. It stays documented because it explains why the site went through a stage
+that can't be seen today.
 
-Adaptación obligada, ya documentada en `Button.tsx`: visitors.now pone texto
-**blanco** sobre su lavanda. Sunset Orange es un tono medio y el blanco encima
-da 2.54:1. **Texto sobre naranja va en negro** (8.26:1).
+Forced adaptation, already documented in `Button.tsx`: visitors.now puts **white**
+text on its lavender. Sunset Orange is a mid tone and white on top of it
+gives 2.54:1. **Text on orange goes in black** (8.26:1).
 
-### ronnsquare.fr — el movimiento
+### ronnsquare.fr — the motion
 
-| Elemento | Medido |
+| Element | Measured |
 |---|---|
-| `.brand-clone` | `position: fixed`, `z-index: 220`, 518×356, contiene un SVG |
-| `.transition` | `position: fixed`, `z-index: 400`, viewport completo, dibuja una forma de marca |
-| `.site-bg` | `position: fixed`, viewport completo |
+| `.brand-clone` | `position: fixed`, `z-index: 220`, 518×356, contains an SVG |
+| `.transition` | `position: fixed`, `z-index: 400`, full viewport, draws a brand shape |
+| `.site-bg` | `position: fixed`, full viewport |
 
-Se le tomaron dos gestos: un elemento de marca que acompaña el scroll y una
-transición de página que dibuja una forma de marca en vez de un telón liso.
+Two gestures were taken from it: a brand element that follows the scroll and a
+page transition that draws a brand shape instead of a plain curtain.
 
-⚠️ **Del primero ya no queda nada.** `BrandTrail` se dio de baja en el rediseño
-de la home por pedido de Camila. De ronnsquare sobrevive **sólo la transición**.
+⚠️ **Nothing is left of the first one.** `BrandTrail` was retired in the home page
+redesign at Camila's request. From ronnsquare **only the transition** survives.
 
-> ⚠️ En layout, ronnsquare es casi lo OPUESTO a visitors.now: fondo crema
-> cálido, tipografía negra grande alineada a la izquierda, botones oscuros de
-> esquina viva. Se tomó el movimiento, no la maqueta. Ver «El conflicto».
+> ⚠️ In layout, ronnsquare is almost the OPPOSITE of visitors.now: warm cream
+> background, large black type aligned left, dark sharp-cornered
+> buttons. The motion was taken, not the mockup. See "The conflict".
 
-### agencefoudre.com — cómo se van contando los servicios
+### agencefoudre.com — how the services are told one after another
 
-| Elemento | Medido |
+| Element | Measured |
 |---|---|
-| Sección | `position: relative`, **3600px** con ventana de 900px → 4 pantallas para 3 ítems |
-| Ambas columnas | `position: sticky; top: 0` |
-| Ítem activo | abre su bloque con `min-height`, `cubic-bezier(.23, 1, .32, 1)`, 0.8s |
-| Título activo | 46px, peso 900, en el rosa de marca; los inactivos apagados |
+| Section | `position: relative`, **3600px** with a 900px window → 4 screens for 3 items |
+| Both columns | `position: sticky; top: 0` |
+| Active item | opens its block with `min-height`, `cubic-bezier(.23, 1, .32, 1)`, 0.8s |
+| Active title | 46px, weight 900, in the brand pink; the inactive ones dimmed |
 
-**DADO DE BAJA.** Se adoptó en `PinnedList` para «how this place works» y Camila
-lo cambió por la escalera de for-living.it (abajo). El módulo se borró.
+**RETIRED.** It was adopted in `PinnedList` for "how this place works" and Camila
+swapped it for the for-living.it staircase (below). The module was deleted.
 
-Lo que dejó aprendido, que vale para la próxima vez que aparezca la tentación:
-un recorrido de varias pantallas para tres párrafos cortos cuesta caro. Con
-42vh por ítem —ya recortado desde los 133 de la referencia— la sección se
-llevaba 2.226px, casi un tercio del scroll de la home.
+What it left as a lesson, which holds for the next time the temptation shows up:
+a multi-screen journey for three short paragraphs is expensive. At
+42vh per item —already cut down from the reference's 133— the section took
+2,226px, almost a third of the home page's scroll.
 
-### for-living.it — los pasos en escalera
+### for-living.it — the staircase steps
 
-El bloque «We handle all the complexity». Cuatro pasos bajando en diagonal:
-cada uno un peldaño más abajo y más a la derecha, con un filete que corre por
-la izquierda del bloque y dobla en horizontal hasta el arranque del siguiente.
+The "We handle all the complexity" block. Four steps descending diagonally:
+each one a step lower and further right, with a rule that runs down the
+left of the block and turns horizontal to the start of the next one.
 
-| Elemento | Medido |
+| Element | Measured |
 |---|---|
-| Pasos | 4, todos abiertos y visibles a la vez |
-| Desplazamiento | cada peldaño arranca donde termina el filete horizontal del anterior |
-| Bloque | número tenue + título + descripción en gris, sin caja ni relleno |
-| Filete | 1px, en L: vertical por la izquierda del bloque, horizontal al pie |
+| Steps | 4, all open and visible at once |
+| Offset | each step starts where the previous one's horizontal rule ends |
+| Block | faint number + title + gray description, no box or fill |
+| Rule | 1px, L-shaped: vertical along the left of the block, horizontal at the foot |
 
-Adoptado en `StepStair` → `HowThisPlaceWorks`. La geometría sale de una grilla
-de N×N con el paso *i* en la celda *(fila i, columna i)*: la diagonal cae sola y
-el ancho de la celda ES la distancia hasta el siguiente, así que el filete
-horizontal termina exactamente en su arranque sin un número calculado a mano.
+Adopted in `StepStair` → `HowThisPlaceWorks`. The geometry comes from an N×N
+grid with step *i* in cell *(row i, column i)*: the diagonal falls into place on its own and
+the cell width IS the distance to the next one, so the horizontal rule
+ends exactly at its start without a hand-calculated number.
 
-Dos desvíos: son tres pasos y no cuatro —son los que hay—, y cada uno lleva sus
-etiquetas de datos debajo de la descripción, que la referencia no tiene.
+Two deviations: there are three steps and not four —those are the ones there are—, and each one carries its
+data tags below the description, which the reference doesn't have.
 
 ### designproject.io
 
-| Medido | Valor |
+| Measured | Value |
 |---|---|
-| Contenedor dominante | **1280px** (15 apariciones) |
-| Fondos | alternancia `#f8f8f8` · `#e9f6fd` · `#162825` (oscuro, 3 veces) |
-| Encabezados de sección | 48px, mayormente **centrados** |
-| CTA de cierre | 72px |
-| Elementos `sticky` | 0 |
+| Dominant container | **1280px** (15 occurrences) |
+| Backgrounds | alternating `#f8f8f8` · `#e9f6fd` · `#162825` (dark, 3 times) |
+| Section headings | 48px, mostly **centered** |
+| Closing CTA | 72px |
+| `sticky` elements | 0 |
 
 ### stripe.com/es-us
 
-| Medido | Valor |
+| Measured | Value |
 |---|---|
-| Contenedor dominante | **1232px** (71 apariciones) |
-| Fondos | blanco casi en todo; **una sola** banda oscura `#0d1738` |
-| Encabezados de sección | 32px, **alineados a la izquierda** |
-| Hero | 44px · un único momento centrado a 56px |
+| Dominant container | **1232px** (71 occurrences) |
+| Backgrounds | white almost everywhere; **a single** dark band `#0d1738` |
+| Section headings | 32px, **left-aligned** |
+| Hero | 44px · a single centered moment at 56px |
 
-### wework.com y superside.com
+### wework.com and superside.com
 
-De las capturas que mandó Camila:
+From the screenshots Camila sent:
 
-- Fondo blanco / crudo, tipografía negra, jerarquía por tamaño y peso.
-- Filas de 3–4 con **ícono chico + micro-etiqueta en versalitas + título +
-  cuerpo**, separadas por filetes de 1px, no por tarjetas pesadas.
-- **Un tramo del titular en itálica de una familia distinta**
-  («brands that *refuse to compromise*», «un *espacio de coworking*»).
-- Divisiones editoriales a dos columnas: texto de encuadre a un lado, lista de
-  enlaces o de medios al otro.
-
----
-
-## 2. El hilo común
-
-Cinco de las siete son lo mismo: **fondo blanco, texto negro, estructura por
-filetes finos, color como puntuación y una sola banda oscura por página.** Eso
-ya es la ley del color del proyecto; las referencias la confirman en vez de
-contradecirla.
-
-Coincidencias medidas que valen como decisión:
-
-- **Contenedor 1280px.** Unánime entre los cinco repos de la casa, Showdown
-  Social y designproject.io; Stripe usa 1232. Nuestro token se queda.
-- **Una sola superficie oscura por página.** Stripe usa una; designproject
-  tres en una página larguísima. Nuestro `deep` en el footer y en contadas
-  secciones está bien calibrado.
-- **Encabezados de sección alineados a la izquierda y modestos** (Stripe 32px),
-  con **un** momento grande y centrado por página. Es lo que ya hace el home:
-  hero centrado, el resto a la izquierda.
-
-## 3. El conflicto, sin promediar
-
-visitors.now (píldoras, sombras, centrado, suave) y ronnsquare.fr (crema
-cálido, negro grande a la izquierda, esquina viva) tiran para lados opuestos.
-El segundo se parece bastante al diseño que Camila **rechazó**.
-
-Lectura: lo que le gustó de ronnsquare fue el **movimiento**, no la maqueta —
-lo dijo con esas palabras.
-
-**RESUELTO.** El conflicto se cerró solo: la piel de visitors.now se cayó
-entera y de ronnsquare quedó únicamente la transición de página. La forma la
-fija ahora superside.com, que Camila eligió explícitamente para el hero, las
-cards y los dos bloques nuevos.
+- White / off-white background, black type, hierarchy by size and weight.
+- Rows of 3–4 with **small icon + small-caps micro-label + title +
+  body**, separated by 1px rules, not by heavy cards.
+- **A stretch of the headline in italics from a different family**
+  ("brands that *refuse to compromise*", "a *coworking space*").
+- Two-column editorial splits: framing text on one side, a list of
+  links or media on the other.
 
 ---
 
-## 4. Qué se implementó de todo esto
+## 2. The common thread
 
-Actualizado el 9 de septiembre de 2026, después del rediseño de la home.
+Five of the seven are the same thing: **white background, black text, structure through
+thin rules, color as punctuation and a single dark band per page.** That
+is already the project's color law; the references confirm it instead of
+contradicting it.
 
-| Gesto | Dónde | Referencia |
+Measured coincidences that count as a decision:
+
+- **1280px container.** Unanimous across the house's five repos, Showdown
+  Social and designproject.io; Stripe uses 1232. Our token stays.
+- **A single dark surface per page.** Stripe uses one; designproject
+  three on a very long page. Our `deep` in the footer and in a handful of
+  sections is well calibrated.
+- **Section headings aligned left and modest** (Stripe 32px),
+  with **one** large centered moment per page. It's what the home page already does:
+  centered hero, the rest aligned left.
+
+## 3. The conflict, without averaging
+
+visitors.now (pills, shadows, centered, soft) and ronnsquare.fr (warm
+cream, large black on the left, sharp corners) pull in opposite directions.
+The second one looks quite a lot like the design Camila **rejected**.
+
+Reading: what she liked about ronnsquare was the **motion**, not the mockup —
+she said it in those words.
+
+**RESOLVED.** The conflict closed on its own: the visitors.now skin fell away
+entirely and only the page transition remained from ronnsquare. The form is
+now set by superside.com, which Camila explicitly chose for the hero, the
+cards and the two new blocks.
+
+---
+
+## 4. What was implemented from all this
+
+Updated on September 9, 2026, after the home page redesign.
+
+| Gesture | Where | Reference |
 |---|---|---|
-| Transición de página | `PageTransition` | ronnsquare.fr |
-| Pasos en escalera diagonal con filete en L | `StepStair` → `HowThisPlaceWorks` | for-living.it |
-| Acento tipográfico dentro del titular | `Accent`, `MaskedLines` | wework / superside |
-| Filas de ícono + versalita + título, con filetes | `ThreeDoors` | wework / superside |
-| Hero de titular + una frase + un CTA + muro | `Hero`, `VideoWall` | superside |
-| Cards de foto arriba y bloque de color abajo | `WhatsOn` | superside |
-| Banner de card oscura con imagen inset | `EventsBanner` | superside · «Our global team» |
+| Page transition | `PageTransition` | ronnsquare.fr |
+| Diagonal staircase steps with an L-shaped rule | `StepStair` → `HowThisPlaceWorks` | for-living.it |
+| Typographic accent inside the headline | `Accent`, `MaskedLines` | wework / superside |
+| Rows of icon + small caps + title, with rules | `ThreeDoors` | wework / superside |
+| Hero with headline + one sentence + one CTA + wall | `Hero`, `VideoWall` | superside |
+| Cards with photo on top and color block below | `WhatsOn` | superside |
+| Dark card banner with inset image | `EventsBanner` | superside · "Our global team" |
 
-### Lo que se dio de baja, y por qué
+### What was retired, and why
 
-**`BrandTrail` — el elemento de marca que acompañaba el scroll.** Era lo
-adoptado de ronnsquare.fr junto con la transición de página. Camila lo mandó
-sacar en el rediseño: «quitemos el elemento de marca que acompaña el scroll».
-De ronnsquare queda **sólo `PageTransition`**.
+**`BrandTrail` — the brand element that followed the scroll.** It was what was
+adopted from ronnsquare.fr along with the page transition. Camila had it
+removed in the redesign: "let's remove the brand element that follows the scroll".
+From ronnsquare **only `PageTransition`** remains.
 
-**Las píldoras y las sombras suaves de visitors.now.** Se habían ido antes,
-cuando Camila fijó Showdown Social como referencia máxima: ninguna de las
-cuatro referencias que eligió usa píldoras. Ver la nota de `Button.tsx`.
+**The pills and soft shadows from visitors.now.** They had gone earlier,
+when Camila set Showdown Social as the top reference: none of the
+four references she chose uses pills. See the note in `Button.tsx`.
 
-### Referencias nuevas que entraron en el rediseño
+### New references that came in with the redesign
 
-Camila sumó **superside.com** como la referencia de forma de la home, y de ahí
-salieron cuatro de las siete filas de la tabla de arriba. Dos páginas concretas
-que se midieron con el navegador:
+Camila added **superside.com** as the form reference for the home page, and from it
+came four of the seven rows in the table above. Two specific pages
+that were measured with the browser:
 
-- `superside.com/our-creative-talent`, bloque «OUR GLOBAL TEAM» → `EventsBanner`
-- el hero de `superside.com` → `Hero` + `VideoWall`
+- `superside.com/our-creative-talent`, "OUR GLOBAL TEAM" block → `EventsBanner`
+- the `superside.com` hero → `Hero` + `VideoWall`
 
-### Sobre el acento del titular
+### About the headline accent
 
-⚠️ Se aplicó en **color y no en itálica**, que es donde se aparta de la
-referencia. Camila: «usar cambio de color no itálica, porque el brand no usa
-itálica». Superside lo hace con una serif itálica de otra familia; acá no hay
-serif y no se sumó una cuarta familia por un acento.
+⚠️ It was applied in **color and not in italics**, which is where it departs from the
+reference. Camila: "use a color change, not italics, because the brand doesn't use
+italics". Superside does it with an italic serif from another family; here there's no
+serif and a fourth family wasn't added for one accent.
 
-Y son **dos colores según la superficie**, no uno: `sunset` sobre claro da
-2.48:1 y no pasa ni el 3:1 de texto grande. Sobre claro va `terra` (7.43:1),
-sobre `deep` va `sunset` (4.26:1).
+And it's **two colors depending on the surface**, not one: `sunset` on light gives
+2.48:1 and doesn't even pass the 3:1 for large text. On light it's `terra` (7.43:1),
+on `deep` it's `sunset` (4.26:1).
 
-### Lo que sigue sin llegar
+### What still hasn't arrived
 
-Camila escribió «esta es otra pag de muestra del estilo» y nunca llegó ni URL
-ni imagen. Sigue faltando.
+Camila wrote "this is another sample page of the style" and neither a URL
+nor an image ever arrived. Still missing.
