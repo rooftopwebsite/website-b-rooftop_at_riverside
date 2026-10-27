@@ -1,19 +1,19 @@
 import fs from 'node:fs/promises';
 
 /**
- * Guard del CSS. Corre DESPUÉS del build.
+ * CSS guard. Runs AFTER the build.
  *
- * ⚠️ Existe por un fallo real que costó caro: un comentario CSS anidado dentro
- * del bloque de `@font-face` cerró el comentario antes de tiempo, dejó un `*​/`
- * suelto, y Tailwind dejó de emitir **todas** las utilidades de tema. El build
- * pasó sin un solo warning, la página se sirvió sin estilos, y sólo se detectó
- * bisecando contra el commit anterior.
+ * ⚠️ It exists because of a real failure that cost a lot: a CSS comment nested inside
+ * the `@font-face` block closed the comment early, left a stray `*​/`,
+ * and Tailwind stopped emitting **all** the theme utilities. The build
+ * passed without a single warning, the page was served with no styles, and it was only caught
+ * by bisecting against the previous commit.
  *
- * Dos chequeos:
- *   1. Comentarios anidados o cierres sueltos en globals.css — la causa.
- *   2. Que el CSS emitido contenga un puñado de utilidades canario. Es el
- *      chequeo que de verdad importa: no supone nada sobre POR QUÉ se rompió,
- *      sólo mira si el resultado sirve.
+ * Two checks:
+ *   1. Nested comments or stray closers in globals.css — the cause.
+ *   2. That the emitted CSS contains a handful of canary utilities. It's the
+ *      check that really matters: it assumes nothing about WHY it broke,
+ *      it only looks at whether the result works.
  *
  *   npm run build && npm run check:css
  */
@@ -21,10 +21,10 @@ import fs from 'node:fs/promises';
 const SOURCE = 'src/app/globals.css';
 
 /**
- * Utilidades que TIENEN que existir en el CSS emitido. Se eligieron porque
- * cada una viene de un namespace distinto del tema: color, espaciado, tamaño
- * de texto, radio, sombra y tracking. Si el tema deja de registrarse, caen
- * todas juntas.
+ * Utilities that MUST exist in the emitted CSS. They were chosen because
+ * each one comes from a different theme namespace: color, spacing, text
+ * size, radius, shadow and tracking. If the theme stops registering, they all
+ * fall together.
  */
 const CANARIES = [
   'bg-cream',
@@ -33,21 +33,21 @@ const CANARIES = [
   'text-d4',
   'rounded-pill',
   'shadow-btn',
-  /* ⚠️ Era `tracking-display`, el token de tracking del display, que se
-     eliminó al pasar a la escala óptica de `--text-*--letter-spacing`. El
-     canario de tracking ahora es `tracking-eyebrow`, que sigue siendo un
-     token propio del tema y cubre el mismo namespace. */
+  /* ⚠️ It was `tracking-display`, the display tracking token, which was
+     removed when moving to the optical scale of `--text-*--letter-spacing`. The
+     tracking canary is now `tracking-eyebrow`, which is still a token of the
+     theme's own and covers the same namespace. */
   'tracking-eyebrow',
-  'caja',
+  'page-box',
   'eyebrow',
 ];
 
-/** Piso razonable: el CSS sano ronda los 50 KB; roto bajaba a 33 KB. */
+/** Reasonable floor: healthy CSS is around 50 KB; broken it dropped to 33 KB. */
 const MIN_BYTES = 42_000;
 
 let failed = false;
 
-/* ── 1. Comentarios ─────────────────────────────────────────────────────── */
+/* ── 1. Comments ────────────────────────────────────────────────────────── */
 const css = await fs.readFile(SOURCE, 'utf8');
 let depth = 0;
 let line = 1;
@@ -56,30 +56,30 @@ const commentProblems = [];
 for (let i = 0; i < css.length - 1; i++) {
   if (css[i] === '\n') line += 1;
   if (css[i] === '/' && css[i + 1] === '*') {
-    if (depth > 0) commentProblems.push(`comentario ANIDADO abierto en la línea ${line}`);
+    if (depth > 0) commentProblems.push(`NESTED comment opened on line ${line}`);
     depth += 1;
     i += 1;
   } else if (css[i] === '*' && css[i + 1] === '/') {
     depth -= 1;
     i += 1;
     if (depth < 0) {
-      commentProblems.push(`cierre de comentario SUELTO en la línea ${line}`);
+      commentProblems.push(`STRAY comment closer on line ${line}`);
       depth = 0;
     }
   }
 }
-if (depth > 0) commentProblems.push('hay un comentario SIN CERRAR al final del archivo');
+if (depth > 0) commentProblems.push('there is an UNCLOSED comment at the end of the file');
 
 if (commentProblems.length) {
   failed = true;
   console.log(`❌ ${SOURCE}`);
   for (const p of commentProblems) console.log(`   ${p}`);
-  console.log('   Los comentarios CSS no se anidan. Esto rompe el @theme en silencio.');
+  console.log('   CSS comments do not nest. This breaks @theme silently.');
 } else {
-  console.log(`✅ ${SOURCE} — comentarios bien balanceados, sin anidados`);
+  console.log(`✅ ${SOURCE} — comments well balanced, none nested`);
 }
 
-/* ── 2. Canarios en el CSS emitido ──────────────────────────────────────── */
+/* ── 2. Canaries in the emitted CSS ─────────────────────────────────────── */
 async function findBuiltCss() {
   const dir = '.next/static/chunks';
   try {
@@ -92,7 +92,7 @@ async function findBuiltCss() {
 
 const built = await findBuiltCss();
 if (built.length === 0) {
-  console.log('⚠️  No hay CSS compilado. Corré `npm run build` antes que esto.');
+  console.log('⚠️  There is no compiled CSS. Run `npm run build` before this.');
   process.exitCode = 1;
 } else {
   const all = (await Promise.all(built.map((f) => fs.readFile(f, 'utf8')))).join('');
@@ -101,18 +101,18 @@ if (built.length === 0) {
   const missing = CANARIES.filter((c) => !all.includes(c));
   if (missing.length) {
     failed = true;
-    console.log(`❌ CSS emitido: faltan ${missing.length} utilidades canario`);
+    console.log(`❌ Emitted CSS: ${missing.length} canary utilities missing`);
     console.log(`   ${missing.join(', ')}`);
-    console.log('   Señal de que el @theme no se registró o el escaneo no encontró las fuentes.');
+    console.log('   A sign that @theme did not register or the scan did not find the sources.');
   } else {
-    console.log(`✅ CSS emitido — las ${CANARIES.length} utilidades canario están presentes`);
+    console.log(`✅ Emitted CSS — all ${CANARIES.length} canary utilities are present`);
   }
 
   if (bytes < MIN_BYTES) {
     failed = true;
-    console.log(`❌ CSS emitido pesa ${bytes} bytes, por debajo del piso de ${MIN_BYTES}`);
+    console.log(`❌ Emitted CSS weighs ${bytes} bytes, below the floor of ${MIN_BYTES}`);
   } else {
-    console.log(`✅ CSS emitido — ${bytes.toLocaleString('es')} bytes`);
+    console.log(`✅ Emitted CSS — ${bytes.toLocaleString('en-US')} bytes`);
   }
 }
 

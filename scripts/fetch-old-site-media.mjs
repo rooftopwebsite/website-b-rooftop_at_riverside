@@ -1,50 +1,50 @@
 /**
- * Baja TODAS las fotos que el sitio vigente del cliente publica hoy.
+ * Downloads ALL the photos the client's current site publishes today.
  *
  *   node scripts/fetch-old-site-media.mjs
  *
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ POR QUÉ EXISTE. La entrega del cliente son 36 fotos —camiones, barra y
- * noches de música— y el sitio nuevo tiene huecos que ninguna de esas 36 puede
- * llenar: el market, el game lounge, los trucks que no están en la entrega, la
- * gente. Pero el cliente SÍ publica material para todo eso: está en las 23
- * rutas de `eatdrinkparadise.com`, que es su Wix.
+ * ⚠️ WHY IT EXISTS. The client's delivery is 36 photos —trucks, bar and
+ * music nights— and the new site has gaps that none of those 36 can
+ * fill: the market, the game lounge, the trucks that aren't in the delivery, the
+ * people. But the client DOES publish material for all of that: it's on the 23
+ * routes of `eatdrinkparadise.com`, which is their Wix.
  *
- * Camila, 2026-09-22: «baja todas las fotos de la web original y ponlas en una
- * carpeta del repo, junto con las que yo misma ya te he dado».
+ * Camila, 2026-09-22: «download all the photos from the original website and put them in a
+ * folder in the repo, along with the ones I've already given you myself».
  *
- * ⚠️ LO QUE BAJA VA A `_interno/`, QUE NO SE VERSIONA. Es la regla §5b de
- * `docs/INVARIANTES.md`: el material del cliente no entra a git; lo que entra
- * es el DERIVADO —la imagen recortada y optimizada que el sitio sirve—. Este
- * script llena la carpeta de entrada; `scripts/build-media.mjs` es el que
- * produce lo que se publica.
+ * ⚠️ WHAT IT DOWNLOADS GOES TO `_interno/`, WHICH IS NOT VERSIONED. It's rule §5b of
+ * `docs/INVARIANTS.md`: the client's material doesn't go into git; what goes in
+ * is the DERIVATIVE —the cropped and optimized image the site serves—. This
+ * script fills the input folder; `scripts/build-media.mjs` is the one that
+ * produces what gets published.
  *
- * ⚠️ BAJA EL ORIGINAL Y NO LA VERSIÓN TRANSFORMADA. Wix sirve cada imagen con
- * un sufijo de recorte y calidad —`/v1/fill/w_640,h_480,q_80/…`— y esas son las
- * miniaturas que usa SU maqueta. La URL sin el sufijo devuelve el archivo tal
- * como lo subieron, que suele ser de 2000 a 4000px. Es lo único que sirve para
- * recortar de nuevo.
+ * ⚠️ IT DOWNLOADS THE ORIGINAL AND NOT THE TRANSFORMED VERSION. Wix serves each image with
+ * a crop and quality suffix —`/v1/fill/w_640,h_480,q_80/…`— and those are the
+ * thumbnails ITS layout uses. The URL without the suffix returns the file as
+ * it was uploaded, which is usually 2000 to 4000px. It's the only thing useful for
+ * cropping again.
  *
- * ⚠️ NO TOCA `public/`. Nada de lo que este script baja se publica solo: hay
- * que elegirlo, recortarlo y escribirle un `alt`. Ese paso es a mano y a ojo.
+ * ⚠️ IT DOESN'T TOUCH `public/`. Nothing this script downloads gets published on its own: it has
+ * to be chosen, cropped and given an `alt`. That step is by hand and by eye.
  * ══════════════════════════════════════════════════════════════════════════
  */
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 
 const BASE = 'https://www.eatdrinkparadise.com';
-const SALIDA = '_interno/fotos/_originales-web';
+const OUTPUT = '_interno/fotos/_originales-web';
 
 /**
- * Las rutas del sitio vigente, sacadas de `docs/current-site-inventory.md`.
+ * The current site's routes, taken from `docs/current-site-inventory.md`.
  *
- * ⚠️ ESTÁN LAS 23, INCLUIDAS LAS QUE NO USAMOS. `/blank` y `/blank-1` son
- * restos de plantilla y `/inquiry-services-page` es lorem de Wix, pero las tres
- * pueden tener fotos reales cargadas encima: el inventario dice que `/blank`
- * mezcla un formulario de vendors con la ficha de un cóctel. Bajar de más acá
- * no cuesta nada; descubrir dentro de un mes que faltaba una foto, sí.
+ * ⚠️ ALL 23 ARE HERE, INCLUDING THE ONES WE DON'T USE. `/blank` and `/blank-1` are
+ * template leftovers and `/inquiry-services-page` is Wix lorem, but all three
+ * may have real photos loaded on top: the inventory says `/blank`
+ * mixes a vendors form with a cocktail's card. Downloading too much here
+ * costs nothing; finding out a month from now that a photo was missing does.
  */
-const RUTAS = [
+const ROUTES = [
   '/',
   '/this-is-us',
   '/eat',
@@ -71,115 +71,115 @@ const RUTAS = [
 ];
 
 /*
- * ⚠️ EL USER-AGENT DE NAVEGADOR NO ES OPCIONAL. Wix contesta 403 a un fetch sin
- * él, y el error que devuelve es una página de HTML: sin esto el script baja 23
- * páginas de error y reporta cero imágenes, que es el peor modo de fallar.
+ * ⚠️ THE BROWSER USER-AGENT IS NOT OPTIONAL. Wix answers 403 to a fetch without
+ * it, and the error it returns is an HTML page: without this the script downloads 23
+ * error pages and reports zero images, which is the worst way to fail.
  */
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
 
 /**
- * Los IDs de media que aparecen en el HTML de una página.
+ * The media IDs that appear in a page's HTML.
  *
- * ⚠️ SE LEEN DEL HTML CRUDO Y NO DEL DOM RENDERIZADO, y alcanza: Wix mete el
- * catálogo entero de la página en un JSON embebido (`warmupData`), así que las
- * fotos que su maqueta carga por JavaScript igual están escritas en el texto
- * que llega en la primera respuesta.
+ * ⚠️ THEY'RE READ FROM THE RAW HTML AND NOT FROM THE RENDERED DOM, and that's enough: Wix puts the
+ * page's entire catalog in an embedded JSON (`warmupData`), so the
+ * photos its layout loads via JavaScript are still written in the text
+ * that arrives in the first response.
  *
- * ⚠️ SE FILTRAN LOS ARCHIVOS SIN `~mv2`, que son los íconos de la plantilla de
- * Wix —flechas, logos de redes, el pin del mapa—. El patrón `<hash>~mv2.<ext>`
- * es el de un archivo que alguien SUBIÓ; los otros vienen con el tema.
+ * ⚠️ FILES WITHOUT `~mv2` ARE FILTERED OUT, which are the Wix template's
+ * icons —arrows, social logos, the map pin—. The `<hash>~mv2.<ext>` pattern
+ * is that of a file someone UPLOADED; the others come with the theme.
  */
-function mediaDe(html) {
+function mediaFrom(html) {
   const ids = new Set();
   for (const m of html.matchAll(/static\.wixstatic\.com\/media\/([A-Za-z0-9~_.%-]+)/g)) {
-    // Wix escapa la virgulilla en algunas apariciones del JSON.
-    const archivo = decodeURIComponent(m[1]);
-    if (!/~mv2\.(jpg|jpeg|png|webp|gif)$/i.test(archivo)) continue;
-    ids.add(archivo);
+    // Wix escapes the tilde in some occurrences in the JSON.
+    const file = decodeURIComponent(m[1]);
+    if (!/~mv2\.(jpg|jpeg|png|webp|gif)$/i.test(file)) continue;
+    ids.add(file);
   }
   return ids;
 }
 
-await mkdir(SALIDA, { recursive: true });
+await mkdir(OUTPUT, { recursive: true });
 
-/** Dónde apareció cada archivo. Es la mitad del valor del inventario. */
-const donde = new Map();
-let fallos = 0;
+/** Where each file appeared. It's half the value of the inventory. */
+const where = new Map();
+let failures = 0;
 
-for (const ruta of RUTAS) {
-  const url = `${BASE}${ruta}`;
+for (const route of ROUTES) {
+  const url = `${BASE}${route}`;
   let html = '';
   try {
     const res = await fetch(url, { headers: { 'User-Agent': UA } });
     if (!res.ok) {
-      console.log(`⚠️  ${ruta} → HTTP ${res.status}`);
-      fallos += 1;
+      console.log(`⚠️  ${route} → HTTP ${res.status}`);
+      failures += 1;
       continue;
     }
     html = await res.text();
   } catch (e) {
-    console.log(`⚠️  ${ruta} → ${e.message}`);
-    fallos += 1;
+    console.log(`⚠️  ${route} → ${e.message}`);
+    failures += 1;
     continue;
   }
 
-  const encontrados = mediaDe(html);
-  for (const a of encontrados) {
-    if (!donde.has(a)) donde.set(a, []);
-    donde.get(a).push(ruta);
+  const found = mediaFrom(html);
+  for (const a of found) {
+    if (!where.has(a)) where.set(a, []);
+    where.get(a).push(route);
   }
-  console.log(`   ${ruta.padEnd(26)} ${encontrados.size} imágenes`);
+  console.log(`   ${route.padEnd(26)} ${found.size} images`);
 }
 
-console.log(`\n${donde.size} archivos únicos en ${RUTAS.length - fallos} rutas. Bajando…\n`);
+console.log(`\n${where.size} unique files across ${ROUTES.length - failures} routes. Downloading…\n`);
 
-let bajados = 0;
-let saltados = 0;
+let downloaded = 0;
+let skipped = 0;
 
-for (const [archivo, rutas] of donde) {
-  const destino = `${SALIDA}/${archivo}`;
-  if (existsSync(destino)) {
-    saltados += 1;
+for (const [file, routes] of where) {
+  const dest = `${OUTPUT}/${file}`;
+  if (existsSync(dest)) {
+    skipped += 1;
     continue;
   }
   try {
-    const res = await fetch(`https://static.wixstatic.com/media/${archivo}`, {
+    const res = await fetch(`https://static.wixstatic.com/media/${file}`, {
       headers: { 'User-Agent': UA },
     });
     if (!res.ok) {
-      console.log(`⚠️  ${archivo} → HTTP ${res.status}`);
+      console.log(`⚠️  ${file} → HTTP ${res.status}`);
       continue;
     }
-    await writeFile(destino, Buffer.from(await res.arrayBuffer()));
-    bajados += 1;
+    await writeFile(dest, Buffer.from(await res.arrayBuffer()));
+    downloaded += 1;
   } catch (e) {
-    console.log(`⚠️  ${archivo} → ${e.message}`);
+    console.log(`⚠️  ${file} → ${e.message}`);
   }
-  void rutas;
+  void routes;
 }
 
 /*
- * El índice. Sin esto la carpeta son ochenta hashes de Wix y no se sabe cuál
- * salía de dónde, que es justamente el dato que hace falta para elegir.
+ * The index. Without it the folder is eighty Wix hashes and you can't tell which
+ * came from where, which is precisely the piece of information you need to choose.
  */
-const indice = [
-  '# Fotos del sitio vigente del cliente',
+const index = [
+  '# Photos from the client\'s current site',
   '',
-  `Bajadas de \`eatdrinkparadise.com\` el ${new Date().toISOString().slice(0, 10)} con`,
-  '`node scripts/fetch-old-site-media.mjs`. **Esta carpeta no se versiona** (ver',
-  '§5b de `docs/INVARIANTES.md`): lo que entra a git es el derivado optimizado,',
-  'no el original.',
+  `Downloaded from \`eatdrinkparadise.com\` on ${new Date().toISOString().slice(0, 10)} with`,
+  '`node scripts/fetch-old-site-media.mjs`. **This folder is not versioned** (see',
+  '§5b of `docs/INVARIANTS.md`): what goes into git is the optimized derivative,',
+  'not the original.',
   '',
-  '| archivo | aparece en |',
+  '| file | appears on |',
   '|---|---|',
-  ...[...donde.entries()]
+  ...[...where.entries()]
     .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([a, rutas]) => `| \`${a}\` | ${rutas.join(', ')} |`),
+    .map(([a, routes]) => `| \`${a}\` | ${routes.join(', ')} |`),
   '',
 ].join('\n');
 
-await writeFile(`${SALIDA}/INDICE.md`, indice);
+await writeFile(`${OUTPUT}/INDICE.md`, index);
 
-console.log(`✅ ${bajados} bajados, ${saltados} ya estaban. Índice en ${SALIDA}/INDICE.md`);
+console.log(`✅ ${downloaded} downloaded, ${skipped} were already there. Index at ${OUTPUT}/INDICE.md`);
 void readFile;

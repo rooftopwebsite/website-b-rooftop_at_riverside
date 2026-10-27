@@ -1,28 +1,28 @@
 import fs from 'node:fs/promises';
 
 /**
- * Aborta si el servidor que vas a medir NO está sirviendo el build actual.
+ * Aborts if the server you're about to measure is NOT serving the current build.
  *
- * ⚠️ Existe porque el mismo error pasó TRES veces en el proyecto, y las tres
- * veces el guard terminó en verde o en rojo por el motivo equivocado:
+ * ⚠️ It exists because the same mistake happened THREE times in the project, and
+ * all three times the guard ended up green or red for the wrong reason:
  *
- *   · `a11y` dio limpio midiendo una página sin estilos (chunks viejos)
- *   · `check:motion` dio «layout idéntico» contra un puerto que no era
- *   · `check:seo` marcó un H1 roto que en el build de disco estaba bien,
- *     porque `next start` había muerto con EADDRINUSE y contestaba un
- *     proceso viejo de otra sesión
+ *   · `a11y` came out clean while measuring a page with no styles (stale chunks)
+ *   · `check:motion` reported «identical layout» against the wrong port
+ *   · `check:seo` flagged a broken H1 that was fine in the on-disk build,
+ *     because `next start` had died with EADDRINUSE and a stale process from
+ *     another session was answering
  *
- * Imprimir el puerto ayuda, pero no alcanza: el puerto puede ser el correcto y
- * el proceso viejo igual.
+ * Printing the port helps, but it isn't enough: the port can be the right one
+ * and the process still stale.
  *
- * ⚠️ NO se compara el BUILD_ID. Fue el primer intento y está mal para este
- * proyecto: con Turbopack los chunks salen como `/_next/static/chunks/<hash>.js`
- * y el build id NO aparece en el HTML, así que el chequeo fallaba incluso
- * contra un server recién levantado. Lo que sí cambia en cada build y sí está
- * en el HTML es el nombre del CSS emitido, que va con hash de contenido.
+ * ⚠️ The BUILD_ID is NOT compared. That was the first attempt and it's wrong for
+ * this project: with Turbopack the chunks come out as `/_next/static/chunks/<hash>.js`
+ * and the build id does NOT appear in the HTML, so the check failed even
+ * against a freshly started server. What does change on every build and is
+ * in the HTML is the name of the emitted CSS, which carries a content hash.
  */
 
-/** ¿Es `next dev`? Ahí no hay nada viejo que detectar: recompila en cada request. */
+/** Is it `next dev`? There's nothing stale to detect there: it recompiles on every request. */
 function looksLikeDev(html, headers) {
   return (
     html.includes('hmr-client') ||
@@ -32,22 +32,22 @@ function looksLikeDev(html, headers) {
 }
 
 export async function assertFresh(base) {
-  console.log(`Objetivo: ${base}`);
+  console.log(`Target: ${base}`);
 
   let res;
   try {
     res = await fetch(base, { redirect: 'follow' });
   } catch (err) {
-    console.error(`\n❌ No contesta nadie en ${base}`);
+    console.error(`\n❌ Nobody is answering at ${base}`);
     console.error(`   ${err.message}`);
-    console.error('   Levantá el server y volvé a correr, o pasá BASE=http://localhost:PUERTO\n');
+    console.error('   Start the server and run again, or pass BASE=http://localhost:PORT\n');
     process.exit(1);
   }
 
   const html = await res.text();
 
   if (looksLikeDev(html, res.headers)) {
-    console.log('Modo: next dev (recompila solo, no hay build viejo posible)\n');
+    console.log('Mode: next dev (recompiles on its own, no stale build possible)\n');
     return;
   }
 
@@ -55,27 +55,27 @@ export async function assertFresh(base) {
   try {
     cssFiles = (await fs.readdir('.next/static/chunks')).filter((f) => f.endsWith('.css'));
   } catch {
-    console.log('Modo: sin `.next` local — no se puede comparar\n');
+    console.log('Mode: no local `.next` — cannot compare\n');
     return;
   }
 
   if (cssFiles.length === 0) {
-    console.log('Modo: el build no emitió CSS — no se puede comparar\n');
+    console.log('Mode: the build emitted no CSS — cannot compare\n');
     return;
   }
 
   const match = cssFiles.find((f) => html.includes(f));
   if (!match) {
     const served = [...html.matchAll(/\/_next\/static\/[^"']*\.css/g)].map((m) => m[0]);
-    console.error(`\n❌ ${base} está sirviendo un build VIEJO.`);
-    console.error(`   CSS en disco:  ${cssFiles.join(', ')}`);
-    console.error(`   CSS servido:   ${served.join(', ') || '(ninguno)'}`);
+    console.error(`\n❌ ${base} is serving a STALE build.`);
+    console.error(`   CSS on disk:   ${cssFiles.join(', ')}`);
+    console.error(`   CSS served:    ${served.join(', ') || '(none)'}`);
     console.error('');
-    console.error('   Casi siempre es un `next start` de otra sesión que quedó ocupando el');
-    console.error('   puerto: el tuyo murió con EADDRINUSE y contesta el viejo. Cerralo, o');
-    console.error('   serví en un puerto libre y pasá BASE=http://localhost:PUERTO\n');
+    console.error('   It is almost always a `next start` from another session still holding the');
+    console.error('   port: yours died with EADDRINUSE and the stale one answers. Close it, or');
+    console.error('   serve on a free port and pass BASE=http://localhost:PORT\n');
     process.exit(1);
   }
 
-  console.log(`Build servido: ${match} ✓\n`);
+  console.log(`Build served: ${match} ✓\n`);
 }

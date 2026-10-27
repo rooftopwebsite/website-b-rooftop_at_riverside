@@ -1,83 +1,83 @@
 /**
- * Guard de sincronía entre las dos declaraciones de la paleta.
+ * Sync guard between the two declarations of the palette.
  *
  *   npm run check:tokens
  *
- * ⚠️ POR QUÉ EXISTE. La paleta está escrita en dos lados y tiene que estarlo:
+ * ⚠️ WHY IT EXISTS. The palette is written in two places and it has to be:
  *
- *   · `src/app/globals.css`, bloque `@theme` → es lo que RENDERIZA. Tailwind v4
- *     es CSS-first, no hay `tailwind.config.ts` y no se puede importar un `.ts`
- *     dentro de `@theme`.
- *   · `src/lib/brand.ts`, objeto `COLORS` → es lo que se puede LEER desde
- *     TypeScript y desde los scripts, y donde viven las reglas de uso.
+ *   · `src/app/globals.css`, `@theme` block → it's what RENDERS. Tailwind v4
+ *     is CSS-first, there's no `tailwind.config.ts` and a `.ts` can't be imported
+ *     inside `@theme`.
+ *   · `src/lib/brand.ts`, `COLORS` object → it's what can be READ from
+ *     TypeScript and from the scripts, and where the usage rules live.
  *
- * Sin un guard, las dos copias se separan sin que nada avise. Ya pasó: durante
- * meses `brand.ts` declaró `paper: '#FFFFFF'` e `ink: '#000000'` mientras el
- * sitio pintaba `#FDFCF7` y `#0A1F1E`. `scripts/contrast.mjs` leía la copia
- * vieja, así que la auditoría de contraste entera estaba calculada contra
- * colores que el sitio no usaba y los ratios documentados no eran los reales.
- * Nadie lo notó porque el build pasaba.
+ * Without a guard, the two copies drift apart without anything warning. It already happened: for
+ * months `brand.ts` declared `paper: '#FFFFFF'` and `ink: '#000000'` while the
+ * site painted `#FDFCF7` and `#0A1F1E`. `scripts/contrast.mjs` read the stale
+ * copy, so the entire contrast audit was calculated against
+ * colors the site didn't use and the documented ratios weren't the real ones.
+ * Nobody noticed because the build passed.
  *
- * Este script compara token por token y falla con el detalle de la diferencia.
+ * This script compares token by token and fails with the detail of the difference.
  */
 import { readFileSync } from 'node:fs';
 
-const raiz = new URL('../', import.meta.url);
-const CSS = readFileSync(new URL('src/app/globals.css', raiz), 'utf8');
-const TS = readFileSync(new URL('src/lib/brand.ts', raiz), 'utf8');
+const root = new URL('../', import.meta.url);
+const CSS = readFileSync(new URL('src/app/globals.css', root), 'utf8');
+const TS = readFileSync(new URL('src/lib/brand.ts', root), 'utf8');
 
-/** Los `--color-*: #hex;` del CSS. Los que son `var(...)` son alias y se saltean. */
-function paletaCss() {
+/** The CSS's `--color-*: #hex;`. The ones that are `var(...)` are aliases and get skipped. */
+function cssPalette() {
   const p = new Map();
   const alias = new Set();
   for (const m of CSS.matchAll(/--color-([a-z0-9-]+):\s*([^;]+);/g)) {
-    const [, nombre, valor] = m;
-    const v = valor.trim();
-    if (v.startsWith('var(')) alias.add(nombre);
-    else if (/^#[0-9a-fA-F]{3,8}$/.test(v)) p.set(nombre, v.toUpperCase());
+    const [, name, value] = m;
+    const v = value.trim();
+    if (v.startsWith('var(')) alias.add(name);
+    else if (/^#[0-9a-fA-F]{3,8}$/.test(v)) p.set(name, v.toUpperCase());
   }
-  return { paleta: p, alias };
+  return { palette: p, alias };
 }
 
-/** El objeto `COLORS` de brand.ts. Acepta clave con y sin comillas. */
-function paletaTs() {
-  const bloque = TS.match(/export const COLORS = \{([\s\S]*?)\n\} as const;/);
-  if (!bloque) throw new Error('no se encontró `export const COLORS` en src/lib/brand.ts');
+/** The `COLORS` object from brand.ts. Accepts keys with and without quotes. */
+function tsPalette() {
+  const block = TS.match(/export const COLORS = \{([\s\S]*?)\n\} as const;/);
+  if (!block) throw new Error('`export const COLORS` was not found in src/lib/brand.ts');
   const p = new Map();
-  for (const m of bloque[1].matchAll(/^\s*'?([a-zA-Z0-9-]+)'?:\s*'(#[0-9a-fA-F]{3,8})'/gm)) {
+  for (const m of block[1].matchAll(/^\s*'?([a-zA-Z0-9-]+)'?:\s*'(#[0-9a-fA-F]{3,8})'/gm)) {
     p.set(m[1], m[2].toUpperCase());
   }
   return p;
 }
 
-const { paleta: css, alias } = paletaCss();
-const ts = paletaTs();
+const { palette: css, alias } = cssPalette();
+const ts = tsPalette();
 
-const problemas = [];
+const problems = [];
 
-for (const [nombre, valor] of ts) {
-  if (alias.has(nombre)) continue;
-  if (!css.has(nombre)) {
-    problemas.push(`· \`${nombre}\` está en brand.ts (${valor}) y NO en el @theme de globals.css`);
-  } else if (css.get(nombre) !== valor) {
-    problemas.push(
-      `· \`${nombre}\` DIVERGE — globals.css pinta ${css.get(nombre)}, brand.ts declara ${valor}`,
+for (const [name, value] of ts) {
+  if (alias.has(name)) continue;
+  if (!css.has(name)) {
+    problems.push(`· \`${name}\` is in brand.ts (${value}) and NOT in the @theme of globals.css`);
+  } else if (css.get(name) !== value) {
+    problems.push(
+      `· \`${name}\` DIVERGES — globals.css paints ${css.get(name)}, brand.ts declares ${value}`,
     );
   }
 }
 
-/* Al revés sólo se avisa: el @theme puede tener tokens que TypeScript no
-   necesite ver, y forzar la simetría total sería ruido. */
-const soloCss = [...css.keys()].filter((n) => !ts.has(n) && !alias.has(n));
+/* The reverse is only a warning: @theme can have tokens TypeScript doesn't
+   need to see, and forcing total symmetry would be noise. */
+const cssOnly = [...css.keys()].filter((n) => !ts.has(n) && !alias.has(n));
 
-console.log(`check:tokens — ${css.size} colores en globals.css, ${ts.size} en brand.ts`);
-if (alias.size) console.log(`  alias (se saltean): ${[...alias].join(', ')}`);
-if (soloCss.length) console.log(`  ⓘ sólo en globals.css, sin espejo en brand.ts: ${soloCss.join(', ')}`);
+console.log(`check:tokens — ${css.size} colors in globals.css, ${ts.size} in brand.ts`);
+if (alias.size) console.log(`  aliases (skipped): ${[...alias].join(', ')}`);
+if (cssOnly.length) console.log(`  ⓘ only in globals.css, with no mirror in brand.ts: ${cssOnly.join(', ')}`);
 
-if (problemas.length) {
-  console.error(`\n❌ ${problemas.length} problema(s) de sincronía:\n${problemas.join('\n')}`);
-  console.error('\nArreglalo en `src/lib/brand.ts` para que espeje `globals.css`, que es lo que renderiza.');
+if (problems.length) {
+  console.error(`\n❌ ${problems.length} sync problem(s):\n${problems.join('\n')}`);
+  console.error('\nFix it in `src/lib/brand.ts` so it mirrors `globals.css`, which is what renders.');
   process.exit(1);
 }
 
-console.log('✅ las dos declaraciones coinciden');
+console.log('✅ the two declarations match');

@@ -2,33 +2,33 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 /**
- * Audita el ritmo de superficies de cada página.
+ * Audits the surface rhythm of every page.
  *
- * Las reglas del brief:
- *   · blanco por defecto
- *   · como máximo DOS secciones de crema por página
- *   · como máximo UNA de teal profundo
- *   · NUNCA dos secciones de color seguidas
+ * The brief's rules:
+ *   · white by default
+ *   · at most TWO cream sections per page
+ *   · at most ONE deep teal section
+ *   · NEVER two color sections in a row
  *
- * Lee los `tone=` de los `<Section>` en el orden en que aparecen en el archivo,
- * que es el orden en que se renderizan. Las páginas que componen secciones desde
- * otro módulo (la home, las verticales de eventos) se resuelven siguiendo el
- * import, para que el conteo sea el real y no el del archivo suelto.
+ * Reads the `tone=` of the `<Section>`s in the order they appear in the file,
+ * which is the order they render in. Pages that compose sections from
+ * another module (the home page, the event verticals) are resolved by following the
+ * import, so the count is the real one and not that of the standalone file.
  *
  *   node scripts/surface-rhythm.mjs
  */
 
 const PAGE_GLOB = 'src/app';
 
-/** Módulos que exportan secciones y hay que expandir donde se usan. */
+/** Modules that export sections and have to be expanded where they're used. */
 /**
- * ⚠️ Este mapa hay que MANTENERLO. Una sección que no esté acá no se cuenta, y
- * el guard da verde por omisión — que es peor que dar rojo. Pasó al fusionar
- * `TonightAtTheYard` + `ThisWeek` en `WhatsOn`: la home reportaba
- * «paper · paper · paper · paper · paper» y la sección crema no aparecía.
+ * ⚠️ This map has to be MAINTAINED. A section that isn't here doesn't get counted, and
+ * the guard gives green by omission — which is worse than giving red. It happened when merging
+ * `TonightAtTheYard` + `ThisWeek` into `WhatsOn`: the home page reported
+ * «paper · paper · paper · paper · paper» and the cream section didn't show up.
  *
- * Regla: si creás un archivo en `sections/` que renderiza un `<Section>`,
- * agregalo acá en el mismo commit.
+ * Rule: if you create a file in `sections/` that renders a `<Section>`,
+ * add it here in the same commit.
  */
 const SECTION_MODULES = {
   '@/components/sections/HomeSections': 'src/components/sections/HomeSections.tsx',
@@ -41,29 +41,29 @@ const SECTION_MODULES = {
   '@/components/sections/PhotoDivider': 'src/components/sections/PhotoDivider.tsx',
   '@/components/sections/EventVertical': 'src/components/sections/EventVertical.tsx',
   /*
-   * ⚠️ LAS TRES DE `/our-story`, agregadas el 2026-09-22 al rediseñar la
-   * página. Las tres renderizan su propia `<Section tone>` y ninguna estaba
-   * declarada, así que el guard veía TRES secciones de las siete y reportaba
-   * «deep · paper · deep». El diagnóstico igual era correcto —había dos
-   * oscuras— pero por casualidad: las cuatro que faltaban podrían haber sido
-   * cuatro cremas seguidas sin que nadie se enterara.
+   * ⚠️ THE THREE FROM `/our-story`, added on 2026-09-22 when redesigning the
+   * page. All three render their own `<Section tone>` and none was
+   * declared, so the guard saw THREE sections out of the seven and reported
+   * «deep · paper · deep». The diagnosis was still correct —there were two
+   * dark ones— but by chance: the four that were missing could have been
+   * four creams in a row without anyone finding out.
    *
-   * Es exactamente lo que advierte el bloque de arriba: si un archivo de
-   * `sections/` renderiza un `<Section>`, se agrega acá en el mismo commit.
+   * It's exactly what the block above warns about: if a file in
+   * `sections/` renders a `<Section>`, it gets added here in the same commit.
    */
   '@/components/sections/AboutStory': 'src/components/sections/AboutStory.tsx',
   '@/components/sections/VenueTabs': 'src/components/sections/VenueTabs.tsx',
   '@/components/sections/HowToOrder': 'src/components/sections/HowToOrder.tsx',
   /*
-   * ⚠️ LA CARCASA DE LOS TRES DOCUMENTOS LEGALES, agregada el 2026-09-22.
-   * `/gaming-truck-policies`, `/game-zone-waiver` y `/bar-games-waiver` no
-   * escriben una sola `<Section>` en su `page.tsx`: las dos que tienen —el
-   * encabezado en `bone` y el cuerpo en `paper`— las pone `LegalPage`, así que
-   * sin esta línea el guard veía tres páginas de CERO secciones y las daba por
-   * buenas sin mirar nada.
+   * ⚠️ THE SHELL OF THE THREE LEGAL DOCUMENTS, added on 2026-09-22.
+   * `/gaming-truck-policies`, `/game-zone-waiver` and `/bar-games-waiver` don't
+   * write a single `<Section>` in their `page.tsx`: the two they have —the
+   * header in `bone` and the body in `paper`— are placed by `LegalPage`, so
+   * without this line the guard saw three pages with ZERO sections and passed them
+   * without looking at anything.
    */
   '@/components/legal/LegalPage': 'src/components/legal/LegalPage.tsx',
-  '@/components/shared/PageHero': null, // el hero es siempre blanco
+  '@/components/shared/PageHero': null, // the hero is always white
 };
 
 async function walk(dir) {
@@ -78,60 +78,60 @@ async function walk(dir) {
 
 /**
  * ══════════════════════════════════════════════════════════════════════════
- * ⚠️ LAS SECCIONES CRUDAS DEL REDISEÑO, y por qué hubo que enseñárselas al
- * guard en lugar de dejarlo pasar.
+ * ⚠️ THE REDESIGN'S RAW SECTIONS, and why the guard had to be taught about them
+ * instead of letting it slide.
  *
- * El guard leía `tone=` de los `<Section>`. Las ocho secciones de la home
- * nueva no usan `<Section>` —su geometría es otra: arcos de 88px, márgenes
- * negativos y bandas que sangran, nada de eso entra en las cuatro props de
- * ese componente— así que la home DESAPARECIÓ del listado y el guard dio
- * verde sin haberla mirado.
+ * The guard read `tone=` from the `<Section>`s. The eight sections of the new
+ * home page don't use `<Section>` —their geometry is different: 88px arcs, negative
+ * margins and bleeding bands, none of which fits in that component's four
+ * props— so the home page DISAPPEARED from the listing and the guard gave
+ * green without having looked at it.
  *
- * Eso es exactamente lo que este archivo advierte tres bloques más arriba:
- * «el guard da verde por omisión — que es peor que dar rojo». Ya había
- * pasado una vez al fusionar `TonightAtTheYard` + `ThisWeek`.
+ * That's exactly what this file warns about three blocks above:
+ * «the guard gives green by omission — which is worse than giving red». It had already
+ * happened once when merging `TonightAtTheYard` + `ThisWeek`.
  *
- * Así que ahora también se leen los `<section className="… bg-X …">`
- * crudos. Es más frágil que leer una prop —depende de que la clase esté
- * escrita literal y no compuesta— pero cubre el caso real: si mañana alguien
- * agrega una tercera banda `deep` a la home, el guard la ve.
+ * So now the raw `<section className="… bg-X …">` are read too.
+ * It's more fragile than reading a prop —it depends on the class being
+ * written literally and not composed— but it covers the real case: if tomorrow someone
+ * adds a third `deep` band to the home page, the guard sees it.
  * ══════════════════════════════════════════════════════════════════════════
  */
-const BG_A_TONO = { paper: 'paper', bone: 'paper', cream: 'cream', mint: 'cream', deep: 'deep', ink: 'deep' };
+const BG_TO_TONE = { paper: 'paper', bone: 'paper', cream: 'cream', mint: 'cream', deep: 'deep', ink: 'deep' };
 
 /**
- * Los tonos de un archivo, en orden: `<Section tone>` y `<section bg-*>`.
+ * A file's tones, in order: `<Section tone>` and `<section bg-*>`.
  *
- * ⚠️ TAMBIÉN SE LEEN LOS `<FormSlab tone>`, y hay que sumar acá cualquier
- * componente nuevo que ENVUELVA a `<Section>` recibiendo el tono por prop.
- * `FormSlab` es la losa de formulario de `/events`, `/contact` y los dos
- * carriles de `/join-us`: renderiza una `<Section>` con el `tone` que se le
- * pasa, así que para el ritmo de la página vale exactamente lo mismo.
+ * ⚠️ `<FormSlab tone>` IS ALSO READ, and any new component that WRAPS
+ * `<Section>` receiving the tone by prop has to be added here.
+ * `FormSlab` is the form slab of `/events`, `/contact` and the two
+ * lanes of `/join-us`: it renders a `<Section>` with the `tone` it's
+ * passed, so for the page's rhythm it counts exactly the same.
  *
- * Sin este renglón el guard no ve esas cuatro secciones y da VERDE POR
- * OMISIÓN, que es el error contra el que advierte el bloque de `SECTION_MODULES`
- * y que ya pasó dos veces en este archivo.
+ * Without this line the guard doesn't see those four sections and gives GREEN BY
+ * OMISSION, which is the mistake the `SECTION_MODULES` block warns against
+ * and that has already happened twice in this file.
  *
- * ⚠️ NO alcanza con agregarlo a `SECTION_MODULES`: esa expansión sólo sirve
- * para componentes que se usan SIN props (`<WhatsOn />`), porque lee el tono
- * del módulo. Acá el tono lo decide la página, así que se lee de la página.
+ * ⚠️ Adding it to `SECTION_MODULES` is NOT enough: that expansion only works
+ * for components used WITHOUT props (`<WhatsOn />`), because it reads the tone
+ * from the module. Here the tone is decided by the page, so it's read from the page.
  */
 async function tonesIn(file) {
   const src = await fs.readFile(file, 'utf8');
   const tones = [];
   /*
-   * La lista de props hasta el primer `>` O el primer `{`; si no declara
-   * `tone`, el default del componente es paper.
+   * The props list up to the first `>` OR the first `{`; if it doesn't declare
+   * `tone`, the component's default is paper.
    *
-   * ⚠️ EL CORTE EN `{` NO SOBRA. `FormSlab` recibe el contenido de su columna
-   * izquierda en `aside={ … }`, que es JSX con sus propios `>` y con sus
-   * propios `<Eyebrow tone="deep">` adentro. Cortando sólo en `>`, el guard
-   * se comía media losa y leía el tono de un rótulo como si fuera el de la
-   * sección.
+   * ⚠️ THE CUT AT `{` IS NOT SUPERFLUOUS. `FormSlab` receives the content of its left
+   * column in `aside={ … }`, which is JSX with its own `>` and with its
+   * own `<Eyebrow tone="deep">` inside. Cutting only at `>`, the guard
+   * swallowed half the slab and read the tone of a label as if it were the
+   * section's.
    *
-   * ⚠️ Y EL `\s` ADELANTE TAMPOCO. Sin él, `panelTone="paper"` contiene
-   * `tone="paper"` y se leería como el tono de la sección cuando es el del
-   * panel, que es otra cosa.
+   * ⚠️ AND THE LEADING `\s` ISN'T EITHER. Without it, `panelTone="paper"` contains
+   * `tone="paper"` and would be read as the section's tone when it's the
+   * panel's, which is something else.
    */
   for (const m of src.matchAll(/<(?:Section|FormSlab)\b([^>{]*)[>{]/g)) {
     const attrs = m[1];
@@ -142,67 +142,66 @@ async function tonesIn(file) {
 }
 
 /**
- * ⚠️ `bone` cuenta como `paper` y `ink` como `deep`, y las dos equivalencias
- * son las que hacen que la cuenta signifique algo.
+ * ⚠️ `bone` counts as `paper` and `ink` as `deep`, and those two equivalences
+ * are what make the count mean something.
  *
- * `bone` es la segunda superficie clara: 1.08:1 contra `paper`. Contarla
- * aparte diría que la home alterna entre dos colores cuando en realidad es
- * toda clara con un escalón apenas visible.
+ * `bone` is the second light surface: 1.08:1 against `paper`. Counting it
+ * separately would say the home page alternates between two colors when in reality it's
+ * all light with a barely visible step.
  *
- * `ink` es oscuro y pesa como oscuro. Que sea tinta y no teal cambia el
- * color, no el presupuesto de superficie.
+ * `ink` is dark and weighs as dark. Being ink and not teal changes the
+ * color, not the surface budget.
  */
-async function tonosCrudos(file) {
+async function rawTones(file) {
   const src = await fs.readFile(file, 'utf8');
   const tones = [];
   for (const m of src.matchAll(/<section\b([^>]*)>/g)) {
     const bg = m[1].match(/\bbg-(paper|bone|cream|deep|ink)\b/)?.[1];
-    if (bg) tones.push(BG_A_TONO[bg]);
+    if (bg) tones.push(BG_TO_TONE[bg]);
   }
   return tones;
 }
 
-/** Expande los componentes de sección que la página importa y usa. */
+/** Expands the section components the page imports and uses. */
 /**
  * ══════════════════════════════════════════════════════════════════════════
- * LOS PARES QUE LA PÁGINA CRUZA CON UNA OLA.
+ * THE PAIRS THE PAGE CROSSES WITH A WAVE.
  *
- * ⚠️ NACIÓ EL 2026-09-22 CON UN FALSO POSITIVO. `/our-story` quedó en rojo por
- * «color seguido: cream→deep» cuando la cita de Chris Magnus pasó a ser su
- * propia banda crema, arriba de la banda oscura del equipo. Entre las dos hay
- * un `<SoftWave from="cream" to="deep" />`, que es exactamente el mecanismo
- * con el que este sitio cruza de un color a otro.
+ * ⚠️ IT WAS BORN ON 2026-09-22 FROM A FALSE POSITIVE. `/our-story` went red for
+ * «color in a row: cream→deep» when Chris Magnus's quote became its
+ * own cream band, above the team's dark band. Between the two there's
+ * a `<SoftWave from="cream" to="deep" />`, which is exactly the mechanism
+ * this site uses to cross from one color to another.
  *
- * ⚠️ Y EL PRECEDENTE YA ESTABA, escondido por un accidente de este mismo
- * script: `/events` tiene el MISMO par —la banda crema de `EventSpaces` y la
- * losa oscura de precios, con su ola en medio— y figura en verde. No porque
- * cumpla la regla, sino porque el parser lee la crema desde el componente y la
- * concatena al final, con lo cual las dos nunca quedan pegadas en la lista.
+ * ⚠️ AND THE PRECEDENT WAS ALREADY THERE, hidden by an accident of this same
+ * script: `/events` has the SAME pair —the cream band of `EventSpaces` and the
+ * dark pricing slab, with its wave in between— and shows up green. Not because
+ * it meets the rule, but because the parser reads the cream from the component and
+ * appends it at the end, so the two never end up next to each other in the list.
  *
- * O sea: el patrón ya se usaba y el guard lo dejaba pasar por el motivo
- * equivocado. Esto lo reconoce a propósito.
+ * In other words: the pattern was already in use and the guard let it through for the wrong
+ * reason. This recognizes it on purpose.
  *
- * ⚠️ QUÉ NO AFLOJA. La regla existe para que no haya un bloque de 1.400px de
- * color seguido, y una ola no es una excusa para eso: sigue habiendo un techo
- * de oscuras (§ `techoDeep`) y un máximo de dos cremas, y los dos cuentan
- * igual. Lo único que esto dice es que DOS BANDAS SEPARADAS POR UNA OLA no son
- * el mismo bloque, que es lo que se ve en pantalla.
+ * ⚠️ WHAT IT DOESN'T LOOSEN. The rule exists so there's no 1,400px block of
+ * color in a row, and a wave isn't an excuse for that: there's still a ceiling
+ * on dark ones (§ `deepCeiling`) and a maximum of two creams, and both count
+ * the same. The only thing this says is that TWO BANDS SEPARATED BY A WAVE are not
+ * the same block, which is what you see on screen.
  *
- * ⚠️ SE LEE SÓLO DEL `page.tsx`, no de los componentes. Una ola escrita adentro
- * de un componente no dice nada del orden de la página que lo usa, y adivinarlo
- * sería la clase de heurística que ya metió a este script en problemas dos
- * veces.
+ * ⚠️ IT'S READ ONLY FROM `page.tsx`, not from the components. A wave written inside
+ * a component says nothing about the order of the page that uses it, and guessing it
+ * would be the kind of heuristic that already got this script into trouble twice.
  * ══════════════════════════════════════════════════════════════════════════
  */
-async function olasDe(file) {
+async function wavesIn(file) {
   const src = await fs.readFile(file, 'utf8');
-  const pares = new Set();
+  const pairs = new Set();
   for (const m of src.matchAll(/<SoftWave\b([^>]*)\/>/g)) {
     const from = m[1].match(/from="(\w+)"/)?.[1];
     const to = m[1].match(/to="(\w+)"/)?.[1];
-    if (from && to) pares.add(`${BG_A_TONO[from] ?? from}→${BG_A_TONO[to] ?? to}`);
+    if (from && to) pairs.add(`${BG_TO_TONE[from] ?? from}→${BG_TO_TONE[to] ?? to}`);
   }
-  return pares;
+  return pairs;
 }
 
 async function pageTones(file) {
@@ -210,21 +209,21 @@ async function pageTones(file) {
   const own = await tonesIn(file);
 
   /*
-   * Componentes de sección usados en el JSX, en orden de aparición.
+   * Section components used in the JSX, in order of appearance.
    *
-   * ⚠️ ANTES PEDÍA `<Nombre />` PELADO, sin una sola prop, y por eso los tres
-   * documentos legales entraban al guard como páginas de CERO secciones. Su
-   * `page.tsx` no escribe ninguna `<Section>`: las dos que tienen —encabezado
-   * en `bone`, cuerpo en `paper`— las pone `LegalPage`, que se usa con seis
-   * props. El guard las leía, no encontraba nada y las daba por buenas.
+   * ⚠️ IT USED TO REQUIRE A BARE `<Name />`, without a single prop, and that's why the three
+   * legal documents entered the guard as pages with ZERO sections. Their
+   * `page.tsx` doesn't write any `<Section>`: the two they have —header
+   * in `bone`, body in `paper`— are placed by `LegalPage`, which is used with six
+   * props. The guard read them, found nothing and passed them.
    *
-   * Es la misma trampa que el bloque de `SECTION_MODULES` advierte tres veces
-   * y que ya pasó dos: verde por omisión. Ahora se acepta cualquier
-   * autocerrado, con props o sin ellas.
+   * It's the same trap the `SECTION_MODULES` block warns about three times
+   * and that has already happened twice: green by omission. Now any
+   * self-closing tag is accepted, with props or without.
    *
-   * ⚠️ AMPLIAR ESTO NO AFECTA A NINGÚN COMPONENTE QUE NO ESTÉ DECLARADO: el
-   * bucle de abajo sólo expande los módulos de `SECTION_MODULES`. Lo único que
-   * cambia es que los declarados ahora también cuentan cuando reciben props.
+   * ⚠️ WIDENING THIS DOESN'T AFFECT ANY COMPONENT THAT ISN'T DECLARED: the
+   * loop below only expands the modules in `SECTION_MODULES`. The only thing that
+   * changes is that the declared ones now also count when they receive props.
    */
   const used = [...src.matchAll(/<([A-Z][A-Za-z]*)[^>]*\/>/g)].map((m) => m[1]);
   const expanded = [];
@@ -235,7 +234,7 @@ async function pageTones(file) {
       const imported = new RegExp(`import[^;]*\\b${name}\\b[^;]*from '${mod.replace(/[/@]/g, '\\$&')}'`);
       if (imported.test(src)) {
         const modSrc = await fs.readFile(target, 'utf8');
-        // El bloque de esa función exportada.
+        // The block of that exported function.
         let start = modSrc.indexOf(`export function ${name}(`);
         if (start === -1) start = modSrc.indexOf('export default function');
         if (start === -1) continue;
@@ -248,26 +247,26 @@ async function pageTones(file) {
     }
   }
 
-  // Si la página delega todo en un template (EventVertical), usa el del módulo.
+  // If the page delegates everything to a template (EventVertical), use the module's.
   if (own.length === 0 && expanded.length === 0) {
     if (/EventVertical/.test(src)) return tonesIn(SECTION_MODULES['@/components/sections/EventVertical']);
   }
 
   /*
-   * Las secciones crudas del rediseño, en el orden en que la página las usa.
-   * Se leen del módulo de cada componente, igual que las `<Section>`.
+   * The redesign's raw sections, in the order the page uses them.
+   * They're read from each component's module, just like the `<Section>`s.
    */
-  const crudos = [];
+  const raw = [];
   for (const name of used) {
     for (const [mod, target] of Object.entries(SECTION_MODULES)) {
       if (!target) continue;
       const imported = new RegExp(`import[^;]*\\b${name}\\b[^;]*from '${mod.replace(/[/@]/g, '\\$&')}'`);
-      if (imported.test(src)) crudos.push(...(await tonosCrudos(target)));
+      if (imported.test(src)) raw.push(...(await rawTones(target)));
     }
   }
 
-  const todos = expanded.length > 0 ? [...expanded, ...own] : own;
-  return [...todos, ...crudos];
+  const all = expanded.length > 0 ? [...expanded, ...own] : own;
+  return [...all, ...raw];
 }
 
 const files = await walk(PAGE_GLOB);
@@ -280,90 +279,90 @@ for (const file of files.sort()) {
 
   /*
    * ══════════════════════════════════════════════════════════════════════
-   * ⚠️ LAS REGLAS SE MIDEN SOBRE LOS TONOS NORMALIZADOS, no sobre los
-   * escritos. Lo que se IMPRIME sigue siendo el nombre real, para que el
-   * listado diga qué hay en la página y no una traducción.
+   * ⚠️ THE RULES ARE MEASURED ON THE NORMALIZED TONES, not on the
+   * written ones. What gets PRINTED is still the real name, so the
+   * listing says what's on the page and not a translation.
    *
-   * Esto corrige una incoherencia del propio archivo. Tres bloques más
-   * arriba está escrito que «`bone` cuenta como `paper` y `ink` como
-   * `deep`», con el argumento de que bone es un escalón de 1.08:1 y
-   * contarlo aparte «diría que la home alterna entre dos colores cuando en
-   * realidad es toda clara». Pero ese mapa sólo se aplicaba a las secciones
-   * CRUDAS (`tonosCrudos`) y no a las `<Section tone>`, así que la misma
-   * superficie contaba distinto según cómo estuviera escrita.
+   * This fixes an inconsistency in the file itself. Three blocks
+   * above it's written that «`bone` counts as `paper` and `ink` as
+   * `deep`», with the argument that bone is a 1.08:1 step and
+   * counting it separately «would say the home page alternates between two colors when in
+   * reality it's all light». But that map was only applied to the
+   * RAW sections (`rawTones`) and not to the `<Section tone>`s, so the same
+   * surface counted differently depending on how it was written.
    *
-   * El costo de la incoherencia era concreto: `/contact` y `/join-us`
-   * estaban en rojo desde que se escribieron por «color seguido: bone→deep»,
-   * o sea por tener una banda clara antes de la única banda oscura del pie.
-   * Eso no es lo que la regla quiere evitar — la regla existe para que no
-   * haya 1.400px de verde seguido— y no había forma de cumplirla sin sacar
-   * el escalón de hueso o la banda de cierre.
+   * The cost of the inconsistency was concrete: `/contact` and `/join-us`
+   * had been red since they were written because of «color in a row: bone→deep»,
+   * i.e. for having a light band before the footer's only dark band.
+   * That's not what the rule wants to prevent — the rule exists so there aren't
+   * 1,400px of green in a row— and there was no way to comply without removing
+   * the bone step or the closing band.
    *
-   * ⚠️ NORMALIZAR SÓLO PUEDE AFLOJAR, NUNCA APRETAR, y conviene saberlo: el
-   * mapa manda bone→paper e ink→deep. Lo primero quita adyacencias; lo
-   * segundo no agrega ninguna, porque `ink` ya contaba como color. Las
-   * cuentas de crema y de oscuras no se mueven. O sea que ninguna página que
-   * estaba en verde puede haberse vuelto roja con este cambio.
+   * ⚠️ NORMALIZING CAN ONLY LOOSEN, NEVER TIGHTEN, and it's worth knowing: the
+   * map sends bone→paper and ink→deep. The first removes adjacencies; the
+   * second doesn't add any, because `ink` already counted as color. The
+   * cream and dark counts don't move. So no page that
+   * was green can have turned red with this change.
    * ══════════════════════════════════════════════════════════════════════
    */
-  const norm = tones.map((t) => BG_A_TONO[t] ?? t);
+  const norm = tones.map((t) => BG_TO_TONE[t] ?? t);
 
   const cream = norm.filter((t) => t === 'cream').length;
   const deep = norm.filter((t) => t === 'deep').length;
 
   /*
-   * ⚠️ UN PAR CRUZADO POR UNA OLA NO ES UNA ADYACENCIA. Ver `olasDe()`: la
-   * ola es el corte, así que las dos bandas no se leen como un solo bloque de
-   * color aunque estén una al lado de la otra en el DOM.
+   * ⚠️ A PAIR CROSSED BY A WAVE IS NOT AN ADJACENCY. See `wavesIn()`: the
+   * wave is the break, so the two bands don't read as a single block of
+   * color even though they're next to each other in the DOM.
    */
-  const olas = await olasDe(file);
+  const waves = await wavesIn(file);
 
   const adjacent = [];
   for (let i = 1; i < norm.length; i++) {
     const a = norm[i - 1];
     const b = norm[i];
     if (a === 'paper' || b === 'paper') continue;
-    if (olas.has(`${a}→${b}`)) continue;
-    adjacent.push(`${tones[i - 1]}→${tones[i]} (posición ${i})`);
+    if (waves.has(`${a}→${b}`)) continue;
+    adjacent.push(`${tones[i - 1]}→${tones[i]} (position ${i})`);
   }
 
   /*
    * ══════════════════════════════════════════════════════════════════════
-   * ⚠️ EL TECHO DE OSCURAS PASÓ DE FIJO A PROPORCIONAL, y hay que saber qué
-   * se cambió y qué NO.
+   * ⚠️ THE DARK CEILING WENT FROM FIXED TO PROPORTIONAL, and you need to know what
+   * was changed and what was NOT.
    *
-   * La regla del brief era «como máximo UNA sección de teal profundo». Se
-   * escribió cuando las páginas tenían de cuatro a seis secciones: ahí una
-   * sola oscura ES el 20-25 % de superficie que el brief pide, y dos ya se
-   * pasaban.
+   * The brief's rule was «at most ONE deep teal section». It was
+   * written when pages had four to six sections: there a
+   * single dark one IS the 20-25 % of surface the brief asks for, and two already
+   * went over.
    *
-   * La home del rediseño tiene ocho secciones. Con el techo fijo en 1, el
-   * guard le exige a una página de ocho el mismo presupuesto absoluto que a
-   * una de cuatro — o sea, la mitad de proporción. Eso no es lo que la regla
-   * quería decir: lo que quería evitar es que la página se vuelva oscura, y
-   * eso es una PROPORCIÓN.
+   * The redesign's home page has eight sections. With the ceiling fixed at 1, the
+   * guard demands of an eight-section page the same absolute budget as of
+   * a four-section one — that is, half the proportion. That's not what the rule
+   * meant: what it wanted to prevent is the page turning dark, and
+   * that's a PROPORTION.
    *
-   * El techo ahora es `ceil(secciones / 3)`, que deja las páginas viejas
-   * exactamente donde estaban —cuatro secciones → 2, y ninguna llega— y le
-   * da 3 a la home de ocho.
+   * The ceiling is now `ceil(sections / 3)`, which leaves the old pages
+   * exactly where they were —four sections → 2, and none reaches it— and gives
+   * 3 to the eight-section home page.
    *
-   * ⚠️ LO QUE NO SE TOCÓ, y es lo que de verdad protege el ritmo: «nunca dos
-   * de color seguidas». Esa regla es la que impide un bloque de 1.400px de
-   * verde, y sigue igual de estricta. Un techo proporcional sin esta regla
-   * al lado sí sería aflojar.
+   * ⚠️ WHAT WAS NOT TOUCHED, and it's what really protects the rhythm: «never two
+   * color sections in a row». That rule is the one that prevents a 1,400px block of
+   * green, and it's still just as strict. A proportional ceiling without this rule
+   * next to it would indeed be loosening.
    *
-   * ⚠️ ESTE GUARD CUENTA SECCIONES, NO PÍXELES. El dato que importa de
-   * verdad —el % de la página en oscuro, que la auditoría midió en 55,4 %
-   * una vez— sale de `design-audit/`, no de acá. Si el rediseño cambia
-   * mucho las alturas, hay que volver a medirlo ahí.
+   * ⚠️ THIS GUARD COUNTS SECTIONS, NOT PIXELS. The figure that really
+   * matters —the % of the page in dark, which the audit measured at 55.4 %
+   * once— comes from `design-audit/`, not from here. If the redesign changes
+   * the heights a lot, it has to be measured again there.
    * ══════════════════════════════════════════════════════════════════════
    */
-  const techoDeep = Math.max(1, Math.ceil(norm.length / 3));
+  const deepCeiling = Math.max(1, Math.ceil(norm.length / 3));
 
   const issues = [];
-  if (cream > 2) issues.push(`${cream} secciones crema (máx. 2)`);
-  if (deep > techoDeep) issues.push(`${deep} secciones oscuras (máx. ${techoDeep} en ${norm.length})`);
-  if (adjacent.length) issues.push(`color seguido: ${adjacent.join(', ')}`);
+  if (cream > 2) issues.push(`${cream} cream sections (max. 2)`);
+  if (deep > deepCeiling) issues.push(`${deep} dark sections (max. ${deepCeiling} out of ${norm.length})`);
+  if (adjacent.length) issues.push(`color in a row: ${adjacent.join(', ')}`);
 
   if (issues.length) {
     problems += 1;
@@ -375,5 +374,5 @@ for (const file of files.sort()) {
   }
 }
 
-console.log(problems === 0 ? '\nRitmo de superficies OK.' : `\n${problems} páginas fuera de regla.`);
+console.log(problems === 0 ? '\nSurface rhythm OK.' : `\n${problems} pages out of rule.`);
 if (problems > 0) process.exitCode = 1;

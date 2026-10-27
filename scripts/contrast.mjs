@@ -1,32 +1,32 @@
 /**
- * Genera `design-audit/CONTRASTE.md` con los ratios WCAG 2.1 de cada par en uso.
+ * Generates `design-audit/CONTRAST.md` with the WCAG 2.1 ratios of every pair in use.
  *
- *   node scripts/contrast.mjs          → escribe CONTRASTE.md
- *   node scripts/contrast.mjs --check  → sólo falla si algún par no pasa
+ *   node scripts/contrast.mjs          → writes CONTRAST.md
+ *   node scripts/contrast.mjs --check  → only fails if some pair doesn't pass
  *
- * ⚠️ LA PALETA SE LEE DE `src/app/globals.css`, no está escrita acá.
+ * ⚠️ THE PALETTE IS READ FROM `src/app/globals.css`, it isn't written here.
  *
- * Es la corrección de un problema real que encontró la auditoría: la paleta de
- * `scripts/contrast.mjs` estaba copiada a mano, quedó vieja cuando el `@theme`
- * cambió, y por eso TODOS los ratios de `docs/contrast-audit.md` estaban
- * calculados contra colores que el sitio no pintaba. Un script que lee la
- * fuente no puede desincronizarse.
+ * It's the fix for a real problem the audit found: the palette in
+ * `scripts/contrast.mjs` was copied by hand, went stale when the `@theme`
+ * changed, and because of that ALL the ratios in `docs/contrast-audit.md` were
+ * calculated against colors the site didn't paint. A script that reads the
+ * source can't drift out of sync.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const CSS = readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8');
 
-/** Extrae los `--color-*` del bloque @theme. */
-function leerPaleta() {
+/** Extracts the `--color-*` from the @theme block. */
+function readPalette() {
   const p = {};
   for (const m of CSS.matchAll(/--color-([a-z0-9-]+):\s*(#[0-9a-fA-F]{3,8})\s*;/g)) {
     p[m[1]] = m[2].toUpperCase();
   }
-  if (Object.keys(p).length === 0) throw new Error('no se encontró ningún --color-* en globals.css');
+  if (Object.keys(p).length === 0) throw new Error('no --color-* found in globals.css');
   return p;
 }
 
-const P = leerPaleta();
+const P = readPalette();
 
 const hx = (h) => {
   h = h.replace('#', '');
@@ -41,116 +41,116 @@ const L = (h) => {
 const hex = (n) => P[n] ?? (n.startsWith('#') ? n.toUpperCase() : null);
 function ratio(a, b) {
   const ha = hex(a), hb = hex(b);
-  if (!ha) throw new Error(`token desconocido: ${a}`);
-  if (!hb) throw new Error(`token desconocido: ${b}`);
+  if (!ha) throw new Error(`unknown token: ${a}`);
+  if (!hb) throw new Error(`unknown token: ${b}`);
   const x = L(ha), y = L(hb);
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
 }
 
 /**
- * Los pares REALMENTE EN USO en la home rediseñada.
- * tipo: body (≥4.5) · large (≥3, texto ≥24px o ≥19px bold) · ui (≥3) · deco (exento)
+ * The pairs ACTUALLY IN USE on the redesigned home page.
+ * type: body (≥4.5) · large (≥3, text ≥24px or ≥19px bold) · ui (≥3) · deco (exempt)
  */
-const PARES = [
-  ['— Texto sobre las dos superficies claras —'],
-  ['ink', 'paper', 'Títulos y cuerpo sobre la base', 'body'],
-  ['ink', 'bone', 'Títulos y cuerpo sobre la segunda superficie', 'body'],
-  ['body', 'paper', 'Cuerpo — mismo valor que `ink`, token separado', 'body'],
-  ['muted', 'paper', '**La bajada** y el texto secundario', 'body'],
-  ['muted', 'bone', 'La bajada sobre la segunda superficie', 'body'],
-  ['muted', 'cream', 'La bajada sobre una píldora amarilla', 'body'],
+const PAIRS = [
+  ['— Text on the two light surfaces —'],
+  ['ink', 'paper', 'Headlines and body on the base', 'body'],
+  ['ink', 'bone', 'Headlines and body on the second surface', 'body'],
+  ['body', 'paper', 'Body — same value as `ink`, separate token', 'body'],
+  ['muted', 'paper', '**The subhead** and secondary text', 'body'],
+  ['muted', 'bone', 'The subhead on the second surface', 'body'],
+  ['muted', 'cream', 'The subhead on a yellow pill', 'body'],
 
-  ['— Texto sobre la banda oscura —'],
-  ['paper', 'deep', 'Títulos y cuerpo sobre la banda de Events y el footer', 'body'],
-  ['muted-dark', 'deep', '**La bajada** sobre oscuro — el par que encontró `npm run a11y`', 'body'],
-  ['cream', 'deep', 'Eyebrow y detalle sobre oscuro', 'body'],
-  ['paper', 'deeper', 'Texto del header', 'body'],
-  ['muted', 'deep', '❌ `muted` sobre oscuro — el bug que hubo que arreglar', 'body'],
+  ['— Text on the dark band —'],
+  ['paper', 'deep', 'Headlines and body on the Events band and the footer', 'body'],
+  ['muted-dark', 'deep', '**The subhead** on dark — the pair `npm run a11y` found', 'body'],
+  ['cream', 'deep', 'Eyebrow and detail on dark', 'body'],
+  ['paper', 'deeper', 'Header text', 'body'],
+  ['muted', 'deep', '❌ `muted` on dark — the bug that had to be fixed', 'body'],
 
-  ['— La tarjeta del newsletter: `teal600`, donde SÓLO pasa el blanco —'],
-  ['paper', 'teal600', 'Todo el texto de la tarjeta — título, bajada y errores', 'body'],
-  ['teal600', 'deep', 'La tarjeta contra la losa del footer — dos superficies, sin mínimo', 'deco'],
-  ['cream', 'teal600', 'El relleno del botón «Join» y el anillo de foco', 'ui'],
-  ['muted-dark', 'teal600', '❌ la bajada en `muted-dark` — por eso la tarjeta pisa `--lead-ink`', 'body'],
-  ['tomato-soft', 'teal600', '❌ el error en rojo — por eso los errores quedaron blancos', 'body'],
-  ['bone', 'teal600', '❌ ni siquiera `bone` llega: el techo de esta superficie es 4.59', 'body'],
+  ['— The newsletter card: `teal600`, where ONLY white passes —'],
+  ['paper', 'teal600', 'All the card text — headline, subhead and errors', 'body'],
+  ['teal600', 'deep', 'The card against the footer slab — two surfaces, no minimum', 'deco'],
+  ['cream', 'teal600', 'The «Join» button fill and the focus ring', 'ui'],
+  ['muted-dark', 'teal600', '❌ the subhead in `muted-dark` — that is why the card overrides `--lead-ink`', 'body'],
+  ['tomato-soft', 'teal600', '❌ the error in red — that is why the errors stayed white', 'body'],
+  ['bone', 'teal600', '❌ not even `bone` makes it: this surface\'s ceiling is 4.59', 'body'],
 
-  ['— Rellenos de marca: el texto encima va NEGRO —'],
-  ['#000000', 'sunset', 'Texto del CTA primario', 'body'],
-  ['#000000', 'river', 'Texto sobre relleno teal', 'body'],
-  ['#000000', 'cream', 'Texto sobre la píldora amarilla', 'body'],
-  ['deep', 'cream', 'Texto sobre botón crema (el CTA sobre oscuro)', 'body'],
+  ['— Brand fills: the text on top goes BLACK —'],
+  ['#000000', 'sunset', 'Primary CTA text', 'body'],
+  ['#000000', 'river', 'Text on teal fill', 'body'],
+  ['#000000', 'cream', 'Text on the yellow pill', 'body'],
+  ['deep', 'cream', 'Text on cream button (the CTA on dark)', 'body'],
 
-  ['— El acento del titular, a dos colores según superficie —'],
-  ['sunset-deep', 'paper', 'Acento sobre claro — sólo display, NO cuerpo', 'large'],
-  ['sunset-deep', 'bone', 'Acento sobre la segunda superficie — sólo display', 'large'],
-  ['sunset', 'deep', 'Acento sobre oscuro — sólo display, NO cuerpo', 'large'],
+  ['— The headline accent, in two colors depending on surface —'],
+  ['sunset-deep', 'paper', 'Accent on light — display only, NOT body', 'large'],
+  ['sunset-deep', 'bone', 'Accent on the second surface — display only', 'large'],
+  ['sunset', 'deep', 'Accent on dark — display only, NOT body', 'large'],
 
-  ['— El rojo de error y de dato pendiente sobre claro —'],
-  ['terra', 'paper', 'Error de formulario y marcador de pendiente', 'body'],
-  ['terra', 'bone', 'Lo mismo sobre la segunda superficie', 'body'],
+  ['— The error and pending-data red on light —'],
+  ['terra', 'paper', 'Form error and pending marker', 'body'],
+  ['terra', 'bone', 'Same on the second surface', 'body'],
 
-  ['— Eyebrows: sólo los tonos que pasan —'],
-  ['deep', 'paper', 'Eyebrow y texto de color sobre claro', 'body'],
-  ['deep', 'bone', 'Eyebrow sobre la segunda superficie', 'body'],
-  ['plum', 'paper', 'Eyebrow alternativo', 'body'],
-  ['plum', 'bone', 'Eyebrow alternativo', 'body'],
-  ['magenta', 'paper', 'Eyebrow editorial', 'body'],
-  ['magenta', 'bone', 'Eyebrow editorial', 'body'],
+  ['— Eyebrows: only the tones that pass —'],
+  ['deep', 'paper', 'Eyebrow and colored text on light', 'body'],
+  ['deep', 'bone', 'Eyebrow on the second surface', 'body'],
+  ['plum', 'paper', 'Alternative eyebrow', 'body'],
+  ['plum', 'bone', 'Alternative eyebrow', 'body'],
+  ['magenta', 'paper', 'Editorial eyebrow', 'body'],
+  ['magenta', 'bone', 'Editorial eyebrow', 'body'],
 
-  ['— Anillo de foco (WCAG 1.4.11, 3:1) —'],
-  ['ink', 'paper', 'Anillo sobre claro', 'ui'],
-  ['ink', 'sunset', 'Anillo sobre el CTA naranja', 'ui'],
-  ['cream', 'deep', 'Anillo sobre oscuro', 'ui'],
+  ['— Focus ring (WCAG 1.4.11, 3:1) —'],
+  ['ink', 'paper', 'Ring on light', 'ui'],
+  ['ink', 'sunset', 'Ring on the orange CTA', 'ui'],
+  ['cream', 'deep', 'Ring on dark', 'ui'],
 
-  ['— Filetes de 1px: decorativos, no son controles —'],
-  ['fog', 'paper', 'El filete que reemplaza a las tarjetas', 'deco'],
-  ['fog', 'bone', 'ídem sobre la segunda superficie', 'deco'],
+  ['— 1px rules: decorative, not controls —'],
+  ['fog', 'paper', 'The rule that replaces the cards', 'deco'],
+  ['fog', 'bone', 'same on the second surface', 'deco'],
 
-  ['— PROHIBIDOS, medidos para que quede escrito por qué —'],
-  ['sunset', 'paper', '❌ naranja como TEXTO sobre claro', 'body'],
-  ['sunset', 'bone', '❌ ídem sobre la segunda superficie', 'body'],
-  ['river', 'paper', '❌ teal medio como TEXTO sobre claro', 'body'],
-  ['paper', 'sunset', '❌ blanco sobre el CTA naranja', 'body'],
-  ['paper', 'river', '❌ blanco sobre relleno teal', 'body'],
-  ['teal600', 'cream', '❌ teal600 sobre amarillo — el caso histórico', 'body'],
+  ['— BANNED, measured so the reason is on record —'],
+  ['sunset', 'paper', '❌ orange as TEXT on light', 'body'],
+  ['sunset', 'bone', '❌ same on the second surface', 'body'],
+  ['river', 'paper', '❌ mid teal as TEXT on light', 'body'],
+  ['paper', 'sunset', '❌ white on the orange CTA', 'body'],
+  ['paper', 'river', '❌ white on teal fill', 'body'],
+  ['teal600', 'cream', '❌ teal600 on yellow — the historical case', 'body'],
 ];
 
-const minimo = (t) => (t === 'body' ? 4.5 : t === 'deco' ? 0 : 3);
+const minimum = (t) => (t === 'body' ? 4.5 : t === 'deco' ? 0 : 3);
 
-const filas = [];
-let fallas = 0;
-for (const par of PARES) {
-  if (par.length === 1) {
-    filas.push({ seccion: par[0] });
+const rows = [];
+let failures = 0;
+for (const pair of PAIRS) {
+  if (pair.length === 1) {
+    rows.push({ section: pair[0] });
     continue;
   }
-  const [f, b, uso, tipo] = par;
+  const [f, b, use, type] = pair;
   const r = ratio(f, b);
-  const pasa = r >= minimo(tipo);
-  const prohibido = uso.startsWith('❌');
-  /* Un par prohibido que NO pasa es lo esperado: no cuenta como falla. */
-  if (!pasa && !prohibido && tipo !== 'deco') fallas++;
-  filas.push({ f, b, uso, tipo, r, pasa, prohibido });
+  const passes = r >= minimum(type);
+  const banned = use.startsWith('❌');
+  /* A banned pair that does NOT pass is expected: it doesn't count as a failure. */
+  if (!passes && !banned && type !== 'deco') failures++;
+  rows.push({ f, b, use, type, r, passes, banned });
 }
 
-const nombre = (n) => (n.startsWith('#') ? `\`${n}\`` : `\`${n}\``);
-const valor = (n) => hex(n);
+const name = (n) => (n.startsWith('#') ? `\`${n}\`` : `\`${n}\``);
+const value = (n) => hex(n);
 
-let md = `# Contraste medido — \`redesign/light-tropical\`
+let md = `# Measured contrast — \`redesign/light-tropical\`
 
-Generado por \`node scripts/contrast.mjs\`. **La paleta se lee de
-\`src/app/globals.css\`**, no está escrita en el script: es la corrección del
-problema que encontró la auditoría, donde \`scripts/contrast.mjs\` tenía la
-paleta copiada a mano y había quedado vieja, así que todos los ratios
-documentados estaban calculados contra colores que el sitio no pintaba.
+Generated by \`node scripts/contrast.mjs\`. **The palette is read from
+\`src/app/globals.css\`**, it is not written in the script: it is the fix for the
+problem the audit found, where \`scripts/contrast.mjs\` had the
+palette copied by hand and it had gone stale, so all the documented
+ratios were calculated against colors the site did not paint.
 
-Método: luminancia relativa WCAG 2.1. Mínimos: **4.5:1** para cuerpo,
-**3:1** para texto grande (≥24px, o ≥19px en negrita) y para componentes de
-interfaz no textuales (WCAG 1.4.11). Un filete decorativo no es un componente
-de interfaz y no tiene mínimo.
+Method: WCAG 2.1 relative luminance. Minimums: **4.5:1** for body,
+**3:1** for large text (≥24px, or ≥19px bold) and for non-text
+interface components (WCAG 1.4.11). A decorative rule is not an interface
+component and has no minimum.
 
-## La paleta que se midió
+## The palette that was measured
 
 | token | hex |
 |---|---|
@@ -158,71 +158,71 @@ ${Object.entries(P)
   .map(([k, v]) => `| \`${k}\` | \`${v}\` |`)
   .join('\n')}
 
-## Los pares
+## The pairs
 
-| Par | Uso | Ratio | Mínimo | Estado |
+| Pair | Use | Ratio | Minimum | Status |
 |---|---|---:|---:|---|
 `;
 
-for (const x of filas) {
-  if (x.seccion) {
-    md += `| **${x.seccion}** | | | | |\n`;
+for (const x of rows) {
+  if (x.section) {
+    md += `| **${x.section}** | | | | |\n`;
     continue;
   }
-  const min = x.tipo === 'deco' ? '—' : `${minimo(x.tipo)}:1`;
-  let estado;
-  if (x.prohibido) estado = x.pasa ? '⚠️ pasa pero está prohibido por otra razón' : '🚫 **prohibido, y por esto**';
-  else if (x.tipo === 'deco') estado = '➖ exento — decorativo';
-  else if (!x.pasa) estado = '❌ **FALLA**';
-  else if (x.tipo === 'body' && x.r >= 7) estado = '✅ AAA';
-  else estado = '✅ AA';
-  md += `| ${nombre(x.f)} \`${valor(x.f)}\` sobre ${nombre(x.b)} \`${valor(x.b)}\` | ${x.uso} | **${x.r.toFixed(2)}:1** | ${min} | ${estado} |\n`;
+  const min = x.type === 'deco' ? '—' : `${minimum(x.type)}:1`;
+  let status;
+  if (x.banned) status = x.passes ? '⚠️ passes but is banned for another reason' : '🚫 **banned, and this is why**';
+  else if (x.type === 'deco') status = '➖ exempt — decorative';
+  else if (!x.passes) status = '❌ **FAILS**';
+  else if (x.type === 'body' && x.r >= 7) status = '✅ AAA';
+  else status = '✅ AA';
+  md += `| ${name(x.f)} \`${value(x.f)}\` on ${name(x.b)} \`${value(x.b)}\` | ${x.use} | **${x.r.toFixed(2)}:1** | ${min} | ${status} |\n`;
 }
 
 md += `
-## Las reglas duras que salen de la tabla
+## The hard rules that come out of the table
 
-1. **El naranja y el teal medio no son colores de texto sobre claro.** Dan
-   ${ratio('sunset', 'paper').toFixed(2)}:1 y ${ratio('river', 'paper').toFixed(2)}:1 sobre la base, y sobre la segunda superficie
-   todavía menos (${ratio('sunset', 'bone').toFixed(2)}:1). No pasan ni el mínimo de texto grande, en
-   ningún tamaño. Por eso el acento del titular es **a dos colores según la
-   superficie**: \`sunset-deep\` sobre claro, \`sunset\` sobre oscuro. Los dos
-   son el MISMO tono (28.3°) y la misma saturación; entre ellos sólo cambia la
-   luminosidad, y por eso el acento se lee naranja en las dos superficies.
-2. **Sobre relleno naranja o teal, el texto va negro.** El blanco da
-   ${ratio('paper', 'sunset').toFixed(2)}:1 y ${ratio('paper', 'river').toFixed(2)}:1; el negro da ${ratio('#000000', 'sunset').toFixed(2)}:1 y ${ratio('#000000', 'river').toFixed(2)}:1.
-3. **El acento del titular es sólo para display, de los dos lados.** \`sunset\`
-   sobre \`deep\` da ${ratio('sunset', 'deep').toFixed(2)}:1, y \`sunset-deep\` sobre \`paper\` da
-   ${ratio('sunset-deep', 'paper').toFixed(2)}:1 (sobre \`bone\`, ${ratio('sunset-deep', 'bone').toFixed(2)}:1). Los dos pasan el 3:1 de
-   texto grande y ninguno el 4.5:1 de cuerpo: sirven para una palabra de un
-   titular de 88px, no para una bajada. El rojo \`terra\` —${ratio('terra', 'paper').toFixed(2)}:1— es el
-   que sí puede ir en cuerpo, y es el de los errores de formulario.
-4. **La bajada tiene un token opaco y no una opacidad.** \`muted\`
-   \`${P.muted}\` pasa AA en las tres superficies claras
-   (${ratio('muted', 'paper').toFixed(2)}:1 · ${ratio('muted', 'bone').toFixed(2)}:1 · ${ratio('muted', 'cream').toFixed(2)}:1). Con \`text-body/75\` el color
-   resultante cambiaba según lo que hubiera detrás, así que no se podía medir.
-5. **El anillo de foco se invierte sobre oscuro.** \`ink\` sobre \`deep\` sería
-   ${ratio('ink', 'deep').toFixed(2)}:1 — invisible. La regla \`.on-dark\` de globals.css lo pasa a
-   \`cream\`, que da ${ratio('cream', 'deep').toFixed(2)}:1.
+1. **Orange and mid teal are not text colors on light.** They give
+   ${ratio('sunset', 'paper').toFixed(2)}:1 and ${ratio('river', 'paper').toFixed(2)}:1 on the base, and on the second surface
+   even less (${ratio('sunset', 'bone').toFixed(2)}:1). They don't even pass the large-text minimum, at
+   any size. That is why the headline accent is **in two colors depending on the
+   surface**: \`sunset-deep\` on light, \`sunset\` on dark. The two
+   are the SAME hue (28.3°) and the same saturation; between them only the
+   lightness changes, and that is why the accent reads orange on both surfaces.
+2. **On orange or teal fill, the text goes black.** White gives
+   ${ratio('paper', 'sunset').toFixed(2)}:1 and ${ratio('paper', 'river').toFixed(2)}:1; black gives ${ratio('#000000', 'sunset').toFixed(2)}:1 and ${ratio('#000000', 'river').toFixed(2)}:1.
+3. **The headline accent is display-only, on both sides.** \`sunset\`
+   on \`deep\` gives ${ratio('sunset', 'deep').toFixed(2)}:1, and \`sunset-deep\` on \`paper\` gives
+   ${ratio('sunset-deep', 'paper').toFixed(2)}:1 (on \`bone\`, ${ratio('sunset-deep', 'bone').toFixed(2)}:1). Both pass the 3:1 for
+   large text and neither the 4.5:1 for body: they work for one word of an
+   88px headline, not for a subhead. The \`terra\` red —${ratio('terra', 'paper').toFixed(2)}:1— is the
+   one that can go in body, and it is the one for form errors.
+4. **The subhead has an opaque token and not an opacity.** \`muted\`
+   \`${P.muted}\` passes AA on the three light surfaces
+   (${ratio('muted', 'paper').toFixed(2)}:1 · ${ratio('muted', 'bone').toFixed(2)}:1 · ${ratio('muted', 'cream').toFixed(2)}:1). With \`text-body/75\` the resulting
+   color changed depending on whatever was behind it, so it couldn't be measured.
+5. **The focus ring inverts on dark.** \`ink\` on \`deep\` would be
+   ${ratio('ink', 'deep').toFixed(2)}:1 — invisible. The \`.on-dark\` rule in globals.css switches it to
+   \`cream\`, which gives ${ratio('cream', 'deep').toFixed(2)}:1.
 
-## Colores compuestos — lo que esta tabla NO puede prever
+## Composite colors — what this table CANNOT foresee
 
-Un color translúcido sobre otro translúcido sobre una foto no se puede resolver
-acá: sólo se ve midiendo el píxel renderizado. El caso conocido es el rótulo
-\`video\` del muro del hero, que es \`paper\` translúcido sobre un relleno
-translúcido. **Se verifica con \`npm run a11y\` sobre la página servida**, no en
-esta tabla.
+A translucent color over another translucent one over a photo can't be resolved
+here: it only shows up by measuring the rendered pixel. The known case is the
+\`video\` label on the hero wall, which is translucent \`paper\` over a translucent
+fill. **It is verified with \`npm run a11y\` on the served page**, not in
+this table.
 
-Con la dirección clara ese rótulo pasa a ser \`muted\` opaco sobre \`paper\`
-opaco, o sea ${ratio('muted', 'paper').toFixed(2)}:1 medible acá — que es una de las razones por las que
-conviene que el muro deje de apoyarse en opacidades.
+With the light direction that label becomes opaque \`muted\` on opaque
+\`paper\`, i.e. ${ratio('muted', 'paper').toFixed(2)}:1 measurable here — which is one of the reasons why
+it is better for the wall to stop relying on opacities.
 `;
 
 if (process.argv.includes('--check')) {
-  console.log(fallas === 0 ? '✅ todos los pares en uso pasan su mínimo' : `❌ ${fallas} par(es) por debajo del mínimo`);
-  process.exit(fallas === 0 ? 0 : 1);
+  console.log(failures === 0 ? '✅ all pairs in use pass their minimum' : `❌ ${failures} pair(s) below the minimum`);
+  process.exit(failures === 0 ? 0 : 1);
 }
 
-writeFileSync(new URL('../design-audit/CONTRASTE.md', import.meta.url), md);
-console.log(`CONTRASTE.md escrito · ${Object.keys(P).length} tokens leídos de globals.css · ${filas.filter((f) => !f.seccion).length} pares medidos`);
-console.log(fallas === 0 ? '✅ todos los pares en uso pasan su mínimo' : `❌ ${fallas} par(es) por debajo del mínimo`);
+writeFileSync(new URL('../design-audit/CONTRAST.md', import.meta.url), md);
+console.log(`CONTRAST.md written · ${Object.keys(P).length} tokens read from globals.css · ${rows.filter((f) => !f.section).length} pairs measured`);
+console.log(failures === 0 ? '✅ all pairs in use pass their minimum' : `❌ ${failures} pair(s) below the minimum`);

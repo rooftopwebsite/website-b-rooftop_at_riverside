@@ -4,29 +4,29 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 /**
- * Auditoría de accesibilidad con axe-core sobre las páginas reales.
+ * Accessibility audit with axe-core over the real pages.
  *
- * Corre contra el BUILD DE PRODUCCIÓN, no contra dev: dev inyecta el overlay de
- * Next, que mete sus propios nodos y ensucia el reporte.
+ * Runs against the PRODUCTION BUILD, not against dev: dev injects the Next
+ * overlay, which adds its own nodes and pollutes the report.
  *
  *   npm run build && npx next start --port 3114
  *   node scripts/a11y.mjs
  *
- * ⚠️ Existe porque `docs/contrast-audit.md` sólo puede cubrir los PARES DE
- * PALETA. Lo que no puede prever es el color COMPUESTO: una opacidad sobre otra
- * opacidad, o texto translúcido sobre crema. Eso sólo se ve midiendo el píxel
- * renderizado, que es lo que hace axe.
+ * ⚠️ It exists because `docs/contrast-audit.md` can only cover the PALETTE
+ * PAIRS. What it can't foresee is the COMPOSITE color: one opacity over another
+ * opacity, or translucent text over cream. That only shows up by measuring the
+ * rendered pixel, which is what axe does.
  */
 
 /*
- * ⚠️ UN SOLO puerto para los tres guards, y uno poco común a propósito.
- * Antes cada script tenía el suyo (3114, 3119, 3120) y los tres chocaban con
- * servers viejos de otras sesiones — de ahí los resultados falsos. Serví el
- * build acá:
+ * ⚠️ ONE SINGLE port for the three guards, and an uncommon one on purpose.
+ * Each script used to have its own (3114, 3119, 3120) and all three collided
+ * with stale servers from other sessions, hence the false results. Serve the
+ * build here:
  *
  *   npm run build && npx next start --port 3157
  *
- * assertFresh() verifica que lo que contesta sea de verdad el build actual.
+ * assertFresh() verifies that whatever answers really is the current build.
  */
 const BASE = process.env.BASE ?? 'http://localhost:3157';
 
@@ -37,9 +37,9 @@ const PAGES = [
   '/food-trucks',
   '/food-trucks/el-chilango',
   '/whats-on',
-  // La vista calendario: la otra mitad de `/whats-on`. Decía `?view=month`,
-  // que es el nombre que tenía el parámetro antes del 2026-09-17 y que hoy no
-  // existe, así que esta línea venía auditando la vista grid dos veces.
+  // The calendar view: the other half of `/whats-on`. It used to say
+  // `?view=month`, which was the parameter's name before 2026-09-17 and no
+  // longer exists, so this line had been auditing the grid view twice.
   '/whats-on?view=calendar',
   '/events',
   '/whats-on?type=music',
@@ -65,14 +65,14 @@ for (const width of [1440, 390]) {
   for (const p of PAGES) {
     await page.goto(BASE + p, { waitUntil: 'networkidle' });
 
-    /* ⚠️ Hay que ESPERAR a que las animaciones de entrada terminen antes de
-       medir. Sin esto, axe lee el color a mitad del fundido: un texto que en
-       reposo es `#5a5a5a` se mide como `#e2e2e2` porque el padre todavía está
-       en opacity 0.3. Eso llena el informe de fallos de contraste inventados,
-       y los inventados tapan a los de verdad.
+    /* ⚠️ You have to WAIT for the entrance animations to finish before
+       measuring. Without this, axe reads the color mid-fade: a text that at
+       rest is `#5a5a5a` gets measured as `#e2e2e2` because the parent is still
+       at opacity 0.3. That fills the report with made-up contrast failures,
+       and the made-up ones hide the real ones.
 
-       `networkidle` no alcanza: dice que no hay peticiones, no que la página
-       se quedó quieta. Las entradas más lentas son delay 0.42s + 0.6s. */
+       `networkidle` isn't enough: it says there are no requests, not that the
+       page has settled. The slowest entrances are delay 0.42s + 0.6s. */
     await page.waitForTimeout(1600);
     await page.addScriptTag({ content: axeSource });
     const res = await page.evaluate(async () =>
@@ -105,9 +105,9 @@ await browser.close();
 fs.writeFileSync('a11y-report.json', JSON.stringify(bad, null, 1));
 
 if (bad.length === 0) {
-  console.log(`OK — sin violaciones de WCAG 2.1 AA en ${PAGES.length} páginas x 2 anchos.`);
+  console.log(`OK — no WCAG 2.1 AA violations across ${PAGES.length} pages x 2 widths.`);
 } else {
-  // Agrupado por mensaje: 40 nodos suelen ser 3 problemas repetidos.
+  // Grouped by message: 40 nodes are usually 3 repeated problems.
   const byMsg = new Map();
   for (const b of bad) {
     const key = `${b.id}|${b.message}`;
@@ -116,11 +116,11 @@ if (bad.length === 0) {
     e.count += 1;
     e.pages.add(b.page);
   }
-  console.log(`${bad.length} nodos con violaciones, ${byMsg.size} problemas distintos:\n`);
+  console.log(`${bad.length} nodes with violations, ${byMsg.size} distinct problems:\n`);
   for (const e of [...byMsg.values()].sort((a, b) => b.count - a.count)) {
-    console.log(`[${e.impact}] ${e.id}  x${e.count} nodos, ${e.pages.size} páginas`);
+    console.log(`[${e.impact}] ${e.id}  x${e.count} nodes, ${e.pages.size} pages`);
     console.log(`   ${e.message}`);
-    console.log(`   ej: ${e.html}`);
+    console.log(`   e.g.: ${e.html}`);
     console.log('');
   }
   process.exitCode = 1;

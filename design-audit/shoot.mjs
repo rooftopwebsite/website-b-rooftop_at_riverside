@@ -1,12 +1,12 @@
 /**
- * Capturador de baseline / after.
+ * Baseline / after capturer.
  *   node shoot.mjs <outDir> [url]
  *
- * Produce:
+ * Produces:
  *   <outDir>/home-desktop.png   full page 1440
  *   <outDir>/home-mobile.png    full page 390
- *   <outDir>/sections/NN-<id>-{desktop,mobile}.png  por sección
- *   <outDir>/sections.json      inventario medido (alto, fondo computado)
+ *   <outDir>/sections/NN-<id>-{desktop,mobile}.png  per section
+ *   <outDir>/sections.json      measured inventory (height, computed background)
  */
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -14,7 +14,7 @@ import { join } from 'node:path';
 
 const outDir = process.argv[2];
 const url = process.argv[3] ?? 'http://localhost:3000/';
-if (!outDir) { console.error('falta outDir'); process.exit(1); }
+if (!outDir) { console.error('outDir missing'); process.exit(1); }
 mkdirSync(join(outDir, 'sections'), { recursive: true });
 
 const VIEWPORTS = [
@@ -22,7 +22,7 @@ const VIEWPORTS = [
   { name: 'mobile', width: 390, height: 844 },
 ];
 
-/** Baja hasta el pie en pasos, para que disparen los reveals al scroll. */
+/** Scrolls down to the footer in steps, so the scroll reveals fire. */
 async function scrollThrough(page) {
   await page.evaluate(async () => {
     const step = Math.round(window.innerHeight * 0.6);
@@ -48,14 +48,14 @@ for (const vp of VIEWPORTS) {
   });
   const page = await ctx.newPage();
   await page.goto(url, { waitUntil: 'networkidle' });
-  // El preloader del sitio tiene su propia animación de entrada.
+  // The site's preloader has its own entrance animation.
   await page.waitForTimeout(2500);
   await scrollThrough(page);
 
   await page.screenshot({ path: join(outDir, `home-${vp.name}.png`), fullPage: true });
 
-  // Inventario + captura por sección: los hijos directos de <main>.
-  const secciones = await page.evaluate(() => {
+  // Inventory + per-section capture: the direct children of <main>.
+  const sections = await page.evaluate(() => {
     const main = document.querySelector('main');
     return [...main.children].map((el, i) => {
       const cs = getComputedStyle(el);
@@ -74,13 +74,13 @@ for (const vp of VIEWPORTS) {
     });
   });
 
-  if (vp.name === 'desktop') inventory = secciones;
+  if (vp.name === 'desktop') inventory = sections;
 
   const main = page.locator('main');
   const n = await main.locator('> *').count();
   for (let i = 0; i < n; i++) {
     const el = main.locator('> *').nth(i);
-    const meta = secciones[i];
+    const meta = sections[i];
     const slug = String(meta.id).replace(/[^a-z0-9-]+/gi, '-').toLowerCase().slice(0, 32);
     const name = `${String(i).padStart(2, '0')}-${slug}-${vp.name}.png`;
     try {
@@ -91,12 +91,12 @@ for (const vp of VIEWPORTS) {
       console.error(`  ! ${name}: ${e.message.split('\n')[0]}`);
     }
   }
-  console.log(`${vp.name}: ${n} secciones`);
+  console.log(`${vp.name}: ${n} sections`);
   await ctx.close();
 }
 
 writeFileSync(join(outDir, 'sections.json'), JSON.stringify(inventory, null, 2));
-console.log('\n--- inventario desktop ---');
+console.log('\n--- desktop inventory ---');
 for (const s of inventory) {
   console.log(`${String(s.i).padStart(2)} ${s.id.padEnd(24)} bg=${s.bg.padEnd(20)} color=${s.color.padEnd(18)} h=${s.height}px  ${s.heading ?? ''}`);
 }
