@@ -16,8 +16,8 @@ interface Door {
 
 const DOORS: readonly Door[] = [
   {
-    title: 'Big flavors in the yard',
-    body: 'Mexican street food, fresh seafood, American comfort classics and tropical fusion, each from its own chef. Come hungry and try a little of everything.',
+    title: 'Flavor takes center stage in the yard',
+    body: "Fresh Seafood, American Comfort Classics, Mexican Street Food, and Caribbean Fusion. You don't have to choose just one!",
     link: 'Meet the trucks',
     href: '/food-trucks',
     field: 'bg-deep',
@@ -26,8 +26,8 @@ const DOORS: readonly Door[] = [
     Icon: Truck,
   },
   {
-    title: 'The bar with the sunset view',
-    body: 'Craft cocktails made daily, local drafts, and the best west-facing seat in Bonita Springs.',
+    title: 'The sun dips and the drinks pour at Sunset Bar',
+    body: 'The perfect place to watch the day wind down, celebrate your big event, or kick off another epic night.',
     link: 'See the bar',
     href: '/sunset-bar',
     field: 'bg-sunset',
@@ -36,8 +36,8 @@ const DOORS: readonly Door[] = [
     Icon: Martini,
   },
   {
-    title: 'The home for your legendary party',
-    body: 'Why settle for a stuffy banquet hall? Reserve a section of the outdoor patio, the whole second floor or the entire venue, right in the buzz of downtown. We host, we clean up. You go enjoy the party!',
+    title: 'Book now: legendary parties live here',
+    body: 'The ultimate spot for your celebration, where kindred spirits find their rhythm. Reserve a section of the patio, the whole second story, or the entire park, right in Downtown Bonita Springs. We host, we clean, you enjoy the party!',
     link: 'Plan an event',
     href: '/events',
     field: 'bg-cream',

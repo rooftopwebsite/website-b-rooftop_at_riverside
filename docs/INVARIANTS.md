@@ -243,8 +243,8 @@ None of these have importers (or only their types are imported). **They are not 
   character by character. Straight apostrophe (`'`, not `&rsquo;`); uppercase via CSS, never in the source.
 - `PlateHero` · `title` + `titleAccent` ↔ `PAGE_SEO`: `title` ends with a space. The space goes inside the string: a loose text node
   between two `block`s builds an anonymous box. To break the line, a `span` with `block`, never `<br>`.
-- `src/components/sections/Hero.tsx` · "TOGETHER" plate (`aria-hidden`) ↔ `sr-only` inside the `<h1>`: without the `sr-only` the h1 ends up
-  as "Bonita comes" and `check:seo` fails.
+- `src/components/sections/Hero.tsx` · "PARADISE" plate (`aria-hidden`) ↔ `sr-only` inside the `<h1>`: without the `sr-only` the h1 ends up
+  as "Eat, Drink" and `check:seo` fails.
 
 **Plate hero (`src/components/shared/PlateHero.tsx`)**
 - `mb-[-0.94em]` of the `<h1>` ↔ `top-[calc(100%-0.94em)]` of the two `inverted-corner` ↔ 0.88 line-height + the plate's `pb-[0.12em]`:

@@ -7,7 +7,7 @@ export interface PageSeo {
 
 export const PAGE_SEO = {
   '/': {
-    h1: 'Bonita comes together',
+    h1: 'Eat, Drink, Paradise at Rooftop at Riverside in downtown Bonita Springs',
     title: 'Rooftop Bar & Food Truck Park in Bonita Springs, FL',
     description:
       'A rooftop bar over a yard of gourmet food trucks in downtown Bonita Springs. Live music, weekend happy hour and dogs welcome in the yard. Just come up.',

@@ -122,7 +122,7 @@ export default function Hero({
   };
 
   const HAPPY = { text: happyHourPhrase, Icon: Martini, medal: 'bg-cream text-ink' };
-  const MUSIC = { text: musicPhrase, Icon: MusicNote, medal: 'bg-river text-ink' };
+  const MUSIC = { text: musicPhrase.replace(/(^|\s)[a-z]/g, (c) => c.toUpperCase()), Icon: MusicNote, medal: 'bg-river text-ink' };
 
   const messages = status
     ? status.isOpen
@@ -141,7 +141,7 @@ export default function Hero({
               status.reopensOn === 'today'
                 ? 'Opening soon!'
                 : status.reopensOn
-                  ? `Opens ${status.reopensOn}!`
+                  ? `Opens ${status.reopensOn}${status.reopensAt ? ` at ${status.reopensAt}` : ''}!`
                   : 'See you soon!',
             Icon: Sun,
             medal: 'bg-sunset text-ink',
@@ -158,16 +158,16 @@ export default function Hero({
       <div className="page-box-wide">
       <div className="relative flex flex-wrap-reverse items-start justify-between gap-6">
         <h1 className="m-0 font-display text-titan font-extrabold uppercase text-ink">
-          Bonita comes
-          <span className="sr-only"> together</span>
+          Eat, Drink
+          <span className="sr-only">, Paradise at Rooftop at Riverside in downtown Bonita Springs</span>
         </h1>
         <p className="sr-only">{messages.map((m) => m.text).join('. ')}</p>
         <p
           aria-hidden="true"
           className="mb-1.5 flex flex-1 basis-85 items-center gap-2.5 rounded-pill bg-mint py-1.5 pr-1.5 pl-5 sm:mb-0 sm:self-stretch lg:gap-3.5 lg:py-2 lg:pr-2 lg:pl-6.5"
         >
-          <span className="min-w-0 flex-1 truncate font-body text-pill font-medium whitespace-nowrap text-ink">
-            <span key={message.text} className="rt-roll inline-block max-w-full truncate align-bottom">
+          <span className="min-w-0 flex-1 truncate font-body text-[15px] font-medium whitespace-nowrap min-[400px]:text-pill text-ink">
+            <span key={message.text} className="rt-roll block truncate">
               {message.text}
             </span>
           </span>
@@ -185,7 +185,7 @@ export default function Hero({
           aria-hidden="true"
           className="pointer-events-none absolute top-0 -left-3.5 z-30 m-0 rounded-door bg-bone grain pr-1.5 pl-3.5 pt-[0.06em] pb-[0.1em] font-display text-titan font-extrabold uppercase text-sunset lg:px-7"
         >
-          Together
+          Paradise
         </p>
         <div
           ref={frameRef}
@@ -239,9 +239,10 @@ export default function Hero({
       </div>
       <div className="flex flex-wrap items-start justify-between gap-x-10 gap-y-6 pt-6.5 pb-closing lg:pt-9">
         <p className="m-0 min-w-0 max-w-[62ch] flex-1 basis-[30rem] font-body text-lead font-light text-ink">
-          Picture a cold cocktail on the roof as the sun goes down, the smell of the grill drifting
-          up from the yard, a band warming up and the game on every screen. Grab a seat, bring
-          your people and stay as long as you like.
+          Your favorite hotspot in Downtown Bonita Springs is waiting upstairs. Catch a cool breeze,
+          a cold drink and the game on every TV at the Sunset Bar, then follow the live music
+          downstairs to the Yard for some tasty American classics, Florida seafood with a twist,
+          Caribbean fusion and Mexican street food. Bring the kids, bring your pets, and stay as long as you like.
         </p>
         <div className="flex flex-wrap items-center gap-3.5">
           <ButtonLink href="/whats-on" variant="primary" size="lg">
@@ -254,7 +255,7 @@ export default function Hero({
             size="lg"
             className="ring-ink hover:bg-ink hover:text-bone hover:ring-ink"
           >
-            Rent the place
+            Now booking events
           </ButtonLink>
           </div>
         </div>
