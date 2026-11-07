@@ -1,13 +1,16 @@
 import 'server-only';
-import { Resend } from 'resend';
-import { withTimeout } from './http';
+import { fetchWithTimeout } from './http';
 
 const TIMEOUT_MAIL_MS = 10_000;
+const MAILJET_SEND_URL = 'https://api.mailjet.com/v3.1/send';
+const FROM = { Email: 'info@eatdrinkparadise.com', Name: 'Rooftop at Riverside' } as const;
+const FAILED = 'We could not send your message right now. Please email us directly.';
 
-function client(): Resend | null {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return null;
-  return new Resend(key);
+function credentials(): string | null {
+  const key = process.env.MAILJET_API_KEY;
+  const secret = process.env.MAILJET_SECRET_KEY;
+  if (!key || !secret) return null;
+  return Buffer.from(`${key}:${secret}`).toString('base64');
 }
 
 export interface MailAttachment {
@@ -19,6 +22,14 @@ export interface MailAttachment {
 export interface MailResult {
   readonly ok: boolean;
   readonly message: string;
+}
+
+interface MailjetResponse {
+  readonly Messages?: readonly {
+    readonly Status?: string;
+    readonly Errors?: readonly { readonly ErrorMessage?: string }[];
+  }[];
+  readonly ErrorMessage?: string;
 }
 
 export async function sendMail({
@@ -34,50 +45,60 @@ export async function sendMail({
   readonly replyTo?: string;
   readonly attachments?: readonly MailAttachment[];
 }): Promise<MailResult> {
-  const resend = client();
-  const from = process.env.RESEND_FROM;
+  const auth = credentials();
 
-  if (!resend || !from) {
-    console.error('[mail] RESEND_API_KEY or RESEND_FROM not configured; nothing was sent.');
-    return {
-      ok: false,
-      message: 'We could not send your message right now. Please email us directly.',
-    };
+  if (!auth) {
+    console.error('[mail] MAILJET_API_KEY or MAILJET_SECRET_KEY not configured; nothing was sent.');
+    return { ok: false, message: FAILED };
   }
 
-  try {
-    const { error } = await withTimeout(resend.emails.send({
-      from,
-      to: typeof to === 'string' ? [to] : [...to],
-      subject,
-      text,
-      ...(replyTo ? { replyTo } : {}),
-      ...(attachments && attachments.length > 0
-        ? {
-            attachments: attachments.map((a) => ({
-              filename: a.filename,
-              content: a.content,
-              ...(a.contentType ? { contentType: a.contentType } : {}),
-            })),
-          }
-        : {}),
-    }), TIMEOUT_MAIL_MS);
+  const recipients = typeof to === 'string' ? [to] : [...to];
 
-    if (error) {
-      console.error('[mail] Resend returned an error:', error);
-      return {
-        ok: false,
-        message: 'We could not send your message right now. Please email us directly.',
-      };
+  try {
+    const res = await fetchWithTimeout(
+      MAILJET_SEND_URL,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${auth}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Messages: [
+            {
+              From: FROM,
+              To: recipients.map((Email) => ({ Email })),
+              Subject: subject,
+              TextPart: text,
+              ...(replyTo ? { ReplyTo: { Email: replyTo } } : {}),
+              ...(attachments && attachments.length > 0
+                ? {
+                    Attachments: attachments.map((a) => ({
+                      ContentType: a.contentType || 'application/octet-stream',
+                      Filename: a.filename,
+                      Base64Content: a.content.toString('base64'),
+                    })),
+                  }
+                : {}),
+            },
+          ],
+        }),
+      },
+      { ms: TIMEOUT_MAIL_MS },
+    );
+
+    const payload = (await res.json().catch(() => null)) as MailjetResponse | null;
+    const status = payload?.Messages?.[0]?.Status;
+
+    if (!res.ok || status !== 'success') {
+      console.error('[mail] Mailjet returned an error:', res.status, JSON.stringify(payload));
+      return { ok: false, message: FAILED };
     }
 
     console.info(JSON.stringify({ event: 'mail.sent', to, subject: subject.slice(0, 80) }));
     return { ok: true, message: 'Sent.' };
   } catch (err) {
     console.error('[mail] Exception while sending:', err);
-    return {
-      ok: false,
-      message: 'We could not send your message right now. Please email us directly.',
-    };
+    return { ok: false, message: FAILED };
   }
 }

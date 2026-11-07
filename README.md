@@ -34,10 +34,10 @@ The audits that open pages need the server running. By default they point to
 
 The commented template is `.env.example`. In short:
 
-- **`RESEND_API_KEY`**: shared team variable on Vercel. It is not created at
-  the project level, because that would override it.
-- **`RESEND_FROM`**: has to be `@restoexp.com`, the only verified domain in
-  Resend.
+- **`MAILJET_API_KEY`, `MAILJET_SECRET_KEY`**: Mailjet API credentials (Account settings, API
+  Key Management). All form emails go out through Mailjet from
+  `Rooftop at Riverside <info@eatdrinkparadise.com>`, which has to be a verified sender in
+  Mailjet. Set them in the Render environment, never in the repo.
 - **`MAIL_TO_CONTACT`, `MAIL_TO_EVENTS`, `MAIL_TO_CAREERS`, `MAIL_TO_MARKET`,
   `MAIL_TO_BOOKING`**: which inbox each form goes to. The routing is in
   `src/lib/inboxes.ts`.
