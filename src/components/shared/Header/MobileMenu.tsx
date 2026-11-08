@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
+import { SEASONAL } from '@/content/seasonal';
 import { NAV_CTA, NAV_MORE_FEATURED, NAV_PRIMARY, type NavLink as NavLinkData } from '@/lib/nav';
 import { ButtonLink } from '../Button';
 import { GUTTER } from '../Section';
@@ -76,7 +77,8 @@ export default function MobileMenu({
             {([
               ...NAV_PRIMARY,
               ...moreLinks,
-              ...([...NAV_PRIMARY, ...moreLinks].some((l) => l.href === NAV_MORE_FEATURED.href)
+              ...(!SEASONAL.NFC_NORTH_SUNDAYS ||
+              [...NAV_PRIMARY, ...moreLinks].some((l) => l.href === NAV_MORE_FEATURED.href)
                 ? []
                 : [NAV_MORE_FEATURED]),
             ] as readonly NavLinkData[]).map(({ label, href, external }) => (

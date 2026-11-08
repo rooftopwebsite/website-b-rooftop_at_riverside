@@ -4,7 +4,6 @@ import { SITE_LEGAL_DOCS } from '@/content/legal-docs';
 import { BRAND } from '@/lib/brand';
 import { TALL_BOX_CLS } from '@/lib/flags';
 import { withoutBlog } from '@/lib/nav';
-import AgencyBar from './AgencyBar';
 import { ButtonLink } from './Button';
 import NewsletterSignup from './NewsletterSignup';
 import { GUTTER } from './Section';
@@ -155,7 +154,6 @@ export default function Footer({ hasBlog }: { readonly hasBlog: boolean }) {
           </div>
         </div>
       </div>
-      <AgencyBar />
     </footer>
   );
 }

@@ -18,12 +18,6 @@
     "active": true
   },
   {
-    "name": "Sunset Bar",
-    "description": "The rooftop bar menu: cocktails, draft and bottled beer, seltzers and wine. Transcribed from the January 2026 printed menu. Prices include tax; a 22% gratuity is applied to unsigned bar tabs.",
-    "pdf": "/menus/sunset-bar.pdf",
-    "active": true
-  },
-  {
     "name": "Tropical Fusion",
     "description": "Caribbean plates like jerk chicken and oxtail, next to gyros, flatbreads and pasta.",
     "pdf": "/menus/tropical-fusion.pdf",

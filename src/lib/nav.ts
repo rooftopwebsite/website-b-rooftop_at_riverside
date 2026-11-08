@@ -63,7 +63,7 @@ export const NAV_MORE_FEATURED = {
   href: '/sunset-bar#nfc-north-hq',
   hint: 'Your hometown bar for Green Bay, Chicago, Detroit and Minnesota fans, every Sunday of the season.',
   points: [
-    'The 1 PM and 4 PM games on every screen upstairs',
+    'The 1 PM and 4:30 PM games on every screen upstairs',
     'Drink specials for Green Bay, Chicago, Detroit and Minnesota',
     'Weekly giveaways for each NFC North team',
     'Week 18 draw for Beckett Witnessed autographed jerseys',

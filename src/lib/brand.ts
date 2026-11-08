@@ -72,14 +72,6 @@ export const BRAND = {
   giftCards: CONTACT.giftCards,
 
   eventbrite: CONTACT.eventbrite as string | null,
-
-  credit: { label: 'Resto Experience', url: 'https://restoexp.com' },
-} as const;
-
-export const AGENCY = {
-  url: 'https://restoexp.com',
-  label: 'Resto Experience',
-  tagline: 'Content, marketing & web design',
 } as const;
 
 export const SEO_LOCAL = {

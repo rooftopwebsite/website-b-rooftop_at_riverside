@@ -9,11 +9,13 @@ export interface FeaturedDeal {
   readonly name: string;
   readonly how: string;
   readonly price: string;
+  readonly aliases?: readonly string[];
 }
 
 const flat = (text: string) => text.replace(/[‘’]/g, "'").toLowerCase();
 
-const namesDeal = (text: string, deal: FeaturedDeal) => flat(text).includes(flat(deal.name));
+const namesDeal = (text: string, deal: FeaturedDeal) =>
+  [deal.name, ...(deal.aliases ?? [])].some((n) => flat(text).includes(flat(n)));
 
 const paragraphsOf = (event: VenueEvent) =>
   event.body.length > 0 ? event.body : event.summary === event.title ? [] : [event.summary];
@@ -157,7 +159,7 @@ export default function FeaturedEventCard({
 
         {linkToCalendar ? (
           <span className="mt-2 inline-flex w-fit items-center gap-2.5 font-body text-base font-semibold text-cream">
-            See the night
+            See What’s Happening
             <ArrowRight className="size-4 transition-transform duration-300 ease-brand group-hover:translate-x-1" />
           </span>
         ) : null}

@@ -3,7 +3,7 @@
 Website for Rooftop at Riverside (Bonita Springs, FL): a rooftop bar over a
 food truck park. It replaces the Wix site `eatdrinkparadise.com`.
 
-Next.js 16 (App Router) · React 19 · Tailwind 4 · Vercel. Built by RestoExp.
+Next.js 16 (App Router) · React 19 · Tailwind 4 · Vercel.
 
 ## Getting started
 
@@ -64,6 +64,15 @@ every 5 minutes per server on the pages that render on request.
   creates a `calendarSettings` document that marks the calendar as set up. Do not delete it.
 - **Flyers:** existing flyers stay in `public/images/events/`. A flyer uploaded in Sanity replaces
   the old one for that event.
+- **NFC North Sundays block (football season):** the block on `/sunset-bar` and its "More" menu card
+  are controlled by `NFC_NORTH_SUNDAYS` in `src/content/seasonal.ts`. Set it to `false` after the
+  season and redeploy. It does not read or change Sanity events, and its copy is in
+  `src/content/nfc-north.ts`.
+- **Bar menu (`/sunset-bar`):** the "See the full menu" button reads the `barMenuSettings` document
+  from the same dataset. It opens the uploaded PDF only when **Menu available** is on and a PDF is
+  uploaded. In every other case (switch off, no PDF, not a PDF, Sanity unreachable, variables not
+  set) it opens a "Coming soon" window. There is no fallback PDF. The window's title and text can be
+  overridden in the Studio; the defaults live in `src/lib/bar-menu-types.ts`.
 - **Adding events or changing the fields:** change the Studio schema and `src/lib/sanity-events.ts`
   together.
 
@@ -92,7 +101,7 @@ file, commit, and Vercel publishes. There is no database and no dashboard.
 |---|---|
 | `contact.json` | Phone, emails (general, events, hiring), address, coordinates, Google Maps link, social, gift cards and Eventbrite |
 | `hours.json` | Opening hours for the bar (`bar`) and the trucks (`trucks`) per day. Each day is `{ "open": "15:00", "close": "21:00" }` in 24 h, or `"closed"`. A closing time after midnight is written as is (`"02:00"`) |
-| `menus.json` | The PDF menus: `name`, `description`, `pdf` (path inside `public/`, e.g. `/menus/sunset-bar.pdf`) and `active`. The one called `Sunset Bar` is the bar's; the rest are matched by name with the trucks in `trucks.ts` |
+| `menus.json` | The food truck PDF menus: `name`, `description`, `pdf` (path inside `public/`, e.g. `/menus/prime-carvery.pdf`) and `active`, matched by name with the trucks in `trucks.ts`. The bar menu is not here, it comes from Sanity (see Bar menu below) |
 | `events.json` | The calendar. One entry per date (an event repeated on scattered dates has several). Poster in `public/images/events/posters/`, referenced in `bannerUrl`. Recurring ones have `isRecurring: true` and `recurrenceDays` with the days (`"[0,6]"`, 0 = Sunday). The venue comes from `tags` (`sunset-bar`, `the-yard`, `game-lounge`) and `featured` highlights it |
 | `jobs.json` | Openings for `/join-us`. Empty = none are listed. Fields: `id`, `title`, `description`, `requirements`, `employment_type`, `department`, `salary_type`, `salary_min`, `salary_max`, `status` (`open`) |
 | `blog.json` | Blog posts. Empty = the blog is hidden from the menu, the footer and the sitemap. Minimum fields: `id`, `slug`, `title`, `excerpt`, `contentHtml` (or `content` in markdown), `coverImageUrl` (in `public/images/blog/`), `coverImageAlt`, `publishedAt`, `featured` |

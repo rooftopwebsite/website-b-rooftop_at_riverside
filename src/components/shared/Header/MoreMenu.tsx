@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { SEASONAL } from '@/content/seasonal';
 import { NAV_MORE_FEATURED, type NavGroup } from '@/lib/nav';
 import TilePattern, { TileMark } from '../TilePattern';
 
@@ -72,52 +73,54 @@ export default function MoreMenu({ moreOpen, moreGroups, isCurrent, onLinkClick 
           </div>
         ))}
 
-        <Link
-          href={NAV_MORE_FEATURED.href}
-          onClick={onLinkClick}
-          aria-current={isCurrent(NAV_MORE_FEATURED.href) ? 'page' : undefined}
-          className="on-dark group flex flex-col overflow-hidden rounded-card bg-deep card-shadow"
-        >
-          <TilePattern height="h-18" />
+        {SEASONAL.NFC_NORTH_SUNDAYS ? (
+          <Link
+            href={NAV_MORE_FEATURED.href}
+            onClick={onLinkClick}
+            aria-current={isCurrent(NAV_MORE_FEATURED.href) ? 'page' : undefined}
+            className="on-dark group flex flex-col overflow-hidden rounded-card bg-deep card-shadow"
+          >
+            <TilePattern height="h-18" />
 
-          <span className="flex flex-1 flex-col p-5">
-            <span className="eyebrow text-cream">{NAV_MORE_FEATURED.eyebrow}</span>
+            <span className="flex flex-1 flex-col p-5">
+              <span className="eyebrow text-cream">{NAV_MORE_FEATURED.eyebrow}</span>
 
-            <span className="mt-2.5 font-display text-d6 font-bold uppercase leading-[1.1] text-paper transition-colors duration-200 group-hover:text-cream">
-              {NAV_MORE_FEATURED.label}
+              <span className="mt-2.5 font-display text-d6 font-bold uppercase leading-[1.1] text-paper transition-colors duration-200 group-hover:text-cream">
+                {NAV_MORE_FEATURED.label}
+              </span>
+              <span className="mt-2 font-body text-data font-light leading-[1.5] text-paper/85">
+                {NAV_MORE_FEATURED.hint}
+              </span>
+              <span className="mt-3 flex flex-col gap-1.5">
+                {NAV_MORE_FEATURED.points.map((dot) => (
+                  <span key={dot} className="flex items-start gap-2 font-body text-data leading-[1.4] text-paper">
+                    <span aria-hidden="true" className="mt-[7px] size-[5px] shrink-0 rounded-pill bg-sunset" />
+                    {dot}
+                  </span>
+                ))}
+              </span>
+              <span className="mt-auto flex items-center gap-1.5 pt-4 font-body text-data font-medium text-cream">
+                {NAV_MORE_FEATURED.cta}
+                <svg
+                  width="14"
+                  height="9"
+                  viewBox="0 0 14 9"
+                  fill="none"
+                  aria-hidden="true"
+                  className="transition-transform duration-200 ease-brand group-hover:translate-x-0.5"
+                >
+                  <path
+                    d="M0 4.5h12M8.5 1l3.5 3.5-3.5 3.5"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
             </span>
-            <span className="mt-2 font-body text-data font-light leading-[1.5] text-paper/85">
-              {NAV_MORE_FEATURED.hint}
-            </span>
-            <span className="mt-3 flex flex-col gap-1.5">
-              {NAV_MORE_FEATURED.points.map((dot) => (
-                <span key={dot} className="flex items-start gap-2 font-body text-data leading-[1.4] text-paper">
-                  <span aria-hidden="true" className="mt-[7px] size-[5px] shrink-0 rounded-pill bg-sunset" />
-                  {dot}
-                </span>
-              ))}
-            </span>
-            <span className="mt-auto flex items-center gap-1.5 pt-4 font-body text-data font-medium text-cream">
-              {NAV_MORE_FEATURED.cta}
-              <svg
-                width="14"
-                height="9"
-                viewBox="0 0 14 9"
-                fill="none"
-                aria-hidden="true"
-                className="transition-transform duration-200 ease-brand group-hover:translate-x-0.5"
-              >
-                <path
-                  d="M0 4.5h12M8.5 1l3.5 3.5-3.5 3.5"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-          </span>
-        </Link>
+          </Link>
+        ) : null}
       </div>
     </div>
   );

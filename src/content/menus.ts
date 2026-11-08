@@ -58,7 +58,3 @@ export async function truckMenus(): Promise<readonly TruckMenuData[]> {
     };
   });
 }
-
-export async function barMenuData(): Promise<MenuPdf | null> {
-  return getMenuPdfs().find(isFromBar) ?? null;
-}

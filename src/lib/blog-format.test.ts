@@ -33,7 +33,7 @@ const feed = (over: Partial<FeedPost> = {}): FeedPost => ({
   content: null,
   contentHtml: '<h1>Title</h1><p>More Than Rice — A Spanish Ritual</p>',
   jsonLd: null,
-  author: { name: 'Resto Experience', avatarUrl: null },
+  author: { name: 'Rooftop at Riverside', avatarUrl: null },
   publishedAt: '2026-04-15',
   updatedAt: '2026-09-01T19:03:23.222Z',
   featured: false,
