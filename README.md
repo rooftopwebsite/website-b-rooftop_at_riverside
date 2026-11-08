@@ -41,7 +41,27 @@ The commented template is `.env.example`. In short:
 - **`MAIL_TO_CONTACT`, `MAIL_TO_EVENTS`, `MAIL_TO_CAREERS`, `MAIL_TO_MARKET`,
   `MAIL_TO_BOOKING`**: which inbox each form goes to. The routing is in
   `src/lib/inboxes.ts`.
-- **`NEWSLETTER_SHEETS_WEBHOOK_URL`**: pending, the spreadsheet doesn't exist yet.
+- **`MAILJET_CONTACT_LIST_ID`**: the Mailjet contact list that confirmed newsletter subscribers
+  are added to (`10656804`).
+- **`NEWSLETTER_TOKEN_SECRET`**: server-only secret that signs the newsletter confirmation links.
+  At least 32 characters; generate one with `openssl rand -hex 32`. Set it on Render, never in the
+  repo. Changing it invalidates links that are already out.
+- **`NEWSLETTER_LINK_BASE_URL`** (optional): the site address used in the confirmation email link.
+  Defaults to `https://rooftopatriverside.com`. Set it on a staging site so the link points back there.
+
+### Newsletter double opt-in
+
+1. The footer form needs first name, email and the unchecked consent box. It sends a confirmation
+   email through Mailjet. Nothing is added to the Mailjet list yet.
+2. The email link opens `/newsletter/confirm?token=...`. The page shows a button, and only the
+   button press adds the contact to the list, with the `addnoforce` action (a contact who
+   unsubscribed earlier is never resubscribed).
+3. The link is a signed token (HMAC-SHA256) that expires after 24 hours. There is no database.
+   **The token is time-limited but not strictly single-use:** a second press within 24 hours
+   repeats the same safe `addnoforce` call, which changes nothing. Strict single-use would
+   need persistent storage.
+4. Every campaign sent from Mailjet to this list must keep Mailjet's unsubscribe link in the
+   template.
 
 There is no database and no variable is needed to read content.
 

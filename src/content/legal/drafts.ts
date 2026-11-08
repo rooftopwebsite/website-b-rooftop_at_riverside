@@ -43,19 +43,47 @@ const NOTICE: LegalBlock = {
   text: 'DRAFT LAYOUT. The body text below is filler, not a legal document, and this page stays hidden from search engines until the final wording is in. The section headings are the real ones.',
 };
 
+const PRIVACY_NOTICE: LegalBlock = {
+  kind: 'notice',
+  text: 'DRAFT. Section 4, Newsletter and email, describes how the newsletter sign-up works today. The other sections are still filler, not a legal document, and this page stays hidden from search engines until the final wording is in and has been reviewed.',
+};
+
+const NEWSLETTER_SECTION: readonly LegalBlock[] = [
+  { kind: 'heading', text: '4. Newsletter and email' },
+  {
+    kind: 'paragraph',
+    text: 'If you sign up for our newsletter we collect your first name and email address, and the fact that you ticked the box asking us to email you news and events. The box is never ticked for you, and filling in any other form on this site does not sign you up for the newsletter.',
+  },
+  {
+    kind: 'paragraph',
+    text: 'We use a double opt-in. After you submit the form we send you one email with a confirmation link that works for 24 hours. You are only added to our mailing list once you open the link and press the confirm button. If you do not confirm, we do not add you.',
+  },
+  {
+    kind: 'paragraph',
+    text: 'We use Mailjet as our email service provider. Mailjet sends our confirmation and newsletter emails and stores the mailing list for us. Your name and email address are shared with Mailjet for that purpose only.',
+  },
+  {
+    kind: 'paragraph',
+    text: 'You can unsubscribe at any time using the unsubscribe link at the bottom of every newsletter, or by writing to us at the address in the last section. If you unsubscribe, we will not add you back to the list on our own.',
+  },
+];
+
 export const PRIVACY_POLICY_DRAFT: readonly LegalBlock[] = [
-  NOTICE,
+  PRIVACY_NOTICE,
   ...blocks([
     { title: '1. Information we collect', paragraphs: 2, list: 4 },
     { title: '2. How we use your information', paragraphs: 2 },
     { title: '3. The forms on this site', paragraphs: 1, list: 4 },
-    { title: '4. Sharing and disclosure', paragraphs: 2 },
-    { title: '5. Cookies and tracking', paragraphs: 1 },
-    { title: '6. Data retention', paragraphs: 1 },
-    { title: '7. Your rights and choices', paragraphs: 2, list: 3 },
-    { title: '8. Children under thirteen', paragraphs: 1 },
-    { title: '9. Changes to this policy', paragraphs: 1 },
-    { title: '10. How to reach us', paragraphs: 1 },
+  ]),
+  ...NEWSLETTER_SECTION,
+  ...blocks([
+    { title: '5. Sharing and disclosure', paragraphs: 2 },
+    { title: '6. Cookies and tracking', paragraphs: 1 },
+    { title: '7. Data retention', paragraphs: 1 },
+    { title: '8. Your rights and choices', paragraphs: 2, list: 3 },
+    { title: '9. Children under thirteen', paragraphs: 1 },
+    { title: '10. Changes to this policy', paragraphs: 1 },
+    { title: '11. How to reach us', paragraphs: 1 },
   ]),
 ];
 

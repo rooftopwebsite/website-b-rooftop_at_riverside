@@ -231,8 +231,10 @@ None of these have importers (or only their types are imported). **They are not 
   never stopped existing. `retiredTruckRedirects()` keeps the name so `next.config.ts` doesn't have to be touched (today it redirects every slug).
 - `tomato-soft` token (`globals.css`) → it is not an orphan: the dark variant of `PendingData` uses it.
 - `EVENT_FAMILIES` → no longer listed on `/events`, but it generates `EVENT_SUBTYPES`, which validates the `InquiryForm` dropdown on the server.
-- `src/app/actions/newsletter.ts` → it was deleted once by mistake: the current site **does** have the form. It returns an error on
-  purpose as long as `NEWSLETTER_SHEETS_WEBHOOK_URL` doesn't exist (it goes to a spreadsheet via Apps Script, not to Mailjet).
+- `src/app/actions/newsletter.ts` → it was deleted once by mistake: the current site **does** have the form. It sends a double opt-in
+  confirmation email through Mailjet and only adds the contact to the list (`MAILJET_CONTACT_LIST_ID`, action `addnoforce`, never
+  `addforce`) after the button on `/newsletter/confirm` is pressed. The consent checkbox is unchecked by default and must stay so.
+  Confirmation links are signed and expire after 24 hours, but are not strictly single-use (no database).
 - `src/components/shared/Motion/` re-exports `EASE_BRAND`, `DURATION`, `REVEAL_OFFSET`, `STAGGER` and `REVEAL_AMOUNT` from
   `lib/motion.ts` under the old names, so as not to break call sites. `ScrollExit` was deleted on 2026-09-23 (it's in git).
 

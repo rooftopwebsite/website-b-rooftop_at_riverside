@@ -6,7 +6,7 @@ const MAILJET_SEND_URL = 'https://api.mailjet.com/v3.1/send';
 const FROM = { Email: 'info@eatdrinkparadise.com', Name: 'Rooftop at Riverside' } as const;
 const FAILED = 'We could not send your message right now. Please email us directly.';
 
-function credentials(): string | null {
+export function mailjetAuth(): string | null {
   const key = process.env.MAILJET_API_KEY;
   const secret = process.env.MAILJET_SECRET_KEY;
   if (!key || !secret) return null;
@@ -45,7 +45,7 @@ export async function sendMail({
   readonly replyTo?: string;
   readonly attachments?: readonly MailAttachment[];
 }): Promise<MailResult> {
-  const auth = credentials();
+  const auth = mailjetAuth();
 
   if (!auth) {
     console.error('[mail] MAILJET_API_KEY or MAILJET_SECRET_KEY not configured; nothing was sent.');

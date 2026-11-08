@@ -6,7 +6,8 @@ const REQUIRED = [
   'MAIL_TO_CAREERS',
   'MAIL_TO_MARKET',
   'MAIL_TO_BOOKING',
-  'NEWSLETTER_SHEETS_WEBHOOK_URL',
+  'MAILJET_CONTACT_LIST_ID',
+  'NEWSLETTER_TOKEN_SECRET',
 ] as const;
 
 export function register(): void {

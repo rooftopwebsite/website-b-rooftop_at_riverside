@@ -240,55 +240,24 @@ be answered from here because all four are commercial promises.
 | 29 | **Is the Thursday giveaway still running?** (`/tnt-sign-ups`, «Enter to win free tickets», QR at the venue, winner on Fridays) | `/whats-on` | Same case: 301 to `/whats-on` without a single line about the giveaway. The official rules are already written and get reused as is |
 | 30 | **The menus of the four current trucks** | the four `/food-trucks` detail pages | The current site only publishes two menus as images, and one is from a truck that's no longer there. Of the four on the roster, today only El Chilango has a published menu |
 | 31 | **The complete monthly calendar, event by event** | `/whats-on`, and the RestoExp database | The database today only has the four weekly recurring events. The one-off events (festivals, ticketed shows) aren't loaded, and they're precisely the ones sold through Eventbrite. The client already delivers the following month's calendar on the 10th |
-| 32 | **Does the email list live in Toast or in a spreadsheet?** | the pre-footer across the whole site | Questionnaire F5 says email marketing goes out through Toast, which is already the POS. The site's form currently points to a spreadsheet webhook that doesn't exist yet. Depending on the answer, the form's destination changes, not the form |
+| 32 | **Does the email list live in Toast or in a spreadsheet?** | the pre-footer across the whole site | Questionnaire F5 says email marketing goes out through Toast, which is already the POS. The site's form now adds confirmed subscribers to a Mailjet contact list. Depending on the answer, the form's destination changes, not the form |
 | 23 | **Form backend + file storage** — a technical decision, not the client's | `/join-us` | The current site runs three forms with uploads of up to 15 MB (musicians' material, vendor details, résumés). Until we choose where they live, the page sends to email, which is honest and works today |
-| 24 | **⚠️ The newsletter spreadsheet and its webhook** — a technical decision, not the client's | The pre-footer on **all 23 pages** | The form is finished and validates, but **the sign-up isn't saved**: without `NEWSLETTER_SHEETS_WEBHOOK_URL` the action returns a visible error that sends people to write to `info@eatdrinkparadise.com`. See the step by step below |
+| 24 | **Newsletter sign-up goes to Mailjet** | The pre-footer on **all 23 pages** | The form sends a double opt-in confirmation email and adds confirmed subscribers to Mailjet list `10656804`. Needs `MAILJET_CONTACT_LIST_ID` and `NEWSLETTER_TOKEN_SECRET` on Render. See below |
 
-### 24 · How the newsletter gets connected — 15 minutes
+### 24 · How the newsletter gets connected
 
-The pre-footer form sends `{ firstName, email, source }` via POST to
-an Apps Script URL. That endpoint still needs to be created.
+The pre-footer form takes first name, email and an unchecked consent box. It emails a
+confirmation link and, only after the button on `/newsletter/confirm` is pressed, adds the
+person to the Mailjet contact list.
 
-1. **New spreadsheet** in the agency's Drive. First row:
-   `date · firstName · email · source`.
-2. **Extensions → Apps Script**, paste this and save:
+1. In Render, set `MAILJET_CONTACT_LIST_ID=10656804` and a new `NEWSLETTER_TOKEN_SECRET`
+   (`openssl rand -hex 32`). `MAILJET_API_KEY` and `MAILJET_SECRET_KEY` are already used by the other forms.
+2. Confirm `info@eatdrinkparadise.com` is a validated sender in Mailjet.
+3. Test one real sign-up: tick the box, open the email, press the confirm button, then check
+   the contact appears in the list in Mailjet.
+4. Keep Mailjet's unsubscribe link in every campaign template sent to this list.
 
-```js
-function doPost(e) {
-  try {
-    var d = JSON.parse(e.postData.contents);
-    if (!d.email) throw new Error('empty email');
-    SpreadsheetApp.getActiveSpreadsheet()
-      .getSheets()[0]
-      .appendRow([new Date(), d.firstName || '', d.email, d.source || '']);
-    return ContentService
-      .createTextOutput(JSON.stringify({ result: 'ok' }))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    // ⚠️ Apps Script answers 200 anyway. That's why the `result` goes in the body
-    // and `actions.ts` reads it: without this a write failure would be reported
-    // to the user as a success.
-    return ContentService
-      .createTextOutput(JSON.stringify({ result: 'error', error: String(err) }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-```
-
-3. **Deploy → New deployment → Web app**, with
-   *Execute as* **me** and *Who has access* **anyone**. Without that
-   second value the site gets a 401 and the sign-up is lost.
-4. Copy the `/exec` URL and load it as `NEWSLETTER_SHEETS_WEBHOOK_URL` in
-   Vercel (all three environments) and in each person's `.env.local`.
-
-**After connecting it, a real sign-up has to be tested** and the row checked in the
-spreadsheet. The «not connected» error and the «write failed» error look
-different in the browser, but both are recorded in the logs with the prefix
-`[newsletter]`.
-
-> **What this is NOT:** a sending platform. The spreadsheet collects the list;
-> sending the campaign stays manual until the client chooses a
-> provider (Mailchimp, Klaviyo). Decision postponed by Camila on 2026-09-11.
+> **What this is NOT:** a sending platform. Mailjet collects the list; campaigns are sent from Mailjet.
 
 ---
 

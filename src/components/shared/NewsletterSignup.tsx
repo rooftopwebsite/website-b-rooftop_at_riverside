@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useActionState, useId } from 'react';
 import { useFormStatus } from 'react-dom';
 import { subscribeToNewsletter } from '@/app/actions/newsletter';
@@ -87,6 +88,31 @@ export default function NewsletterSignup() {
 
                   <SubmitButton />
                 </div>
+                <div>
+                  <label htmlFor={fid('consent')} className="flex items-start gap-3 font-body text-data text-paper">
+                    <input
+                      id={fid('consent')}
+                      name="consent"
+                      type="checkbox"
+                      aria-invalid={errors.consent ? true : undefined}
+                      aria-describedby={errors.consent ? fid('consent-err') : undefined}
+                      className="mt-0.5 size-5 shrink-0 cursor-pointer accent-sunset"
+                    />
+                    <span>
+                      Yes, email me news and events from Rooftop at Riverside. I can unsubscribe at any
+                      time. See the{' '}
+                      <Link href="/privacy-policy" className="link-text underline">
+                        Privacy Policy
+                      </Link>
+                      .
+                    </span>
+                  </label>
+                  {errors.consent ? (
+                    <p id={fid('consent-err')} className="mt-1 font-body text-data text-paper">
+                      {errors.consent}
+                    </p>
+                  ) : null}
+                </div>
                 <div className="sr-only" aria-hidden="true">
                   <label htmlFor={fid('website')}>Leave this empty</label>
                   <input id={fid('website')} name="website" type="text" tabIndex={-1} autoComplete="off" />
@@ -107,7 +133,7 @@ export default function NewsletterSignup() {
                         {errors.email}
                       </p>
                     ) : null}
-                    {!errors.firstName && !errors.email ? (
+                    {!errors.firstName && !errors.email && !errors.consent ? (
                       <p className="font-body text-data text-paper">{state.message}</p>
                     ) : null}
                   </div>
