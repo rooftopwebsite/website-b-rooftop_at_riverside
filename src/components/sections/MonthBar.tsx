@@ -96,15 +96,15 @@ export default function MonthBar({
             aria-label="Filter events by type"
             className={`-mx-gutter mt-[2px] -mb-2 overflow-x-auto py-2 [scrollbar-width:none] md:-mx-gutter-lg lg:mt-[4px] [&::-webkit-scrollbar]:hidden ${GUTTER}`}
           >
-            <ul className="m-0 flex w-max min-w-full list-none flex-nowrap gap-[6px] p-0">
+            <ul className="m-0 flex w-max min-w-full list-none flex-nowrap gap-[6px] p-0 md:w-full md:flex-wrap md:gap-[8px]">
               {filters.map((f) => (
-                <li key={f.id ?? 'all'}>
+                <li key={f.id ?? 'all'} className="shrink-0">
                   <Link
                     href={f.href}
                     scroll={false}
                     aria-current={f.current ? 'true' : undefined}
                     className={[
-                      'hit-area inline-block whitespace-nowrap rounded-pill px-[13px] py-[5px] text-caption font-bold uppercase tracking-[0.08em] transition-colors',
+                      'hit-area block whitespace-nowrap rounded-pill px-[13px] py-[5px] text-caption font-bold uppercase tracking-[0.08em] transition-colors',
                       f.current
                         ? ACTIVE
                         : 'border border-teal600/35 text-deep hover:border-teal600 hover:bg-mint/50',
