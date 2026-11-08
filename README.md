@@ -48,6 +48,24 @@ The commented template is `.env.example`. In short:
   repo. Changing it invalidates links that are already out.
 - **`NEWSLETTER_LINK_BASE_URL`** (optional): the site address used in the confirmation email link.
   Defaults to `https://rooftopatriverside.com`. Set it on a staging site so the link points back there.
+- **`SANITY_PROJECT_ID`, `SANITY_DATASET`** (optional): turn on the events calendar from Sanity
+  (`hfsae018`, `production`). Leave both empty and the site uses `src/content/events.json`.
+
+### Events from Sanity
+
+The Studio lives in a separate folder, `rooftop-sanity-studio`, next to this one. The website only
+reads published events from Sanity's public, cached API (no token), at build time and at most once
+every 5 minutes per server on the pages that render on request.
+
+- **Not set up yet, or Sanity unreachable:** the site uses `src/content/events.json`. If Sanity
+  fails after a good read, the last good copy from Sanity is kept.
+- **Set up and empty:** once the events are imported, the Sanity list is the truth. If it is empty,
+  the calendar is empty, and deleted or expired events do not come back from the JSON. The import
+  creates a `calendarSettings` document that marks the calendar as set up. Do not delete it.
+- **Flyers:** existing flyers stay in `public/images/events/`. A flyer uploaded in Sanity replaces
+  the old one for that event.
+- **Adding events or changing the fields:** change the Studio schema and `src/lib/sanity-events.ts`
+  together.
 
 ### Newsletter double opt-in
 

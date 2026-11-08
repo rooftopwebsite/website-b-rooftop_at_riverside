@@ -5,7 +5,7 @@ import { withoutEmDash } from '@/lib/em-dash';
 export type EventKind = 'recurring' | 'one-off' | 'festival';
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
-interface RawEvent {
+export interface RawEvent {
   readonly id: string;
   readonly title: string;
   readonly description: string;
@@ -19,6 +19,8 @@ interface RawEvent {
   readonly recurrenceDays: string | null;
   readonly price: number | string | null;
   readonly tags: readonly string[];
+  readonly ticketUrl?: string | null;
+  readonly imageAlt?: string | null;
 }
 
 export interface VenueEvent {
@@ -124,16 +126,17 @@ function adapt(r: RawEvent): VenueEvent {
     endTime: end,
     endsNextDay: end < start,
     space: spaceFromTags(r.tags),
-    ticketUrl: TICKETS[slug] ?? null,
+    ticketUrl: r.ticketUrl ?? TICKETS[slug] ?? null,
     price: price !== null && Number.isFinite(price) && price > 0 ? price : null,
     image: r.bannerUrl,
-    imageAlt: r.bannerUrl ? (ALT[slug] ?? `Poster for ${title}`) : null,
+    imageAlt: r.bannerUrl ? (r.imageAlt ?? ALT[slug] ?? `Poster for ${title}`) : null,
     tags: r.tags,
   };
 }
 
 export async function getVenueEvents(): Promise<readonly VenueEvent[]> {
-  return (raw as readonly RawEvent[]).map(adapt);
+  const { sanityEvents } = await import('@/lib/sanity-events');
+  return ((await sanityEvents()) ?? (raw as readonly RawEvent[])).map(adapt);
 }
 
 export const featuredEvent = async () =>
