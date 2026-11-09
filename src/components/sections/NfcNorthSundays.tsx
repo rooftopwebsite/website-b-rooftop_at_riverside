@@ -2,6 +2,9 @@ import Image from 'next/image';
 import { ButtonLink } from '@/components/shared/Button';
 import { Eyebrow, Heading } from '@/components/shared/Type';
 import {
+  ALL_WEEK_COLLEGE,
+  ALL_WEEK_HEADING,
+  ALL_WEEK_NFL,
   GIVEAWAY_HEADING,
   GIVEAWAY_JERSEYS,
   GIVEAWAY_JERSEY_INTRO,
@@ -113,6 +116,18 @@ export default function NfcNorthSundays() {
             </li>
           ))}
         </ul>
+      </div>
+
+      <div className="mt-12 text-center lg:mt-16">
+        <Heading level={3} className="m-0 text-d4 leading-none text-paper lg:text-d3">
+          {ALL_WEEK_HEADING}
+        </Heading>
+        <p className="mx-auto mt-4 max-w-[56ch] font-body text-lead font-light text-bone">
+          {ALL_WEEK_NFL}
+        </p>
+        <p className="mx-auto mt-4 max-w-[56ch] font-body text-lead font-light text-bone">
+          {ALL_WEEK_COLLEGE}
+        </p>
       </div>
 
       <div className="mt-12 text-center lg:mt-16">

@@ -238,8 +238,14 @@ export const matchesFilter = (e: VenueEvent, id: string | null): boolean => {
   return e.tags.some((t) => f.tags.includes(t)) || (id === 'festival' && e.kind === 'festival');
 };
 
+// Pills hidden until there is enough programming. The events stay under Everything and on the
+// calendar, and the ids stay in EVENT_FILTERS for event colors.
+const HIDDEN_FILTER_IDS: readonly string[] = ['themed', 'festival'];
+
 export const activeFilters = (events: readonly VenueEvent[]): readonly EventFilter[] =>
-  EVENT_FILTERS.filter((f) => events.some((e) => matchesFilter(e, f.id)));
+  EVENT_FILTERS.filter(
+    (f) => !HIDDEN_FILTER_IDS.includes(f.id) && events.some((e) => matchesFilter(e, f.id)),
+  );
 
 export const isTicketed = (e: VenueEvent): boolean => e.ticketUrl !== null;
 

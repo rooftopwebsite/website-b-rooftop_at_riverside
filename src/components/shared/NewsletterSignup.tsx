@@ -140,10 +140,6 @@ export default function NewsletterSignup() {
                     ) : null}
                   </div>
                 ) : null}
-
-                <p className="subhead text-center font-body text-micro desk:text-left">
-                  Rooftop updates only. We don’t sell your information. Unsubscribe anytime.
-                </p>
               </form>
             )}
       </div>

@@ -69,7 +69,7 @@ export default async function EventsPage({
           Take me to the form
         </ButtonLink>
         <ButtonLink href="#spaces" variant="secondary" size="lg">
-          See the spaces
+          More Information
         </ButtonLink>
       </PlateHero>
 
@@ -219,7 +219,7 @@ export default async function EventsPage({
         eyebrowTone="terra"
         title="Tell us about your party"
         titleId="inquire-title"
-        lead="Send it over and you get real numbers back, within one business day."
+        lead="Send it over and you get real numbers back, within 24–48 hours."
         aside={
           <div
             className={

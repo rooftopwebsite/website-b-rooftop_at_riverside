@@ -3,6 +3,7 @@ import MonthBar from '@/components/sections/MonthBar';
 import MonthCalendar from '@/components/sections/MonthCalendar';
 import UpcomingCards from '@/components/sections/UpcomingCards';
 import { ButtonLink } from '@/components/shared/Button';
+import ThursdayNightCard from '@/components/sections/ThursdayNightCard';
 import PlateHero from '@/components/shared/PlateHero';
 import Section from '@/components/shared/Section';
 import { Heading } from '@/components/shared/Type';
@@ -28,6 +29,7 @@ import {
   shiftMonth,
   todayInVenue,
   upcomingInMonth,
+  upcomingOccurrences,
 } from '@/lib/calendar';
 import { SITE_URL, breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
@@ -42,13 +44,14 @@ export default async function WhatsOnPage({
 }) {
   const sp = await searchParams;
   const { year, month } = parseMonth(sp.month);
-  const type = sp.type ?? null;
   const view = parseView(sp.view);
   const today = todayInVenue();
 
   const venue = await getVenue();
   const events = await getVenueEvents();
   const filters = activeFilters(events);
+  // Hidden or unknown filter ids in old links fall back to Everything.
+  const type = filters.some((f) => f.id === sp.type) ? (sp.type ?? null) : null;
 
   const occurrences = occurrencesInMonth(events, year, month).filter((o) =>
     matchesFilter(o.event, type),
@@ -72,6 +75,12 @@ export default async function WhatsOnPage({
     `/whats-on?month=${monthKey(m.year, m.month)}${t ? `&type=${t}` : ''}${
       v === 'calendar' ? '&view=calendar' : ''
     }`;
+
+  const tnfEvent = events.find((e) => e.slug === 'thursday-night-football');
+  const tnfNext = tnfEvent ? upcomingOccurrences([tnfEvent], today, 1)[0] : undefined;
+  const tnfHref = tnfNext
+    ? `/whats-on?month=${tnfNext.date.slice(0, 7)}#event-${tnfNext.event.slug}-${tnfNext.date}`
+    : null;
 
   const empty = view === 'grid' ? ofGrid.length === 0 : occurrences.length === 0;
   const lastMonth = view === 'grid' && occurrences.length > 0 && ofGrid.length === 0;
@@ -134,6 +143,7 @@ export default async function WhatsOnPage({
           See the calendar
         </ButtonLink>
       </PlateHero>
+      {tnfHref ? <ThursdayNightCard href={tnfHref} /> : null}
       <div>
         <MonthBar
           label={label}

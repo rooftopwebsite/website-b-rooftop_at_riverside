@@ -38,6 +38,11 @@ export const NAV_MORE_GROUPS: readonly NavGroup[] = [
     links: [
       { label: 'Market', href: '/market', hint: 'Local vendors and handmade goods in the yard.' },
       {
+        label: 'Sports & Game Days',
+        href: '/whats-on?type=sports',
+        hint: 'Football from Thursday to Sunday.',
+      },
+      {
         label: 'Gift Cards',
         href: BRAND.giftCards,
         external: true,

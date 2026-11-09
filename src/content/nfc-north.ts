@@ -73,6 +73,14 @@ export const SUNDAY_SPECIALS: readonly SundaySpecial[] = [
   },
 ];
 
+export const ALL_WEEK_HEADING = 'Game days all week';
+
+export const ALL_WEEK_NFL =
+  'From Thursday Night Football to Sunday matchups, Rooftop is your spot for NFL action all week long. Catch your favorite teams, enjoy a cold drink, and make game day part of your Rooftop routine.';
+
+export const ALL_WEEK_COLLEGE =
+  'College football Saturdays, NFL Sundays, and Thursday night matchups. There’s always a reason to catch the game at Rooftop.';
+
 export const WHATS_HAPPENING_NOTE =
   'Football’s just part of the fun. Check out what’s coming up at Rooftop.';
 

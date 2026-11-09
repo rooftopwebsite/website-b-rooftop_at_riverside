@@ -64,7 +64,7 @@ export default function InquiryForm({
       >
         <Eyebrow tone="deep">Request received</Eyebrow>
         <Heading level={2} className="mt-gap-kicker text-d4">
-          We&rsquo;ll come back within one business day
+          We&rsquo;ll come back within 24–48 hours
         </Heading>
         <p className="mt-gap-subhead max-w-[54ch] text-lead text-body/80">{state.message}</p>
         <p className="mt-3 max-w-[54ch] text-[16px] leading-[1.65] text-body/75">

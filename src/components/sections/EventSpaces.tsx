@@ -7,26 +7,26 @@ import { BUYOUT_OPTIONS } from '@/content/spaces';
 
 export default function EventSpaces() {
   return (
-    <div id="spaces" className="scroll-mt-24">
+    <div>
       <Section
         tone="cream"
         band="lg"
         bandTop="none"
         innerClassName={CROSS_PADDING}
-        labelledBy="buyout-title"
+        labelledBy="spaces"
         className="band-arc z-[2] pb-closing"
       >
         <h2
-          id="buyout-title"
-          className="mx-auto max-w-[14ch] text-center font-display text-band font-extrabold uppercase"
+          id="spaces"
+          className="mx-auto max-w-[14ch] scroll-mt-28 text-center font-display text-band font-extrabold uppercase"
         >
           <span className="text-ink">Pick the space</span>{' '}
           <span className="text-sunset-deep">that fits</span>
         </h2>
         <p className="subhead mx-auto mt-gap-subhead max-w-[56ch] text-center text-body/80">
-          Whatever the occasion, we have a space to make it yours. Choose from our Full Upstairs,
-          Rooftop Patio, or Full Venue Rental options, giving you the flexibility to create the
-          perfect setting for celebrations, gatherings, corporate events, and everything in between.
+          Whatever the occasion, we have a space to make it yours. Book the whole place, the second
+          floor or the rooftop patio, and set the scene for celebrations, gatherings, corporate
+          events and everything in between.
         </p>
         <StaggerGroup as="ul" className="mt-block grid list-none gap-5 p-0 md:grid-cols-3">
           {BUYOUT_OPTIONS.map((o) => (

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { ButtonLink } from '@/components/shared/Button';
 import { Ticket, X } from '@/components/shared/Icon';
+import { namedDeals, type FeaturedDeal } from '@/components/shared/FeaturedEventCard';
 import { Eyebrow } from '@/components/shared/Type';
 import { isTicketed, timeRange, weekdaysLabel, type VenueEvent } from '@/content/events';
 import { weekdayLong } from '@/lib/calendar';
@@ -17,9 +18,13 @@ export interface OpenedEvent {
 export default function EventDialog({
   isOpen,
   onClose,
+  deals,
+  dealsLabel,
 }: {
   readonly isOpen: OpenedEvent | null;
   readonly onClose: () => void;
+  readonly deals?: readonly FeaturedDeal[];
+  readonly dealsLabel?: string;
 }) {
   const event = isOpen?.event ?? null;
   const ref = useRef<HTMLDialogElement>(null);
@@ -48,6 +53,7 @@ export default function EventDialog({
       ? `Every ${weekdaysLabel(event.weekdays)}`
       : null;
 
+  const promos = namedDeals(event, deals);
   const body = event.body.length > 0 ? event.body : event.summary === event.title ? [] : [event.summary];
 
   return (
@@ -136,6 +142,32 @@ export default function EventDialog({
                 {p}
               </p>
             ))}
+          </div>
+        ) : null}
+
+        {promos.length > 0 ? (
+          <div className="mt-5">
+            {dealsLabel ? (
+              <p className="m-0 text-caption font-bold uppercase tracking-[0.1em] text-deep">
+                {dealsLabel}
+              </p>
+            ) : null}
+            <ul className="m-0 mt-2 flex list-none flex-col gap-1.5 p-0">
+              {promos.map((d) => (
+                <li key={d.name} className="flex gap-2 text-[15px] leading-[1.5] text-body/80">
+                  <span
+                    aria-hidden="true"
+                    className="mt-2 size-[5px] shrink-0 rounded-pill bg-sunset-deep"
+                  />
+                  <span>
+                    <strong className="font-bold text-ink">
+                      {d.price} {d.name}
+                    </strong>
+                    {d.how ? <> · {d.how}</> : null}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         ) : null}
 

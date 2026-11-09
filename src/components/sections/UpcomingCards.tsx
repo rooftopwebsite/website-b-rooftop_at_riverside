@@ -23,11 +23,15 @@ export default function UpcomingCards({
   readonly dealsLabel?: string;
 }) {
   return (
-    <EventDialogProvider>
-    <ul className="mt-[28px] grid list-none grid-cols-1 gap-[12px] p-0 sm:grid-cols-2 sm:gap-[20px] lg:grid-cols-3">
+    <EventDialogProvider deals={deals} dealsLabel={dealsLabel}>
+    <ul className="mt-[28px] grid list-none auto-rows-fr grid-cols-1 gap-[12px] p-0 sm:grid-cols-2 sm:gap-[20px] lg:grid-cols-3">
       {items.map((item) => (
-        <li key={`${item.event.slug}-${item.date}`}>
-          <UpcomingCard item={item} today={today} deals={deals} dealsLabel={dealsLabel} />
+        <li
+          key={`${item.event.slug}-${item.date}`}
+          id={`event-${item.event.slug}-${item.date}`}
+          className="scroll-mt-44"
+        >
+          <UpcomingCard item={item} today={today} deals={deals} />
         </li>
       ))}
     </ul>
@@ -83,12 +87,10 @@ function UpcomingCard({
   item,
   today,
   deals,
-  dealsLabel,
 }: {
   readonly item: Occurrence;
   readonly today: string;
   readonly deals?: readonly FeaturedDeal[];
-  readonly dealsLabel?: string;
 }) {
   const { event, date } = item;
   const type = eventTypeLabel(event);
@@ -132,35 +134,7 @@ function UpcomingCard({
         </h3>
         <ExpandableBody
           id={bodyId}
-          title={event.title}
-          lines={promos.length > 0 ? 12 - promos.length - 2 : 12}
-          after={
-            promos.length > 0 ? (
-            <div className="max-sm:hidden">
-              {dealsLabel && curated.length > 0 ? (
-                <p className="mt-[14px] text-caption font-bold uppercase tracking-[0.1em] text-deep">
-                  {dealsLabel}
-                </p>
-              ) : null}
-              <ul className="m-0 mt-[8px] flex list-none flex-col gap-[6px] p-0">
-                {promos.map((d) => (
-                  <li key={d.name} className="flex gap-[8px] text-[15px] leading-[1.5] text-body/80">
-                    <span
-                      aria-hidden="true"
-                      className="mt-[8px] size-[5px] shrink-0 rounded-pill bg-sunset-deep"
-                    />
-                    <span>
-                      <strong className="font-bold text-ink">
-                        {d.price} {d.name}
-                      </strong>
-                      {d.how ? <> · {d.how}</> : null}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            ) : null
-          }
+          lines={4}
         >
           {blocks.map((b, i) =>
             b.type === 'paragraph' ? (
@@ -185,9 +159,9 @@ function UpcomingCard({
           )}
         </ExpandableBody>
 
-        <SeeMore event={event} date={date} visible={hasMore} className={hasMore ? 'mt-[10px] sm:hidden' : 'sm:hidden'} />
-        {isTicketed(event) && event.ticketUrl ? (
-          <p className="relative z-10 m-0 mt-auto pt-[14px]">
+        <div className="relative z-10 mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 pt-[14px]">
+          <SeeMore event={event} date={date} visible={hasMore} className={hasMore ? '' : 'sm:hidden'} />
+          {isTicketed(event) && event.ticketUrl ? (
             <a
               href={event.ticketUrl}
               target="_blank"
@@ -198,8 +172,8 @@ function UpcomingCard({
               <ArrowSquareOut className="size-[14px] shrink-0" aria-hidden="true" />
               <span className="sr-only">for {event.title} on Eventbrite (opens in a new tab)</span>
             </a>
-          </p>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     </article>
   );

@@ -4,18 +4,32 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 import dynamic from 'next/dynamic';
 import type { OpenedEvent } from '@/components/sections/EventDialog';
 import { ArrowRight } from '@/components/shared/Icon';
+import type { FeaturedDeal } from '@/components/shared/FeaturedEventCard';
 import type { VenueEvent } from '@/content/events';
 
 const EventDialog = dynamic(() => import('@/components/sections/EventDialog'), { ssr: false });
 
 const OpenEventContext = createContext<((a: OpenedEvent) => void) | null>(null);
 
-export function EventDialogProvider({ children }: { readonly children: ReactNode }) {
+export function EventDialogProvider({
+  children,
+  deals,
+  dealsLabel,
+}: {
+  readonly children: ReactNode;
+  readonly deals?: readonly FeaturedDeal[];
+  readonly dealsLabel?: string;
+}) {
   const [isOpen, setIsOpen] = useState<OpenedEvent | null>(null);
   return (
     <OpenEventContext.Provider value={setIsOpen}>
       {children}
-      {isOpen ? <EventDialog isOpen={isOpen} onClose={() => setIsOpen(null)} /> : null}
+      {isOpen ? <EventDialog
+          isOpen={isOpen}
+          onClose={() => setIsOpen(null)}
+          deals={deals}
+          dealsLabel={dealsLabel}
+        /> : null}
     </OpenEventContext.Provider>
   );
 }
