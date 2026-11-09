@@ -39,7 +39,7 @@ export const NAV_MORE_GROUPS: readonly NavGroup[] = [
       { label: 'Market', href: '/market', hint: 'Local vendors and handmade goods in the yard.' },
       {
         label: 'Sports & Game Days',
-        href: '/whats-on?type=sports',
+        href: '/whats-on#thursday-night-football',
         hint: 'Football from Thursday to Sunday.',
       },
       {

@@ -32,7 +32,6 @@ export default function FoodTrucksPage() {
         accent="Flavor Takes Center Stage"
         title="in The Yard"
         lead="Follow the sounds of live music, the laughter coming from The Yard, and the irresistible aromas coming off the grills. Take a stroll, meet the chefs behind our four food trucks, and explore everything from fresh seafood and American favorites to Mexican street food and Caribbean fusion."
-        moreLead="Whether you’re catching a show, relaxing at Sunset Bar, or enjoying the views of Riverside Park, there’s always something delicious waiting for you at Rooftop."
         from="paper"
         to="mint"
       />

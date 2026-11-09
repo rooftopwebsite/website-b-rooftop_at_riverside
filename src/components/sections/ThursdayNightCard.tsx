@@ -6,7 +6,9 @@ import { Eyebrow, Heading } from '@/components/shared/Type';
 export default function ThursdayNightCard({ href }: { readonly href: string }) {
   return (
     <Section band="sm" bandTop="none" labelledBy="tnf-title" className="pt-8 lg:pt-12">
-      <div className="relative overflow-hidden rounded-frame bg-deep grain px-7 py-10 text-center text-paper card-shadow sm:px-12 sm:py-12 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:px-16 lg:py-14 lg:text-left">
+      <div
+        id="thursday-night-football"
+        className="relative scroll-mt-28 overflow-hidden rounded-frame bg-deep grain px-7 py-10 text-center text-paper card-shadow sm:px-12 sm:py-12 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:px-16 lg:py-14 lg:text-left">
         <span
           aria-hidden="true"
           className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-paper/25"
