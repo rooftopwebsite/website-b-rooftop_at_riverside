@@ -40,9 +40,9 @@ export default async function ContactPage() {
       />
       <PlateHero
         question="Trying to reach the rooftop in Bonita Springs?"
-        title={'Say hello to '}
-        titleAccent="the rooftop"
-        lead="Your message goes straight to the person who can answer it. If it is urgent, give us a call."
+        title={'Crafted '}
+        titleAccent="Just for You"
+        lead="Planning an event or have a question about Rooftop? Send us a message and our team will get back to you within 24–48 hours. We’re happy to help!"
         photo="/images/venue/contact-bar-day-wide.webp"
         photoAlt="Guests at the bar at Rooftop at Riverside on a weekday afternoon"
       >
@@ -59,7 +59,7 @@ export default async function ContactPage() {
         eyebrowTone="deep"
         title="Write to the right person"
         titleId="write-title"
-        lead="Write to us and a person here reads it. We come back within one business day."
+        lead="Write to us and a person here reads it. We come back within 24–48 hours."
         aside={
           <div className="flex flex-col gap-9 md:grid md:grid-cols-2 md:gap-x-8 lg:flex">
             <div className="grid gap-3 md:col-span-2 md:grid-cols-2 lg:grid-cols-1">

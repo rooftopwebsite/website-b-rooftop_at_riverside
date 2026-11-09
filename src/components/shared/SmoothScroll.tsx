@@ -31,7 +31,17 @@ export default function SmoothScroll() {
   }, [reduced]);
 
   useEffect(() => {
-    lenisRef.current?.scrollTo(0, { immediate: true });
+    const lenis = lenisRef.current;
+    if (!lenis) return;
+
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    const target = id ? document.getElementById(id) : null;
+    if (!target) {
+      lenis.scrollTo(0, { immediate: true });
+      return;
+    }
+    const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+    lenis.scrollTo(target, { immediate: true, offset: -margin });
   }, [pathname]);
 
   return null;

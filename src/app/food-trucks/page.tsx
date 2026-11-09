@@ -29,16 +29,13 @@ export default function FoodTrucksPage() {
 
       <PageHeroWave
         eyebrow="The yard"
-        accent="Big flavors,"
-        title="out in the yard"
-        lead="Every truck is run by its own chef, with its own specialties and its own menu. Walk the yard, talk to the chefs, and try a little of everything."
+        accent="Flavor Takes Center Stage"
+        title="in The Yard"
+        lead="Follow the sounds of live music, the laughter coming from The Yard, and the irresistible aromas coming off the grills. Take a stroll, meet the chefs behind our four food trucks, and explore everything from fresh seafood and American favorites to Mexican street food and Caribbean fusion."
+        moreLead="Whether you’re catching a show, relaxing at Sunset Bar, or enjoying the views of Riverside Park, there’s always something delicious waiting for you at Rooftop."
         from="paper"
         to="mint"
-      >
-        <ButtonLink href="#roster-title" variant="primary" size="lg">
-          See the menus
-        </ButtonLink>
-      </PageHeroWave>
+      />
       <TruckCards tone="mint" head={false} />
       <CompareSlab
         from="mint"
@@ -47,21 +44,21 @@ export default function FoodTrucksPage() {
         accent="Start at the bar,"
         title="then follow your appetite"
         lead="Start with a drink, then walk the yard. Everyone at the table gets to pick their favorite."
-        cta={{ label: 'See the bar menu', href: '/sunset-bar#bar-menu-title' }}
+        cta={{ label: 'See the bar menu', href: '/sunset-bar#bar-menu-button' }}
         ours={{
           label: 'How ordering works',
           steps: [
             {
-              title: 'Grab a drink',
-              body: 'Start at the Sunset Bar, or take a seat and a server will come to you.',
+              title: 'Grab a Drink',
+              body: 'Pull up a seat at the bar or let our hostess find you the perfect spot in The Yard. Order your favorite drink, check out our house specialties, and see what’s on special.',
             },
             {
-              title: 'Meet the chefs',
-              body: 'Walk the yard, talk to the chefs and see what each truck is cooking today.',
+              title: 'Explore the Food Trucks',
+              body: 'Take a stroll through The Yard, meet our chefs, and see what’s cooking. Or scan the QR code at your seat to order dinner for the whole table on one check, with our food runners bringing everything right to you.',
             },
             {
-              title: 'Order at the window',
-              body: 'Order at any truck, take a pager and grab a seat anywhere in the yard.',
+              title: 'Kick Back & Relax',
+              body: 'Settle in with great food, cold drinks, and live music while enjoying the beautiful Southwest Florida weather and the energy of Downtown Bonita Springs. Stay for a little while or make an entire evening of it.',
             },
           ],
         }}
@@ -83,11 +80,13 @@ export default function FoodTrucksPage() {
 
           <div className="relative">
             <Heading level={2} id="rotation-title" className="mx-auto max-w-[18ch] text-d4 lg:text-d3">
-              Something different for every craving
+              We’ve Got Something for Everyone!
             </Heading>
             <p className="mx-auto mt-5 max-w-[52ch] font-body text-lead font-light leading-[1.5] text-ink">
-              Our chefs are independent operators, and if you think these menus are creative, wait
-              until you see their specials. Follow us for what they cook up next.
+              Four independently operated food trucks, four creative menus, and plenty of reasons to
+              come back for another taste. From everyday favorites to specials you won’t always find
+              on the menu, our trucks are always bringing something delicious to The Yard. Follow
+              your favorites on Instagram to see what they’re cooking up next.
             </p>
             <div className="mt-8 flex justify-center">
               <ButtonLink href={BRAND.social.instagram} variant="primary" external>

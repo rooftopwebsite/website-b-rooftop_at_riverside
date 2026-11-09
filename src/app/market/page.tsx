@@ -37,7 +37,7 @@ export default async function MarketPage() {
         question="Looking for a local makers market in Bonita Springs?"
         title={'Meet the '}
         titleAccent="makers"
-        lead="An afternoon of handmade things in the yard, with the trucks cooking and the bar open upstairs. And if you are the one who makes the thing, this is where you set up a table."
+        lead="Discover some of Southwest Florida’s favorite independent makers, creators, and small businesses at Rooftop’s neighborhood market. Shop everything from clothing and custom hats to handmade soaps, local honey, fresh juices, and more. Bring the family, bring your four-legged shopping buddy, and spend the day supporting the local businesses that make our community special."
         photo="/images/market/hero-yard-wide.webp"
         photoAlt="Stalls and pop-up tents in the yard on a market day, with racks of clothes and two vendors at their stand"
       >

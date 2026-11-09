@@ -19,7 +19,7 @@ function MenuSheetCard({
 }) {
   if (pdfUrl) {
     return (
-      <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className={CARD}>
+      <a id="bar-menu-button" href={pdfUrl} target="_blank" rel="noopener noreferrer" className={`${CARD} scroll-mt-28`}>
         {children}
         <span className="sr-only"> (opens in a new tab)</span>
       </a>
@@ -27,7 +27,7 @@ function MenuSheetCard({
   }
 
   return (
-    <button type="button" onClick={onOpen} aria-haspopup="dialog" className={CARD}>
+    <button id="bar-menu-button" type="button" onClick={onOpen} aria-haspopup="dialog" className={`${CARD} scroll-mt-28`}>
       {children}
     </button>
   );
@@ -72,9 +72,10 @@ export default function MenuSheets({
           The bar menu
         </Heading>
         <p className="mx-auto mt-gap-subhead max-w-[58ch] text-pretty text-lead text-body/80">
-          House cocktails with your preferred spirits, handcrafted daily with fresh juice and house
-          syrups. Elegant wines, local drafts from our neighborhood breweries, and the crowd
-          favorite bottles, cans and seltzers.
+          From handcrafted cocktails made with your favorite spirits, fresh juices, and house-made
+          syrups to a thoughtfully selected collection of wines and local drafts, there’s plenty to
+          raise a glass to at Sunset Bar. Prefer to keep it classic? We’ve got your favorite
+          bottles, cans, and seltzers ready to pour.
         </p>
         <div className="mx-auto mt-9 w-full max-w-[760px] lg:mt-12">
           <MenuSheetCard pdfUrl={pdfUrl} onOpen={() => setIsOpen(true)}>
@@ -92,9 +93,6 @@ export default function MenuSheets({
               </span>
               <span className="mt-gap-kicker font-display text-d4 font-extrabold uppercase leading-[0.95] text-paper lg:text-d3">
                 See the full menu
-              </span>
-              <span className="mt-gap-subhead text-balance font-body text-base font-light text-paper/80">
-                Cocktails and specials, beer, wine and happy hour.
               </span>
             </span>
             <span

@@ -115,7 +115,7 @@ export const TRUCKS: readonly Truck[] = [
     blurb:
       'American classics, made with a focus on quality and flavor.',
     schedule: null,
-    instagram: null,
+    instagram: 'https://www.instagram.com/primecarvery/',
     photo: '/images/trucks/prime-carvery-1.jpg',
     photoAlt: 'A burger with melted cheese served from the Prime Carvery truck',
     photoBrief: "The truck from outside, with its sign readable, open and serving.",
@@ -134,7 +134,7 @@ export const TRUCKS: readonly Truck[] = [
     blurb:
       'Traditional recipes with a twist, from the Florida coast.',
     schedule: null,
-    instagram: null,
+    instagram: 'https://www.instagram.com/seameonwheels/',
     photo: '/images/trucks/seafood-1.jpg',
     photoAlt: 'A poke bowl with fresh fish and vegetables from Sea Me on Wheels',
     photoBrief: "The truck from outside, with its sign readable, open and serving.",
@@ -151,7 +151,7 @@ export const TRUCKS: readonly Truck[] = [
     story: null,
     blurb: null,
     schedule: null,
-    instagram: null,
+    instagram: 'https://www.instagram.com/tropicalfusionm/',
     photo: '/images/trucks/tropical-1.jpg',
     photoAlt: 'A plated dish from the Tropical Fusion food truck',
     photoBrief: 'The truck from outside, with its sign readable and a plated dish.',

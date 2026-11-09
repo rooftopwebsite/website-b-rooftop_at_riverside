@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ArrowUpRight } from '@/components/shared/Icon';
+import { ArrowUpRight, Instagram } from '@/components/shared/Icon';
 import { PhotoPending } from '@/components/shared/PendingData';
 import Section from '@/components/shared/Section';
 import { SectionHead } from '@/components/shared/Type';
@@ -125,11 +125,24 @@ export default async function TruckCards({
                   </p>
                 ) : null}
 
-                <h3
-                  className={`m-0 font-display text-d5 font-bold uppercase leading-none text-ink ${t ? 'mt-1.5' : ''}`}
-                >
-                  {t ? displayName(t) : menu.name}
-                </h3>
+                <div className={`flex items-center justify-between gap-3 ${t ? 'mt-1.5' : ''}`}>
+                  <h3 className="m-0 min-w-0 font-display text-d5 font-bold uppercase leading-none text-ink">
+                    {t ? displayName(t) : menu.name}
+                  </h3>
+                  {t?.instagram ? (
+                    <a
+                      href={t.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hit-area grid size-8 shrink-0 place-items-center rounded-pill border border-teal600/35 text-deep transition-colors duration-200 hover:border-teal600 hover:bg-mint/50 hover:text-sunset-deep"
+                    >
+                      <Instagram className="size-4.5" aria-hidden="true" />
+                      <span className="sr-only">
+                        Instagram for {displayName(t)} (opens in a new tab)
+                      </span>
+                    </a>
+                  ) : null}
+                </div>
                 {menu.description ? (
                   <p className="m-0 mt-3 font-body text-data font-light leading-[1.5] text-body">
                     {menu.description}
@@ -171,8 +184,7 @@ export default async function TruckCards({
         <div className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,auto)] lg:items-center lg:gap-14 lg:p-11">
           <div>
             <h3 className="m-0 font-display text-d4 font-bold uppercase leading-none text-paper lg:text-d3">
-              When the trucks
-              <br className="hidden lg:block" /> are open
+              What’s Cooking & When
             </h3>
             <p className="m-0 mt-3.5 max-w-[34ch] font-body text-data font-light text-muted-dark">
               The bar upstairs opens an hour earlier every day.

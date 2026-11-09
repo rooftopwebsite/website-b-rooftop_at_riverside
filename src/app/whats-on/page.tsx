@@ -123,7 +123,7 @@ export default async function WhatsOnPage({
       ) : null}
 
       <PlateHero
-        question="Looking for live music tonight in Bonita Springs?"
+        question="Looking for something to do in Bonita Springs?"
         title={"What's on "}
         titleAccent="this week"
         lead="Life is too short for boring weeknights. Step away from the screens and into a yard buzzing with laughter, clinking glasses and the best local music."

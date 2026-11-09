@@ -79,7 +79,7 @@ export default function ThreeDoors() {
                       className={`size-11 shrink-0 origin-top-left transition-transform duration-300 ease-brand group-hover:scale-106 lg:size-13 ${iconInk}`}
                     />
                     <h3
-                      className={`m-0 mt-5 max-w-[13ch] text-balance pr-14 font-display text-d4 font-bold uppercase leading-[0.92] lg:text-d3 ${ink}`}
+                      className={`m-0 mt-5 max-w-[9.5em] text-balance pr-14 font-display text-[35px] font-bold uppercase leading-[0.96] md:text-[30px] lg:text-[27px] desk:text-[46px] ${ink}`}
                     >
                       {title}
                     </h3>

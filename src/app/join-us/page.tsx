@@ -54,11 +54,12 @@ export default async function JoinUsPage({
       <div className={`grain bg-paper pt-12 md:pt-16 lg:pt-20 ${GUTTER}`}>
         <div className="page-box text-center">
           <Heading level={2} id="apply-title" className="mx-auto max-w-[18ch] text-balance text-band">
-            What are you <span className="text-sunset-deep">here for</span>
+            How Can We <span className="text-sunset-deep">Work Together?</span>
           </Heading>
           <p className="subhead mx-auto mt-gap-subhead max-w-[56ch] font-body text-lead font-light">
-            We hire when we hire, and we book {longMusic.toLowerCase()}. Either way a person
-            reads what comes in.
+            {lane === 'team'
+              ? 'If you’ve got a can-do attitude, enjoy working with a team, and take pride in creating a great experience for our guests, we’d love to hear from you. Submit your resume or reach out below.'
+              : `We book ${longMusic.toLowerCase()}. A person reads what comes in.`}
           </p>
         </div>
       </div>

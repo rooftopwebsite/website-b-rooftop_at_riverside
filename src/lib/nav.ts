@@ -28,24 +28,14 @@ export const NAV_MORE_GROUPS: readonly NavGroup[] = [
   {
     label: 'Get to know us',
     links: [
-      {
-        label: 'About',
-        href: '/our-story',
-        hint: 'The Magnus family, what this place is, and the questions.',
-      },
       { label: 'Blog', href: '/blog', hint: 'Stories from the rooftop, the trucks and the people.' },
-      { label: 'Join Us', href: '/join-us', hint: 'Play here, park a truck here, work here.' },
+      { label: 'Join Us', href: '/join-us', hint: 'Work here, play here.' },
       { label: 'Contact', href: '/contact', hint: 'The right inbox, hours, parking and the map.' },
     ],
   },
   {
     label: 'While you’re here',
     links: [
-      {
-        label: 'Gaming Truck',
-        href: '/game-truck',
-        hint: 'Three consoles, six screens and a Game Coach. Parties too.',
-      },
       { label: 'Market', href: '/market', hint: 'Local vendors and handmade goods in the yard.' },
       {
         label: 'Gift Cards',
@@ -99,9 +89,7 @@ export const ALL_ROUTES: readonly string[] = [
   '/food-trucks',
   '/whats-on',
   '/events',
-  '/game-truck',
   '/market',
-  '/our-story',
   '/blog',
   '/join-us',
   '/contact',

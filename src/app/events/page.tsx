@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import EventSpaces from '@/components/sections/EventSpaces';
 import EventTypes from '@/components/sections/EventTypes';
 import InquiryForm from '@/components/sections/InquiryForm';
@@ -209,49 +208,6 @@ export default async function EventsPage({
             </article>
           </RevealItem>
         </StaggerGroup>
-      </Section>
-      <Section band="lg" labelledBy="game-truck-title">
-        <div
-          id="game-truck"
-          className="relative scroll-mt-24 rounded-frame bg-bone grain p-6 pb-10 sm:p-9 sm:pb-12 lg:p-12"
-        >
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-3.5 rounded-shell border border-dashed border-deep/35"
-          />
-          <div className="relative grid items-center gap-7 sm:grid-cols-2 sm:items-stretch sm:gap-9 lg:gap-14">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-shell card-shadow sm:aspect-auto sm:h-full sm:min-h-64">
-              <Image
-                src="/images/game-truck/truck-night.webp"
-                alt="Two guests in Rooftop shirts playing on the gaming truck screens at night"
-                fill
-                sizes="(min-width: 1024px) 40vw, (min-width: 640px) 45vw, 100vw"
-                className="object-cover"
-              />
-            </div>
-
-            <div className="self-center">
-              <Eyebrow tone="magenta">Add-on</Eyebrow>
-              <Heading
-                level={2}
-                id="game-truck-title"
-                className="mt-gap-kicker max-w-[16ch] text-d4 md:text-d3 lg:text-d2"
-              >
-                Park a <span className="text-sunset-deep">gaming truck</span> in the yard
-              </Heading>
-              <p className="mt-5 max-w-[46ch] font-body text-lead font-light leading-[1.5] text-ink">
-                A trailer of screens and consoles pulls into the yard, plugs in and runs on its own
-                staff. The guests who would rather play than mingle have somewhere to go, and
-                nobody from your party has to run it.
-              </p>
-              <div className="mt-8">
-                <ButtonLink href="/game-truck" variant="primary">
-                  See the truck
-                </ButtonLink>
-              </div>
-            </div>
-          </div>
-        </div>
       </Section>
       <FormSlab
         id="inquire"

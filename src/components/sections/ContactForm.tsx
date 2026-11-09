@@ -115,7 +115,7 @@ export default function ContactForm() {
           <SentenceArea name="message" label={SENTENCE.message} required rows={6} maxLength={4000} />
           <div className="mt-[8px] flex flex-col items-center gap-[12px]">
             <SubmitButton idle="Send message" busy="Sending…" />
-            <p className="text-[15px] text-body/70">We answer within one business day.</p>
+            <p className="text-[15px] text-body/70">We answer within 24–48 hours.</p>
           </div>
         </>
       )}

@@ -68,6 +68,6 @@ export async function submitContact(_prev: ActionState, formData: FormData): Pro
 
   return {
     status: 'ok',
-    message: 'We read everything that comes in and answer within one business day.',
+    message: 'We read everything that comes in and answer within 24–48 hours.',
   };
 }

@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      { source: '/our-story', destination: '/', statusCode: 307 },
+      { source: '/game-truck', destination: '/events', statusCode: 301 },
       { source: '/this-is-us', destination: '/our-story', statusCode: 301 },
       { source: '/eat', destination: '/food-trucks', statusCode: 301 },
       { source: '/drink', destination: '/sunset-bar', statusCode: 301 },
@@ -33,7 +35,7 @@ const nextConfig: NextConfig = {
       { source: '/hostanevent', destination: '/events', statusCode: 301 },
       { source: '/neighborhood-market', destination: '/market', statusCode: 301 },
       { source: '/entertainment', destination: '/join-us', statusCode: 301 },
-      { source: '/game-lounge', destination: '/game-truck', statusCode: 301 },
+      { source: '/game-lounge', destination: '/events', statusCode: 301 },
       { source: '/find-us', destination: '/contact#visit', statusCode: 301 },
       { source: '/parking', destination: '/contact#parking', statusCode: 301 },
 
@@ -56,7 +58,7 @@ const nextConfig: NextConfig = {
       { source: '/nfc-north-hq', destination: '/whats-on', statusCode: 301 },
       { source: '/events/inquire', destination: '/events#inquire', statusCode: 301 },
       { source: '/events/spaces', destination: '/events#spaces', statusCode: 301 },
-      { source: '/events/game-truck', destination: '/game-truck', statusCode: 301 },
+      { source: '/events/game-truck', destination: '/events', statusCode: 301 },
       { source: '/events/corporate', destination: '/events#corporate', statusCode: 301 },
       { source: '/events/celebrations', destination: '/events#celebrations', statusCode: 301 },
       { source: '/events/fundraisers', destination: '/events#fundraisers', statusCode: 301 },

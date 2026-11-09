@@ -38,10 +38,12 @@ export default function NewsletterSignup() {
           <div className="grid items-center gap-9 md:grid-cols-[1fr_1.15fr] md:gap-10 lg:gap-16">
             <div>
               <Heading level={2} id={`${id}-title`} className="m-0 text-d3 text-paper">
-                Sign up
+                Don’t Miss What’s Coming Up
               </Heading>
-              <p className="subhead mt-gap-subhead max-w-[38ch] font-body text-lead font-light">
-                Stay up to date with all the latest from Rooftop at Riverside.
+              <p className="subhead mt-gap-subhead max-w-[46ch] font-body text-lead font-light">
+                Be the first to hear about our live events, ticket releases, weekly entertainment,
+                drink specials, giveaways, tournaments, and more! Sign up and stay in the loop on
+                everything happening at Rooftop at Riverside.
               </p>
             </div>
             {state.status === 'ok' ? (
@@ -140,7 +142,7 @@ export default function NewsletterSignup() {
                 ) : null}
 
                 <p className="subhead text-center font-body text-micro desk:text-left">
-                  No spam. Unsubscribe any time.
+                  Rooftop updates only. We don’t sell your information. Unsubscribe anytime.
                 </p>
               </form>
             )}

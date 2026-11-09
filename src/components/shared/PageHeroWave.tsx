@@ -9,6 +9,7 @@ export default function PageHeroWave({
   title,
   accent,
   lead,
+  moreLead,
   from = 'paper',
   to = 'bone',
   children,
@@ -17,6 +18,7 @@ export default function PageHeroWave({
   readonly title: ReactNode;
   readonly accent?: string;
   readonly lead?: ReactNode;
+  readonly moreLead?: ReactNode;
   readonly from?: Surface;
   readonly to?: Surface;
   readonly children?: ReactNode;
@@ -46,6 +48,12 @@ export default function PageHeroWave({
           {lead ? (
             <p className="mx-auto mt-7 max-w-[62ch] font-body text-lead font-light leading-[1.55] text-body">
               {lead}
+            </p>
+          ) : null}
+
+          {moreLead ? (
+            <p className="mx-auto mt-5 max-w-[62ch] font-body text-lead font-light leading-[1.55] text-body">
+              {moreLead}
             </p>
           ) : null}
 

@@ -25,7 +25,6 @@ const LINKS_EVENTS: readonly FooterLink[] = [
 ] as const;
 
 const LINKS_ABOUT: readonly FooterLink[] = [
-  { label: 'About', href: '/our-story' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
   { label: 'Join Us', href: '/join-us' },
