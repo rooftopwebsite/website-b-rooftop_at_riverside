@@ -63,8 +63,7 @@ export default function ThreeDoors() {
             <span className="text-sunset-deep">celebrate here</span>
           </h2>
           <p className="mx-auto mt-6 max-w-[60ch] text-center font-body text-lead font-light text-ink">
-            A rooftop bar with a view, gourmet food trucks in the yard and a venue made for
-            parties. Every visit turns into a different night.
+            {'Indulge in our artisan street eats & unwind with our elevated spirits'}
           </p>
         </Reveal>
         <StaggerGroup as="ul" className="mt-block grid list-none grid-cols-1 gap-12 p-0 md:gap-5 lg:grid-cols-3 lg:gap-6">
