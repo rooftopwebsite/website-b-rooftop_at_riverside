@@ -22,6 +22,8 @@ export const metadata: Metadata = pageMeta({
   },
 });
 
+export const revalidate = 300;
+
 export default async function SunsetBarPage() {
   const happyHour = await getHappyHour();
 

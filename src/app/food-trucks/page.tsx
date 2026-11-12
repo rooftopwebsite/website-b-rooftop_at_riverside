@@ -15,6 +15,8 @@ export const metadata: Metadata = pageMeta({
   route: "/food-trucks",
 });
 
+export const revalidate = 300;
+
 export default function FoodTrucksPage() {
   const trucks = activeTrucks();
 

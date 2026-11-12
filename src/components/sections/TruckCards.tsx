@@ -157,7 +157,7 @@ export default async function TruckCards({
                       rel="noopener noreferrer"
                       className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-data font-semibold uppercase tracking-cta text-ink transition-colors duration-200 hover:bg-sunset-hover"
                     >
-                      See the menu
+                      {menu.menuLabel}
                       <ArrowUpRight className="size-3.5 shrink-0" />
                       <span className="sr-only">
                         for {t ? displayName(t) : menu.name} (opens in a new tab)
@@ -169,7 +169,7 @@ export default async function TruckCards({
                       disabled
                       className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-data font-semibold uppercase tracking-cta text-ink opacity-50"
                     >
-                      See the menu
+                      {menu.menuLabel}
                       <ArrowUpRight className="size-3.5 shrink-0" />
                     </button>
                   )}
