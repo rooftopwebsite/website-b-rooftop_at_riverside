@@ -43,10 +43,9 @@ describe('fetchTruckMenus', () => {
 
   it('uses the Sanity PDF and default label when enabled and valid', async () => {
     const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply([doc('prime-carvery')]) });
-    assert.deepEqual(out?.get('prime-carvery'), {
-      pdfUrl: PDF('prime-carvery'),
-      label: DEFAULT_MENU_LABEL,
-    });
+    assert.deepEqual(out?.get('prime-carvery'), [
+      { pdfUrl: PDF('prime-carvery'), label: DEFAULT_MENU_LABEL },
+    ]);
     assert.equal(out?.size, 1);
   });
 
@@ -55,7 +54,7 @@ describe('fetchTruckMenus', () => {
       ...CFG,
       fetchImpl: reply([doc('el-chilango', { buttonLabel: '  See tacos  ' })]),
     });
-    assert.equal(out?.get('el-chilango')?.label, 'See tacos');
+    assert.equal(out?.get('el-chilango')?.[0]?.label, 'See tacos');
   });
 
   it('ignores missing, non-PDF or foreign PDFs', async () => {
@@ -76,7 +75,7 @@ describe('fetchTruckMenus', () => {
 
   it('keeps each truck matched to its own document', async () => {
     const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply(SLUGS.map((s) => doc(s))) });
-    for (const s of SLUGS) assert.equal(out?.get(s)?.pdfUrl, PDF(s));
+    for (const s of SLUGS) assert.equal(out?.get(s)?.[0]?.pdfUrl, PDF(s));
     assert.equal(out?.size, 4);
   });
 
@@ -114,6 +113,92 @@ describe('fetchTruckMenus', () => {
   });
 });
 
+describe('two menus per truck', () => {
+  const two = (slug: string, extra: Record<string, unknown> = {}) =>
+    doc(slug, {
+      buttonLabel: 'Food Menu',
+      secondButtonLabel: 'Specials Menu',
+      secondPdfUrl: PDF(`${slug}-2`),
+      secondPdfMime: 'application/pdf',
+      ...extra,
+    });
+
+  it('one PDF uploaded gives one button', async () => {
+    const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply([doc('el-chilango')]) });
+    assert.equal(out?.get('el-chilango')?.length, 1);
+  });
+
+  it('two PDFs uploaded give two labeled buttons, first one first', async () => {
+    const out = await fetchTruckMenus({
+      ...CFG,
+      fetchImpl: reply([two('el-chilango'), two('sea-me-on-wheels')]),
+    });
+    for (const s of ['el-chilango', 'sea-me-on-wheels']) {
+      assert.deepEqual(out?.get(s), [
+        { pdfUrl: PDF(s), label: 'Food Menu' },
+        { pdfUrl: PDF(`${s}-2`), label: 'Specials Menu' },
+      ]);
+    }
+  });
+
+  it('uses a default label when the second label is empty', async () => {
+    const out = await fetchTruckMenus({
+      ...CFG,
+      fetchImpl: reply([two('el-chilango', { secondButtonLabel: '  ' })]),
+    });
+    assert.equal(out?.get('el-chilango')?.[1]?.label, 'See the second menu');
+  });
+
+  it('Menu Available off shows no Sanity buttons, even with two PDFs', async () => {
+    const out = await fetchTruckMenus({
+      ...CFG,
+      fetchImpl: reply([two('el-chilango', { menuAvailable: false })]),
+    });
+    assert.equal(out?.size, 0);
+  });
+
+  it('a missing or invalid second PDF leaves the first button working', async () => {
+    const bad = [
+      { secondPdfUrl: null, secondPdfMime: null },
+      { secondPdfMime: 'image/png' },
+      { secondPdfUrl: 'https://example.com/x.pdf' },
+      { secondPdfUrl: 'https://cdn.sanity.io/files/other/d/x.pdf' },
+      { secondPdfUrl: 'http://cdn.sanity.io/files/p/d/x.pdf' },
+      { secondPdfUrl: '/menus/x.pdf' },
+    ];
+    for (const b of bad) {
+      const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply([two('el-chilango', b)]) });
+      assert.deepEqual(out?.get('el-chilango'), [{ pdfUrl: PDF('el-chilango'), label: 'Food Menu' }], JSON.stringify(b));
+    }
+  });
+
+  it('a valid second PDF still shows if the first is invalid', async () => {
+    const out = await fetchTruckMenus({
+      ...CFG,
+      fetchImpl: reply([two('el-chilango', { pdfUrl: 'https://example.com/x.pdf' })]),
+    });
+    assert.deepEqual(out?.get('el-chilango'), [{ pdfUrl: PDF('el-chilango-2'), label: 'Specials Menu' }]);
+  });
+
+  it('ignores a second PDF on trucks that only have one menu', async () => {
+    const out = await fetchTruckMenus({
+      ...CFG,
+      fetchImpl: reply([two('prime-carvery'), two('tropical-fusion')]),
+    });
+    assert.equal(out?.get('prime-carvery')?.length, 1);
+    assert.equal(out?.get('tropical-fusion')?.length, 1);
+  });
+
+  it('keeps each truck matched to its own PDFs', async () => {
+    const out = await fetchTruckMenus({
+      ...CFG,
+      fetchImpl: reply(SLUGS.map((s) => two(s))),
+    });
+    for (const s of SLUGS) assert.equal(out?.get(s)?.[0]?.pdfUrl, PDF(s));
+    assert.equal(out?.get('sea-me-on-wheels')?.[1]?.pdfUrl, PDF('sea-me-on-wheels-2'));
+  });
+});
+
 describe('getTruckMenuOverrides', () => {
   beforeEach(() => {
     resetTruckMenuCache();
@@ -146,7 +231,7 @@ describe('getTruckMenuOverrides', () => {
       await getTruckMenuOverrides();
       const again = await getTruckMenuOverrides();
       assert.equal(calls, 1);
-      assert.equal(again.get('prime-carvery')?.pdfUrl, PDF('prime-carvery'));
+      assert.equal(again.get('prime-carvery')?.[0]?.pdfUrl, PDF('prime-carvery'));
     } finally {
       globalThis.fetch = real;
     }

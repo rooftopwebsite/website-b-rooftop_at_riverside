@@ -149,7 +149,7 @@ export default async function TruckCards({
                   </p>
                 ) : null}
 
-                <div className="mt-auto pt-5">
+                <div className="mt-auto flex flex-col gap-2.5 pt-5">
                   {menu.pdfUrl ? (
                     <a
                       href={menu.pdfUrl}
@@ -173,6 +173,21 @@ export default async function TruckCards({
                       <ArrowUpRight className="size-3.5 shrink-0" />
                     </button>
                   )}
+                  {menu.extraMenus.map((extra) => (
+                    <a
+                      key={extra.pdfUrl}
+                      href={extra.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-sunset px-4.5 py-2 font-body text-data font-semibold uppercase tracking-cta text-ink transition-colors duration-200 hover:bg-sunset-hover"
+                    >
+                      {extra.label}
+                      <ArrowUpRight className="size-3.5 shrink-0" />
+                      <span className="sr-only">
+                        for {t ? displayName(t) : menu.name} (opens in a new tab)
+                      </span>
+                    </a>
+                  ))}
                 </div>
               </div>
             </article>

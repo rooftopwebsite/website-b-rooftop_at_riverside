@@ -1,6 +1,6 @@
 import { activeTrucks, truckByName, type Truck } from '@/content/trucks';
 import { withoutEmDash } from '@/lib/em-dash';
-import { DEFAULT_MENU_LABEL, getTruckMenuOverrides } from '@/lib/sanity-truck-menus';
+import { DEFAULT_MENU_LABEL, getTruckMenuOverrides, type TruckMenuButton } from '@/lib/sanity-truck-menus';
 import menus from './menus.json';
 
 export const BAR_MENU = 'Sunset Bar';
@@ -35,6 +35,7 @@ export interface TruckMenuData {
   readonly description: string | null;
   readonly pdfUrl: string | null;
   readonly menuLabel: string;
+  readonly extraMenus: readonly TruckMenuButton[];
   readonly truck: Truck | null;
 }
 
@@ -48,6 +49,7 @@ export async function truckMenus(): Promise<readonly TruckMenuData[]> {
       description: t.blurb ?? t.story,
       pdfUrl: t.menuImage,
       menuLabel: DEFAULT_MENU_LABEL,
+      extraMenus: [],
       truck: t,
     }));
   }
@@ -58,8 +60,9 @@ export async function truckMenus(): Promise<readonly TruckMenuData[]> {
     return {
       name: truck?.name ?? m.name,
       description: m.description ?? truck?.blurb ?? truck?.story ?? null,
-      pdfUrl: live?.pdfUrl ?? m.pdfUrl,
-      menuLabel: live?.label ?? DEFAULT_MENU_LABEL,
+      pdfUrl: live?.[0]?.pdfUrl ?? m.pdfUrl,
+      menuLabel: live?.[0]?.label ?? DEFAULT_MENU_LABEL,
+      extraMenus: live?.slice(1) ?? [],
       truck,
     };
   });
