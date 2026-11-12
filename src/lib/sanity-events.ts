@@ -4,6 +4,7 @@ import type { RawEvent } from '@/content/events';
 const API_VERSION = 'v2025-02-19';
 const TIMEOUT_MS = 8000;
 const FRESH_MS = 5 * 60 * 1000;
+const REVALIDATE_S = 300;
 
 const QUERY = `{
   "ready": count(*[_id == "calendarSettings"]) > 0,
@@ -97,7 +98,9 @@ export async function fetchSanityEvents({
     `?perspective=published&query=${encodeURIComponent(QUERY)}`;
 
   try {
-    const res = await fetchImpl(url, { signal: AbortSignal.timeout(TIMEOUT_MS) });
+    // Next's data cache keeps the response for 5 minutes, instead of for as long as the build lasts.
+    const init = { signal: AbortSignal.timeout(TIMEOUT_MS), next: { revalidate: REVALIDATE_S } };
+    const res = await fetchImpl(url, init as RequestInit);
     if (!res.ok) {
       console.error('[sanity] events query failed:', res.status);
       return null;

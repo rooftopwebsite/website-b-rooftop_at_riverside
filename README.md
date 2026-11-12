@@ -54,8 +54,17 @@ The commented template is `.env.example`. In short:
 ### Events from Sanity
 
 The Studio lives in a separate folder, `rooftop-sanity-studio`, next to this one. The website only
-reads published events from Sanity's public, cached API (no token), at build time and at most once
-every 5 minutes per server on the pages that render on request.
+reads published events from Sanity's public, cached API (no token). Every page that shows events,
+including the home page, refreshes on its own within about 5 to 10 minutes of a publish, with no
+redeploy (a 300-second page refresh, a 300-second cache on the Sanity request, and a 5-minute cache in
+the loader).
+
+- **Render webhook (active):** the Sanity webhook "Rooftop Events Auto Deploy" also rebuilds the
+  staging site on Render when an `event`, `calendarSettings` or `barMenuSettings` document is published
+  (filter and setup in the Studio README). Publishing an event therefore updates the site sooner than
+  the 5-minute refresh. Other content (food truck menus, Football Specials, Seasonal Cocktails) is not
+  in the webhook and relies on the 5-minute refresh. The deploy hook URL is a secret: keep it in
+  Sanity and Render only, never in the repo or in docs.
 
 - **Not set up yet, or Sanity unreachable:** the site uses `src/content/events.json`. If Sanity
   fails after a good read, the last good copy from Sanity is kept.

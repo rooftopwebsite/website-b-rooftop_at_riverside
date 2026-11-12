@@ -17,6 +17,8 @@ export const metadata: Metadata = pageMeta({
   route: '/',
 });
 
+export const revalidate = 300;
+
 export default async function HomePage() {
   const events = await getVenueEvents();
   const upcoming = upcomingOccurrences(events, todayInVenue(), 8);
