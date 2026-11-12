@@ -13,13 +13,9 @@ import { Eyebrow, Heading } from '@/components/shared/Type';
 import {
   DRINK_OPTIONS,
   ENHANCEMENTS,
-  ENHANCEMENTS_NOTE,
   EVENTS_PDF,
   FOOD_OPTIONS,
-  RENTAL,
-  RENTAL_DEPOSIT,
   RENTAL_MINIMUM_HOURS,
-  SMALL_PARTY_MAX,
 } from '@/content/events-pricing';
 import { AREAS_OF_INTEREST } from '@/content/spaces';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
@@ -58,7 +54,7 @@ export default async function EventsPage({
         question="Looking for a private event venue in Bonita Springs?"
         title={'The party they '}
         titleAccent="talk about"
-        lead="Picture your people on the rooftop at golden hour, drinks in hand, music drifting up from the yard and downtown Bonita Springs glowing all around you. Book a section of the patio, the whole second floor or the entire venue, and we take care of the rest."
+        lead="Life gives us plenty of reasons to celebrate, and we're here for all of them. From casual get-togethers to unforgettable milestones, Rooftop at Riverside offers a one-of-a-kind setting in the heart of Downtown Bonita Springs. With flexible event spaces, a lively atmosphere, and customizable experiences, we'll help you create a celebration that's uniquely yours."
         photo="/images/events/events-hero.webp"
         photoMobileRatio="landscape"
         photoMobile="/images/events/events-hero-mobile.webp"
@@ -94,64 +90,23 @@ export default async function EventsPage({
       <EventSpaces />
       <SoftWave from="cream" to="deep" className="relative -mb-px" />
 
-      <Section tone="deep" band="lg" labelledBy="cost-title">
+      <Section tone="deep" band="lg" labelledBy="options-title">
         <div className="mx-auto max-w-[46rem] text-center">
           <Eyebrow tone="cream" className="justify-center">
-            What it costs
+            Your Event, Your Way
           </Eyebrow>
           <h2
-            id="cost-title"
+            id="options-title"
             className="m-0 mx-auto mt-gap-kicker max-w-[16ch] font-display text-band font-extrabold uppercase"
           >
-            <span className="text-paper">The numbers,</span>{' '}
-            <span className="text-sunset">up front</span>
+            <span className="text-paper">Ways to</span>{' '}
+            <span className="text-sunset">Make It Yours</span>
           </h2>
           <p className="mx-auto mt-gap-subhead max-w-[56ch] font-body text-lead font-light text-paper/85">
-            Renting the space, feeding everyone and running the bar, all in one place.
-            No quote needed to read this.
+            From food and bar options to those little extras that make an event your own, we&rsquo;ll help you put together a celebration that fits what you have in mind.
           </p>
         </div>
         <StaggerGroup as="ul" className="mt-block grid list-none gap-5 p-0 lg:grid-cols-2">
-          <RevealItem as="li" className="h-full">
-            <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
-              <Heading level={3} role="label" className="text-cream">
-                Renting the space
-              </Heading>
-              <dl className="m-0 mt-6 grid gap-5 sm:grid-cols-2">
-                {RENTAL.map((r) => (
-                  <div key={r.label} className="border-t border-dashed border-bone/25 pt-4">
-                    <dt className="font-body text-caption font-medium uppercase tracking-eyebrow text-muted-dark">
-                      {r.label}
-                    </dt>
-                    {r.price ? (
-                      <dd className="m-0 mt-2 font-display text-d2 font-extrabold leading-none tabular-nums text-sunset">
-                        {r.price}
-                        {r.unit ? (
-                          <span className="ml-1.5 font-body text-caption font-medium tracking-normal text-paper/80">
-                            {r.unit}
-                          </span>
-                        ) : null}
-                      </dd>
-                    ) : (
-                      <dd className="m-0 mt-2 font-display text-d6 font-bold leading-none text-sunset">
-                        Inquire for pricing
-                      </dd>
-                    )}
-                    {r.extra ? (
-                      <dd className="m-0 mt-2 font-body text-base font-light text-bone/85">
-                        {r.extra}
-                      </dd>
-                    ) : null}
-                  </div>
-                ))}
-              </dl>
-              <p className="m-0 mt-auto pt-6 font-body text-base font-light leading-[1.6] text-bone/85">
-                {RENTAL_MINIMUM_HOURS} hour minimum upstairs
-                {RENTAL_DEPOSIT ? ', and a deposit holds the date' : ''}.
-              </p>
-            </article>
-          </RevealItem>
-
           {[
             { key: 'food', title: 'Ways to feed everyone', rows: FOOD_OPTIONS },
             { key: 'drink', title: 'Ways to run the bar', rows: DRINK_OPTIONS },
@@ -170,9 +125,6 @@ export default async function EventsPage({
                       <p className="m-0 flex-1 font-display text-d6 font-bold uppercase leading-none text-paper">
                         {r.name}
                       </p>
-                      <p className="m-0 shrink-0 font-display text-d6 font-bold leading-none tabular-nums text-sunset">
-                        {r.price ?? 'Ask us'}
-                      </p>
                       <p className="m-0 basis-full font-body text-base font-light leading-[1.55] text-bone/85">
                         {r.body}
                       </p>
@@ -183,7 +135,7 @@ export default async function EventsPage({
             </RevealItem>
           ))}
 
-          <RevealItem as="li" className="h-full">
+          <RevealItem as="li" className="h-full lg:col-span-2">
             <article className="flex h-full flex-col rounded-shell bg-deeper p-7 lg:p-9">
               <div className="flex h-full flex-col gap-5">
                 <div>
@@ -201,13 +153,13 @@ export default async function EventsPage({
                     ))}
                   </ul>
                 </div>
-                <p className="m-0 mt-auto border-t border-dashed border-bone/25 pt-4 font-body text-base font-light leading-[1.6] text-bone/85">
-                  {ENHANCEMENTS_NOTE}
-                </p>
               </div>
             </article>
           </RevealItem>
         </StaggerGroup>
+        <p className="m-0 mt-8 text-center font-body text-base font-light text-bone/85">
+          {RENTAL_MINIMUM_HOURS} hour minimum upstairs.
+        </p>
       </Section>
       <FormSlab
         id="inquire"
@@ -219,7 +171,7 @@ export default async function EventsPage({
         eyebrowTone="terra"
         title="Tell us about your party"
         titleId="inquire-title"
-        lead="Send it over and you get real numbers back, within 24–48 hours."
+        lead="Tell us a little about your event, and we'll be in touch to go over the details, availability, and pricing."
         aside={
           <div
             className={
@@ -230,11 +182,12 @@ export default async function EventsPage({
           >
             <div className="flex flex-col gap-1.5">
               <p className="font-body text-base font-bold leading-[1.5] text-ink">
-                Fewer than {SMALL_PARTY_MAX} guests?
+                Smaller Crew? We&rsquo;ve Got You!
               </p>
               <p className="max-w-[34ch] font-body text-base font-light leading-[1.6] text-body/75">
-                That is a reservation, not a buyout. Call or write and we sort it out without the
-                form.
+                Celebrating with fewer than 20 guests? Ask about reserving a section at Rooftop at
+                Riverside! It&rsquo;s a great option for smaller gatherings that don&rsquo;t need the
+                entire space.
               </p>
               <a
                 href={`mailto:${venue.emailEvents}`}
@@ -277,6 +230,23 @@ export default async function EventsPage({
       >
         <InquiryForm defaultAreas={areas} />
       </FormSlab>
+
+      <Section tone="mint" band="lg" labelledBy="plan-event-title">
+        <div className="mx-auto max-w-[40rem] text-center">
+          <Heading level={2} id="plan-event-title" className="text-band text-ink">
+            Let&rsquo;s Plan Your Event
+          </Heading>
+          <p className="mx-auto mt-gap-subhead max-w-[48ch] text-pretty font-body text-lead font-light text-body/85">
+            Tell us a little about what you&rsquo;re planning, and we&rsquo;ll help you explore the
+            options for your celebration.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <ButtonLink href="#inquire" variant="primary" size="lg">
+              Inquire About Pricing
+            </ButtonLink>
+          </div>
+        </div>
+      </Section>
     </>
   );
 }
