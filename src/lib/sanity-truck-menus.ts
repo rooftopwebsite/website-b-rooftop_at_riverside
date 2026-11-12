@@ -8,9 +8,6 @@ const FRESH_MS = 5 * 60 * 1000;
 export const DEFAULT_MENU_LABEL = 'See the menu';
 export const DEFAULT_FOOTBALL_LABEL = 'Football Specials';
 
-// Must match TWO_MENU_SLUGS in the Studio schema. Only these trucks have Football Specials.
-const FOOTBALL_SLUGS: readonly string[] = ['el-chilango', 'sea-me-on-wheels'];
-
 const QUERY = `*[_type == "truckMenu"] | order(_id){
   _id, truckSlug, menuAvailable, buttonLabel, footballSpecialsAvailable, secondButtonLabel,
   "pdfUrl": menuPdf.asset->url,
@@ -112,7 +109,6 @@ export async function fetchTruckMenus({
           ? { pdfUrl: doc.pdfUrl, label: cleanLabel(doc.buttonLabel, DEFAULT_MENU_LABEL) }
           : undefined;
       const football =
-        FOOTBALL_SLUGS.includes(slug) &&
         doc.footballSpecialsAvailable === true &&
         valid(doc.secondPdfUrl, doc.secondPdfMime)
           ? { pdfUrl: doc.secondPdfUrl, label: cleanLabel(doc.secondButtonLabel, DEFAULT_FOOTBALL_LABEL) }

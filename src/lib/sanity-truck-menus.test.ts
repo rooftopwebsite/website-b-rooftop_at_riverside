@@ -36,7 +36,6 @@ const reply = (result: unknown, status = 200) => async () =>
   new Response(JSON.stringify({ result }), { status });
 
 const SLUGS = ['el-chilango', 'prime-carvery', 'sea-me-on-wheels', 'tropical-fusion'];
-const TWO = ['el-chilango', 'sea-me-on-wheels'];
 
 const run = async (d: unknown) => (await fetchTruckMenus({ ...CFG, fetchImpl: reply([d]) })) ?? null;
 
@@ -150,21 +149,21 @@ describe('Football Specials', () => {
     assert.equal(out?.get('el-chilango')?.football, undefined);
   });
 
-  it('is ignored on Prime Carvery and Tropical Fusion', async () => {
+  it('works on all four trucks, independent of each truck\'s main menu', async () => {
     const out = await fetchTruckMenus({
       ...CFG,
-      fetchImpl: reply([football('prime-carvery'), football('tropical-fusion')]),
+      fetchImpl: reply(SLUGS.map((s) => football(s, { menuAvailable: false }))),
     });
-    for (const s of ['prime-carvery', 'tropical-fusion']) {
-      assert.equal(out?.get(s)?.football, undefined);
-      assert.equal(out?.get(s)?.main?.pdfUrl, PDF(s));
+    for (const s of SLUGS) {
+      assert.equal(out?.get(s)?.main, undefined, s);
+      assert.equal(out?.get(s)?.football?.pdfUrl, PDF(`${s}-fb`), s);
     }
   });
 
   it('keeps each truck matched to its own PDFs', async () => {
     const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply(SLUGS.map((s) => football(s))) });
     for (const s of SLUGS) assert.equal(out?.get(s)?.main?.pdfUrl, PDF(s));
-    for (const s of TWO) assert.equal(out?.get(s)?.football?.pdfUrl, PDF(`${s}-fb`));
+    for (const s of SLUGS) assert.equal(out?.get(s)?.football?.pdfUrl, PDF(`${s}-fb`));
   });
 });
 
