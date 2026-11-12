@@ -24,6 +24,8 @@ export const NAV_PRIMARY: readonly NavLink[] = [
 export const NAV_MAIN: readonly NavLink[] = NAV_PRIMARY.filter((l) => !l.side);
 export const NAV_SIDE: readonly NavLink[] = NAV_PRIMARY.filter((l) => l.side);
 
+export const SEASONAL_COCKTAILS_HREF = '/seasonal-cocktails';
+
 export const NAV_MORE_GROUPS: readonly NavGroup[] = [
   {
     label: 'Get to know us',
@@ -41,6 +43,11 @@ export const NAV_MORE_GROUPS: readonly NavGroup[] = [
         label: 'Sports & Game Days',
         href: '/whats-on?type=sports#thursday-night-football',
         hint: 'Football from Thursday to Sunday.',
+      },
+      {
+        label: 'Seasonal Cocktails',
+        href: SEASONAL_COCKTAILS_HREF,
+        hint: 'Discover what’s pouring this season.',
       },
       {
         label: 'Gift Cards',

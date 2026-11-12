@@ -1,7 +1,10 @@
 import type { MetadataRoute } from 'next';
 import { getPosts } from '@/lib/blog';
-import { ALL_ROUTES, BLOG_HREF } from '@/lib/nav';
+import { ALL_ROUTES, BLOG_HREF, SEASONAL_COCKTAILS_HREF } from '@/lib/nav';
+import { getSeasonalCocktails } from '@/lib/sanity-seasonal-cocktails';
 import { SITE_URL } from '@/lib/seo';
+
+export const revalidate = 300;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -14,8 +17,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   };
 
   const posts = await getPosts();
+  const hasCocktails = (await getSeasonalCocktails()).length > 0;
 
-  const routes = posts.length > 0 ? ALL_ROUTES : ALL_ROUTES.filter((path) => path !== BLOG_HREF);
+  const base = posts.length > 0 ? ALL_ROUTES : ALL_ROUTES.filter((path) => path !== BLOG_HREF);
+  const routes = hasCocktails ? [...base, SEASONAL_COCKTAILS_HREF] : base;
 
   const staticRoutes = routes.map((path) => ({
     url: `${SITE_URL}${path === '/' ? '' : path}`,

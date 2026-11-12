@@ -10,6 +10,7 @@ import { Heading } from '@/components/shared/Type';
 import { SEASONAL } from '@/content/seasonal';
 import { getHappyHour } from '@/content/happy-hour';
 import { getBarMenu } from '@/lib/sanity-bar-menu';
+import { getSeasonalCocktails } from '@/lib/sanity-seasonal-cocktails';
 import { breadcrumbJsonLd, jsonLdScript, pageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = pageMeta({
@@ -28,6 +29,7 @@ export default async function SunsetBarPage() {
   const happyHour = await getHappyHour();
 
   const menu = await getBarMenu();
+  const hasSeasonalCocktails = (await getSeasonalCocktails()).length > 0;
 
   return (
     <>
@@ -127,6 +129,20 @@ export default async function SunsetBarPage() {
         </div>
       </Section>
       <MenuSheets menu={menu} />
+      {hasSeasonalCocktails ? (
+        <Section tone="bone" band="sm" bandTop="none" labelledBy="seasonal-promo-title">
+          <div className="text-center">
+            <Heading level={2} id="seasonal-promo-title" className="text-d4 text-ink lg:text-d3">
+              What&rsquo;s Pouring This Season?
+            </Heading>
+            <div className="mt-6 flex justify-center">
+              <ButtonLink href="/seasonal-cocktails" variant="primary" size="lg">
+                See Seasonal Cocktails
+              </ButtonLink>
+            </div>
+          </div>
+        </Section>
+      ) : null}
     </>
   );
 }
