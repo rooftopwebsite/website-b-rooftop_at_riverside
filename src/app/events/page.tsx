@@ -187,7 +187,8 @@ export default async function EventsPage({
               <p className="max-w-[34ch] font-body text-base font-light leading-[1.6] text-body/75">
                 Celebrating with fewer than 20 guests? Ask about reserving a section at Rooftop at
                 Riverside! It&rsquo;s a great option for smaller gatherings that don&rsquo;t need the
-                entire space.
+                entire space. Feel free to give us a call, send an email, or fill out the inquiry
+                form, whichever works best for you.
               </p>
               <a
                 href={`mailto:${venue.emailEvents}`}

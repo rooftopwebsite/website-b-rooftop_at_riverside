@@ -115,8 +115,8 @@ export const EVENT_TYPES = [
 ] as const;
 
 export const GUEST_RANGES = [
-  '24 or fewer',
-  '25 – 49',
+  '20 or fewer',
+  '21 – 49',
   '50 – 74',
   '75 – 99',
   '100 or more',
