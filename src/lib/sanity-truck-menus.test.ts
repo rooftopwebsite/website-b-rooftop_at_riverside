@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { beforeEach, describe, it } from 'node:test';
 import { truckByName } from '../content/trucks.ts';
 import {
+  DEFAULT_FOOTBALL_LABEL,
   DEFAULT_MENU_LABEL,
   fetchTruckMenus,
   getTruckMenuOverrides,
@@ -22,39 +23,43 @@ const doc = (slug: string, extra: Record<string, unknown> = {}) => ({
   ...extra,
 });
 
+const football = (slug: string, extra: Record<string, unknown> = {}) =>
+  doc(slug, {
+    footballSpecialsAvailable: true,
+    secondButtonLabel: null,
+    secondPdfUrl: PDF(`${slug}-fb`),
+    secondPdfMime: 'application/pdf',
+    ...extra,
+  });
+
 const reply = (result: unknown, status = 200) => async () =>
   new Response(JSON.stringify({ result }), { status });
 
 const SLUGS = ['el-chilango', 'prime-carvery', 'sea-me-on-wheels', 'tropical-fusion'];
+const TWO = ['el-chilango', 'sea-me-on-wheels'];
 
-describe('fetchTruckMenus', () => {
+const run = async (d: unknown) => (await fetchTruckMenus({ ...CFG, fetchImpl: reply([d]) })) ?? null;
+
+describe('main menu', () => {
   it('returns nothing when no truck document exists (local PDFs stay)', async () => {
-    const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply([]) });
-    assert.equal(out?.size, 0);
+    assert.equal((await fetchTruckMenus({ ...CFG, fetchImpl: reply([]) }))?.size, 0);
   });
 
   it('ignores a truck whose Menu Available is off, even with a PDF', async () => {
-    const out = await fetchTruckMenus({
-      ...CFG,
-      fetchImpl: reply([doc('prime-carvery', { menuAvailable: false })]),
-    });
-    assert.equal(out?.size, 0);
+    assert.equal((await run(doc('prime-carvery', { menuAvailable: false })))?.size, 0);
   });
 
   it('uses the Sanity PDF and default label when enabled and valid', async () => {
-    const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply([doc('prime-carvery')]) });
-    assert.deepEqual(out?.get('prime-carvery'), [
-      { pdfUrl: PDF('prime-carvery'), label: DEFAULT_MENU_LABEL },
-    ]);
-    assert.equal(out?.size, 1);
+    const out = await run(doc('prime-carvery'));
+    assert.deepEqual(out?.get('prime-carvery'), {
+      main: { pdfUrl: PDF('prime-carvery'), label: DEFAULT_MENU_LABEL },
+      football: undefined,
+    });
   });
 
-  it('uses the custom button label, trimmed and capped', async () => {
-    const out = await fetchTruckMenus({
-      ...CFG,
-      fetchImpl: reply([doc('el-chilango', { buttonLabel: '  See tacos  ' })]),
-    });
-    assert.equal(out?.get('el-chilango')?.[0]?.label, 'See tacos');
+  it('uses the custom button label, trimmed', async () => {
+    const out = await run(doc('el-chilango', { buttonLabel: '  See tacos  ' }));
+    assert.equal(out?.get('el-chilango')?.main?.label, 'See tacos');
   });
 
   it('ignores missing, non-PDF or foreign PDFs', async () => {
@@ -68,25 +73,102 @@ describe('fetchTruckMenus', () => {
       { pdfUrl: '/menus/prime-carvery.pdf' },
     ];
     for (const b of bad) {
-      const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply([doc('prime-carvery', b)]) });
-      assert.equal(out?.size, 0, JSON.stringify(b));
+      assert.equal((await run(doc('prime-carvery', b)))?.size, 0, JSON.stringify(b));
     }
   });
 
   it('keeps each truck matched to its own document', async () => {
     const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply(SLUGS.map((s) => doc(s))) });
-    for (const s of SLUGS) assert.equal(out?.get(s)?.[0]?.pdfUrl, PDF(s));
+    for (const s of SLUGS) assert.equal(out?.get(s)?.main?.pdfUrl, PDF(s));
     assert.equal(out?.size, 4);
   });
 
   it('ignores a document whose id does not match its truck (duplicates)', async () => {
-    const out = await fetchTruckMenus({
-      ...CFG,
-      fetchImpl: reply([{ ...doc('prime-carvery'), _id: 'someOtherId', pdfUrl: PDF('dupe') }]),
-    });
+    const out = await run({ ...doc('prime-carvery'), _id: 'someOtherId', pdfUrl: PDF('dupe') });
     assert.equal(out?.size, 0);
   });
+});
 
+describe('Football Specials', () => {
+  it('every toggle combination, with both PDFs valid', async () => {
+    const cases: [boolean, boolean, boolean, boolean][] = [
+      // main toggle, football toggle, expect main, expect football
+      [false, false, false, false],
+      [true, false, true, false],
+      [false, true, false, true],
+      [true, true, true, true],
+    ];
+    for (const [m, f, em, ef] of cases) {
+      const out = await run(football('el-chilango', { menuAvailable: m, footballSpecialsAvailable: f }));
+      const o = out?.get('el-chilango');
+      assert.equal(!!o?.main, em, `main ${m}/${f}`);
+      assert.equal(!!o?.football, ef, `football ${m}/${f}`);
+    }
+  });
+
+  it('shows Football Specials alone while the main menu is OFF (main keeps the local PDF)', async () => {
+    const out = await run(football('sea-me-on-wheels', { menuAvailable: false }));
+    assert.deepEqual(out?.get('sea-me-on-wheels'), {
+      main: undefined,
+      football: { pdfUrl: PDF('sea-me-on-wheels-fb'), label: DEFAULT_FOOTBALL_LABEL },
+    });
+  });
+
+  it('uses the custom label, or Football Specials when empty', async () => {
+    const custom = await run(football('el-chilango', { secondButtonLabel: ' Game Day ' }));
+    assert.equal(custom?.get('el-chilango')?.football?.label, 'Game Day');
+    const blank = await run(football('el-chilango', { secondButtonLabel: '  ' }));
+    assert.equal(blank?.get('el-chilango')?.football?.label, 'Football Specials');
+  });
+
+  it('hides only the Football button when its PDF is missing or invalid', async () => {
+    const bad = [
+      { secondPdfUrl: null, secondPdfMime: null },
+      { secondPdfMime: 'image/png' },
+      { secondPdfUrl: 'https://example.com/x.pdf' },
+      { secondPdfUrl: 'https://cdn.sanity.io/files/other/d/x.pdf' },
+      { secondPdfUrl: 'http://cdn.sanity.io/files/p/d/x.pdf' },
+      { secondPdfUrl: '/menus/x.pdf' },
+    ];
+    for (const b of bad) {
+      const o = (await run(football('el-chilango', b)))?.get('el-chilango');
+      assert.equal(o?.football, undefined, JSON.stringify(b));
+      assert.equal(o?.main?.pdfUrl, PDF('el-chilango'), JSON.stringify(b));
+    }
+  });
+
+  it('never falls back to the main PDF, in either direction', async () => {
+    const noFootballPdf = (await run(football('el-chilango', { secondPdfUrl: null, secondPdfMime: null, menuAvailable: false })));
+    assert.equal(noFootballPdf?.size, 0);
+    const noMainPdf = (await run(football('el-chilango', { pdfUrl: null, pdfMime: null })))?.get('el-chilango');
+    assert.equal(noMainPdf?.main, undefined);
+    assert.equal(noMainPdf?.football?.pdfUrl, PDF('el-chilango-fb'));
+  });
+
+  it('an old document with a second PDF but no Football toggle shows nothing extra', async () => {
+    const out = await run(football('el-chilango', { footballSpecialsAvailable: undefined }));
+    assert.equal(out?.get('el-chilango')?.football, undefined);
+  });
+
+  it('is ignored on Prime Carvery and Tropical Fusion', async () => {
+    const out = await fetchTruckMenus({
+      ...CFG,
+      fetchImpl: reply([football('prime-carvery'), football('tropical-fusion')]),
+    });
+    for (const s of ['prime-carvery', 'tropical-fusion']) {
+      assert.equal(out?.get(s)?.football, undefined);
+      assert.equal(out?.get(s)?.main?.pdfUrl, PDF(s));
+    }
+  });
+
+  it('keeps each truck matched to its own PDFs', async () => {
+    const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply(SLUGS.map((s) => football(s))) });
+    for (const s of SLUGS) assert.equal(out?.get(s)?.main?.pdfUrl, PDF(s));
+    for (const s of TWO) assert.equal(out?.get(s)?.football?.pdfUrl, PDF(`${s}-fb`));
+  });
+});
+
+describe('Sanity failures and requests', () => {
   it('returns null on a network error, API error or bad shape', async () => {
     const boom = async () => {
       throw new Error('offline');
@@ -113,92 +195,6 @@ describe('fetchTruckMenus', () => {
   });
 });
 
-describe('two menus per truck', () => {
-  const two = (slug: string, extra: Record<string, unknown> = {}) =>
-    doc(slug, {
-      buttonLabel: 'Food Menu',
-      secondButtonLabel: 'Specials Menu',
-      secondPdfUrl: PDF(`${slug}-2`),
-      secondPdfMime: 'application/pdf',
-      ...extra,
-    });
-
-  it('one PDF uploaded gives one button', async () => {
-    const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply([doc('el-chilango')]) });
-    assert.equal(out?.get('el-chilango')?.length, 1);
-  });
-
-  it('two PDFs uploaded give two labeled buttons, first one first', async () => {
-    const out = await fetchTruckMenus({
-      ...CFG,
-      fetchImpl: reply([two('el-chilango'), two('sea-me-on-wheels')]),
-    });
-    for (const s of ['el-chilango', 'sea-me-on-wheels']) {
-      assert.deepEqual(out?.get(s), [
-        { pdfUrl: PDF(s), label: 'Food Menu' },
-        { pdfUrl: PDF(`${s}-2`), label: 'Specials Menu' },
-      ]);
-    }
-  });
-
-  it('uses a default label when the second label is empty', async () => {
-    const out = await fetchTruckMenus({
-      ...CFG,
-      fetchImpl: reply([two('el-chilango', { secondButtonLabel: '  ' })]),
-    });
-    assert.equal(out?.get('el-chilango')?.[1]?.label, 'See the second menu');
-  });
-
-  it('Menu Available off shows no Sanity buttons, even with two PDFs', async () => {
-    const out = await fetchTruckMenus({
-      ...CFG,
-      fetchImpl: reply([two('el-chilango', { menuAvailable: false })]),
-    });
-    assert.equal(out?.size, 0);
-  });
-
-  it('a missing or invalid second PDF leaves the first button working', async () => {
-    const bad = [
-      { secondPdfUrl: null, secondPdfMime: null },
-      { secondPdfMime: 'image/png' },
-      { secondPdfUrl: 'https://example.com/x.pdf' },
-      { secondPdfUrl: 'https://cdn.sanity.io/files/other/d/x.pdf' },
-      { secondPdfUrl: 'http://cdn.sanity.io/files/p/d/x.pdf' },
-      { secondPdfUrl: '/menus/x.pdf' },
-    ];
-    for (const b of bad) {
-      const out = await fetchTruckMenus({ ...CFG, fetchImpl: reply([two('el-chilango', b)]) });
-      assert.deepEqual(out?.get('el-chilango'), [{ pdfUrl: PDF('el-chilango'), label: 'Food Menu' }], JSON.stringify(b));
-    }
-  });
-
-  it('a valid second PDF still shows if the first is invalid', async () => {
-    const out = await fetchTruckMenus({
-      ...CFG,
-      fetchImpl: reply([two('el-chilango', { pdfUrl: 'https://example.com/x.pdf' })]),
-    });
-    assert.deepEqual(out?.get('el-chilango'), [{ pdfUrl: PDF('el-chilango-2'), label: 'Specials Menu' }]);
-  });
-
-  it('ignores a second PDF on trucks that only have one menu', async () => {
-    const out = await fetchTruckMenus({
-      ...CFG,
-      fetchImpl: reply([two('prime-carvery'), two('tropical-fusion')]),
-    });
-    assert.equal(out?.get('prime-carvery')?.length, 1);
-    assert.equal(out?.get('tropical-fusion')?.length, 1);
-  });
-
-  it('keeps each truck matched to its own PDFs', async () => {
-    const out = await fetchTruckMenus({
-      ...CFG,
-      fetchImpl: reply(SLUGS.map((s) => two(s))),
-    });
-    for (const s of SLUGS) assert.equal(out?.get(s)?.[0]?.pdfUrl, PDF(s));
-    assert.equal(out?.get('sea-me-on-wheels')?.[1]?.pdfUrl, PDF('sea-me-on-wheels-2'));
-  });
-});
-
 describe('getTruckMenuOverrides', () => {
   beforeEach(() => {
     resetTruckMenuCache();
@@ -210,6 +206,20 @@ describe('getTruckMenuOverrides', () => {
     const real = globalThis.fetch;
     globalThis.fetch = (async () => {
       throw new Error('should not be called');
+    }) as typeof fetch;
+    try {
+      assert.equal((await getTruckMenuOverrides()).size, 0);
+    } finally {
+      globalThis.fetch = real;
+    }
+  });
+
+  it('returns nothing (local PDFs stay) when Sanity fails and nothing is cached', async () => {
+    process.env.SANITY_PROJECT_ID = 'p';
+    process.env.SANITY_DATASET = 'd';
+    const real = globalThis.fetch;
+    globalThis.fetch = (async () => {
+      throw new Error('offline');
     }) as typeof fetch;
     try {
       assert.equal((await getTruckMenuOverrides()).size, 0);
@@ -231,7 +241,7 @@ describe('getTruckMenuOverrides', () => {
       await getTruckMenuOverrides();
       const again = await getTruckMenuOverrides();
       assert.equal(calls, 1);
-      assert.equal(again.get('prime-carvery')?.[0]?.pdfUrl, PDF('prime-carvery'));
+      assert.equal(again.get('prime-carvery')?.main?.pdfUrl, PDF('prime-carvery'));
     } finally {
       globalThis.fetch = real;
     }

@@ -6,13 +6,13 @@ const TIMEOUT_MS = 8000;
 const FRESH_MS = 5 * 60 * 1000;
 
 export const DEFAULT_MENU_LABEL = 'See the menu';
-export const DEFAULT_SECOND_MENU_LABEL = 'See the second menu';
+export const DEFAULT_FOOTBALL_LABEL = 'Football Specials';
 
-// Must match TWO_MENU_SLUGS in the Studio schema.
-const TWO_MENU_SLUGS: readonly string[] = ['el-chilango', 'sea-me-on-wheels'];
+// Must match TWO_MENU_SLUGS in the Studio schema. Only these trucks have Football Specials.
+const FOOTBALL_SLUGS: readonly string[] = ['el-chilango', 'sea-me-on-wheels'];
 
 const QUERY = `*[_type == "truckMenu"] | order(_id){
-  _id, truckSlug, menuAvailable, buttonLabel, secondButtonLabel,
+  _id, truckSlug, menuAvailable, buttonLabel, footballSpecialsAvailable, secondButtonLabel,
   "pdfUrl": menuPdf.asset->url,
   "pdfMime": menuPdf.asset->mimeType,
   "secondPdfUrl": secondMenuPdf.asset->url,
@@ -26,6 +26,7 @@ const docSchema = z.object({
   buttonLabel: z.string().nullish(),
   pdfUrl: z.string().nullish(),
   pdfMime: z.string().nullish(),
+  footballSpecialsAvailable: z.boolean().nullish(),
   secondButtonLabel: z.string().nullish(),
   secondPdfUrl: z.string().nullish(),
   secondPdfMime: z.string().nullish(),
@@ -40,8 +41,14 @@ export interface TruckMenuButton {
   readonly label: string;
 }
 
-// The valid menu buttons for a truck, in order (one or two).
-export type TruckMenuOverrides = ReadonlyMap<string, readonly TruckMenuButton[]>;
+// What Sanity currently provides for a truck. Each part is independent: a missing main menu
+// means the local PDF stays, and Football Specials never stands in for the main menu.
+export interface TruckMenuOverride {
+  readonly main?: TruckMenuButton;
+  readonly football?: TruckMenuButton;
+}
+
+export type TruckMenuOverrides = ReadonlyMap<string, TruckMenuOverride>;
 
 export interface TruckMenusConfig {
   readonly projectId: string;
@@ -89,29 +96,28 @@ export async function fetchTruckMenus({
       return null;
     }
 
-    const out = new Map<string, readonly TruckMenuButton[]>();
+    const out = new Map<string, TruckMenuOverride>();
     const seen = new Set<string>();
     for (const doc of parsed.data.result) {
       const slug = doc.truckSlug;
       // One document per truck. The canonical id wins, anything else for that truck is ignored.
       if (!slug || seen.has(slug) || doc._id !== `truckMenu-${slug}`) continue;
       seen.add(slug);
-      if (doc.menuAvailable !== true) continue;
 
-      const valid = (url: string | null | undefined, mime: string | null | undefined) =>
+      const valid = (url: string | null | undefined, mime: string | null | undefined): url is string =>
         mime === 'application/pdf' && !!url && isSanityPdf(url, projectId, dataset);
 
-      const buttons: TruckMenuButton[] = [];
-      if (doc.pdfUrl && valid(doc.pdfUrl, doc.pdfMime)) {
-        buttons.push({ pdfUrl: doc.pdfUrl, label: cleanLabel(doc.buttonLabel, DEFAULT_MENU_LABEL) });
-      }
-      if (TWO_MENU_SLUGS.includes(slug) && doc.secondPdfUrl && valid(doc.secondPdfUrl, doc.secondPdfMime)) {
-        buttons.push({
-          pdfUrl: doc.secondPdfUrl,
-          label: cleanLabel(doc.secondButtonLabel, DEFAULT_SECOND_MENU_LABEL),
-        });
-      }
-      if (buttons.length > 0) out.set(slug, buttons);
+      const main =
+        doc.menuAvailable === true && valid(doc.pdfUrl, doc.pdfMime)
+          ? { pdfUrl: doc.pdfUrl, label: cleanLabel(doc.buttonLabel, DEFAULT_MENU_LABEL) }
+          : undefined;
+      const football =
+        FOOTBALL_SLUGS.includes(slug) &&
+        doc.footballSpecialsAvailable === true &&
+        valid(doc.secondPdfUrl, doc.secondPdfMime)
+          ? { pdfUrl: doc.secondPdfUrl, label: cleanLabel(doc.secondButtonLabel, DEFAULT_FOOTBALL_LABEL) }
+          : undefined;
+      if (main || football) out.set(slug, { main, football });
     }
     return out;
   } catch (err) {

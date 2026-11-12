@@ -60,9 +60,9 @@ export async function truckMenus(): Promise<readonly TruckMenuData[]> {
     return {
       name: truck?.name ?? m.name,
       description: m.description ?? truck?.blurb ?? truck?.story ?? null,
-      pdfUrl: live?.[0]?.pdfUrl ?? m.pdfUrl,
-      menuLabel: live?.[0]?.label ?? DEFAULT_MENU_LABEL,
-      extraMenus: live?.slice(1) ?? [],
+      pdfUrl: live?.main?.pdfUrl ?? m.pdfUrl,
+      menuLabel: live?.main?.label ?? DEFAULT_MENU_LABEL,
+      extraMenus: live?.football ? [live.football] : [],
       truck,
     };
   });
