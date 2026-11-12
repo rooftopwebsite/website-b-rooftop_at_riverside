@@ -43,7 +43,7 @@ export default async function SunsetBarPage() {
         question="Looking for somewhere special to get together?"
         title={"Bonita's only "}
         titleAccent="rooftop"
-        lead="Bring your family or your friends for great food and cold drinks. Feel the breeze up on the roof, watch downtown Bonita Springs go by, and stay for the view. All of it at the only rooftop bar in Bonita Springs."
+        lead="Gather your family and friends for chef-driven street eats and ice-cold drinks. Catch the breeze from the roof, watch the energy of downtown Bonita Springs unfold below, and stay for the view. Rise above it all at the city’s only rooftop bar."
         photo="/images/venue/bar-cocktails-wide.webp"
         photoAlt="Four cocktails on a table on the rooftop at golden hour, with the bar and the umbrellas behind"
       >
