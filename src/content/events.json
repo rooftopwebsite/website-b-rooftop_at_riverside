@@ -36,11 +36,11 @@
   {
     "id": "f31d22f9-2663-49da-b4fa-8b6fa591c8f3",
     "title": "Weekend Happy Hour",
-    "description": "Every Saturday and Sunday, from noon to 6 PM, all over the venue.\n$1 off drafts, bottles and cans\n$8 Tito's, Captain, Crown's\n$10 Margaritas\nSuperior Light Beer is the featured pour.",
+    "description": "Every Saturday and Sunday, from 11 AM to 6 PM, all over the venue.\n$10 House Margaritas\n$20 Bucket Specials\n$1 Off Beers & Seltzers\n$8 Kettle Cucumber Mash Martinis",
     "bannerUrl": "/images/events/posters/weekend-happy-hour.webp",
     "startDate": "2026-09-21",
     "endDate": null,
-    "startTime": "12:00:00",
+    "startTime": "11:00:00",
     "endTime": "18:00:00",
     "isRecurring": true,
     "recurrenceType": "weekly",
