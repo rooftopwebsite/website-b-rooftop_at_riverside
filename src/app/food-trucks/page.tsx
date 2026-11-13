@@ -33,7 +33,7 @@ export default function FoodTrucksPage() {
         eyebrow="The yard"
         accent="Flavor Takes Center Stage"
         title="in The Yard"
-        lead="Follow the sounds of live music, the laughter coming from The Yard, and the irresistible aromas coming off the grills. Take a stroll, meet the chefs behind our four food trucks, and explore everything from fresh seafood and American favorites to Mexican street food and Caribbean fusion."
+        lead="Let the live music, lively chatter, and smoky grill aromas lead you straight into The Yard. Stroll from truck to truck, chat with our local chefs, and dig into everything from fresh seafood and American favorites to Mexican street eats and Caribbean fusion."
         from="paper"
         to="mint"
       />
