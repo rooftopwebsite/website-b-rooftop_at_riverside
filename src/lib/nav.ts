@@ -12,6 +12,8 @@ export interface NavLink {
 export interface NavGroup {
   readonly label: string;
   readonly links: readonly NavLink[];
+  // Shown in the same column as the group before it, instead of in a column of its own.
+  readonly below?: boolean;
 }
 
 export const NAV_PRIMARY: readonly NavLink[] = [
@@ -33,6 +35,17 @@ export const NAV_MORE_GROUPS: readonly NavGroup[] = [
       { label: 'Blog', href: '/blog', hint: 'Stories from the rooftop, the trucks and the people.' },
       { label: 'Join Us', href: '/join-us', hint: 'Work here, play here.' },
       { label: 'Contact', href: '/contact', hint: 'The right inbox, hours, parking and the map.' },
+    ],
+  },
+  {
+    label: 'Plan Something Special',
+    below: true,
+    links: [
+      {
+        label: 'Plan an Event',
+        href: '/events',
+        hint: 'From casual gatherings to milestone celebrations.',
+      },
     ],
   },
   {

@@ -13,6 +13,12 @@ interface MoreMenuProps {
 }
 
 export default function MoreMenu({ moreOpen, moreGroups, isCurrent, onLinkClick }: MoreMenuProps) {
+  const columns = moreGroups.reduce<NavGroup[][]>((cols, group) => {
+    if (group.below && cols.length > 0) cols[cols.length - 1]!.push(group);
+    else cols.push([group]);
+    return cols;
+  }, []);
+
   return (
     <div
       className={[
@@ -24,52 +30,56 @@ export default function MoreMenu({ moreOpen, moreGroups, isCurrent, onLinkClick 
       ].join(' ')}
     >
       <div className="page-box-wide grid gap-x-10 gap-y-9 pt-11 pb-11 desk:grid-cols-[repeat(2,minmax(0,15rem))_1fr]">
-        {moreGroups.map((group) => (
-          <div key={group.label}>
-            <p className="eyebrow text-deep">
-              {group.label}
-              <TileMark className="mt-1.5 block" />
-            </p>
+        {columns.map((column) => (
+          <div key={column[0]!.label}>
+            {column.map((group, groupIndex) => (
+              <div key={group.label} className={groupIndex > 0 ? 'mt-9' : undefined}>
+                <p className="eyebrow text-deep">
+                  {group.label}
+                  <TileMark className="mt-1.5 block" />
+                </p>
 
-            <ul className="mt-3.5 flex flex-col">
-              {group.links.map(({ label, href, hint, badge, external }) => (
-                <li key={href} className="border-b border-fog last:border-b-0">
-                  <Link
-                    href={href}
-                    {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : null)}
-                    onClick={onLinkClick}
-                    aria-current={isCurrent(href) ? 'page' : undefined}
-                    className="group block py-3.5"
-                  >
-                    <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span
-                        className={[
-                          'font-body text-d7 font-bold leading-none',
-                          'transition-colors duration-200',
-                          isCurrent(href) ? 'text-terra' : 'text-ink group-hover:text-terra',
-                        ].join(' ')}
+                <ul className="mt-3.5 flex flex-col">
+                  {group.links.map(({ label, href, hint, badge, external }) => (
+                    <li key={href} className="border-b border-fog last:border-b-0">
+                      <Link
+                        href={href}
+                        {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : null)}
+                        onClick={onLinkClick}
+                        aria-current={isCurrent(href) ? 'page' : undefined}
+                        className="group block py-3.5"
                       >
-                        {label}
-                        {external ? (
-                          <span className="sr-only"> (opens in a new tab)</span>
-                        ) : null}
-                      </span>
-                      {badge ? (
-                        <span className="eyebrow rounded-pill bg-sunset px-1.75 py-0.5 text-ink">
-                          {badge}
+                        <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                          <span
+                            className={[
+                              'font-body text-d7 font-bold leading-none',
+                              'transition-colors duration-200',
+                              isCurrent(href) ? 'text-terra' : 'text-ink group-hover:text-terra',
+                            ].join(' ')}
+                          >
+                            {label}
+                            {external ? (
+                              <span className="sr-only"> (opens in a new tab)</span>
+                            ) : null}
+                          </span>
+                          {badge ? (
+                            <span className="eyebrow rounded-pill bg-sunset px-1.75 py-0.5 text-ink">
+                              {badge}
+                            </span>
+                          ) : null}
                         </span>
-                      ) : null}
-                    </span>
 
-                    {hint ? (
-                      <span className="mt-1.5 block font-body text-data font-light leading-[1.5] text-muted">
-                        {hint}
-                      </span>
-                    ) : null}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                        {hint ? (
+                          <span className="mt-1.5 block font-body text-data font-light leading-[1.5] text-muted">
+                            {hint}
+                          </span>
+                        ) : null}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         ))}
 

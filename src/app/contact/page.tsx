@@ -40,8 +40,8 @@ export default async function ContactPage() {
       />
       <PlateHero
         question="Trying to reach the rooftop in Bonita Springs?"
-        title={'Crafted '}
-        titleAccent="Just for You"
+        title={'Say hello to '}
+        titleAccent="the rooftop"
         lead="Planning an event or have a question about Rooftop? Send us a message and our team will get back to you within 24–48 hours. We’re happy to help!"
         photo="/images/venue/contact-rooftop-seating.jpg"
         photoMobileRatio="landscape"

@@ -36,8 +36,8 @@ export default async function MarketPage() {
       <PlateHero
         question="Looking for a local makers market in Bonita Springs?"
         title={'Meet the '}
-        titleAccent="makers"
-        lead="Discover some of Southwest Florida’s favorite independent makers, creators, and small businesses at Rooftop’s neighborhood market. Shop everything from clothing and custom hats to handmade soaps, local honey, fresh juices, and more. Bring the family, bring your four-legged shopping buddy, and spend the day supporting the local businesses that make our community special."
+        titleAccent="vendors"
+        lead="We’re proud to give local small business owners a place to share what they do, connect with the community, and grow their businesses. Our market brings together local vendors, unique finds, and neighbors who love supporting local. Come explore, meet the faces behind the businesses, and see what our community has to offer."
         photo="/images/market/hero-yard-wide.webp"
         photoAlt="Stalls and pop-up tents in the yard on a market day, with racks of clothes and two vendors at their stand"
       >
