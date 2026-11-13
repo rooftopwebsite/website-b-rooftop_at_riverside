@@ -73,7 +73,7 @@ export default async function JoinUsPage({
           eyebrowTone="deep"
           title="Work here"
           titleId="work-title"
-          lead="It is a rooftop bar over a yard of gourmet food trucks, with a stage and live music most nights. Busy, outdoors, and never the same shift twice."
+          lead="Join a supportive, thoughtful team led by engaged ownership and hands-on management who truly care. At our live music and entertainment venue, your skills are respected, your hard work is recognized, and your voice matters."
           aside={
             <div className="flex flex-col gap-6">
               {openings.length > 0 ? (
