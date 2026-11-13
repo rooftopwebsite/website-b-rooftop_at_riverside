@@ -15,7 +15,7 @@ export const HAPPY_HOUR_GROUPS: readonly HappyHourGroup[] = [
     days: 'Wednesday – Friday',
     time: '3 PM – 6 PM',
     deals: [
-      { price: '$4.00', what: 'Drafts' },
+      { price: '$4', what: 'Drafts' },
       { price: '$5', what: 'House Wine' },
       { price: '$6', what: 'Wells' },
     ],

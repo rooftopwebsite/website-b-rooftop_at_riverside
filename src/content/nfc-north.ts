@@ -3,11 +3,24 @@ export const NFC_NORTH_HEADING = 'NFC North Sundays at Rooftop';
 export const NFC_NORTH_EYEBROW = 'Every Sunday of the season';
 
 export const NFC_NORTH_LEAD =
-  'Make Sunset Bar your Sunday football spot in Downtown Bonita Springs. Enjoy the open-air breeze, your favorite drinks, and the excitement of NFC North football with the 1 PM and 4:30 PM games on every screen upstairs. Whether you’re a lifelong Packers, Bears, Lions, or Vikings fan, or your loyalty lies elsewhere, there’s a place for you at Rooftop.';
+  'Football Sundays at Rooftop have something for every NFL fan! Head upstairs to the Sunset Bar for NFC North action featuring the Packers, Bears, Lions, and Vikings, or catch every NFL game on our downstairs TVs. No matter who you’re rooting for, we’ve got your game on.';
+
+export const NFC_NORTH_WHERE = [
+  {
+    label: 'Upstairs at the Sunset Bar',
+    body: 'NFC North football, with the 1 PM and 4:30 PM games on every screen.',
+  },
+  {
+    label: 'Downstairs',
+    body: 'Every NFL game, every weekend, on our TVs.',
+  },
+] as const;
 
 export const GIVEAWAY_HEADING = 'Weekly Giveaways & Grand Prize Drawing';
 
-export const GIVEAWAY_STEPS = [
+export const WEEKLY_GIVEAWAY_HEADING = 'Weekly Giveaway';
+
+export const WEEKLY_GIVEAWAY_ITEMS = [
   {
     title: 'One ticket per check',
     body: 'Close your check, get a raffle ticket and drop it in your team’s bucket.',
@@ -16,11 +29,12 @@ export const GIVEAWAY_STEPS = [
     title: 'Weekly prizes',
     body: 'Every Sunday there is a giveaway for each team in the division.',
   },
-  {
-    title: 'Rollover entries',
-    body: 'Every entry rolls into the Week 18 grand prize drawing.',
-  },
 ] as const;
+
+export const GRAND_PRIZE_HEADING = 'Grand Prize Drawing';
+
+export const GRAND_PRIZE_LEAD =
+  'Weekly Entries Roll over for Week 18 draw for an autographed jersey of your favorite star!';
 
 export const GIVEAWAY_JERSEY_INTRO =
   'The Week 18 drawing gives away a Beckett Witnessed autographed jersey for each team:';

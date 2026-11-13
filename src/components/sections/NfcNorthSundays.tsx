@@ -7,13 +7,17 @@ import {
   GIVEAWAY_HEADING,
   GIVEAWAY_JERSEYS,
   GIVEAWAY_JERSEY_INTRO,
-  GIVEAWAY_STEPS,
+  GRAND_PRIZE_HEADING,
+  GRAND_PRIZE_LEAD,
   NFC_NORTH_EYEBROW,
   NFC_NORTH_HEADING,
   NFC_NORTH_LEAD,
+  NFC_NORTH_WHERE,
   SPECIALS_HEADING,
   SPECIALS_NOTE,
   SUNDAY_SPECIALS,
+  WEEKLY_GIVEAWAY_HEADING,
+  WEEKLY_GIVEAWAY_ITEMS,
   WHATS_HAPPENING_CTA,
   WHATS_HAPPENING_NOTE,
 } from '@/content/nfc-north';
@@ -33,6 +37,16 @@ export default function NfcNorthSundays() {
         <p className="mx-auto mt-5 max-w-[56ch] font-body text-lead font-light text-bone">
           {NFC_NORTH_LEAD}
         </p>
+        <ul className="mx-auto m-0 mt-7 grid max-w-[44rem] list-none gap-5 p-0 sm:grid-cols-2 sm:gap-10">
+          {NFC_NORTH_WHERE.map((w) => (
+            <li key={w.label} className="flex flex-col items-center gap-1.5 text-center">
+              <span className="font-display text-d6 uppercase tracking-eyebrow text-cream">
+                {w.label}
+              </span>
+              <span className="font-body text-base font-light text-bone">{w.body}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className="relative mt-10 rounded-frame bg-bone grain px-6 py-9 text-ink sm:px-10 lg:mt-14 lg:px-14 lg:py-12">
@@ -44,40 +58,47 @@ export default function NfcNorthSundays() {
           <Heading level={3} className="m-0 text-center text-d4 leading-none text-deep lg:text-d3">
             {GIVEAWAY_HEADING}
           </Heading>
-          <ol className="m-0 mt-8 grid list-none gap-6 p-0 md:grid-cols-3 md:gap-0 md:divide-x md:divide-dashed md:divide-ink/20">
-            {GIVEAWAY_STEPS.map((s, i) => (
-              <li key={s.title} className="flex flex-col items-center gap-2 text-center md:px-6">
-                <span
-                  aria-hidden="true"
-                  className="font-display text-d3 leading-none tabular-nums text-sunset-deep"
+          <div className="mt-8">
+            <Heading level={4} role="label" className="m-0 text-center text-d5 leading-none text-sunset-deep">
+              {WEEKLY_GIVEAWAY_HEADING}
+            </Heading>
+            <ul className="m-0 mt-6 grid list-none gap-6 p-0 md:grid-cols-2 md:gap-0 md:divide-x md:divide-dashed md:divide-ink/20">
+              {WEEKLY_GIVEAWAY_ITEMS.map((s) => (
+                <li key={s.title} className="flex flex-col items-center gap-2 text-center md:px-6">
+                  <span className="font-display text-d6 uppercase tracking-eyebrow text-deep">
+                    {s.title}
+                  </span>
+                  <span className="font-body text-base text-ink/80">{s.body}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="mt-8 border-t border-dashed border-ink/20 pt-8">
+            <Heading level={4} role="label" className="m-0 text-center text-d5 leading-none text-sunset-deep">
+              {GRAND_PRIZE_HEADING}
+            </Heading>
+            <p className="mx-auto m-0 mt-4 max-w-[48ch] text-center font-body text-base text-ink/80">
+              {GRAND_PRIZE_LEAD}
+            </p>
+            <p className="m-0 mt-6 text-center font-body text-base font-semibold text-ink">
+              {GIVEAWAY_JERSEY_INTRO}
+            </p>
+            <ul className="m-0 mt-4 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-4">
+              {GIVEAWAY_JERSEYS.map((j) => (
+                <li
+                  key={j.team}
+                  className="flex flex-col items-center gap-1 rounded-btn bg-paper px-3 py-4 text-center ring-1 ring-fog"
                 >
-                  {i + 1}
-                </span>
-                <span className="font-display text-d6 uppercase tracking-eyebrow text-deep">
-                  {s.title}
-                </span>
-                <span className="font-body text-base text-ink/80">{s.body}</span>
-              </li>
-            ))}
-          </ol>
-          <p className="m-0 mt-8 text-center font-body text-base font-semibold text-ink">
-            {GIVEAWAY_JERSEY_INTRO}
-          </p>
-          <ul className="m-0 mt-4 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-4">
-            {GIVEAWAY_JERSEYS.map((j) => (
-              <li
-                key={j.team}
-                className="flex flex-col items-center gap-1 rounded-btn bg-paper px-3 py-4 text-center ring-1 ring-fog"
-              >
-                <span className="text-caption font-bold uppercase tracking-[0.08em] text-teal600">
-                  {j.team}
-                </span>
-                <span className="font-display text-d7 uppercase leading-tight text-deep sm:text-d6">
-                  {j.player}
-                </span>
-              </li>
-            ))}
-          </ul>
+                  <span className="text-caption font-bold uppercase tracking-[0.08em] text-teal600">
+                    {j.team}
+                  </span>
+                  <span className="font-display text-d7 uppercase leading-tight text-deep sm:text-d6">
+                    {j.player}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 
