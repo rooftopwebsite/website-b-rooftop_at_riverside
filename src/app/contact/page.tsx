@@ -43,8 +43,9 @@ export default async function ContactPage() {
         title={'Crafted '}
         titleAccent="Just for You"
         lead="Planning an event or have a question about Rooftop? Send us a message and our team will get back to you within 24–48 hours. We’re happy to help!"
-        photo="/images/venue/contact-bar-day-wide.webp"
-        photoAlt="Guests at the bar at Rooftop at Riverside on a weekday afternoon"
+        photo="/images/venue/contact-rooftop-seating.jpg"
+        photoMobileRatio="landscape"
+        photoAlt="The covered rooftop seating area at Rooftop at Riverside, with white-cushioned sofas and orange wooden chairs under a white pergola, surrounded by palms and folding glass doors"
       >
         <ButtonLink href="#write" variant="primary" size="lg">
           Write to us
