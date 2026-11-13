@@ -1,3 +1,11 @@
+export interface TruckLogo {
+  readonly src: string;
+  readonly width: number;
+  readonly height: number;
+  // Optical size inside the logo strip, as a share of the strip, so wide and tall logos look balanced.
+  readonly fit: { readonly w: string; readonly h: string };
+}
+
 export interface Truck {
   readonly slug: string;
   readonly name: string;
@@ -12,6 +20,7 @@ export interface Truck {
   readonly photoAlt: string | null;
   readonly photoBrief: string;
   readonly menuImage: string | null;
+  readonly logo: TruckLogo | null;
 
   readonly gallery: readonly { src: string; alt: string }[];
   readonly nameConfirmed: boolean;
@@ -34,6 +43,7 @@ export const TRUCKS: readonly Truck[] = [
     photoBrief:
       "The OCN Seafood Co. truck open and serving, at sunset, with the window lit and people ordering.",
     menuImage: null,
+    logo: null,
     gallery: [],
     nameConfirmed: true,
     active: false,
@@ -52,6 +62,7 @@ export const TRUCKS: readonly Truck[] = [
     photoBrief:
       "The Butcher's Blvd truck parked in the yard, plus a close-up of a smashburger going out.",
     menuImage: null,
+    logo: null,
     gallery: [],
     nameConfirmed: true,
     active: false,
@@ -71,6 +82,12 @@ export const TRUCKS: readonly Truck[] = [
     photoAlt: 'Chilaquiles with pulled pork, avocado and crema from El Chilango MX',
     photoBrief: "The truck from outside, with its sign readable.",
     menuImage: '/menus/el-chilango-mx.jpg',
+    logo: {
+      src: '/images/trucks/logos/el-chilango-logo.png',
+      width: 1774,
+      height: 887,
+      fit: { w: '82%', h: '88%' },
+    },
     gallery: [
       {
         src: '/images/trucks/el-chilango-2.webp',
@@ -100,6 +117,7 @@ export const TRUCKS: readonly Truck[] = [
     photoBrief:
       "The Reggae Kitchen truck with its sign readable, and a plated dish that shows the color of the food.",
     menuImage: null,
+    logo: null,
     gallery: [],
     nameConfirmed: false,
     active: false,
@@ -120,6 +138,12 @@ export const TRUCKS: readonly Truck[] = [
     photoAlt: 'A burger with melted cheese served from the Prime Carvery truck',
     photoBrief: "The truck from outside, with its sign readable, open and serving.",
     menuImage: null,
+    logo: {
+      src: '/images/trucks/logos/prime-carvery-logo.png',
+      width: 2116,
+      height: 743,
+      fit: { w: '100%', h: '100%' },
+    },
     gallery: [],
     nameConfirmed: true,
     active: true,
@@ -139,6 +163,12 @@ export const TRUCKS: readonly Truck[] = [
     photoAlt: 'A poke bowl with fresh fish and vegetables from Sea Me on Wheels',
     photoBrief: "The truck from outside, with its sign readable, open and serving.",
     menuImage: '/menus/sea-me-on-wheels.webp',
+    logo: {
+      src: '/images/trucks/logos/sea-me-on-wheels-logo.png',
+      width: 1774,
+      height: 887,
+      fit: { w: '80%', h: '88%' },
+    },
     gallery: [],
     nameConfirmed: true,
     active: true,
@@ -156,6 +186,12 @@ export const TRUCKS: readonly Truck[] = [
     photoAlt: 'A plated dish from the Tropical Fusion food truck',
     photoBrief: 'The truck from outside, with its sign readable and a plated dish.',
     menuImage: null,
+    logo: {
+      src: '/images/trucks/logos/tropical-fusion-logo.png',
+      width: 1807,
+      height: 870,
+      fit: { w: '72%', h: '84%' },
+    },
     gallery: [],
     nameConfirmed: true,
     active: true,

@@ -98,6 +98,23 @@ export default async function TruckCards({
           <li key={menu.name} className="relative h-full">
             <AwningEdge />
             <article className="flex h-full flex-col overflow-hidden rounded-shell bg-paper card-shadow">
+              {t?.logo ? (
+                <div className="relative bg-deep pt-9">
+                  <div className="relative mx-auto h-[4.75rem] w-full">
+                    <div className="absolute inset-0 grid place-items-center">
+                      <div className="relative" style={{ width: t.logo.fit.w, height: t.logo.fit.h }}>
+                        <Image
+                          src={t.logo.src}
+                          alt={`${displayName(t)} logo`}
+                          fill
+                          sizes="(min-width: 1024px) 240px, (min-width: 640px) 40vw, 80vw"
+                          className="object-contain"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
               <div className={`relative aspect-[3/2] ${t?.photo ? 'bg-fog' : ''}`}>
                 {t?.photo ? (
                   <>
