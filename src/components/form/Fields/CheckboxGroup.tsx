@@ -11,12 +11,14 @@ export function CheckboxGroup({
   options,
   hint,
   defaultChecked,
+  singleColumn,
 }: {
   readonly name: string;
   readonly legend: string;
   readonly options: readonly Option[];
   readonly hint?: string;
   readonly defaultChecked?: readonly string[];
+  readonly singleColumn?: boolean;
 }) {
   const { uid } = useContext(Ctx);
   const { eid, err } = useField(name);
@@ -26,7 +28,7 @@ export function CheckboxGroup({
         {legend}
         {hint ? <span className="ml-[8px] font-normal text-body/75">{hint}</span> : null}
       </legend>
-      <div className="mt-[6px] grid gap-[10px] sm:grid-cols-2">
+      <div className={`mt-[6px] grid gap-[10px] ${singleColumn ? '' : 'sm:grid-cols-2'}`}>
         {options.map((o) => (
           <label
             key={o.value}

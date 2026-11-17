@@ -1,5 +1,6 @@
 'use server';
 
+import { AREAS_OF_INTEREST } from '@/content/spaces';
 import { getVenue } from '@/lib/venue';
 import { publicInbox } from '@/lib/inboxes';
 import { inquiryFromForm, inquirySchema } from '@/lib/schemas/event-inquiry';
@@ -49,7 +50,10 @@ export async function submitEventInquiry(
       'Food tier': d.foodTier,
       'Bar package': d.barTier ?? '(not chosen)',
       Budget: d.budget,
-      'Interested in': d.areas.length > 0 ? d.areas.join(', ') : '(nothing ticked)',
+      'Interested in':
+        d.areas.length > 0
+          ? d.areas.map((v) => AREAS_OF_INTEREST.find((a) => a.value === v)?.label ?? v).join(', ')
+          : '(nothing ticked)',
       'Heard about us': d.referral ?? '(not given)',
       Comments: d.comments || '(none)',
     },

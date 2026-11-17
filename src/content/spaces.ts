@@ -124,19 +124,19 @@ export const GUEST_RANGES = [
 
 export const FOOD_TIERS = [
   {
-    value: 'Food Truck Spread',
-    label: 'Food Truck Spread',
+    value: 'Food Truck Experience',
+    label: 'Food Truck Experience',
     hint: 'Your guests order from the trucks on the night.',
   },
   {
-    value: 'Small Bites',
-    label: 'Small Bites',
-    hint: 'The trucks send out small bites for the whole group.',
+    value: 'Small Bites Spread',
+    label: 'Small Bites Spread',
+    hint: 'Select an assortment of favorites from our food trucks for guests to enjoy.',
   },
   {
-    value: 'Catered',
-    label: 'Catered',
-    hint: 'A set menu, plated or buffet, coordinated with the trucks.',
+    value: 'Preferred Caterers',
+    label: 'Preferred Caterers',
+    hint: 'A set menu, plated or buffet, coordinated with the caterer.',
   },
 ] as const;
 
@@ -209,8 +209,7 @@ export const BUDGET_RANGES = [
 ] as const;
 
 export const AREAS_OF_INTEREST = [
-  { value: 'rooftop', label: 'The rooftop bar' },
-  { value: 'patio', label: 'The rooftop patio' },
-  { value: 'yard', label: 'The Yard, gated' },
+  { value: 'upstairs', label: 'The full upstairs - rooftop bar and patio' },
+  { value: 'patio', label: 'The Rooftop Patio' },
   { value: 'buyout', label: 'The whole place' },
 ] as const;

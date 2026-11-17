@@ -130,6 +130,7 @@ export default function InquiryForm({
             legend={LABELS.areas}
             options={AREAS_OF_INTEREST.map((a) => ({ value: a.value, label: a.label }))}
             defaultChecked={defaultAreas}
+            singleColumn
           />
         </div>
       </fieldset>
@@ -174,7 +175,7 @@ function FoodTier() {
         Food tier <span className="text-terra">*</span>
       </legend>
       <p className="text-[15px] leading-[1.55] text-body/75">
-        The trucks cook. We coordinate them. Pick how involved you want that to be.
+        {"Let's talk food! Select the option that works best for your gathering."}
       </p>
       <div className="grid gap-[12px] sm:grid-cols-3">
         {FOOD_TIERS.map((tier) => (

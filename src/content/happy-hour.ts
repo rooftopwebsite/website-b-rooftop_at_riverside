@@ -29,7 +29,7 @@ export const HAPPY_HOUR_GROUPS: readonly HappyHourGroup[] = [
       { price: '$10', what: 'House Margaritas' },
       { price: '$20', what: 'Bucket Specials' },
       { price: '$1 Off', what: 'Beers & Seltzers' },
-      { price: '$8', what: 'Kettle Cucumber Mash Martinis' },
+      { price: '$8', what: 'Kettle Cucumber Smash' },
     ],
   },
 ];
