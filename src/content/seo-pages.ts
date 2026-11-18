@@ -23,7 +23,7 @@ export const PAGE_SEO = {
   },
 
   '/food-trucks': {
-    h1: 'Big flavors, out in the yard',
+    h1: 'Flavor Takes Center Stage in The Yard',
     title: 'Food Trucks | Bonita Springs Food Truck Park',
     description:
       'Gourmet food trucks in the yard at Rooftop at Riverside. Street tacos, seafood, American comfort classics and tropical fusion, with craft cocktails from the rooftop bar.',
@@ -39,7 +39,7 @@ export const PAGE_SEO = {
   },
 
   '/events': {
-    h1: 'Your event, two stories up',
+    h1: 'The party they talk about',
     title: 'Private Event Venue in Bonita Springs | Rooftop at Riverside',
     description:
       'Rent the rooftop, the yard, or the whole place. Four food trucks, our own bar, and one person coordinating all of it. Downtown Bonita Springs.',
@@ -55,7 +55,7 @@ export const PAGE_SEO = {
 
 
   '/market': {
-    h1: 'Meet the makers',
+    h1: 'Meet the vendors',
     title: 'Neighborhood Market | Rooftop at Riverside',
     description:
       'Local makers set up in the yard with handmade goods, while the trucks cook and the bar stays open. Booths are $30, and you can apply online.',
@@ -81,7 +81,7 @@ export const PAGE_SEO = {
 
 
   '/blog': {
-    h1: 'Stories from the Rooftop',
+    h1: 'The Rooftop Blog',
     title: 'Blog | Rooftop at Riverside, Downtown Bonita Springs',
     description:
       'Stories from the rooftop bar and food truck park in Downtown Bonita Springs: the music, the trucks, the game days and the people behind them.',
@@ -135,21 +135,21 @@ export const PAGE_SEO = {
     h1: 'Terms of service',
     title: 'Terms of Service | Rooftop at Riverside',
     description:
-      'The terms for using rooftopatriverside.com, buying event tickets, booking a private event and visiting the venue.',
+      'The terms for using eatdrinkparadise.com, buying event tickets, booking a private event and visiting the venue.',
     keywords: [],
   },
   '/cookie-policy': {
     h1: 'Cookie policy',
     title: 'Cookie Policy | Rooftop at Riverside',
     description:
-      'Which cookies rooftopatriverside.com sets, which ones come from third parties, and how to change what you allow.',
+      'Which cookies eatdrinkparadise.com sets, which ones come from third parties, and how to change what you allow.',
     keywords: [],
   },
   '/accessibility': {
     h1: 'Accessibility statement',
     title: 'Accessibility | Rooftop at Riverside',
     description:
-      'How we build and test rooftopatriverside.com for accessibility, what is still missing, and how to tell us when something does not work.',
+      'How we build and test eatdrinkparadise.com for accessibility, what is still missing, and how to tell us when something does not work.',
     keywords: [],
   },
 } as const satisfies Record<string, PageSeo>;

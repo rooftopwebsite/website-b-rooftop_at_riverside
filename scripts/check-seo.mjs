@@ -6,7 +6,7 @@ import { PAGE_SEO } from '../src/content/seo-pages.ts';
 const BASE = process.env.BASE ?? 'http://localhost:3157';
 
 await assertFresh(BASE);
-const SITE = 'https://rooftopatriverside.com';
+const SITE = 'https://eatdrinkparadise.com';
 
 const BANNED = [
   { re: /\bour kitchen\b/i, note: 'the venue has no kitchen' },
@@ -24,7 +24,18 @@ const ALLOWED_CONTEXT = [
   /not a restaurant/i,
   /don.t have a kitchen/i,
   /no venue kitchen/i,
+  /meet our chefs, and see what.s cooking/i,
 ];
+
+const REDIRECTED = {
+  '/our-story': '/',
+  '/game-truck': '/events',
+};
+
+const MAY_BE_EMPTY = new Set(['/blog']);
+
+const sitemapXml = await (await fetch(`${BASE}/sitemap.xml`)).text();
+const inSitemap = (route) => sitemapXml.includes(`<loc>${SITE}${route}</loc>`);
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -33,6 +44,23 @@ const page = await ctx.newPage();
 let problems = 0;
 
 for (const [route, expected] of Object.entries(PAGE_SEO)) {
+  if (route in REDIRECTED) {
+    const hop = await fetch(BASE + route, { redirect: 'manual' });
+    const target = new URL(hop.headers.get('location') ?? '', BASE).pathname;
+    const problemsHere = [];
+    if (![301, 302, 307, 308].includes(hop.status)) problemsHere.push(`HTTP ${hop.status}, expected a redirect`);
+    if (target !== REDIRECTED[route]) problemsHere.push(`redirects to ${target}, expected ${REDIRECTED[route]}`);
+    if (inSitemap(route)) problemsHere.push('listed in the sitemap');
+    if (problemsHere.length) {
+      problems += 1;
+      console.log(`❌ ${route}`);
+      for (const i of problemsHere) console.log(`   ${i}`);
+    } else {
+      console.log(`↪  ${route} hidden: redirects to ${REDIRECTED[route]}, not in the sitemap`);
+    }
+    continue;
+  }
+
   const res = await page.goto(BASE + route, { waitUntil: 'domcontentloaded' });
   const issues = [];
 
@@ -50,6 +78,19 @@ for (const [route, expected] of Object.entries(PAGE_SEO)) {
     };
   });
 
+  if (MAY_BE_EMPTY.has(route) && data.noindex) {
+    const bad = [];
+    if (data.canonical) bad.push(`empty page has a canonical: ${data.canonical}`);
+    if (inSitemap(route)) bad.push('listed in the sitemap while empty');
+    if (bad.length) {
+      problems += 1;
+      console.log(`❌ ${route}`);
+      for (const i of bad) console.log(`   ${i}`);
+    } else {
+      console.log(`⏸  ${route} has no posts: noindex, no canonical, not in the sitemap`);
+    }
+    continue;
+  }
   if (data.noindex && data.h1s.length === 0) {
     console.log(`⏸  ${route} hidden (noindex, no content): skipped`);
     continue;

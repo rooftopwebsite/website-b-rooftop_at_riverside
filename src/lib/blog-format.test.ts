@@ -16,7 +16,7 @@ import {
   type FeedPost,
 } from './blog-format.ts';
 
-const SITE = 'https://rooftopatriverside.com';
+const SITE = 'https://eatdrinkparadise.com';
 const COVER = `${IMAGE_ORIGIN}cover.webp`;
 
 const feed = (over: Partial<FeedPost> = {}): FeedPost => ({

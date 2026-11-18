@@ -140,7 +140,7 @@ and the shadows were tinted in another project's navy.
 
 ## 4. SEO — from the first commit, not at the end
 
-- `SITE_URL = 'https://rooftopatriverside.com'`.
+- `SITE_URL = 'https://eatdrinkparadise.com'`.
 - `pageMeta()` in `src/lib/seo.ts`, with the table of titles and descriptions in
   `src/content/seo-pages.ts`. The titles in the table are **absolute** (they already include the
   brand); those of dynamic routes go through the layout's `template`.

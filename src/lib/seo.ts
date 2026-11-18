@@ -3,7 +3,7 @@ import { PAGE_SEO, type SeoRoute } from '@/content/seo-pages';
 import type { Venue } from './venue';
 import { BRAND, addressLine } from './brand';
 
-export const SITE_URL = 'https://rooftopatriverside.com';
+export const SITE_URL = 'https://eatdrinkparadise.com';
 
 interface OgImage {
   readonly url: string;

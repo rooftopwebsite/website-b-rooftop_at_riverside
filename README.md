@@ -47,7 +47,7 @@ The commented template is `.env.example`. In short:
   At least 32 characters; generate one with `openssl rand -hex 32`. Set it on Render, never in the
   repo. Changing it invalidates links that are already out.
 - **`NEWSLETTER_LINK_BASE_URL`** (optional): the site address used in the confirmation email link.
-  Defaults to `https://rooftopatriverside.com`. Set it on a staging site so the link points back there.
+  Defaults to `https://eatdrinkparadise.com`. Set it on a staging site so the link points back there.
 - **`SANITY_PROJECT_ID`, `SANITY_DATASET`** (optional): turn on the events calendar from Sanity
   (`hfsae018`, `production`). Leave both empty and the site uses `src/content/events.json`.
 
